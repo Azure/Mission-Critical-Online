@@ -1,0 +1,29 @@
+<!--This is a catalog of items which are loaded via an ajax call.
+    uses Vue.js
+ The page shows item in a grid, with an image, name, price and a button to view item details on a separate page.
+-->
+<html>
+<head>
+    <title>Contoso Catalog</title>
+    <meta charset="utf-8">
+    </head>
+    <body>
+        <!-- grid of catalog items grid, with an image, name, price and a button to view item details on a separate page -->
+        <div id="catalog">
+            <div class="item" v-for="item in items">
+                <div class="item-image">
+                    <img :src="item.image" alt="Item image">
+                </div>
+                <div class="item-name">
+                    {{item.name}}
+                </div>
+                <div class="item-price">
+                    {{item.price}}
+                </div>
+                <div class="item-button">
+                    <button v-on:click="viewItem(item.id)">View Item</button>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

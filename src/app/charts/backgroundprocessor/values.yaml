@@ -1,0 +1,10 @@
+container:
+  containerimage: "OVERWRITE.acr.io/alwayson/backgroundprocessor:1234" # Container Image Name
+  pullPolicy: "IfNotPresent" # Container Image Pull Policy. Using IfNotPresent to enable pod starts even if ACR cannot be reached and image was pulled on the node previously
+
+scale:
+  minReplicas: 2 # Min Replicas
+  maxReplicas: 8 # Max Replicas
+
+azure:
+  region: "East US 2"

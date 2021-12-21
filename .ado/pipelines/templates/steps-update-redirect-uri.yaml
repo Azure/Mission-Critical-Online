@@ -1,0 +1,85 @@
+parameters:
+- name: "type"
+  type: string
+  values: ["add", "remove"]
+
+steps:
+- task: DownloadSecureFile@1
+  name: graphSpCertificate
+  displayName: 'Download certificate for Microsoft Graph service principal'
+  inputs:
+    secureFile: '$(b2cAdoClientCertName)'
+
+- task: PowerShell@2
+  displayName: 'Install Graph PowerShell module'
+  inputs:
+    targetType: 'inline'
+    script: |
+      # Graph module shouldn't be preinstalled on the agent, but checking anyway.
+      if (Get-Module -ListAvailable -Name Microsoft.Graph) {
+        Write-Host "*** Module Microsoft.Graph exists."
+      }
+      else {
+        Write-Host "*** Installing Microsoft.Graph module..."
+        Install-Module Microsoft.Graph -Force
+      }
+
+- template: steps-parse-terraform-output.yaml
+  parameters:
+    workingDirectory: '$(Pipeline.Workspace)/terraformOutputGlobalInfra'  # Global infra deploy output directory
+
+- task: PowerShell@2
+  displayName: 'Modify (${{ parameters.type }}) redirect URI in B2C app registration'
+  inputs:
+    targetType: 'inline'
+    script: |
+      
+      $frontDoorFqdn = "https://$(frontdoor_fqdn)"
+
+      Write-Host "*** Loading certificate..."
+      $CertPath = "$(graphSpCertificate.secureFilePath)"
+      Write-Host "*** Certificate path: " $CertPath
+      $Certificate = [System.Security.Cryptography.X509Certificates.X509Certificate2]::new($CertPath, "$(b2cAdoClientCertPassword)")
+
+      $tenantId = "$(b2cTenantName).onmicrosoft.com"
+
+      Write-Host "*** Connecting Graph. Client ID: $(b2cAdoClientId), Tenant: $tenantId, Certificate: $($Certificate.Thumbprint) (from $CertPath)."
+      
+      # Connecting using app-only authentication with in-memory certificate.
+      Connect-MgGraph -ClientID "$(b2cAdoClientId)" -TenantId "$tenantId" -Certificate $Certificate
+      
+      # Get app registration
+      Write-Host "*** Getting UI app registration..."
+      $app = Get-MgApplication | Where-Object { $_.AppId -eq "$(b2cUIClientID)" } # look for app by AppId, which is different from the -ApplicationId parameter
+      $app
+
+      if ("${{ parameters.type }}" -eq "add") {
+        # Check if redirect URI already exists
+        if ($app.Spa.RedirectUris.Contains("$frontDoorFqdn")) {
+          Write-Host "*** Redirect URI $frontDoorFqdn already present, skipping."
+        }
+        else {
+          # Add FQDN to the registration
+          $app.Spa.RedirectUris += "$frontDoorFqdn"
+          Write-Host "*** Updated list of URIs:"
+          $app.Spa.RedirectUris
+
+          # Update app registration
+          Write-Host "*** Updating UI app with additional URI $frontDoorFqdn..."
+          Update-MgApplication -ApplicationId $app.Id -Spa $app.Spa
+        }
+      }
+      elseif ("${{ parameters.type }}" -eq "remove") {
+        if ($app.Spa.RedirectUris.Contains("$frontDoorFqdn")) {
+          Write-Host "*** Removing $frontDoorFqdn from UI application's Redirect URIs..."
+          $newRedirect = $app.Spa.RedirectUris | Where-Object { $_ -ne "$frontDoorFqdn" }
+          $app.Spa.RedirectUris = $newRedirect
+          Update-MgApplication -ApplicationId $app.Id -Spa $app.Spa
+        }
+        else {
+          Write-Host "*** Redirect URI for $frontDoorFqdn not present."
+        }
+      }
+      else {
+        throw "*** Invalid type of action: ${{ parameters.type }}"
+      }

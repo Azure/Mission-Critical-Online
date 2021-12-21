@@ -1,0 +1,31 @@
+parameters:
+- name: trafficWeightNewBackends
+  type: number
+- name: removeDisabledBackends # if set to true, any backends in Front Door that are in a Disabled state (from a previous run of this script), will be now removed
+  type: boolean
+  default: false
+
+# We have this as both, a stage-template and a steps-template.
+# Reason for this is that we use it in two different places:
+# Once we need to deployment job to have approvals and once we call it from inside another deployment job
+stages:
+- stage: 'configurefrontdoor${{ parameters.trafficWeightNewBackends }}'
+  displayName: 'Direct ${{ parameters.trafficWeightNewBackends }} percent of traffic to new release unit'
+  jobs:
+  - deployment: 'configurefrontdoor${{ parameters.trafficWeightNewBackends }}Job' # Using a deployment job so that we can have manual approves, which are configured on the environment specificed below
+    displayName: 'Direct ${{ parameters.trafficWeightNewBackends }} per cent of traffic to new release unit'
+    environment: '$(environment)'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+
+          - checkout: self # checkout github repository
+            clean: true
+
+          - template: steps-set-pipeline-variables.yaml # load set-pipeline-variables function
+
+          - template: steps-frontdoor-traffic-switch.yaml # call steps-template
+            parameters:
+              trafficWeightNewBackends: ${{ parameters.trafficWeightNewBackends }}
+              removeDisabledBackends: ${{ parameters.removeDisabledBackends }}

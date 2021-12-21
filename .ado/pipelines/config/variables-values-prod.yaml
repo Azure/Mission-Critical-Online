@@ -1,0 +1,27 @@
+# Central configuration settings
+# used for E2E environment pipelines
+variables:
+
+# Resource prefix for this environment
+- name:  'prefix'
+  value: 'aoprod'          # Needs to be a unique prefix
+
+- name: 'stampLocations'
+  value: '["northeurope", "canadacentral"]' # Check which regions are valid. There is a list in /src/infra/README.md
+
+
+# Terraform state variables
+- name:  'terraformResourceGroup'
+  value: 'terraformstate-rg'
+- name:  'terraformStorageAccount'
+  value: 'aoprodterraformstate'      # Needs to be a globally unique name
+
+# Custom DNS name settings
+- name: 'envDnsZoneRG'
+  value: 'ao-dns-rg'
+- name: 'envDomainName'
+  value: 'always-on.app'
+
+# Other settings
+- name:  'contactEmail'
+  value: 'alwaysonappnet@microsoft.com'

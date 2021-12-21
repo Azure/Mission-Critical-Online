@@ -1,0 +1,32 @@
+{
+  "id": "signin",
+  "type": "B2CSignIn_V3",
+  "protocol": "OpenIdConnect",
+  "booleanData": {
+    "mfaDisable": true,
+    "allowEmailFactor": true
+  },
+  "idpData": {
+    "idpSelection": [
+      {
+        "technicalProfileId": "SelfAsserted-LocalAccountSignin-Email-V3-SignInOnly"
+      }
+    ]
+  },
+  "userAttributesData": {
+    "claims": [
+      {
+        "id": "displayName"
+      },
+      {
+        "id": "emails"
+      },
+      {
+        "id": "extension_GameMaster"
+      },
+      {
+        "id": "objectId"
+      }
+    ]
+  }
+}

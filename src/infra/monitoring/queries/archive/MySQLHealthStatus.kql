@@ -1,0 +1,25 @@
+let _ResourceType = "DBFORMYSQL/SERVERS"
+let Thresholds=datatable(MetricName: string, YellowThreshold: double, RedThreshold: double) [
+    // CPU percentage:
+    "cpu_percent", 60, 80, 
+    // Memory Percentage:
+    "memory_percent", 60, 80,
+    // IO Consumption Percent:
+    "io_consumption_percent", 60, 80,
+    // Storage percentage:
+    "storage_percent", 60, 80,
+    // Percentage of server log storage used:
+    "serverlog_storage_percent", 60, 80
+    ];
+//
+AzureMetrics
+| where TimeGenerated > ago(1d)
+| extend ResourceType = extract("(PROVIDERS/MICROSOFT.)([A-Z]*/[A-Z]*)", 2, ResourceId)
+| where ResourceType == _ResourceType
+| summarize arg_max(TimeGenerated, *) by MetricName
+| project TimeGenerated, MetricName, Namespace = "AzureMetrics", Value=Average
+| lookup kind=inner Thresholds on MetricName
+| extend IsYellow = iff(Value > YellowThreshold and Value < RedThreshold, 1, 0)
+| extend IsRed = iff(Value > RedThreshold, 1, 0)
+| project NodeName, MetricName, Value, YellowThreshold, IsYellow, RedThreshold, IsRed
+

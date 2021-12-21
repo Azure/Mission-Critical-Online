@@ -1,0 +1,36 @@
+// This looks at the state of the Public Storage account which hosts the static website content
+//
+let Thresholds=datatable(MetricName: string, YellowThreshold: double, RedThreshold: double) [
+    // Average Latency in milliseconds
+    "averageLatency", 100, 200,
+    // Number of non-successful requests
+    "failureCount", 2, 5
+    ];
+//
+let timespanStart= todatetime(format_datetime(now(-2d), 'yyyy-MM-dd HH:ss')); // We need to remove any sub-second part from the start, otherwise the series are not to the seconds
+let timespanEnd = now(-2m); // there is some ingestion lag, so we account for this by stripping the last 2m
+// First we count storage errors as reported in the StorageBlobLogs table
+let storageErrors=
+StorageBlobLogs
+| where AccountName endswith "pubst"
+| where StatusText != "Success"
+| make-series Value=count() default=0 on TimeGenerated from timespanStart to timespanEnd step 1m
+| mv-expand TimeGenerated, Value
+| extend TimeGenerated = todatetime(TimeGenerated), Value=toreal(Value), MetricName='failureCount';
+//
+// Now we join the storage errors with the metrics table from which we query the average success latency for storage requests
+let avgLatency = AzureMetrics
+| where TimeGenerated > ago(2d)
+| where ResourceProvider == "MICROSOFT.STORAGE"
+| where ResourceId endswith "PUBST/BLOBSERVICES/DEFAULT" // We are only interested in the public storage account which hosts the static website
+| where MetricName == "SuccessE2ELatency"
+| make-series Value=avg(Average) default=0 on TimeGenerated from timespanStart to timespanEnd step 1m
+| mv-expand TimeGenerated, Value
+| extend TimeGenerated = todatetime(TimeGenerated), Value=toreal(Value), MetricName='averageLatency';
+storageErrors
+| union avgLatency
+| lookup kind = inner Thresholds on MetricName
+| extend IsYellow = iff(todouble(Value) > YellowThreshold and todouble(Value) < RedThreshold, 1, 0)
+| extend IsRed = iff(todouble(Value) > RedThreshold, 1, 0)
+| project-reorder TimeGenerated, MetricName, Value, IsYellow, IsRed, YellowThreshold, RedThreshold
+| order by TimeGenerated, MetricName

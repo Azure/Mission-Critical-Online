@@ -1,0 +1,44 @@
+{
+    "location": "uksouth",
+    "identity": {
+      "type": "SystemAssigned"
+    },
+    "properties": {
+      "steps": [
+        {
+          "name": "AKS pod chaos step 1",
+          "branches": [
+            {
+              "name": "AKS pod chaos branch 1",
+              "actions": [
+                {
+                  "type": "continuous",
+                  "selectorId": "Selector1",
+                  "duration": "PT10M",
+                  "parameters": [
+                    {
+                        "key": "jsonSpec",
+                        "value": "{\"action\":\"pod-kill\",\"mode\":\"random-max-percent\",\"value\":\"50\",\"selector\":{\"namespaces\":[\"workload\"]},\"duration\":\"60s\",\"scheduler\":{\"cron\":\"@every 1m\"}}"
+                    }
+                  ],
+                  "name": "urn:csci:microsoft:azureKubernetesServiceChaosMesh:podChaos/1.0"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "selectors": [
+        {
+          "id": "Selector1",
+          "type": "List",
+          "targets": [
+            {
+              "type": "ChaosTarget",
+              "id": "REPLACE-ME/providers/Microsoft.Chaos/targets/Microsoft-AzureKubernetesServiceChaosMesh"
+            }
+          ]
+        }
+      ]
+    }
+  }

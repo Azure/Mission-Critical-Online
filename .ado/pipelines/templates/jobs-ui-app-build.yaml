@@ -1,0 +1,28 @@
+parameters:
+  workingDirectory:         '' # directory where package.json is located
+  jobName:                  '' # name for each build job - needs to be unique within a given stage/pipeline
+
+
+jobs:
+- job: ${{ parameters.jobName }}
+  displayName: 'Build UI app'
+  steps:
+
+  - task: Npm@1
+    displayName: 'NPM install'
+    inputs:
+      command: 'install'
+      workingDir: ${{ parameters.workingDirectory }}
+
+  - task: Npm@1
+    displayName: 'Build the static UI app for deployment'
+    inputs:
+      command: 'custom'
+      customCommand: 'run build'
+      workingDir: ${{ parameters.workingDirectory }}
+
+  - task: PublishPipelineArtifact@1
+    displayName: 'Publish built app'
+    inputs:
+      targetPath: '${{ parameters.workingDirectory }}/dist'
+      artifactName: 'uiApp'

@@ -1,0 +1,13 @@
+# This file points Grafana to the location of dashboards that need to be added when provisioning
+# More info: https://grafana.com/docs/grafana/latest/administration/provisioning/#dashboards
+
+apiVersion: 1
+
+providers:
+  - name: Default    # A uniquely identifiable name for the provider
+    folder: Monitoring # The folder where to place the dashboards
+    type: file
+    options:
+      path:  /etc/grafana/provisioning/dashboards/json
+ 
+ 

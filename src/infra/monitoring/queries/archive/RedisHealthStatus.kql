@@ -1,0 +1,22 @@
+let _ResourceType = "CACHE/REDIS";
+let Thresholds=datatable(MetricName: string, YellowThreshold: double, RedThreshold: double) [
+    // Connected Clients:
+    "connectedclients", 6000, 6750, 
+    // CPU Percentage:
+    "percentProcessorTime", 80, 90,
+    // Server Load:
+    "serverLoad", 80, 90,
+    // Memory used percentage:
+    "usedmemorypercentage", 80,90
+    ];
+//
+AzureMetrics
+| where TimeGenerated > ago(1d)
+| extend ResourceType = extract("(PROVIDERS/MICROSOFT.)([A-Z]*/[A-Z]*)", 2, ResourceId)
+| where ResourceType == _ResourceType
+| summarize arg_max(TimeGenerated, *) by MetricName
+| project TimeGenerated, MetricName, Namespace = "AzureMetrics", Value=Average
+| lookup kind=inner Thresholds on MetricName
+| extend IsYellow = iff(Value > YellowThreshold and Value < RedThreshold, 1, 0)
+| extend IsRed = iff(Value > RedThreshold, 1, 0)
+| project NodeName, MetricName, Value, YellowThreshold, IsYellow, RedThreshold, IsRed

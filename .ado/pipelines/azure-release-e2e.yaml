@@ -1,0 +1,61 @@
+name: '$(BuildDefinitionName).$(DayOfYear)$(Rev:.r)'
+
+# Run automatic validation on dependabot branches
+trigger:
+  batch: true
+  branches:
+    include:
+    - component-updates
+    exclude:
+    - dependabot/*
+
+pr: none
+
+pool:
+  vmImage: 'ubuntu-20.04' # (default) microsoft-hosted agentpool
+  # name: 'e2e-private-agents' # (optional) self-hosted agentpool. Change this to switch between the Public and Private version of AlwaysOn
+
+parameters:
+- name: destroyEnvironment
+  displayName: "Destroy Environment at the end"
+  type: boolean
+  default: true
+
+- name: runLoadTesting
+  displayName: "Run embedded load testing"
+  type: boolean
+  default: false
+
+- name: runChaosTesting
+  displayName: "Run Chaos testing"
+  type: boolean
+  default: false
+
+
+variables:
+- name:  'environment' # set the environment name as variable
+  value: 'e2e'
+
+- template: config/configuration.yaml # contains version numbers and global configuration settings
+- name:  'workingDirectory'    # Terraform root working directory
+  value: 'src/infra/workload'
+- name:  'azureServiceConnection' # environment specific service connection
+  value: 'alwayson-${{ variables.environment }}-serviceconnection'
+
+- group: '${{ variables.environment }}-env-vg' # contains environment-specific values (secrets which cannot be stored in the config file)
+- template: config/variables-values-${{ variables.environment }}.yaml # contains environment-specific values (non-secret)
+
+# We do not use custom domains for e2e envs so we set this variable to empty
+- name: 'terraformAdditionalParametersCustomDomains'
+  value: ''
+
+stages:
+
+- template: templates/stages-full-release.yaml
+  parameters:
+    environment: '${{ variables.environment }}'
+    runLoadTesting: ${{ parameters.runLoadTesting }}
+    runChaosTesting: ${{ parameters.runChaosTesting }}
+    destroyOldEnvironment: ${{ parameters.destroyEnvironment }}
+    trafficSwitchSteps:
+    - 100

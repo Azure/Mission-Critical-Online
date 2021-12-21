@@ -1,0 +1,92 @@
+name: '$(BuildDefinitionName).$(DayOfYear)$(Rev:.r)'
+
+trigger: none
+
+pr: none
+
+schedules:
+- cron: "0 3 * * *"
+  displayName: Daily 3AM release
+  branches:
+    include:
+    - main
+  always: true # Run this every night, even if there were no code changes. We do this to check that the process is still ok and that there were no breaking platform changes, for instance when the specified K8s version ran out of support
+
+pool:
+  vmImage: 'ubuntu-20.04'
+  #name: 'int-private-agents' # (optional) self-hosted agentpool. Change this to switch between the Public and Private version of AlwaysOn
+
+parameters:
+- name: dateBasedSuffix
+  displayName: 'Generate suffix based on current date?' # Used for INT nightly builds
+  type: boolean
+  default: true
+
+variables:
+- name:  'environment' # set the environment name as variable
+  value: 'int'
+
+- template: config/configuration.yaml # contains version numbers and global configuration settings
+- name:  'workingDirectory'    # Terraform root working directory
+  value: 'src/infra/workload'
+- name:  'azureServiceConnection' # environment specific service connection
+  value: 'alwayson-${{ variables.environment }}-serviceconnection'
+
+- group: '${{ variables.environment }}-env-vg' # contains environment-specific values (secrets which cannot be stored in the config file)
+- template: config/variables-values-${{ variables.environment }}.yaml # contains environment-specific values (non-secret)
+
+- name: 'terraformAdditionalParametersCustomDomains'
+  ${{ if ne(variables.envDomainName, '') }}:
+    value: '-var custom_dns_zone_resourcegroup_name=$(envDnsZoneRG) -var custom_fqdn=www.$(envDomainName)'
+  ${{ else }}:
+    value: ''
+
+- name: dateBasedSuffix
+  value: '${{ parameters.dateBasedSuffix }}'
+
+stages:
+
+# For INT we check that a scheduled run is only executed if the previous scheduled run finished successfully
+- stage: checkpipelinestate
+  displayName: 'Check Pipeline state'
+  jobs:
+  - job: checkpipelinestatejob
+    displayName: 'Check Pipeline state'
+    condition: and(succeeded(), eq(variables['Build.Reason'], 'Schedule')) # only check this for scheduled runs (by cron-trigger)
+    steps:
+    - task: PowerShell@2
+      name: 'checkPreviousPipelineRun'
+      displayName: 'Check previous pipeline run status'
+      env:
+          AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
+      inputs:
+        targetType: inline
+        script: |
+
+          # Install or upgrade the ADO extension
+          az extension add --upgrade -n azure-devops
+
+          # Login to Azure DevOps Extension is happening automatically using ENV AZURE_DEVOPS_EXT_PAT which is set above
+          # Set default Azure DevOps organization and project
+          az devops configure --defaults organization=$(System.TeamFoundationCollectionUri) project=$(System.TeamProject) --use-git-aliases true
+
+          # List last pipeline runs (just for easier debugging)
+          echo "*** Last five runs of this pipeline:"
+          az pipelines runs list --pipeline-ids $(System.DefinitionId) --status all --top 5 --output table
+
+          # Fetch result of the previous run (--top 1)
+          $previousRunResult = $(az pipelines runs list --pipeline-ids $(System.DefinitionId) --status completed --top 1 --query "[].{reason:reason,result:result}") | ConvertFrom-Json
+
+          echo "*** Previous run of this pipeline was completed with status: $($previousRunResult.result) Reason: $($previousRunResult.reason)"
+
+          if($previousRunResult.reason -eq "schedule" -and $previousRunResult.result -eq "failed")
+          {
+            throw "*** Previous scheduled pipeline run did not complete successfully. Not running another pipeline. Please cleanup manually and retry."
+          }
+
+- template: templates/stages-full-release.yaml
+  parameters:
+    environment: '${{ variables.environment }}'
+    trafficSwitchSteps:
+    - 50
+    - 100

@@ -1,0 +1,15 @@
+steps:
+- task: AzureCLI@2
+  displayName: 'Install build agent prerequisites'
+  inputs:
+    azureSubscription: $(azureServiceConnection)
+    scriptType: pscore
+    scriptLocation: inlineScript
+    inlineScript: |
+      # Make sure that helm3 is installed
+      echo "*** Download and install helm3 $(helmVersion) cli"
+      curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash -s -- --version $(helmVersion)
+
+      # Make sure that the right kubectl version is installed
+      echo "*** Download and install kubectl $(kubernetesVersion)"
+      sudo az aks install-cli --client-version=$(kubernetesVersion)

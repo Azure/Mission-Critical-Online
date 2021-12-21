@@ -1,0 +1,25 @@
+# NGINX Ingress Controller helm configuration
+# https://github.com/kubernetes/ingress-nginx/blob/master/charts/ingress-nginx/values.yaml
+# Placesholders #..# will be replaced automatically
+
+controller:
+  autoscaling:
+    enabled:     true
+    minReplicas: 3
+    maxReplicas: 12 
+    targetCPUUtilizationPercentage: 75
+    targetMemoryUtilizationPercentage: 75
+  resources:
+    requests:
+      cpu: 750m
+      memory: 750Mi
+  metrics:
+    enabled: true
+    service:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "10254"
+  service:
+    type:           LoadBalancer
+    enableHttp:     true # enable plain http (req. for cert-manager)
+    enableHttps:    true  # enable https listener

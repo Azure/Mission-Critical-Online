@@ -1,0 +1,15 @@
+# Variable file for E2E env
+vnet_address_space = "10.1.0.0/18" # /18 allows for up to 4 stamps
+
+aks_node_size                   = "Standard_F8s_v2" # be aware of the disk size requirement for emphemral disks. Thus we currently cannot use a smaller SKU
+aks_node_pool_autoscale_minimum = 1
+aks_node_pool_autoscale_maximum = 3
+
+event_hub_thoughput_units     = 1
+event_hub_enable_auto_inflate = false
+
+# Change to true to switch into private mode
+private_mode = false
+## These values need to be filled if you want to deploy AlwaysOn in private mode
+buildagent_resource_group_name = ""
+buildagent_vnet_name           = ""

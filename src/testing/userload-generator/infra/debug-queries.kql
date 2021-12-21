@@ -1,0 +1,20 @@
+traces
+| where message has "Calculated current total user load for geo"
+
+traces
+| where operation_Name =="PlayerUserflowExecActivity"
+
+traces
+| where message startswith "ERROR: {\"killed" or message startswith "STDOUT"
+
+traces 
+| where message contains "Starting orchestrator for"
+| extend users=toint(extract("^Starting orchestrator for ([0-9]+) users$", 1, message))
+| project timestamp, cloud_RoleName, users, operation_Id
+| render timechart 
+
+traces
+| where message has "Started new orchestration with"
+| extend users=toint(extract("^Started new orchestration with ([0-9]+) users", 1, message))
+| project timestamp, cloud_RoleName, users
+| render timechart 

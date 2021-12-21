@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "AlwaysOn.HealthService": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

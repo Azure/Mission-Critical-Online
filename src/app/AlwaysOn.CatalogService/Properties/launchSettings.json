@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "AlwaysOn.GameService": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

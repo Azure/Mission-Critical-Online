@@ -1,0 +1,7 @@
+AzureMetrics 
+| take 500
+| where TimeGenerated > ago(1d)
+| extend LocationString = extract("^([A-Z0-9]*)(-)([A-Z0-9]*)", 3, Resource)
+| where LocationString != ""
+| take 1
+| project LocationString = strcat(LocationString, " Stamp")

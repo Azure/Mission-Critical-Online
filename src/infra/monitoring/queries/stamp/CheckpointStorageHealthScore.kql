@@ -1,0 +1,6 @@
+CheckpointStorageHealthStatus()
+| summarize YellowScore = max(IsYellow), RedScore = max(IsRed) by TimeGenerated
+| extend HealthScore = 1 - (YellowScore * 0.25) - (RedScore * 0.5)
+| extend HealthScore = iff(isnull(HealthScore), 1.0, HealthScore) // For now, we assume no data means healthy. In a high volume scenario, this may mean the opposite.
+| order by TimeGenerated desc
+| extend ComponentName = "CheckpointStorage"

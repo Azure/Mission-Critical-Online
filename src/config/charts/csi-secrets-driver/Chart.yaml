@@ -1,0 +1,11 @@
+apiVersion: "v2"
+appVersion: 0.0.1
+name: csi-secrets-config-keyvault
+description: "Configuration for CSI secret driver backed by Azure Key Vault"
+version: 0.0.1
+sources:
+- https://github.com/azure/alwayson
+kubeVersion: ">=1.18.0"
+maintainers:
+- name: alwayson
+  email: alwaysonappnet@microsoft.com

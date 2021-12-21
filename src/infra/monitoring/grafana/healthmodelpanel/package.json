@@ -1,0 +1,37 @@
+{
+  "name": "alwayson-healthmodelpanel",
+  "version": "1.0.0",
+  "description": "AlwaysOn Health Model panel",
+  "scripts": {
+    "build": "grafana-toolkit plugin:build",
+    "test": "grafana-toolkit plugin:test",
+    "dev": "grafana-toolkit plugin:dev",
+    "watch": "grafana-toolkit plugin:dev --watch",
+    "sign": "grafana-toolkit plugin:sign",
+    "start": "yarn watch"
+  },
+  "author": "nielsb@microsoft.com",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@grafana/data": "^8.2.2",
+    "@grafana/toolkit": "^8.2.5",
+    "@grafana/ui": "^8.2.5"
+  },
+  "engines": {
+    "node": ">=14"
+  },
+  "dependencies": {
+    "@emotion/css": "^11.5.0",
+    "@types/react-cytoscapejs": "^1.2.2",
+    "react-cytoscapejs": "^1.2.1"
+  },
+  "resolutions": {
+    "minimist": "^1.2.5",
+    "nth-check": "^2.0.1",
+    "set-value": "^4.1.0",
+    "glob-parent": "^5.1.2",
+    "immer": "^9.0.6",
+    "axios": "^0.21.4",
+    "yargs-parser": "^13.1.2"
+  }
+}

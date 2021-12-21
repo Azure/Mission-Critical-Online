@@ -1,0 +1,28 @@
+let Thresholds = datatable(MetricName: string, YellowThreshold: double, RedThreshold: double) [
+    // Failure count on key vault requests
+    "failureCount", 3, 10
+    ];
+//
+let timespanStart= todatetime(format_datetime(now(-2d), 'yyyy-MM-dd HH:ss')); // We need to remove any sub-second part from the start, otherwise the series are not to the seconds
+let timespanEnd = now(-2m); // there is some ingestion lag, so we account for this by stripping the last 2m
+//
+AzureDiagnostics
+| where ResourceProvider == "MICROSOFT.KEYVAULT"
+// Ignore Authentication operations with a 401. This is normal when using Key Vault SDK, first an unauthenticated request is done then the response is used for authentication.
+| where Category=="AuditEvent" and not (OperationName == "Authentication" and httpStatusCode_d == 401)
+| where OperationName in ('SecretGet','SecretList','VaultGet') or '*' in ('SecretGet','SecretList','VaultGet')
+| where ResultSignature != "Not Found" // Exclude Not Found responses as these happen regularly during 'terraform plan' operations, when TF checks for the existence of secrets
+// Create ResultStatus with all the 'success' results bucked as 'Success'
+// Certain operations like StorageAccountAutoSyncKey have no ResultSignature, for now set to 'Success' as well
+| extend ResultStatus = case ( ResultSignature == "", "Success",
+                               ResultSignature == "OK", "Success",
+                               ResultSignature == "Accepted", "Success",
+                               ResultSignature)
+| make-series Value=countif(ResultStatus != "Success") default=0 on TimeGenerated from timespanStart to timespanEnd step 1m
+| mv-expand TimeGenerated, Value
+| extend TimeGenerated = todatetime(TimeGenerated), Value=toreal(Value), MetricName="failureCount"
+| lookup kind = inner Thresholds on MetricName
+| extend IsYellow = iff(todouble(Value) > YellowThreshold and todouble(Value) < RedThreshold, 1, 0)
+| extend IsRed = iff(todouble(Value) > RedThreshold, 1, 0)
+| project-reorder TimeGenerated, MetricName, Value, IsYellow, IsRed, YellowThreshold, RedThreshold
+| order by TimeGenerated, MetricName

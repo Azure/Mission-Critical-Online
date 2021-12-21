@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "AlwaysOn.ResultWorker": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

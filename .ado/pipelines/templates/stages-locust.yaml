@@ -1,0 +1,151 @@
+parameters:
+ - name: terraformWorkingDirectory
+   type: string
+   default: ''
+ - name: customPrefix
+   type: string
+ - name: locustTargetUrl
+   type: string
+   default: ''
+ - name: numberOfWorkerNodes
+   type: number
+   default: 0
+ - name: testDurationSeconds
+   type: number
+   default: 0
+ - name: locustSpawnRate
+   type: number
+   default: 0
+ - name: locustUser
+   type: number
+   default: 0
+ - name: locustHeadless
+   type: boolean
+   default: false
+
+stages:
+
+- stage: deploylocust
+  displayName: 'Run Locust Loadtest'
+  jobs:
+  - job: deploylocustterraform
+    displayName: 'Deploy Locust Terraform (and run test when in headless mode)'
+    steps:
+    - checkout: self # checkout github repository
+    - download: current # download pipeline artifacts
+
+    - template: steps-set-pipeline-variables.yaml # load set-pipeline-variables function
+
+    - template: steps-terraform-init.yaml
+      parameters:
+        terraformStateFilename:       'terraform-locust-${{ parameters.customPrefix }}.state'
+        terraformWorkingDirectory:    '${{ parameters.terraformWorkingDirectory }}'
+
+      # write locustTargetUrl parameter into a pipeline variable
+    - ${{ if ne(parameters.locustTargetUrl, '') }}:
+      - bash: |
+          echo "##vso[task.setvariable variable=locustTargetUrl]${{ parameters.locustTargetUrl }}"
+
+      # parse global terraform output to gain frontdoor fqdn (used for headless-locust-only)
+    - ${{ if eq(parameters.locustHeadless, 'true') }}:
+      - template: steps-parse-terraform-output.yaml
+        parameters:
+          workingDirectory: '$(Pipeline.Workspace)/terraformOutputGlobalInfra'  # Global infra deploy output directory
+
+      # overwrite locustTargetUrl pipeline variable with frontdoor fqdn (used for headless-locust-only)
+    - ${{ if eq(parameters.locustHeadless, 'true') }}:
+      - task: Bash@3 
+        name: 'bashsetvariable'
+        displayName: 'Set locustTargetUrl variable'
+        inputs:
+          targetType: 'inline'
+          script: |
+            echo "##vso[task.setvariable variable=locustTargetUrl]https://$(frontdoor_fqdn)"
+
+    - task: Bash@3
+      name: 'terraformtaintlocustfile'
+      displayName: 'Terraform taint locustfile and users file'
+      inputs:
+        workingDirectory: '${{ parameters.terraformWorkingDirectory }}'
+        targetType: 'inline'
+        script: |
+          set -eux  # fail on error
+
+          # Taint the locustfile and the usersfile so it will always be replaced with the latest version
+          terraform taint -allow-missing azurerm_storage_share_file.locustfile
+          terraform taint -allow-missing azurerm_storage_share_file.usersfile
+
+    # Deploy the locust infrastructure. If running in headless mode, the test will automatically start once the infra is provisioned.
+    - template: steps-terraform-apply.yaml
+      parameters:
+        terraformWorkingDirectory:  '${{ parameters.terraformWorkingDirectory }}'
+        customPrefix:               '${{ parameters.customPrefix }}'
+        environment:                '$(environment)'
+        customAttributes:           '-var targeturl=$(locustTargetUrl)
+                                    -var queued_by="$(Build.QueuedBy)"
+                                    -var locust_workers=${{ parameters.numberOfWorkerNodes }}
+                                    -var locust_runtime="${{ parameters.testDurationSeconds }}s"
+                                    -var locust_spawn_rate=${{ parameters.locustSpawnRate }}
+                                    -var locust_headless="${{ lower(parameters.locustHeadless) }}"
+                                    -var locust_number_of_users=${{ parameters.locustUser }}
+                                    -var tenant_name=$(b2cTenantName)
+                                    -var ropc_policy_name=$(b2cRopcPolicyName)
+                                    -var client_id=$(b2cUIClientID)
+                                    -var loadtest_user_password=$(loadtestUserPassword)'
+
+    # All of the next tasks are only applicable in headless mode
+    - ${{ if eq(parameters.locustHeadless, 'true') }}:
+      # Sleep for the duration of the load test
+      - task: Bash@3
+        displayName: 'Sleep for ${{ parameters.testDurationSeconds }} seconds'
+        inputs:
+          targetType: 'inline'
+          script: |
+            echo "Sleeping for ${{ parameters.testDurationSeconds }} seconds while the test is running..."
+            sleep ${{ parameters.testDurationSeconds }}
+
+    # Download locust stats and logs from storage account to build agent so we can then store it as a pipeline artifact
+      - task: Bash@3
+        displayName: 'Download Locust stats and logs'
+        inputs:
+          targetType: 'inline'
+          workingDirectory: '${{ parameters.terraformWorkingDirectory }}'
+          script: |
+
+            # Retrieve Azure Files URL and SAS token
+            storageurl=`terraform output -raw locust_storage_url`
+            sastoken=`terraform output -raw locust_readwrite_sas_token`
+
+            # Download logs and stats via az CLI
+            mkdir locust/
+            azcopy copy "$storageurl/stats/*$sastoken" locust/
+            azcopy copy "$storageurl/logs/*$sastoken" locust/
+
+            # Creating an HTML report based on the locust results
+            wget https://github.com/benc-uk/locust-reporter/releases/download/v1.2.2/locust-reporter -O locust-reporter
+            chmod u+x locust-reporter
+            ./locust-reporter -dir locust -failures -outfile locust/Report_${{ parameters.customPrefix }}.html -prefix ${{ parameters.customPrefix }}
+
+            # Clean up storage file share. Otherwise terraform cannot delete it
+            echo "Deleting all files on file share using azcopy"
+            azcopy remove "$storageurl$sastoken" --recursive --exclude-pattern "stats;logs"
+
+      # Publish Loadtest results stats and logs as pipeline artifacts
+      - task: PublishBuildArtifacts@1
+        displayName: 'Publish Locust Results and Logs'
+        inputs:
+          pathToPublish: '${{ parameters.terraformWorkingDirectory }}/locust/'
+          artifactName: 'locust-test-results'
+
+      # Parse load test results
+      - template: steps-parse-loadtest-output.yaml
+        parameters:
+          customPrefix: ${{ parameters.customPrefix }}
+          statsPath: '${{ parameters.terraformWorkingDirectory }}/locust/'
+
+      # Destroy Locust infrastructure at the end
+      - template: steps-terraform-destroy.yaml
+        parameters:
+          terraformStateFilename:     'terraform-locust-${{ parameters.customPrefix }}.state'
+          terraformWorkingDirectory:  '${{ parameters.terraformWorkingDirectory }}'
+          customAttributes:           '-var prefix="${{ parameters.customPrefix }}"'

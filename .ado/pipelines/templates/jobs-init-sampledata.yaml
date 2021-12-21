@@ -1,0 +1,57 @@
+# Job(s) that import/seed sample data into the deployed solution
+jobs:
+
+- job: importsampledata
+  displayName: 'Import sample data'
+  steps:
+
+    - checkout: self # checkout github repository
+
+    - download: current # download pipeline artifacts
+
+    - task: PowerShell@2
+      displayName: 'Import sample data'
+      inputs:
+        targetType: inline
+        script: |
+
+          # load json data from downloaded terraform artifact
+          $globalInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputGlobalInfra/*.json | Get-Content | ConvertFrom-JSON
+
+          $releaseUnitInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputReleaseUnitInfra/*.json | Get-Content | ConvertFrom-JSON
+
+          # Azure Front Door Header ID
+          $frontdoorHeaderId = $globalInfraDeployOutput.frontdoor_id_header.value
+
+          $apiKey = $releaseUnitInfraDeployOutput.api_key.value
+
+          # Take the first stamp. We only need to upload the test data once as it will be automatically globally distributed
+          # We cannot send it through Front Door at this point, since the new stamp might not be wired up yet in AFD
+          $stamp = $releaseUnitInfraDeployOutput.stamp_properties.value[0]
+
+          $url = "https://$($stamp.aks_cluster_ingress_fqdn)/api/1.0/CatalogItem"
+
+          Write-Host "*** Using URL $url"
+
+          $testData =  Get-Content -Path "src/app/sampledata.json" | ConvertFrom-JSON
+
+          $header = @{
+            "X-Azure-FDID" = "$frontdoorHeaderId"
+            "X-API-KEY" = "$apiKey"
+          }
+
+          Write-Host "*** Found $($testData.catalogItems.Count) catalog items to import"
+
+          foreach($catalogItem in $testData.catalogItems)
+          {
+              Write-Host "*** Importing item $($catalogItem.name)"
+              $itemJson = $catalogItem | ConvertTo-Json -Compress
+
+              # Call the Create CatalogItem API
+              Invoke-WebRequest -Method POST `
+                                -Uri $url `
+                                -Headers $header `
+                                -ContentType "application/json" `
+                                -Body $itemJson
+          }
+

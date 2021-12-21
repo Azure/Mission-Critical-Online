@@ -1,0 +1,39 @@
+parameters:
+  terraformStateFilename:           ''
+  terraformWorkingDirectory:        ''
+  customAttributes:                 ''  # custom attributes for terraform
+
+steps:
+
+# Initialize Terraform for destroy
+- template: steps-terraform-init.yaml
+  parameters:
+    terraformStateFilename:             '${{ parameters.terraformStateFilename }}'
+    terraformWorkingDirectory:          '${{ parameters.terraformWorkingDirectory }}'
+
+- task: Bash@3
+  displayName: 'Terraform destroy'
+  name: 'terraformdestroy'
+  inputs:
+    workingDirectory: '${{ parameters.terraformWorkingDirectory }}'
+    targetType: 'inline'
+    script: |
+      # To have access to the input ARM_CLIENT_SECRET which was marked as secret, we need to explicitly reference it in the script
+      export ARM_CLIENT_SECRET="$(ARM_CLIENT_SECRET)"
+
+      terraform destroy -auto-approve -input=false -parallelism=20 -var-file="variables-$(environment).tfvars" ${{ parameters.customAttributes }}
+
+# Delete Terraform state file. We need to run this in any case, even if variables.oldReleaseCustomSuffix=='' since Terrraform init also will always run and thereby create an empty state file
+- task: AzureCLI@2
+  displayName: 'Delete Terraform state file'
+  inputs:
+    azureSubscription: $(azureServiceConnection)
+    scriptType: pscore
+    scriptLocation: inlineScript
+    inlineScript: |
+      echo "*** Deleting Terraform state file ${{ parameters.terraformStateFilename }} on Storage Account $(terraformStorageAccount)"
+
+      az storage blob delete --account-name $(terraformStorageAccount) `
+                             --container-name tfstate `
+                             --name "${{ parameters.terraformStateFilename }}" `
+                             --auth-mode login

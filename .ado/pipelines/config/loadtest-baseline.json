@@ -1,0 +1,82 @@
+[
+    {
+        "name": "POST new game result",
+        "operator": "le",
+        "values": {
+            "Failure Count":"3",
+            "Average Response Time": "175",
+            "Median Response Time": "175"
+        }
+    },
+    {
+        "name": "POST new game result",
+        "operator": "ge",
+        "values": {
+            "Request Count":"20000"
+        }
+    },
+    {
+        "name": "POST Get access token",
+        "operator": "le",
+        "values": {
+            "Failure Count":"3",
+            "Average Response Time": "10000",
+            "Median Response Time": "4500"
+        }
+    },
+    {
+        "name": "POST Get access token",
+        "operator": "ge",
+        "values": {
+            "Request Count":"650"
+        }
+    },
+    {
+        "name": "GET LIST my GameResults",
+        "operator": "le",
+        "values": {
+            "Failure Count":"3",
+            "Average Response Time": "160",
+            "Median Response Time": "140"
+        }
+    },
+    {
+        "name": "GET my Player Stats",
+        "operator": "le",
+        "values": {
+            "Failure Count":"3",
+            "Average Response Time": "140"        
+        }
+    },
+    {
+        "name": "POST AI game",
+        "operator": "le",
+        "values": {
+            "Failure Count":"3",
+            "Average Response Time": "340"        
+        }
+    },
+    {
+        "name": "POST AI game",
+        "operator": "ge",
+        "values": {
+            "Request Count":"20000"
+        }
+    },
+    {
+        "name": "Aggregated",
+        "operator": "le",
+        "values": {
+            "Failure Count":"3",
+            "Average Response Time": "300",
+            "Median Response Time": "175"
+        }
+    },
+    {
+        "name": "Aggregated",
+        "operator": "ge",
+        "values": {
+            "Request Count":"45000"
+        }
+    }
+]

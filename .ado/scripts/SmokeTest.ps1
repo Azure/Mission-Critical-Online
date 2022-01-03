@@ -8,7 +8,6 @@ param(
 # Load helper functions.
 # -----------
 . $env:SYSTEM_DEFAULTWORKINGDIRECTORY/.ado/scripts/Invoke-WebRequestWithRetry.ps1
-. $env:SYSTEM_DEFAULTWORKINGDIRECTORY/.ado/scripts/Decode-JWT.ps1
 
 # -----------
 # Execute smoke tests.
@@ -117,16 +116,15 @@ foreach($target in $targets) {
   Start-Sleep 10
 
   # The 202-response to POST new game result contains in the 'Location' header the URL under which the new comment will be accessible
-  $commentUrl = $responsePostComment.Headers['Location'][0]
+  $getCommentUrl = $responsePostComment.Headers['Location'][0]
 
   if ($mode -eq "stamp") {
     # The Location header contains the global FQDN of the Front Door entry point. For the the individual cluster, we need to change the URL
-    $commentUrl = $commentUrl -replace $frontdoorFqdn,$targetFqdn
+    $getCommentUrl = $getCommentUrl -replace $frontdoorFqdn,$targetFqdn
   }
 
   Write-Output "*** Call - Get newly created comment ($mode)"
-  Invoke-WebRequestWithRetry -Uri $commentUrl -Method 'GET' -Headers $header -MaximumRetryCount $smokeTestRetryCount -RetryWaitSeconds $smokeTestRetryWaitSeconds
-
+  Invoke-WebRequestWithRetry -Uri $getCommentUrl -Method 'GET' -Headers $header -MaximumRetryCount $smokeTestRetryCount -RetryWaitSeconds $smokeTestRetryWaitSeconds
 
   Write-Output "*** Call - UI app for $mode"
   $responseUi = Invoke-WebRequestWithRetry -Uri https://$targetUiFqdn -Method 'GET' -MaximumRetryCount $smokeTestRetryCount -RetryWaitSeconds $smokeTestRetryWaitSeconds

@@ -4,7 +4,7 @@
 # - The pipelines deployed from YAML files in the GitHub repo. Why are these deleted in addition to deleting the project?
 # --- Because deleting the pipelines explicitly also deletes the webhooks created in the GitHub repo for the pipelines
 # --- Just deleting the AzDO project will of course delete the pipelines, but will NOT delete the webhooks created in the GitHub repo.
-# - The AzDO project itself. This will also delete service connections, variable groups, variables, and of course anything else in the project.
+# - The AzDO project itself. This will also delete service connections, and of course anything else in the project.
 #
 # What is NOT deleted?
 # - The Service Principal - in case you already had it existing

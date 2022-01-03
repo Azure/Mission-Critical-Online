@@ -32,7 +32,6 @@ variables:
 - name:  'azureServiceConnection' # environment specific service connection
   value: 'alwayson-${{ variables.environment }}-serviceconnection'
 
-- group: '${{ variables.environment }}-env-vg' # contains environment-specific values (secrets which cannot be stored in the config file)
 - template: config/variables-values-${{ variables.environment }}.yaml # contains environment-specific values (non-secret)
 
 - name: 'terraformAdditionalParametersCustomDomains'

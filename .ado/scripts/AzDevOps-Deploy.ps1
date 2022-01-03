@@ -1,5 +1,5 @@
 # ##################################################
-# Script to deploy Azure DevOps project, variable group and variables, service principal, service connections, and import pipelines from GitHub source repository.
+# Script to deploy Azure DevOps project, service principal, service connections, and import pipelines from GitHub source repository.
 # This script is called from AzDevOps-Harness.ps1 but can be adapted to be called from anything that can call PowerShell scripts.
 # Further customization is possible by using selected function calls to the functions in AzDevOps-Functions.ps1 in other scripts, pipelines or environments.
 # ***** --> Minimal/fastest path: customize the variable values in AzDevOps-Harness.ps1, then run it.
@@ -30,10 +30,6 @@ param
   [string] $GithubBranchName,
   # Whether pipelines should skip running immediately after import. Pass $true to skip (NOT run) pipelines immediately.
   [bool] $SkipFirstPipelineRun = $true,
-  # Username provisioned in AAD B2C to use for smoke tests
-  [string] $SmokeTestUserName,
-  # Hashtable of key-value pairs to add to the created Variable Group as individual Variables
-  $AzDevOpsVariables
 )
 
 # ##################################################
@@ -65,18 +61,12 @@ if (!$AzureTenantId -or !$AzureSubscriptionId) {
 # One of: "public", "private". Typically use "private" unless you need to make this Azure DevOps project visible outside your organization.
 [string] $AzDevOpsProjectVisibility = "private"
 
-# AzDO variable group name per AlwaysOn schema
-[string] $AzDevOpsVarGrpName = "${AzDevOpsEnvironmentName}-env-vg"
+
 
 # Service connections to GitHub and Azure per AlwaysOn schema
 [string] $githubServiceConnectionName = "alwayson-github-serviceconnection"
 [string] $azureServiceConnectionName = "alwayson-${AzDevOpsEnvironmentName}-serviceconnection"
 
-# AzDO variable groups MUST be created with at least one variable
-# We'll pass the smoke test username as it's not secret, and variables passed with variable group creation are stored non-secret
-# Have to create variables separately to store as secret
-[string] $firstVariableName = "smokeUser"
-[string] $firstVariableValue = $SmokeTestUserName
 
 # ##################################################
 # TASKS
@@ -92,30 +82,6 @@ New-AzDevOpsProject `
   -azdoOrgUrl $AzDevOpsOrgUrl `
   -azdoProjectName $AzDevOpsProjectName `
   -azdoProjectVisibility $AzDevOpsProjectVisibility
-
-Write-Host "Create AzDO Variable Group"
-
-$vgId = New-AzDevOpsVariableGroup `
-  -azureSubscriptionId $AzureSubscriptionId `
-  -azdoOrgUrl $AzDevOpsOrgUrl `
-  -azdoProjectName $AzDevOpsProjectName `
-  -azdoVariableGroupName $AzDevOpsVarGrpName `
-  -variableName $firstVariableName `
-  -variableValue $firstVariableValue `
-  -allPipelines $true
-
-Write-Host "Create AzDO Variables as Secrets"
-$AzDevOpsVariables.keys | ForEach-Object {
-  New-AzDevOpsVariable `
-    -azureSubscriptionId $AzureSubscriptionId `
-    -azdoOrgUrl $AzDevOpsOrgUrl `
-    -azdoProjectName $AzDevOpsProjectName `
-    -azdoVariableGroupId $vgId `
-    -variableName $_ `
-    -variableValue $AzDevOpsVariables[$_] `
-    -secret $true
-}
-
 
 Write-Host "Create GitHub Service Connection in AzDO Project"
 $githubServiceConnectionId = New-GithubServiceConnection `

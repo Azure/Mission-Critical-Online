@@ -28,7 +28,7 @@ The process to deploy AlwaysOn is comprised of the following steps:
 1) Create a fork of the [AlwaysOn GitHub](https://github.com/azure/alwayson) repository
 1) Import [deployment pipelines](#3-import-pipelines)
 1) Create [Service Principals](#create-azure-service-principal) for each individual Azure subscription
-1) Create [Service Connections](#configure-service-connections) and [Variable Groups](#configure-variable-groups) in Azure DevOps
+1) Create [Service Connections](#configure-service-connections) in Azure DevOps
 1) Access to an Azure Subscription (it is recommended to use multiple subscriptions to separate environments types i.e. dev, test and prod) with RP and preview features enabled for each of the subscriptions
 1) Adjust configuration
 
@@ -111,7 +111,7 @@ _Rename/move pipeline_
 #### Import via Azure DevOps CLI
 
 Using the `az devops` / `az pipelines` CLI:
-  
+
 > Note: If you are using Azure DevOps Repos instead of GitHub, change `--repository-type github` to `--repository-type tfsgit` in the command below. Also, if your branch is not called `main` but, for example, `master` change this accordingly.
 
 ```bash
@@ -226,22 +226,6 @@ See [Azure Preview feature ](/src/infra/workload/README.md#preview-feature-regis
 There are three variables files in the `/.ado/pipelines/config` folder, one for each environment. You need to edit those file to reflect your own workspace before you execute the first deployments.
 
 **Please follow [this guide](/.ado/pipelines/README.md#configuration-files) to adjust the values for the different configuration files.**
-
-#### Configure Variable Groups
-
-As with the service connections, AlwaysOn uses individual variable groups in Azure DevOps per environment. These variable groups contain additional configuration settings that cannot or should not be stored in code - mostly secrets.
-
-These variable groups are called `<env>-env-vg` and are loaded automatically into each pipeline based on the selected environment.
-
-The variable groups in Azure DevOps only contain sensitive (secret) values, which must not be stored in code in the repo. They are named `[env]-env-vg` (e.g. prod-env-vg).
-
-**Please follow [this guide](/.ado/pipelines/README.md#variable-groups) to adjust the values for the different configuration files.**
-
-At the end you should have the following three variable groups (or less, based on how many environments you chose to configure for now):
-
-* **e2e-env-vg** for the end-to-end validation environment
-* **prod-env-vg** for the production environment
-* **int-env-vg** for the integration environment
 
 #### Create environments
 

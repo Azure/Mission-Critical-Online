@@ -76,16 +76,6 @@ Environment config files are stored in `.ado/pipelines/config` and are named `va
 | envDomainName | OPTIONAL: Name of the Azure DNS Zone. Not required if you do not plan to use a custom DNS name | example.com |
 | contactEmail | E-mail alias used for alerting. **Be careful which address you put in here as it will potentially receive a lot of notification emails** | alwaysonappnet@example.com |
 
-## Variable Groups
-
-In addition to the configuration files, there are *variable groups* per environment in Azure DevOps.
-
-The variable groups in Azure DevOps only contain sensitive (secret) values, which must not be stored in code in the repo. They are named `[env]-env-vg` (e.g. prod-env-vg).
-
-| Key | Description | Sample value |
-| --- | --- | --- |
-
-These config files and variable groups are automatically loaded based on the environment selection (prod, int or e2e).
 
 ## Service Connections
 

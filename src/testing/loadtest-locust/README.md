@@ -49,46 +49,7 @@ And uploads the load test results at the end at the end of each successful run a
 
 ## Authentication
 
-Most of the REST methods on the AlwaysOn API are protected with authentication. In order to call the API and run tests, Locust needs to present the `Authorization: Bearer XXX` HTTP header, containing a valid access token. Current implementation is using the `aad_b2c_auth` function and environmental variables, which need to be present on worker nodes.
-
-```python
-    def aad_b2c_auth(self):
-        # Configuration of authentication - these values should reflect the Azure B2C tenant used by the load test target.
-        tenant = os.environ["TENANT_NAME"]
-        ropc_policy = os.environ["ROPC_POLICY_NAME"]
-        client_id = os.environ["CLIENT_ID"]
-        scope = f"https://{tenant}.onmicrosoft.com/{client_id}/Games.Access"
-
-        url = f'https://{tenant}.b2clogin.com/{tenant}.onmicrosoft.com/{ropc_policy}/oauth2/v2.0/token?client_id={client_id}&username={self.username}&password={self.password}&grant_type=password&tenant={tenant}.onmicrosoft.com&scope={scope}'
-
-        response = self.client.post(url, name="Get access token")
-        self.access_token = json.loads(response._content)['access_token']
-        self.headers = {'Authorization': 'Bearer ' + self.access_token}
-        logging.info(f"(aad_b2c_auth) Fetched access token for user {self.username}")
-```
-
-The **default access token expiration is 60 minutes** by AAD. When the APIs respond with a 401-Unauthenticated error, Locust attempts to acquire a new token from AAD.
-
-See [Authentication](/docs/reference-implementation/AppDesign-Application-Design.md#Authentication) to understand how Azure AD B2C is set up and what the configuration values mean. We're using the "headless access" method with a list of pre-generated testing users.
-
-Testing user accounts need to be present in the B2C tenant before running the test. Then all accounts are stored in the `/src/config/identity/test-users-<tenant>.csv` file and picked randomly during the test. Every tenant (dev, prod) can have a different set of testing users (the reference implementation has 1000 accounts for dev and only a handful for prod). The load tests expects all users to have the same password. The password needs to be stored in the corresponding environment [variable group](/.ado/pipelines/README.md#variable-groups) in Azure DevOps in a variable named `loadtestUserPassword`.
-
-The test-users file is a simple CSV in the following format:
-
-```
-username,userId
-```
-
-For example:
-
-```
-loadtester-0@demo.always-on.app,ab392890-27f6-40d0-b1de-11079a01943e
-loadtester-1@demo.always-on.app,e2a72251-db24-47c4-a5aa-0ae3a925b4d9
-loadtester-2@demo.always-on.app,47b26fd7-bd20-474f-82e4-9ea1696b2b1a
-loadtester-3@demo.always-on.app,c4edc75f-afb6-4ba6-9a4e-9d955e026e03
-```
-
-All testing user accounts should be low-privilege.
+Some of the REST methods on the AlwaysOn API are protected with API key-based authentication. In order to call the API and run tests, Locust needs to present the `X-API-Key: XXX` HTTP header. The corresponding value can be fetched from of of the Azure Key Vault of the deployment (it is the same key between all the stamps).
 
 ## Load Testing
 

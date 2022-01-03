@@ -13,7 +13,6 @@ pr: none
 
 pool:
   vmImage: 'ubuntu-20.04' # (default) microsoft-hosted agentpool
-  # name: 'e2e-private-agents' # (optional) self-hosted agentpool. Change this to switch between the Public and Private version of AlwaysOn
 
 parameters:
 - name: destroyEnvironment

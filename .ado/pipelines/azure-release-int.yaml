@@ -14,7 +14,6 @@ schedules:
 
 pool:
   vmImage: 'ubuntu-20.04'
-  #name: 'int-private-agents' # (optional) self-hosted agentpool. Change this to switch between the Public and Private version of AlwaysOn
 
 parameters:
 - name: dateBasedSuffix

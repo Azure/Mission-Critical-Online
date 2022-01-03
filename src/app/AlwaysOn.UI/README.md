@@ -128,6 +128,37 @@ With this ID (and with the help of the `X-Server-Location` header) an operator i
 
 The UI is currently not performing any data validation when sending requests. But invalid data will result in a 400 Bad Request response which will cause the error banner to indicate failure.
 
+
+## Security
+
+GitHub dependency scanning occasionally reveals vulnerabilities in the application. If there is a vulnerable dependency referenced within the main branch, a warning appears from [Dependabot](https://github.blog/2020-06-01-keep-all-your-packages-up-to-date-with-dependabot/):
+
+![Dependabot warning](/docs/media/dependabot-warning.png)
+
+One example of this occurring was with an `ssri` which is one of the Vue.js dependencies. As Dependabot was not able to deploy an automated fix and we didn't want to modify the dependency tree of a 3rd party package, there is a workaround which allows users to specify the exact package version to use.
+
+*package.json*
+
+```json
+{
+  "name": "html-ui",
+  ...
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "preinstall": "npx npm-force-resolutions"
+  },
+  ...
+  "resolutions": {
+    "ssri": "8.0.1"
+  }
+}
+```
+
+The `resolutions` block comes from [Yarn's selective dependency resolutions](https://classic.yarnpkg.com/en/docs/selective-version-resolutions/) and is used to force specific package versions. In order to make this work with NPM there is the [NPM Force Resolutions package](https://github.com/rogeriochaves/npm-force-resolutions) which has been set up as a `preinstall` step.
+
+> [`npx`](https://docs.npmjs.com/cli/v7/commands/npx) is short for `npm exec` and if a package is not found locally, this command installs it locally into the npm cache.
+
 ---
 
 [Back to documentation root](/docs/README.md)

@@ -1,6 +1,20 @@
-# Reference Implementation
+# Reference Implementation - Infrastructure
 
-AlwaysOn reference implementation follows a layered and modular approach. This approach achieves the following goals:
+## Table of contents
+
+- [Architecture](#architecture)
+  - [Stamp independence](#stamp-independence)
+  - [Stateless compute clusters](#stateless-compute-clusters)
+  - [Scale Units](#scale-units)
+- [Infrastructure](#infrastructure)
+  - [Available Azure regions](#available-azure-regions)
+  - [Global resources](#global-resources)
+  - [Stamp resources](#stamp-resources)
+  - [Naming conventions](#naming-conventions)
+
+---
+
+The AlwaysOn reference implementation follows a layered and modular approach. This approach achieves the following goals:
 
 - Cleaner and manageable deployment design
 - Ability to switch service(s) with other services providing similar capabilities depending on requirements
@@ -24,11 +38,56 @@ Infrastructure layer contains all infrastructure components and underlying found
 
 ![Architecture overview](/docs/media/Architecture-Public.png)
 
+### Stamp independence
+
+Every [stamp](https://docs.microsoft.com/azure/architecture/patterns/deployment-stamp) - which usually corresponds to a deployment to one Azure Region - is considered independent. Stamps are designed to work without relying on components in other regions (i.e. "share nothing").
+
+The main shared component between stamps which requires synchronization at runtime is the database layer. For this, **Azure Cosmos DB** was chosen as it provides the crucial ability of multi-region writes i.e., each stamp can write locally with Cosmos DB handling data replication and synchronization between the stamps.
+
+Aside from the database, a geo-replicated **Azure Container Registry** (ACR) is shared between the stamps. The ACR is replicated to every region which hosts a stamp to ensure fast and resilient access to the images at runtime.
+
+Stamps can be added and removed dynamically as needed to provide more resiliency, scale and proximity to users.
+
+A global load balancer is used to distribute and load balance incoming traffic to the stamps (see [Networking](/docs/reference-implementation/Networking-Design-Decisions.md) for details).
+
+### Stateless compute clusters
+
+As much as possible, no state should be stored on the compute clusters with all states externalized to the database. This allows users to start a user journey in one stamp and continue it in another.
+
+### Scale Units
+
+In addition to [stamp independence](#stamp-independence) and [stateless compute clusters](#stateless-compute-clusters), each "stamp" is considered to be a Scale Unit (SU) following the [Deployment stamps pattern](https://docs.microsoft.com/azure/architecture/patterns/deployment-stamp). All components and services within a given stamp are configured and tested to serve requests in a given range. This includes auto-scaling capabilities for each service as well as proper minimum and maximum values and regular evaluation.
+
+An example SU design in AlwaysOn consists of scalability requirements i.e. minimum values / the expected capacity:
+
+**Scalability requirements**
+| Metric | max |
+| --- | --- |
+| Users | 25k |
+| New games/sec. | 200 |
+| Get games/sec. | 5000 |
+
+This definition is used to evaluate the capabilities of a SU on a regular basis, which later then needs to be translated into a Capacity Model. This in turn will inform the configuration of a SU which is able to serve the expected demand:
+
+**Configuration**
+| Component | min | max |
+| --- | --- | --- |
+| AKS nodes | 3 | 12 |
+| Ingress controller replicas | 3 | 24 |
+| Game Service replicas | 3 | 24 |
+| Result Worker replicas | 3 | 12 |
+| Event Hub throughput units | 1 | 10 |
+| Cosmos DB RUs | 4000 | 40000 |
+
+> Note: Cosmos DB RUs are scaled in all regions simultaneously.
+
+Each SU is deployed into an Azure region and is therefore primarily handling traffic from that given area (although it can take over traffic from other regions when needed). This geographic spread will likely result in load patterns and business hours that might vary from region to region and as such, every SU is designed to scale-in/-down when idle.
+
 ## Infrastructure
 
 ### Available Azure Regions
 
-The reference implementation of AlwaysOn deploys a set of Azure services. These services are not available across all Azure regions. In addition, Availability Zones (AZs) are gradually being rolled-out and these are not available across all regions. Due to these constraints, the reference implementation cannot be deployed to all Azure regions.
+The reference implementation of AlwaysOn deploys a set of Azure services. These services are not available across all Azure regions. In addition, only regions which offer **[Availability Zones](https://docs.microsoft.com/azure/availability-zones/az-region)** (AZs) are considered for a stamp. AZs are gradually being rolled-out and are not yet available across all regions. Due to these constraints, the reference implementation cannot be deployed to all Azure regions.
 
 As of November 2021, following regions have been successfully tested with the reference implementation of AlwaysOn:
 
@@ -63,7 +122,7 @@ As regional availability of services used in reference implementation and AZs ra
 
 > Note: If the target  availability SLA for your application workload can be achieved without AZs and/or your workload is not bound compliance related to data sovereignty, an alternate region where all services/AZs are available can be considered.
 
-### Global
+### Global resources
 
 #### Azure Front Door
 
@@ -95,7 +154,7 @@ As regional availability of services used in reference implementation and AZs ra
 - `daily_quota_gb` is set to prevent overspend, especially on environments that are used for load testing.
 - `retention_in_days` is used to prevent overspend by storing data longer than needed in Log Analytics - long term log and metric retention is supposed to happen in Azure Storage.
 
-### Stamp
+### Stamp resources
 
 A _stamp_ is a regional deployment and can also be considered as a scale-unit. For now we only always deploy one stamp in an Azure Region but this can be extended to allow multiple stamps per region if required.
 
@@ -113,6 +172,10 @@ The current networking setup consists of a single Azure Virtual Network per _sta
 - Diagnostic settings are configured to store all log and metric data in Log Analytics.
 
 #### Azure Kubernetes Service
+
+Azure Kubernetes Service (AKS) is used as the compute platform as it is most versatile and as Kubernetes is the de-facto compute platform standard for modern applications, both inside and outside of Azure.
+
+AlwaysOn uses Linux-only clusters as there is no requirement for any Windows-based containers and Linux is the more mature platform in terms of Kubernetes.
 
 - `role_based_access_control` (RBAC) is **enabled**.
 - `sku_tier` set to **Paid** (Uptime SLA) to achieve the 99.95% SLA within a single region (with `availability_zones` enabled).
@@ -142,14 +205,14 @@ Each region has an individual Log Analytics workspace configured to store all lo
 - `retention_in_days` is set to `30` days to prevent overspend by storing data longer than needed in Log Analytics - long term log and metric retention is supposed to happen in Azure Storage.
 - For the Health Model, a set of Kusto Functions needs to be added to LogAnalytics. There is a sub-resource type called `SavedSearch`. Because these queries can get quite bulky, they are loaded from files instead of specified inline in Terraform. They are stored in the subdirectory monitoring/queries in the `/src/infra` directory.
 
-### Azure Application Insights
+#### Azure Application Insights
 
 As with Log Analytics, Application Insights is also deployed per-region and does not share the lifecycle of an stamp. All Application Insight resources are deployed in a separate resource group `<prefix>-monitoring-rg` and are deployed as part of the global resources deployment.
 
 - Log Analytics Workspace-attached mode is being used.
 - `daily_data_cap_in_gb` is set to `30` GB to prevent overspend, especially on environments that are used for load testing.
 
-### Azure Policy
+#### Azure Policy
 
 Azure Policy is used to monitor and enforce certain baselines. All policies are assigned on a per-stamp, per-resource group level. Azure Kubernetes Service is configured to use the `azure_policy` addon to leverage Policies configured outside of Kubernetes.
 
@@ -169,7 +232,7 @@ Azure Policy is used to monitor and enforce certain baselines. All policies are 
   - A "private" storage account which is used for internals such as the health service and the Event Hub checkpointing.
 - Both accounts are deployed in zone-redundant mode (`ZRS`).
 
-### Supporting services
+#### Supporting services
 
 This repository also contains a couple of supporting services for the AlwaysOn project:
 
@@ -177,6 +240,26 @@ This repository also contains a couple of supporting services for the AlwaysOn p
 - [Locust Load Testing](../testing/loadtest-locust/README.md)
 
 These supporting services are required / optional based on how you chose to use AlwaysOn.
+
+## Naming conventions
+
+All resources used for AlwaysOn follow a pre-defined and consistent naming structure to make it easier to identify them and to avoid confusion. Resource abbreviations are based on the [Cloud Adoption Framework](https://docs.microsoft.com/azure/cloud-adoption-framework/ready/azure-best-practices/resource-abbreviations#general). These abbreviations are typically attached as a suffix to each resource in Azure.
+
+A **prefix** is used to uniquely identify "deployments" as some names in Azure must be worldwide unique. Examples of these include Storage Accounts, Container Registries and CosmosDB accounts.
+
+**Resource groups**
+
+Resource group names begin with the prefix and then indicate whether they contain per-stamp or global resources. In case of per-stamp resource groups, the name also contains the Azure region they are deployed to.
+
+`<prefix><suffix>-<global | stamp>-<region>-rg`
+
+This will, for example, result in `aoprod-global-rg` for global services in prod or `aoprod7745-stamp-eastus2-rg` for a stamp deployment in `eastus2`.
+
+**Resources**
+
+`<prefix><suffix>-<region>-<resource>` for resources that support `-` in their names and `<prefix><region><resource>` for resources such as Storage Accounts, Container Registries and others that do not support `-` in their names.
+
+This will result in, for example, `aoprod7745-eastus2-aks` for an AKS cluster in `eastus2`.
 
 ---
 

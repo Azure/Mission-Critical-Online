@@ -11,7 +11,6 @@ As with the AlwaysOn Design Guidelines, the Reference Implementation section is 
 ### Application Design
 
 - [Application Design](AppDesign-Application-Design.md)
-- [Application User Interface (UI)](AppDesign-UI.md)
 - [Business Continuity/ Disaster Recovery](AppDesign-BCDR-Global.md)
 - [SLO and Availability](AppDesign-SLO-Availability.md)
 

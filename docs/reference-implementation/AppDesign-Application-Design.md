@@ -80,13 +80,13 @@ If an unauthenticated user attempts to perform an operation which requires login
 
 In terms of security, there's no permission validation done on the UI itself. We're using a custom attribute to hide/reveal parts of the UI depending on role, but all requests are validated on the API layer.
 
-To replicate our configuration, see [B2C Provisioning](./Security-B2C-Provisioning.md).
+To replicate our configuration, see [B2C Provisioning](/src/config/identity/B2C-Provisioning.md).
 
 ### Headless access
 
 In order to enable API access without using the UI (a method used mostly for smoke and load testing), there's a secondary sign-in flow which uses [ROPC (Resource owner password credentials)](https://docs.microsoft.com/azure/active-directory-b2c/add-ropc-policy?tabs=app-reg-ga&pivots=b2c-user-flow). This allows users to send a username and password to the AAD `/token` endpoint and receive a response with access token which can then be validated on the API side.
 
-To obtain an access token the ROPC user flow must be [provisioned](./Security-B2C-Provisioning.md#Create-ROPC-user-flow) properly on the tenant. Once done, use the following REST API:
+To obtain an access token the ROPC user flow must be [provisioned](/src/config/identity/B2C-Provisioning.md#Create-ROPC-user-flow) properly on the tenant. Once done, use the following REST API:
 
 ```HTTP
 POST https://<tenant>.b2clogin.com/<tenant>.onmicrosoft.com/<ropc policy>/oauth2/v2.0/token?client_id=<client ID>&username=<user>@<tenant>.onmicrosoft.com&password=<password>&grant_type=password&tenant=<tenant>.onmicrosoft.com&scope=https://<tenant>.onmicrosoft.com/<client ID>/<scope>
@@ -101,7 +101,7 @@ Parameters:
 - `password`: Literal password of the testing user.
 - `scope`: Full URL of the scope created during provisioning (e.g. `https://alwaysondev.onmicrosoft.com/04162f80-c8ab-3d3e-b284-2f4c41819a93/Games.Access`).
 
-> There is a set of pre-provisioned sample accounts. See [B2C - Create users](./Security-B2C-Provisioning.md#Create-Users).
+> There is a set of pre-provisioned sample accounts. See [B2C - Create users](/src/config/identity/B2C-Provisioning.md#Create-Users).
 
 Response:
 
@@ -131,7 +131,7 @@ Troubleshooting notes:
 
 Microsoft Graph is used to fetch player names in the ResultWorker when adding new game results to the database, generating leaderboards and updating players.
 
-After proper [registration](Security-B2C-Provisioning.md#Microsoft-Graph-Access), a standard `GraphServiceClient` from the **Microsoft.Graph** NuGet package can be used.
+After proper [registration](/src/config/identity/B2C-Provisioning.md#Microsoft-Graph-Access), a standard `GraphServiceClient` from the **Microsoft.Graph** NuGet package can be used.
 
 Initialization ([/src/app/AlwaysOn.ResultWorker/Program.cs](/src/app/AlwaysOn.ResultWorker/Program.cs)):
 

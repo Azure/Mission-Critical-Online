@@ -32,7 +32,6 @@
 * [Critical Design Areas](./reference-implementation/Introduction.md#Critical-Design-Areas)
   * Application Design
     * [Application Design](./reference-implementation/AppDesign-Application-Design.md)
-    * [Application User Interface (UI)](./reference-implementation/AppDesign-UI.md)
     * [Business Continuity / Disaster Recovery](./reference-implementation/AppDesign-BCDR-Global.md)
     * [SLO and Availability](./reference-implementation/AppDesign-SLO-Availability.md)
   * Application Platform

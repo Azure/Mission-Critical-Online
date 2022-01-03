@@ -272,27 +272,27 @@ stages:
   jobs:
   - template: jobs-init-sampledata.yaml
 
-# - stage: testingOnlyStampEndpoints # smoke-testing the stamp endpoints
-#   displayName: 'Testing Stamp Endpoints'
-#   dependsOn: importSampleData
-#   jobs:
-#   - template: jobs-smoke-testing.yaml
-#     parameters:
-#       testStampEndpoints: true
-#       testGlobalEndpoint: false
+- stage: testingOnlyStampEndpoints # smoke-testing the stamp endpoints
+  displayName: 'Testing Stamp Endpoints'
+  dependsOn: importSampleData
+  jobs:
+  - template: jobs-smoke-testing.yaml
+    parameters:
+      testStampEndpoints: true
+      testGlobalEndpoint: false
 
 - ${{ each step in parameters.trafficSwitchSteps }}: # based on the list parameter trafficSwitchSteps this step will be repeated n number of times
   - template: stages-configure-frontdoor.yaml
     parameters:
       trafficWeightNewBackends: ${{ step }}
 
-# - stage: testingGlobalEndpoints # smoke-testing global endpoint only after the switchover has happened
-#   displayName: 'Testing Global Endpoint'
-#   jobs:
-#   - template: jobs-smoke-testing.yaml
-#     parameters:
-#       testStampEndpoints: false
-#       testGlobalEndpoint: true
+- stage: testingGlobalEndpoints # smoke-testing global endpoint only after the switchover has happened
+  displayName: 'Testing Global Endpoint'
+  jobs:
+  - template: jobs-smoke-testing.yaml
+    parameters:
+      testStampEndpoints: false
+      testGlobalEndpoint: true
 
 # headless load testing for e2e (optional) with locust. Runs if either Load test or Chaos test was selected by the user
 - ${{ if and(eq(parameters.environment, 'e2e'), or(eq(parameters.runLoadTesting, 'true'), eq(parameters.runChaosTesting, 'true'))) }}: # only in e2e and when either runLoadTesting or runChaosTesting is true

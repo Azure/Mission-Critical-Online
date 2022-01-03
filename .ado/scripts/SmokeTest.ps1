@@ -1,10 +1,5 @@
 param(
   $mode, # "stamp" or "global"
-  $smokeUser,
-  $smokePassword,
-  $b2cTenantName,
-  $b2cUIClientID,
-  $b2cRopcPolicyName,
   $smokeTestRetryCount,
   $smokeTestRetryWaitSeconds
 )
@@ -38,41 +33,11 @@ Write-Output "*******************"
 Write-Output "*** SMOKE TESTS ***"
 Write-Output "*******************"
 
-# get access token for testing user
-$params = "?client_id=$b2cUIClientID" `
-  + "&username=$smokeUser" `
-  + "&password=$smokePassword" `
-  + "&grant_type=password" `
-  + "&tenant=$b2cTenantName.onmicrosoft.com" `
-  + "&scope=https://$b2cTenantName.onmicrosoft.com/$b2cUIClientID/Games.Access"
-
-$b2cUrl = "https://$b2cTenantName.b2clogin.com/$b2cTenantName.onmicrosoft.com/$b2cRopcPolicyName/oauth2/v2.0/token"
-Write-Output "*** Getting access token from Azure AD B2C at $b2cUrl"
-$res = Invoke-WebRequest -Uri "$($b2cUrl)?$params" -Method POST
-$accessToken = ($res.Content | ConvertFrom-Json).access_token
-
-# Parse the JWT access token so we can get the user OID
-$decodedJwt = ConvertFrom-JWTtoken -token $accessToken
-
-Write-Output "Decoded user OID: $($decodedJwt.oid)"
-
-# List of all gestures for random picking
-$gestures = "rock", "paper", "scissors", "lizard", "spock", "ferrari"
-
 # request body needs to be a valid object expected by the API - keep up to date when the contract changes
-$new_game_result_body = @{
-  "player1Gesture" = @{
-    "playerId" = "$($decodedJwt.oid)"
-    "gesture" = "$(Get-Random -InputObject $gestures)"
-  }
-  "player2Gesture"= @{
-    "playerId" = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"    # this is the fixed GUID of the AI player
-    "gesture" = "$(Get-Random -InputObject $gestures)"
-  }
-  "gameDate" = (Get-Date -AsUtc).ToString("o")
+$post_comment_body = @{
+  "authorName" = "Smoke Test Author"
+  "text" = "Just a smoke test"
 } | ConvertTo-JSON
-
-$ai_game_body = "$(Get-Random -InputObject $gestures)" | ConvertTo-JSON
 
 
 # list of targets to test - either all stamps, or one global endpoint
@@ -82,7 +47,6 @@ if ($mode -eq "stamp") {
   # setting header with X-Azure-FDID for HTTP-based smoke tests (required to access the individual stamps directly, bypassing Front Door)
   $header = @{
     "X-Azure-FDID"="$frontdoorHeaderId"
-    "Authorization"="Bearer $accessToken"
   }
 
   # loop through stamps from pipeline artifact json
@@ -102,9 +66,7 @@ if ($mode -eq "stamp") {
   }
 }
 else {
-  $header = @{
-    "Authorization"="Bearer $accessToken"
-  }
+  $header = @{}
 
   $props = @{
     ApiEndpointFqdn = $frontdoorFqdn
@@ -135,41 +97,41 @@ foreach($target in $targets) {
     Invoke-WebRequestWithRetry -Uri $stampHealthUrl -Method 'GET' -Headers $header -MaximumRetryCount $smokeTestRetryCount -RetryWaitSeconds $smokeTestRetryWaitSeconds
   }
 
-  $postGameUrl = "https://$targetFqdn/api/1.0/game"
-  Write-Output "*** Call - Create new game result ($mode)"
+  $listCatalogUrl = "https://$targetFqdn/api/1.0/catalogitem"
+  Write-Output "*** Call - List Catalog ($mode)"
+  $responseListCatalog = Invoke-WebRequestWithRetry -Uri $listCatalogUrl -Method 'get' -Headers $header -MaximumRetryCount $smokeTestRetryCount -RetryWaitSeconds $smokeTestRetryWaitSeconds
 
-  $responsePostGame = Invoke-WebRequestWithRetry -Uri $postGameUrl -Method 'POST' -Headers $header -Body $new_game_result_body -MaximumRetryCount $smokeTestRetryCount -RetryWaitSeconds $smokeTestRetryWaitSeconds -ExpectedResponseCode 202
+  $allItems = $responseListCatalog.Content | ConvertFrom-JSON
+  $randomItem = Get-Random $allItems
 
-  Write-Output "*** Sleeping for 10 seconds to give the system time to create the game result"
+  $itemUrl = "https://$targetFqdn/api/1.0/catalogitem/$($randomItem.id)"
+  Write-Output "*** Call - Get get item ($($randomItem.id)) ($mode)"
+  Invoke-WebRequestWithRetry -Uri $itemUrl -Method 'GET' -Headers $header -MaximumRetryCount $smokeTestRetryCount -RetryWaitSeconds $smokeTestRetryWaitSeconds
+
+  $postCommentUrl = "https://$targetFqdn/api/1.0/catalogitem/$($randomItem.id)/comments"
+  Write-Output "*** Call - Post new comment to item $($randomItem.id) ($mode)"
+
+  $responsePostComment = Invoke-WebRequestWithRetry -Uri $postCommentUrl -Method 'POST' -Headers $header -Body $post_comment_body -MaximumRetryCount $smokeTestRetryCount -RetryWaitSeconds $smokeTestRetryWaitSeconds -ExpectedResponseCode 202
+
+  Write-Output "*** Sleeping for 10 seconds to give the system time to create the comment"
   Start-Sleep 10
 
-  # The 202-response to POST new game result contains in the 'Location' header the URL under which the new game result will be accessible
-  $gameUrl = $responsePostGame.Headers['Location'][0]
+  # The 202-response to POST new game result contains in the 'Location' header the URL under which the new comment will be accessible
+  $commentUrl = $responsePostComment.Headers['Location'][0]
 
   if ($mode -eq "stamp") {
     # The Location header contains the global FQDN of the Front Door entry point. For the the individual cluster, we need to change the URL
-    $gameUrl = $gameUrl -replace $frontdoorFqdn,$targetFqdn
+    $commentUrl = $commentUrl -replace $frontdoorFqdn,$targetFqdn
   }
 
-  Write-Output "*** Call - Get newly created game result ($mode)"
-  Invoke-WebRequestWithRetry -Uri $gameUrl -Method 'GET' -Headers $header -MaximumRetryCount $smokeTestRetryCount -RetryWaitSeconds $smokeTestRetryWaitSeconds
+  Write-Output "*** Call - Get newly created comment ($mode)"
+  Invoke-WebRequestWithRetry -Uri $commentUrl -Method 'GET' -Headers $header -MaximumRetryCount $smokeTestRetryCount -RetryWaitSeconds $smokeTestRetryWaitSeconds
 
-  $playAiGameUrl = "https://$targetFqdn/api/1.0/game/ai"
-  Write-Output "*** Call - Play a game against the AI ($mode)"
-  Invoke-WebRequestWithRetry -Uri $playAiGameUrl -Method 'POST' -Headers $header -Body $ai_game_body -MaximumRetryCount $smokeTestRetryCount -RetryWaitSeconds $smokeTestRetryWaitSeconds -ExpectedResponseCode 202
-
-  $myPlayerStatsUrl = "https://$targetFqdn/api/1.0/player/me"
-  Write-Output "*** Call - Show Stats for current user ($mode)"
-  Invoke-WebRequestWithRetry -Uri $myPlayerStatsUrl -Method 'get' -Headers $header -MaximumRetryCount $smokeTestRetryCount -RetryWaitSeconds $smokeTestRetryWaitSeconds
-
-  $myGamesUrl = "https://$targetFqdn/api/1.0/player/me/games"
-  Write-Output "*** Call - List game results for current user ($mode)"
-  Invoke-WebRequestWithRetry -Uri $myGamesUrl -Method 'get' -Headers $header -MaximumRetryCount $smokeTestRetryCount -RetryWaitSeconds $smokeTestRetryWaitSeconds
 
   Write-Output "*** Call - UI app for $mode"
   $responseUi = Invoke-WebRequestWithRetry -Uri https://$targetUiFqdn -Method 'GET' -MaximumRetryCount $smokeTestRetryCount -RetryWaitSeconds $smokeTestRetryWaitSeconds
 
-  if (!$responseUi.Content.Contains("<title>AlwaysOn Game</title>")) # Check in the HTML content of the response for a known string (the page title in this case)
+  if (!$responseUi.Content.Contains("<title>AlwaysOn Catalog</title>")) # Check in the HTML content of the response for a known string (the page title in this case)
   {
     throw "*** Web UI for $targetUiFqdn doesn't contain the expected site title."
   }

@@ -18,11 +18,6 @@ jobs:
         filePath: $(System.DefaultWorkingDirectory)/.ado/scripts/SmokeTest.ps1
         arguments: > # avoid newline characters in multiline string
           -mode "stamp"
-          -smokeUser $(smokeUser)
-          -smokePassword $(smokePassword)
-          -b2cTenantName $(b2cTenantName)
-          -b2cUIClientID $(b2cUIClientID)
-          -b2cRopcPolicyName $(b2cRopcPolicyName)
           -smokeTestRetryCount $(smokeTestRetryCount)
           -smokeTestRetryWaitSeconds $(smokeTestRetryWaitSeconds)
 
@@ -63,11 +58,6 @@ jobs:
         filePath: $(System.DefaultWorkingDirectory)/.ado/scripts/SmokeTest.ps1
         arguments: > # avoid newline characters in multiline string
           -mode "global"
-          -smokeUser $(smokeUser)
-          -smokePassword $(smokePassword)
-          -b2cTenantName $(b2cTenantName)
-          -b2cUIClientID $(b2cUIClientID)
-          -b2cRopcPolicyName $(b2cRopcPolicyName)
           -smokeTestRetryCount $(smokeTestRetryCount)
           -smokeTestRetryWaitSeconds $(smokeTestRetryWaitSeconds)
 
@@ -91,11 +81,11 @@ jobs:
           echo "Taking a screenshot of the UI root - https://$frontDoorFqdn/"
           npx playwright screenshot --wait-for-timeout=1000 --full-page --browser=chromium "https://$frontDoorFqdn/" screenshots/root.png
 
-          echo "Taking screenshot of new game result form - https://$frontDoorFqdn/#/play"
-          npx playwright screenshot --wait-for-timeout=1000 --full-page --browser=chromium "https://$frontDoorFqdn/#/play" screenshots/play.png
+          echo "Taking screenshot of the catalog page - https://$frontDoorFqdn/#/catalogitem"
+          npx playwright screenshot --wait-for-timeout=1000 --full-page --browser=chromium "https://$frontDoorFqdn/#/catalogitem" screenshots/catalog.png
 
-          echo "Taking screenshot of game result list - https://$frontDoorFqdn/#/list-games"
-          npx playwright screenshot --wait-for-timeout=3000 --full-page --browser=chromium "https://$frontDoorFqdn/#/list-games" screenshots/list-games.png
+          #echo "Taking screenshot of a catalog item - https://$frontDoorFqdn/#/catalog/TODO-CHANGE"
+          #npx playwright screenshot --wait-for-timeout=3000 --full-page --browser=chromium "https://$frontDoorFqdn/#/catalog/TODO-CHANGE" screenshots/catalog-item.png
 
     - publish:  'screenshots/'
       artifact: 'uiScreenshots' # artifact name

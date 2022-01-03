@@ -4,7 +4,7 @@ This section explains how the application was designed and what patterns were im
 
 ## The workload
 
-The AlwaysOn reference implementation considers a simple game workflow where end users can play a game of [rock-paper-scissors-lizard-spock](http://www.samkass.com/theories/RPSSL.html) against an AI opponent, post game results, look at leaderboards and see history of their own games. Although fairly straight forward, this game enables the Reference Implementation to demonstrate the asynchronous processing of requests and how to achieve high throughput within a solution.
+The foundational AlwaysOn reference implementation considers a simple web shop catalog workflow where end users can browse through a catalog of items, see details of an item, and post ratings and comments for items. Although fairly straight forward, this application enables the Reference Implementation to demonstrate the asynchronous processing of requests and how to achieve high throughput within a solution.
 
 The workload consists of three components:
 
@@ -28,53 +28,20 @@ Read operations (e.g. *get leaderboard, get player, list games etc.*) are proces
 
 ![List games reaches to database directly](/docs/media/application-design-operations-1.png)
 
-Write operations (e.g. *play AI game, send game result, delete player*) are processed asynchronously. The API first sends a message with all relevant information (type of action, game result data) to the message queue and immediately returns `HTTP 202 (Accepted)` with additional `Location` header for the create operation.
+High-scale write operations (e.g. *post rating, post comment*) are processed asynchronously. The API first sends a message with all relevant information (type of action, comment data, etc.) to the message queue and immediately returns `HTTP 202 (Accepted)` with additional `Location` header for the create operation.
 
 Messages from the queue are then processed by BackgroundProcessor instances which handle the actual database communication for write operations. The BackgroundProcessor scales in and out dynamically based on message volume on the queue.
 
-![Create game result is asynchronous](/docs/media/application-design-operations-2.png)
+![Post rating is asynchronous](/docs/media/application-design-operations-2.png)
 
-![Delete player is asynchronous](/docs/media/application-design-operations-3.png)
+![Delete comment is asynchronous](/docs/media/application-design-operations-3.png)
 
 There is no backchannel which communicates to the client if the operation completed successfully and so the client application has to proactively poll the API to for updates.
 
 ## Authentication
 
-AlwaysOn uses [Azure Active Directory B2C](https://docs.microsoft.com/azure/active-directory-b2c/overview) to provide and validate identities. The following design decisions were made:
-
-- Users do not register themselves - they have their accounts provisioned by the service provider (Authentication flows are not the main focus of AlwaysOn so it is accepted that this is not realistic).
-
-- There is one central B2C tenant for the *prod* environment and one shared B2C tenant for *int* and *e2e* environments. Both are persistent and not intended to be removed when redeploying. (Sharing *int* and *e2e* tenants simplifies management while still keeping critical production data separated).
-
-- The Azure AD B2C tenant is not deployed through Terraform because:
-    1. It's not yet fully supported ([GitHub issue](https://github.com/hashicorp/terraform-provider-azuread/issues/175)).
-    2. In a live customer solution the identity provider would most likely already be present and centrally managed.
-
-The web application is accessible without authentication but only allows users to perform one operation: get leaderboard. All other actions (including playing a game, deleting and editing) require users to sign in.
-
-There are currently two roles recognized by the app:
-
-- Standard user (*Player*)
-- Elevated user (*Game Master*)
-
-The following table is a summary of operations and their expected permissions:
-
-|Operation            |Permissions        |Note     |
-|---------------------|-------------------|---------|
-|Get game result |Player |Players can access only game results of games where they participated.<br />Game Master can access any game. |
-|Play against AI         |Player               |Every user needs to sign in to play the game. |
-|Add new game result         |Player           |Every user needs to sign in to post game results. |
-|Delete game result         |Game Master           |Players are not allowed to delete any game results. |
-|List all game results      |Game Master           |         |
-|Get the latest leaderboard, get leaderboard by ID, list leaderboards |None |Leaderboards are publicly accessible. |
-|Generate new leaderboard |Game Master | |
-|Delete leaderboard |Game Master | |
-|List all players |Game Master | |
-|Get player by ID |Player |Any signed in user can browse other users' profiles. |
-|Get player's own profile |Player |Any user can see their own profile. |
-|Get full list of any player's games |Game Master | |
-|Get list of current player's games |Player | |
-|Delete player |Game Master | |
+This foundational reference implementation of AlwaysOn uses a simple authentication scheme based on API keys for some restricted operations, such as creating new catalog items or deleting comments.
+More advanced scenarios such as user authentication and user roles are not in scope here.
 
 ## Scalability
 

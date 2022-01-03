@@ -117,7 +117,7 @@ foreach($target in $targets) {
   Write-Output "*** Sleeping for 10 seconds to give the system time to create the comment"
   Start-Sleep 10
 
-  # The 202-response to POST new game result contains in the 'Location' header the URL under which the new comment will be accessible
+  # The 202-response to POST new comment contains in the 'Location' header the URL under which the new comment will be accessible
   $getCommentUrl = $responsePostComment.Headers['Location'][0]
 
   if ($mode -eq "stamp") {

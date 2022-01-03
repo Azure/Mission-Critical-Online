@@ -37,7 +37,7 @@ namespace AlwaysOn.Tests
             var result = await controller.ListCatalogItemsAsync();
 
             // Assert
-            Assert.IsInstanceOf<ActionResult<IEnumerable<CatalogItem>>>(result); // expecting list of gameresults
+            Assert.IsInstanceOf<ActionResult<IEnumerable<CatalogItem>>>(result); // expecting list of CatalogItems
             Assert.IsInstanceOf<OkObjectResult>(result.Result); // expecting HTTP 200 result
         }
 

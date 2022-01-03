@@ -106,7 +106,7 @@ x-server-name: CatalogService-deploy-85d9fc989d-rk6gb
 The Game API returns standard HTTP responses on both success and error.
 
 * **HTTP 200 (OK)** - request was successful and result is available immediately. Typically for GET requests which query for data.
-* **HTTP 202 (Accepted)** - operation was accepted, but the result is not immediately available. This is, for example, being used for sending new game results. For these, the response contains a `Location` header representing the URL where the new item will be accessible.
+* **HTTP 202 (Accepted)** - operation was accepted, but the result is not immediately available. This is, for example, being used for sending new comments or ratings. For these, the response contains a `Location` header representing the URL where the new item will be accessible (not applicable for ratings).
 * **HTTP 400 (Bad Request)** - operation was not successful, because client provided incorrect or missing information. This can happen, for example, when required fields (like `gesture`) are not present within the request.
 * **HTTP 401 (Unauthorized)** - some of the API operations require requests to provide a correct API key. Calls without this key will result in 401 errors.
 * **HTTP 500 (Internal Server Error)** - operation was not successful, because server-side processing encountered an exception. There's nothing the client can do in this case. These types of errors should be caught and highlighted in the monitoring. The user may inform the operator and pass the Correlation ID in the support request.

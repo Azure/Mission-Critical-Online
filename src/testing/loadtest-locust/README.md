@@ -53,9 +53,9 @@ Some of the REST methods on the AlwaysOn API are protected with API key-based au
 
 ## Load Testing
 
-All tests are defined in the [`locustfile.py`](./locustfile.py) Python file. They're defined as a sequence of API calls - each test user gets an access token, plays an AI game, sends a full game result, requests their own player statistics and requests their own game results.
+All tests are defined in the [`locustfile.py`](./locustfile.py) Python file. They're defined as a sequence of API calls which represent typical user actions in the application.
 
-Locust supports weight specification on individual tasks, so the test is configured in a way that sending new game results is more frequent than fetching statistics, to reflect realistic usage pattern.
+Locust supports weight specification on individual tasks, so the test is configured in a way that sending new ratings is more frequent than typing text-based comments, to reflect realistic usage pattern.
 
 The `locusfile.py` Python file is automatically uploaded into the File Share of a dedicated Azure Storage Account:
 

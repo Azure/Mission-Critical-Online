@@ -92,18 +92,16 @@ All pipelines are using Azure DevOps service connections to connect to Microsoft
 As part of the pipelines, basic Smoke Tests against the APIs are executed:
 
 - GET call to the Health Service `/health/stamp` API. Expected result: HTTP 200
-- POST call to the CatalogService `/api/1.0/game` API to create a new game result with AI gesture provided by client. Expected result: HTTP 202
-- POST call to the CatalogService `/api/1.0/game/ai` API to create a new game result with AI gesture generated on the API. Expected result: HTTP 202
-- GET call the CatalogService `/api/1.0/player/me` API to retrieve statistics of the testing user. Expected result: HTTP 200
-- GET call the CatalogService `/api/1.0/player/me/games` API to retrieve list of current player's games. Expected result: HTTP 200
+- GET call the CatalogService `/api/1.0/catalogitem` API to retrieve a list of existing items. Expected result: HTTP 200
+- POST call to the CatalogService `/api/1.0/catalogitem/{itemId}/comments` API to create a new comment for an existing item. Expected result: HTTP 202
+- GET call to the CatalogService `/api/1.0/catalogitem/{itemId}/comments/{commentId}` API to retrieve the previously created comment. Expected result: HTTP 200
 
 The calls are first executed against the individual stamps to test the availability of each regional deployment and afterwards against the global Front Door endpoint, which distributes the requests to the different stamps.
 
 Additionally, two UI smoke tests are performed:
 
 1. GET request to each of the stamp's Static Storage Web endpoint and Front Door endpoint, which then validates that the website contains the HTML page title "AlwaysOn Catalog". Since PowerShell doesn't run JavaScript on the site, this serves as a simple check if the HTML page was deployed to the storage account and is available.
-1. UI test with [Playwright](/src/testing/ui-test-playwright/README.md) against the Front Door endpoint, which takes a screenshot of the home page, play game page and list game results page and publishes them as pipeline artifacts. Playwright uses actual web browser engine (Chromium in our case), so it's possible to navigate in the app and "see" how it really looks like.
-
+1. UI test with [Playwright](/src/testing/ui-test-playwright/README.md) against the Front Door endpoint, which takes a screenshot of the home page and the catalog page and publishes them as pipeline artifacts. Playwright uses actual web browser engine (Chromium in our case), so it's possible to navigate in the app and "see" how it really looks like.
 
 ## Scripting
 

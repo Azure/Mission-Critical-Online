@@ -124,12 +124,6 @@ See [BackgroundProcessor](/src/app/AlwaysOn.BackgroundProcessor/README.md) for m
 
 > **Note** - A messaging queue is not intended to be used as a persistent data store for an long periods of time. Event Hubs supports [Capture feature](https://docs.microsoft.com/azure/event-hubs/event-hubs-capture-enable-through-portal) which enables an Event Hub to automatically write a copy of messages to a linked Azure Storage account. This keeps utilization of an Event Hubs queue in-check but it also serves as a mechanism to backup messages.
 
-## Caching
-
-AlwaysOn uses `IDistributedCache` to reduce the amount of Microsoft Graph calls required to fetch player names based on their ID. This operation happens each time a game result is stored in the the database and since players are expected to play multiple games in sequence, it is better to cache their display names instead of calling the Graph API each time.
-
-The current implementation is set up with a simple MemoryCache (which is not distributed), however, the use of a generic interface makes it possible to switch to another cache (e.g. [`CosmosCache`](https://github.com/Azure/Microsoft.Extensions.Caching.Cosmos), or [Redis cache](https://azure.microsoft.com/services/cache/)) if needed.
-
 ---
 [AlwaysOn - Full List of Documentation](/docs/README.md)
 

@@ -132,7 +132,7 @@ namespace AlwaysOn.CatalogService.Controllers
                 return StatusCode((int)HttpStatusCode.InternalServerError, $"Error in processing. Correlation ID: {Activity.Current?.RootId}");
             }
 
-            return StatusCode((int)HttpStatusCode.Accepted);
+            return AcceptedAtRoute(nameof(GetCommentByIdAsync), new { itemId = itemId, commentId = comment.Id });
         }
 
         /// <summary>

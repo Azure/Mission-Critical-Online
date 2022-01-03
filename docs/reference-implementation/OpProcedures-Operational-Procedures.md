@@ -45,7 +45,7 @@ A couple of examples which were observed so far:
 
 - Terraform `init` failing after 1 second with no apparent error message
 - Terraform `init` failing with an authorization error against the backend storage account
-- Deployment of one of the workloads on AKS failing after many retry attempts (mostly the GameService)
+- Deployment of one of the workloads on AKS failing after many retry attempts (mostly the CatalogService)
 - Terraform deployment of Azure Monitor saved queries failing with a Bad Request error
 - Download of some dependency, e.g. Terraform CLI or Helm
 

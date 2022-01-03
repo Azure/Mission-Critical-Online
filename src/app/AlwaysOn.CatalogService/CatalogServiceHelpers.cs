@@ -13,13 +13,13 @@ using System.Net;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace AlwaysOn.GameService
+namespace AlwaysOn.CatalogService
 {
     public static class CatalogServiceHelpers
     {
         /// <summary>
         /// Creates a message on the message bus to request the deletion of any object by its ID
-        /// Whether the object acutally exists and can be deleted is decided by the ResultWorker during processing
+        /// Whether the object acutally exists and can be deleted is decided by the BackgroundProcessor during processing
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="logger"></param>

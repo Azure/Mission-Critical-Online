@@ -48,7 +48,7 @@ InsightsMetrics
 To monitor the availability of the individual stamps and the overall solution from an outside point of view, [Application Insights Availability Tests](https://docs.microsoft.com/azure/azure-monitor/app/availability-overview) are set up in two places:
 
 - [Regional Availability Tests](/src/infra/workload/releaseunit/modules/stamp/monitoring_webtests.tf): These are set up in the regional Application Insights instances and are used to monitor the availability of the stamps. These tests target the clusters as well as the static storage accounts of the stamps directly. To call the ingress points of the clusters directly, requests need to carry the correct Front Door ID header, else they would be rejected by the ingress controller.
-- [Global Availability Tests](/src/infra/workload/globalresources/monitoring_webtests.tf): These are set up in the global Application Insights instance and are used to monitor the availability of the overall solution by pinging Front Door. Here as well, two tests are being used: One to test an API call against the GameService and one to test the home page of the website.
+- [Global Availability Tests](/src/infra/workload/globalresources/monitoring_webtests.tf): These are set up in the global Application Insights instance and are used to monitor the availability of the overall solution by pinging Front Door. Here as well, two tests are being used: One to test an API call against the CatalogService and one to test the home page of the website.
 
 ## Queries
 

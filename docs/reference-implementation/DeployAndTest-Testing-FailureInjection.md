@@ -8,7 +8,7 @@ All tests were performed in an E2E validation environment so that fully represen
 
 ## DNS-based failure injection
 
-DNS failure injection is a good test case since it can simulate multiple issues. Firstly it simulates the case when the DNS resolution fails, for instance because Azure DNS experiences an issue ,but it can also help to simulate general connection issues between a client and a service, for example when the ResultWorker cannot connect to the Event Hub.
+DNS failure injection is a good test case since it can simulate multiple issues. Firstly it simulates the case when the DNS resolution fails, for instance because Azure DNS experiences an issue ,but it can also help to simulate general connection issues between a client and a service, for example when the BackgroundProcessor cannot connect to the Event Hub.
 
 In single-host scenarios you can simply modify the local `hosts` file to overwrite DNS resolution. In a larger system with multiple dynamic servers like AKS, this is not feasible. However, we can use [Azure Private DNS Zones](https://docs.microsoft.com/azure/dns/private-dns-privatednszone) as an alternative (See the Event Hubs example below for a configuration walk-through). 
 
@@ -32,7 +32,7 @@ Most Azure services support firewall access restrictions based on VNets and/or I
 
 ### Key Vault
 
-When access to Key Vault was blocked on a firewall level, the most direct impact it has is that no new pods can be spawned. The Key Vault CSI driver used to fetch secrets on pod startup cannot perform its tasks and thus prevents the pod from starting. Corresponding error messages can be observed using `kubectl describe po GameService-deploy-my-new-pod -n workload`.
+When access to Key Vault was blocked on a firewall level, the most direct impact it has is that no new pods can be spawned. The Key Vault CSI driver used to fetch secrets on pod startup cannot perform its tasks and thus prevents the pod from starting. Corresponding error messages can be observed using `kubectl describe po CatalogService-deploy-my-new-pod -n workload`.
 
 Existing pods will continue to work, although the same error message as above can be observed - this is caused by results from the periodic update check on secrets.
 
@@ -40,7 +40,7 @@ Although untested, it is assumed that that running a deployment would not work w
 
 ### Event Hub
 
-When access to Event Hub was blocked the sending of new messages by the GameService and HealthService and retrieving of messages by the ResultWorker slowly started to fail taking a few minutes for total failure. This is likely because long-standing AMQP connections are not immediately closed when new firewall restrictions are created.
+When access to Event Hub was blocked the sending of new messages by the CatalogService and HealthService and retrieving of messages by the BackgroundProcessor slowly started to fail taking a few minutes for total failure. This is likely because long-standing AMQP connections are not immediately closed when new firewall restrictions are created.
 
 ### Cosmos DB
 

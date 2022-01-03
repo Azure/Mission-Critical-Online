@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "AlwaysOn.GameService": {
+    "AlwaysOn.CatalogService": {
       "commandName": "Project",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

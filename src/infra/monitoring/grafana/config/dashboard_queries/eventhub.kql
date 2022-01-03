@@ -1,4 +1,4 @@
-// This queries the number of incoming and outgoing messages on the Event Hub, as well as the EventHubLag metric as it gets recorded by the ResultWorker
+// This queries the number of incoming and outgoing messages on the Event Hub, as well as the EventHubLag metric as it gets recorded by the BackgroundProcessor
 let eventHubLag=
 AppMetrics
 | where $__timeFilter(TimeGenerated)

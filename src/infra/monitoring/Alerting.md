@@ -56,10 +56,10 @@ Alerts based on the data stored in a Log Analytics workspace can be created usin
 
 - Percentage of 5xx responses / failed requests exceeding a threshold
 - The result of the ClusterHealthScore() function dropping below 1
-- Spike in entries in the Exception table (not all errors are correlated to incoming requests so they won't be covered by the previous alert, for instance exceptions in the ResultWorker)
+- Spike in entries in the Exception table (not all errors are correlated to incoming requests so they won't be covered by the previous alert, for instance exceptions in the BackgroundProcessor)
 
 #### Percentage of 5xx responses / failed requests exceeding a threshold
 
 > This alert is implemented as a sample as part of the reference implementation.
 
-To demonstrate their setup and usage, a query-based alert on Application Insights is configured as part of the infrastructure deployment within each stamp ([/src/infra/workload/releaseunit/modules/stamp/alerts.tf](/src/infra/workload/releaseunit/modules/stamp/alerts.tf)). It looks at the number of responses sent by the GameService which start with a 5xx status code. If those exceed the set threshold within a 5 minute window, it will fire an alert.
+To demonstrate their setup and usage, a query-based alert on Application Insights is configured as part of the infrastructure deployment within each stamp ([/src/infra/workload/releaseunit/modules/stamp/alerts.tf](/src/infra/workload/releaseunit/modules/stamp/alerts.tf)). It looks at the number of responses sent by the CatalogService which start with a 5xx status code. If those exceed the set threshold within a 5 minute window, it will fire an alert.

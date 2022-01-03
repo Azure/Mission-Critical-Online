@@ -1457,8 +1457,8 @@
                   "deploymentName": {
                     "type": 2,
                     "value": [
-                      "gameservice-deploy",
-                      "resultworker-deploy",
+                      "catalogservice-deploy",
+                      "backgroundprocessor-deploy",
                       "healthservice-deploy"
                     ],
                     "isPending": false,
@@ -1470,13 +1470,13 @@
                     "specialValue": [
                       "value::all"
                     ],
-                    "formattedValue": "'gameservice-deploy','resultworker-deploy','healthservice-deploy'"
+                    "formattedValue": "'catalogservice-deploy','backgroundprocessor-deploy','healthservice-deploy'"
                   },
                   "hpa": {
                     "type": 2,
                     "value": [
-                      "gameservice-autoscaler",
-                      "resultworker-autoscaler",
+                      "catalogservice-autoscaler",
+                      "backgroundprocessor-autoscaler",
                       "healthservice-autoscaler"
                     ],
                     "isPending": false,
@@ -1488,7 +1488,7 @@
                     "specialValue": [
                       "value::all"
                     ],
-                    "formattedValue": "'gameservice-autoscaler','resultworker-autoscaler','healthservice-autoscaler'"
+                    "formattedValue": "'catalogservice-autoscaler','backgroundprocessor-autoscaler','healthservice-autoscaler'"
                   },
                   "selectedTab": {
                     "type": 1,
@@ -1645,8 +1645,8 @@
                   "deploymentName": {
                     "type": 2,
                     "value": [
-                      "gameservice-deploy",
-                      "resultworker-deploy",
+                      "catalogservice-deploy",
+                      "backgroundprocessor-deploy",
                       "healthservice-deploy"
                     ],
                     "isPending": false,
@@ -1658,13 +1658,13 @@
                     "specialValue": [
                       "value::all"
                     ],
-                    "formattedValue": "'gameservice-deploy','resultworker-deploy','healthservice-deploy'"
+                    "formattedValue": "'catalogservice-deploy','backgroundprocessor-deploy','healthservice-deploy'"
                   },
                   "hpa": {
                     "type": 2,
                     "value": [
-                      "gameservice-autoscaler",
-                      "resultworker-autoscaler",
+                      "catalogservice-autoscaler",
+                      "backgroundprocessor-autoscaler",
                       "healthservice-autoscaler"
                     ],
                     "isPending": false,
@@ -1676,7 +1676,7 @@
                     "specialValue": [
                       "value::all"
                     ],
-                    "formattedValue": "'GameService-autoscaler','ResultWorker-autoscaler','healthservice-autoscaler'"
+                    "formattedValue": "'catalogservice-autoscaler','backgroundprocessor-autoscaler','healthservice-autoscaler'"
                   },
                   "selectedTab": {
                     "type": 1,

@@ -11,7 +11,6 @@ using AlwaysOn.Shared.Interfaces;
 using AlwaysOn.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using AlwaysOn.GameService;
 using AlwaysOn.Shared;
 
 namespace AlwaysOn.CatalogService.Controllers

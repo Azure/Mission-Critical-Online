@@ -1,7 +1,7 @@
 (PublicBlobStorageHealthStatus | extend ComponentName="PublicBlobStorage")
 | union (KeyvaultHealthStatus | extend ComponentName="Keyvault")
-| union (GameServiceHealthStatus | extend ComponentName="GameService")
-| union (ResultWorkerHealthStatus | extend ComponentName="ResultWorker")
+| union (CatalogServiceHealthStatus | extend ComponentName="CatalogService")
+| union (BackgroundProcessorHealthStatus | extend ComponentName="BackgroundProcessor")
 | union (ClusterHealthStatus | extend ComponentName="Cluster")
 | where $__timeFilter(TimeGenerated)
 | where IsYellow > 0 or IsRed > 0

@@ -14,7 +14,7 @@ The workload consists of three components:
 
 ## Queue-based asynchronous processing
 
-In order to achieve high responsiveness for all operations, AlwaysOn implements the [Queue-Based Load leveling pattern](https://docs.microsoft.com/azure/architecture/patterns/queue-based-load-leveling) combined with [Competing Consumers pattern](https://docs.microsoft.com/azure/architecture/patterns/competing-consumers) where multiple producer instances (`CatalogService` in our case) generate messages which are then asynchronously processed by consumers (`ResultWorker`). This allows the API to accept the request and return to the caller quickly whilst the more demanding database write operation is processed separately.
+In order to achieve high responsiveness for all operations, AlwaysOn implements the [Queue-Based Load leveling pattern](https://docs.microsoft.com/azure/architecture/patterns/queue-based-load-leveling) combined with [Competing Consumers pattern](https://docs.microsoft.com/azure/architecture/patterns/competing-consumers) where multiple producer instances (`CatalogService` in our case) generate messages which are then asynchronously processed by consumers (`BackgroundProcessor`). This allows the API to accept the request and return to the caller quickly whilst the more demanding database write operation is processed separately.
 
 ![Competing consumers diagram](/docs/media/competing-consumers-diagram.png)
 
@@ -30,7 +30,7 @@ Read operations (e.g. *get leaderboard, get player, list games etc.*) are proces
 
 Write operations (e.g. *play AI game, send game result, delete player*) are processed asynchronously. The API first sends a message with all relevant information (type of action, game result data) to the message queue and immediately returns `HTTP 202 (Accepted)` with additional `Location` header for the create operation.
 
-Messages from the queue are then processed by ResultWorker instances which handle the actual database communication for write operations. The ResultWorker scales in and out dynamically based on message volume on the queue.
+Messages from the queue are then processed by BackgroundProcessor instances which handle the actual database communication for write operations. The BackgroundProcessor scales in and out dynamically based on message volume on the queue.
 
 ![Create game result is asynchronous](/docs/media/application-design-operations-2.png)
 

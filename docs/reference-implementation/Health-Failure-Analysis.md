@@ -64,7 +64,7 @@ Global replication protects Cosmos DB instances from regional outage. The Cosmos
 | **Risk**                    | **Impact/Mitigation/Comment**                | **Outage** |
 | ---------------------------------------------- | ------------------------------------------------------------ | ---------- |
 | **No messages can be sent to the Event Hub** | Stamp becomes unusable for any write operations. **Health service should automatically detect this** and take the stamp out of rotation | No     |
-| **No messages can be read by the ResultWorker** | Messages will queue up, but no messages should get lost since they are persisted. <br />**Currently this is not covered by the Health Service**. But there should be monitoring/alerting in place on the Worker to detect errors in reading messages.<br/>*Mitigation*: The stamp needs to be manually disabled until the problem is fixed. | No     |
+| **No messages can be read by the BackgroundProcessor** | Messages will queue up, but no messages should get lost since they are persisted. <br />**Currently this is not covered by the Health Service**. But there should be monitoring/alerting in place on the Worker to detect errors in reading messages.<br/>*Mitigation*: The stamp needs to be manually disabled until the problem is fixed. | No     |
 
 ### (stamp) Storage Account
 

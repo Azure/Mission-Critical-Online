@@ -16,7 +16,6 @@ using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using AlwaysOn.GameService;
 
 namespace AlwaysOn.CatalogService.Controllers
 {

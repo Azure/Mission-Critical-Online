@@ -11,14 +11,14 @@ let timespanStart= todatetime(format_datetime(now(-2d), 'yyyy-MM-dd HH:ss')); //
 let timespanEnd = now(-2m); // there is some ingestion lag, so we account for this by stripping the last 2m
 // Calculate average processing time for each request
 let avgProcessingTime = AppRequests
-| where AppRoleName startswith "GameService"
+| where AppRoleName startswith "CatalogService"
 | where OperationName != "GET /health/liveness" // Since the liveness requests don't do any processing, including them would skew the results. 
 | make-series Value = avg(DurationMs)  default=0 on TimeGenerated from timespanStart to timespanEnd step 1m
 | mv-expand TimeGenerated, Value
 | extend TimeGenerated = todatetime(TimeGenerated), Value=toreal(Value), MetricName= 'avgProcessingTime';
 // Calculate failed requests
 let failureCount = AppRequests
-| where AppRoleName startswith "GameService"
+| where AppRoleName startswith "CatalogService"
 | where OperationName != "GET /health/liveness" // Since the liveness requests don't do any processing, including them would skew the results. 
 | make-series Value=countif(Success != true) default=0 on TimeGenerated from timespanStart to timespanEnd step 1m
 | mv-expand TimeGenerated, Value

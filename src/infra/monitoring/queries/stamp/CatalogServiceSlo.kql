@@ -1,10 +1,10 @@
 let _interval = 30d;
-let _approlename = 'GameService';
+let _approlename = 'CatalogService';
 let _timeslice = 10s;
 let _region = toscalar(AppRequests
 | where AppRoleName startswith _approlename
 | take 1
-| extend region = extract(@"^.+-(.+)$", 1, AppRoleName) // extract region name from appRoleName which is like gameservice-uksouth
+| extend region = extract(@"^.+-(.+)$", 1, AppRoleName) // extract region name from appRoleName which is like CatalogService-uksouth
 | project region);
 let dataset=AppRequests
 | where TimeGenerated > ago(_interval)

@@ -84,7 +84,7 @@ namespace AlwaysOn.SloProcessor
                 var msiClientId = Environment.GetEnvironmentVariable("USER_ASSIGNED_CLIENT_ID");
                 var client = new LogsQueryClient(new DefaultAzureCredential(options: new DefaultAzureCredentialOptions() { ManagedIdentityClientId = msiClientId }));
 
-                var queryString = "ResultWorkerSlo | union GameServiceSlo";
+                var queryString = "BackgroundProcessorSlo | union CatalogServiceSlo";
 
                 Response<LogsQueryResult> response = await client.QueryWorkspaceAsync(
                     workspaceId,

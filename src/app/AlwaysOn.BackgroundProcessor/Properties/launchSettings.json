@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "AlwaysOn.ResultWorker": {
+    "AlwaysOn.BackgroundProcessor": {
       "commandName": "Project",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Development"

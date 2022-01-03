@@ -27,14 +27,6 @@ param
 [string] $GithubRepoName = "YOUR_GITHUB_REPO_NAME"
 [string] $GithubBranchName = "YOUR_GITHUB_BRANCH_NAME"
 
-# Variable values from AADB2C - mock values here; replace with real values
-[string] $SmokeTestUserName = "user@demo.always-on.app"
-$AzDevOpsVariables = @{
-  "b2cResultWorkerClientSecret" = "myb2cResultWorkerClientSecretValue"
-  "loadtestUserPassword" = "myLoadtestUserPassword"
-  "smokePassword" = "mySmokePassword"
-}
-
 # Deploy and Remove toggles
 [bool] $deploy = $true
 [bool] $remove = $false
@@ -52,8 +44,7 @@ if ($deploy) {
     -GithubRepoName $GithubRepoName `
     -GithubBranchName $GithubBranchName `
     -SkipFirstPipelineRun $true `
-    -SmokeTestUserName $SmokeTestUserName `
-    -AzDevOpsVariables $AzDevOpsVariables
+    -SmokeTestUserName $SmokeTestUserName
 }
 
 if ($remove) {

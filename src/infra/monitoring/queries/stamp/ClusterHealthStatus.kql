@@ -45,7 +45,7 @@ InsightsMetrics
     | where Name == "kube_hpa_status_current_replicas"
     | extend TagsDynamic = parse_json(Tags)
     | extend Service = extract("(.+)-autoscaler", 1, tostring(TagsDynamic['hpa']))
-    | where Service == "gameservice" or Service == "resultworker"
+    | where Service == "catalogservice" or Service == "backgroundprocessor"
     | extend maxReplica = TagsDynamic['spec_max_replicas']
     | extend PercentageAutoscaled = Val / maxReplica * 100
     | project TimeGenerated, Service, Value=PercentageAutoscaled, currentReplicas=strcat(toint(Val)," / ", maxReplica), MetricName="autoscaled_percentage"
@@ -64,7 +64,7 @@ InsightsMetrics
     Perf
     | where TimeGenerated > ago(_Interval)
     | where ObjectName == 'K8SContainer'
-    | where InstanceName endswith "gameservice" or InstanceName endswith "resultworker"
+    | where InstanceName endswith "catalogservice" or InstanceName endswith "backgroundprocessor"
     | extend Service= extract("^.+/(.+)$", 1, InstanceName)
     | where CounterName == "cpuUsageNanoCores" //or CounterName == "cpuLimitNanoCores"
     | summarize Value=avg(CounterValue) by bin(TimeGenerated, 1m), Service

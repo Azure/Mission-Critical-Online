@@ -50,7 +50,7 @@ updates:
 
   # directories containing docker files
   - package-ecosystem: "docker"
-    directory: "/src/app/AlwaysOn.GameService"
+    directory: "/src/app/AlwaysOn.CatalogService"
     schedule:
       interval: "daily" # default = every day at 5:00 UTC
     target-branch: "component-updates"
@@ -62,7 +62,7 @@ updates:
     target-branch: "component-updates"
 
   - package-ecosystem: "docker"
-    directory: "/src/app/AlwaysOn.ResultWorker"
+    directory: "/src/app/AlwaysOn.BackgroundProcessor"
     schedule:
       interval: "daily" # default = every day at 5:00 UTC
     target-branch: "component-updates"

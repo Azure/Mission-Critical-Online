@@ -82,26 +82,30 @@ The AlwaysOn reference implementation leverages the native backup feature of Cos
 
 ## Messaging bus
 
-**[Azure Event Hubs](https://docs.microsoft.com/azure/event-hubs/event-hubs-about)** service is used for the asynchronous messaging between the API service (GameService) and the background worker (ResultWorker). It was chosen over alternative services like Azure Service Bus because of its high throughput support and because AlwaysOn does not require features like Service Bus' in-order delivery.
+**[Azure Event Hubs](https://docs.microsoft.com/azure/event-hubs/event-hubs-about)** service is used for the asynchronous messaging between the API service (CatalogService) and the background worker (BackgroundProcessor). It was chosen over alternative services like Azure Service Bus because of its high throughput support and because AlwaysOn does not require features like Service Bus' in-order delivery.
 
 Event Hubs offers Zone Redundancy in its Standard SKU, whereas Service Bus requires Premium tier for this reliability feature.
 
-The only event processor in the AlwaysOn reference implementation is the **ResultWorker** service which captures and processes events from all Event Hubs partitions.
+The only event processor in the AlwaysOn reference implementation is the **BackgroundProcessor** service which captures and processes events from all Event Hubs partitions.
 
 Every message needs to contain the `action` metadata property which directs the route of processing:
 
 ```csharp
 // `action` is a string:
-//  - AddGameResult
+//  - AddCatalogItem
+//  - AddComment
+//  - AddRating
 //  - DeleteObject
-//  - GenerateNewLeaderboard
 switch (action)
 {
-    case Constants.AddGameResultActionName:
-        await AddGameResultAsync(messageBody);
+    case Constants.AddCatalogItemActionName:
+        await AddCatalogItemAsync(messageBody);
         break;
-    case Constants.GenerateNewLeaderboardActionName:
-        await GenerateNewLeaderboardAsync(messageBody);
+    case Constants.AddCommentActionName:
+        await AddItemCommentAsync(messageBody);
+        break;
+    case Constants.AddRatingActionName:
+        await AddItemRatingAsync(messageBody);
         break;
     case Constants.DeleteObjectActionName:
         await DeleteObjectAsync(messageBody);
@@ -116,7 +120,7 @@ Besides standard user flow messages (database CRUD operations),there are also he
 
 If a message isn't a health check and doesn't contain `action`, it's also dropped.
 
-See [ResultWorker](/src/app/AlwaysOn.ResultWorker/README.md) for more details about the implementation.
+See [BackgroundProcessor](/src/app/AlwaysOn.BackgroundProcessor/README.md) for more details about the implementation.
 
 > **Note** - A messaging queue is not intended to be used as a persistent data store for an long periods of time. Event Hubs supports [Capture feature](https://docs.microsoft.com/azure/event-hubs/event-hubs-capture-enable-through-portal) which enables an Event Hub to automatically write a copy of messages to a linked Azure Storage account. This keeps utilization of an Event Hubs queue in-check but it also serves as a mechanism to backup messages.
 

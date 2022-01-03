@@ -1,11 +1,11 @@
 # Warning Metric alert on the count of Event Hub outgoing messages
 # Will be triggered when the number of outgoing messages drops under threshold. 
-# This often indicates some issue on the sending side (HealthService or GameService)
+# This often indicates some issue on the sending side (HealthService or CatalogService)
 resource "azurerm_monitor_metric_alert" "eh_outgoging_messages_warning" {
   name                = "EventHub-metricalert-OutgoingMessages-Warning"
   resource_group_name = azurerm_resource_group.stamp.name
   scopes              = [azurerm_eventhub_namespace.stamp.id]
-  description         = "Action will be triggered when the number of outgoing messages drops under threshold. This often indicates some issue on the sending side (HealthService or GameService)."
+  description         = "Action will be triggered when the number of outgoing messages drops under threshold. This often indicates some issue on the sending side (HealthService or CatalogService)."
 
   window_size = "PT1M" # average over the last minute
   frequency   = "PT1M" # check every minute
@@ -36,12 +36,12 @@ resource "azurerm_monitor_metric_alert" "eh_outgoging_messages_warning" {
 
 # Warning Metric alert on Event Hub outgoing messages counts
 # Will be triggered when number of outgoing messages drops to zero. 
-# This often indicates some issue on the receiving end (ResultWorker)
+# This often indicates some issue on the receiving end (BackgroundProcessor)
 resource "azurerm_monitor_metric_alert" "eh_outgoging_messages_error" {
   name                = "EventHub-metricalert-OutgoingMessages-Error"
   resource_group_name = azurerm_resource_group.stamp.name
   scopes              = [azurerm_eventhub_namespace.stamp.id]
-  description         = "Action will be triggered when number of outgoing messages drops to zero. This often indicates some issue on the receiving end (ResultWorker)."
+  description         = "Action will be triggered when number of outgoing messages drops to zero. This often indicates some issue on the receiving end (BackgroundProcessor)."
 
   window_size = "PT1M" # average over the last minute
   frequency   = "PT1M" # check every minute

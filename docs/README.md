@@ -54,8 +54,6 @@
   * Networking and Connectivity
     * [Networking Design Decisions](./reference-implementation/Networking-Design-Decisions.md)
     * [Custom Domains](./reference-implementation/Networking-Custom-Domains.md)
-  * Security
-    * [Azure Active Directory B2C Provisioning](./reference-implementation/Security-B2C-Provisioning.md)
   * Operational Procedures
     * [Operational Procedures](./reference-implementation/OpProcedures-Operational-Procedures.md)
     * [Key and Secret Rotation](./reference-implementation/OpProcedures-KeyRotation.md)
@@ -67,12 +65,12 @@
   * [Terraform-based IaC](/src/infra/workload/README.md)
   * [Grafana](/src/infra/monitoring/grafanapanel/README.md)
 * [Application](/src/app/README.md)
-  * [Game Service](/src/app/AlwaysOn.GameService/README.md)
+  * [Catalog Service](/src/app/AlwaysOn.CatalogService/README.md)
   * [Health Service](/src/app/AlwaysOn.HealthService/README.md)
-  * [Result Worker](/src/app/AlwaysOn.ResultWorker/README.md)
+  * [Background Processor](/src/app/AlwaysOn.BackgroundProcessor/README.md)
   * [Unit Tests](/src/app/AlwaysOn.Tests/README.md)
   * [UI Application](/src/app/AlwaysOn.UI/README.md)
-* [Deployment Pipelines](../.ado/pipelines/README.md)
+* [Deployment Pipelines](/.ado/pipelines/README.md)
 * [Configuration](/src/infra/README.md)
 * [Testing](/src/testing/README.md)
 

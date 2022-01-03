@@ -1,5 +1,5 @@
 parameters:
-  containerImageName:       '' # container image name e.g. alwayson/resultworker/dotnet
+  containerImageName:       '' # container image name e.g. alwayson/backgroundprocessor/dotnet
   containerImageDockerfile: '' # path to dockerfile e.g. src/app/dotnet-backendworker/Dockerfile
   workingDirectory:         'src/app'
   jobName:                  '' # name for each build job - needs to be unique within a given stage/pipeline

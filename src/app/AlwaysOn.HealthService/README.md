@@ -1,6 +1,6 @@
 # Health Service
 
-The HealthService is an app component that is running along other components like GameService and ResultWorker on the compute cluster. It provides a REST API that is being called by Azure Front Door to determine the health of a stamp (region). Unlike basic liveness probes, which are present on every API, health service is a more complex component which reflects the state of dependencies, in addition to its own.
+The HealthService is an app component that is running along other components like CatalogService and BackgroundProcessor on the compute cluster. It provides a REST API that is being called by Azure Front Door to determine the health of a stamp (region). Unlike basic liveness probes, which are present on every API, health service is a more complex component which reflects the state of dependencies, in addition to its own.
 
 ![HealthService conceptual diagram](/docs/media/health-service-high-level.png)
 
@@ -14,7 +14,7 @@ All health check results are cached in memory for a configurable number of secon
 
 ## Configuration
 
-Refer to [GameService configuration](../AlwaysOn.GameService/README.md#Configuration) for details of the implementation.
+Refer to [CatalogService configuration](../AlwaysOn.CatalogService/README.md#Configuration) for details of the implementation.
 
 Apart from the configuration settings which are common between components, such as Cosmos DB connection settings, the following settings are used exclusively by the HealthService:
 
@@ -53,7 +53,7 @@ Event Hub health reporting is handled by the `EventHubProducerService`. This ser
 HEALTHCHECK=TRUE
 ```
 
-This message is ignored on the receiving end (`AlwaysOn.ResultWorker.EventHubProcessorService.ProcessEventHanderAsync()`), which checks for the HEALTHCHECK property.
+This message is ignored on the receiving end (`AlwaysOn.BackgroundProcessor.EventHubProcessorService.ProcessEventHanderAsync()`), which checks for the HEALTHCHECK property.
 
 ### Cosmos DB check
 
@@ -69,18 +69,19 @@ For the Read-only query, the following query is being used, which doesn't fetch 
 SELECT GetCurrentDateTime ()
 ```
 
-The write query creates a dummy GameResult with minimum content:
+The write query creates a dummy ItemRating with minimum content:
 
 ```csharp
-var testGameResult = new GameResult()
+var testRating = new ItemRating()
 {
     Id = Guid.NewGuid(),
-    GameDate = DateTime.UtcNow,
-    IsHealthCheck = true,
+    CatalogItemId = Guid.NewGuid(), // Create some random (=non-existing) item id
+    CreationDate = DateTime.UtcNow,
+    Rating = 1,
     TimeToLive = 10 // will be auto-deleted after 10sec
 };
 
-await AddNewGameResultAsync(testGameResult);
+await AddNewRatingAsync(testRating);
 ```
 
 

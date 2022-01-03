@@ -14,8 +14,8 @@ AlwaysOn tested and documented the approach for how to rotate the keys for Cosmo
 1) If this was deployed as a hotfix to an existing release, the pods will automatically pick up the new secret from Key Vault after a few minutes, however, the Cosmos DB client code does currently not re-initialize with a changed key. To resolve this, all of the pods now need to be restarted in a rolling fashion by connecting to each AKS cluster and run the following commands:
 
     ```bash
-    kubectl rollout restart deployment/GameService-deploy -n workload
-    kubectl rollout restart deployment/ResultWorker-deploy -n workload
+    kubectl rollout restart deployment/CatalogService-deploy -n workload
+    kubectl rollout restart deployment/BackgroundProcessor-deploy -n workload
     kubectl rollout restart deployment/healthservice-deploy -n workload
     ```
 

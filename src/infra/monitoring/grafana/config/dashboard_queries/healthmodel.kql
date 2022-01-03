@@ -1,12 +1,12 @@
 WebsiteHealthScore
-| union AddGameResultUserFlowHealthScore
+| union AddCommentUserFlowHealthScore
 | union GetPlayerStatsUserFlowHealthScore
 | union ShowStaticContentUserFlowHealthScore
 | union PublicBlobStorageHealthScore
 | union KeyvaultHealthScore
-| union GameServiceHealthScore
+| union CatalogServiceHealthScore
 | union CheckpointStorageHealthScore
-| union ResultWorkerHealthScore
+| union BackgroundProcessorHealthScore
 | union ClusterHealthScore
 | summarize arg_max(TimeGenerated, *) by ComponentName,Dependencies
 | project-away TimeGenerated

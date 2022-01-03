@@ -14,7 +14,7 @@ namespace AlwaysOn.Shared
         public const string CosmosItemCommentsContainerName = "itemComments";
         public const string CosmosItemRatingsContainerName = "itemRating";
 
-        public const string BackendStoragePoisonMessagesTableName = "resultWorkerPoisonMessages";
+        public const string BackendStoragePoisonMessagesTableName = "backgroundProcessorPoisonMessages";
 
         public const string GlobalStorageAccountImageContainerName = "images";
 
@@ -113,27 +113,27 @@ namespace AlwaysOn.Shared
         }
 
         /// <summary>
-        /// How often should the ResultWorker retry to process an Event if processing fails, for example because CosmosDB is not available.
+        /// How often should the BackgroundProcessor retry to process an Event if processing fails, for example because CosmosDB is not available.
         /// Default: 10
         /// </summary>
         public int BackgroundProcessorMaxRetryCount
         {
             get
             {
-                var value = Configuration["RESULTWORKER_MAX_RETRY_COUNT"];
+                var value = Configuration["BACKGROUNDPROCESSOR_MAX_RETRY_COUNT"];
                 return int.TryParse(value, out int result) ? result : 10;
             }
         }
 
         /// <summary>
-        /// How long - exponentially - should the ResultWorker wait between each retry if processing fails, for example because CosmosDB is not available.
+        /// How long - exponentially - should the BackgroundProcessor wait between each retry if processing fails, for example because CosmosDB is not available.
         /// Default: 5
         /// </summary>
         public int BackgroundProcessorRetryWaitSeconds
         {
             get
             {
-                var value = Configuration["RESULTWORKER_RETRY_WAIT_SEC"];
+                var value = Configuration["BACKGROUNDPROCESSOR_RETRY_WAIT_SEC"];
                 return int.TryParse(value, out int result) ? result : 5;
             }
         }

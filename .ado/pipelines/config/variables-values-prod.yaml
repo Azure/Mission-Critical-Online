@@ -4,7 +4,7 @@ variables:
 
 # Resource prefix for this environment
 - name:  'prefix'
-  value: 'aoprod'          # Needs to be a unique prefix
+  value: 'ao1prod'          # Needs to be a unique prefix
 
 - name: 'stampLocations'
   value: '["northeurope", "canadacentral"]' # Check which regions are valid. There is a list in /src/infra/README.md
@@ -20,7 +20,7 @@ variables:
 - name: 'envDnsZoneRG'
   value: 'ao-dns-rg'
 - name: 'envDomainName'
-  value: 'always-on.app'
+  value: 'shop.always-on.app'
 
 # Other settings
 - name:  'contactEmail'

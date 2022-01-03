@@ -1,0 +1,139 @@
+parameters:
+  - name: stageName # allow overriding stage name to make the template reusable
+    type: string
+    default: 'deploychaos'
+  - name: dependsOn # object of stages to depend on
+    type: object
+    default: {}
+  - name: customPrefix
+    type: string
+  - name: testDurationSeconds
+    type: number
+    default: 0
+  - name: loadTestStartSeconds
+    type: number
+    default: 300
+  - name: podKiller
+    type: boolean
+    default: false
+  - name: cpuStress
+    type: boolean
+    default: false
+  - name: memoryStress
+    type: boolean
+    default: false
+
+stages:
+  - stage: ${{ parameters.stageName }}
+    displayName: 'Deploy and Run Chaos Experiments'
+    dependsOn: ${{ parameters.dependsOn }}
+    jobs:
+    - job: deploychaosjob
+      displayName: 'Deploy and Run Chaos Experiments'
+      steps:
+      - checkout: self # checkout github repository
+
+      - download: current # download pipeline artifacts
+
+      - template: steps-set-pipeline-variables.yaml # load the set-pipeline-variables function (used for tags and prefixes)
+
+      # Sleep for the duration of the load test startup this is a simple attempt to sync the start of both tests.
+      - task: Bash@3
+        displayName: 'Sleep for ${{ parameters.loadTestStartSeconds }} seconds'
+        inputs:
+          targetType: "inline"
+          script: |
+                echo "Sleeping for ${{ parameters.loadTestStartSeconds }} seconds while the load test is starting..."
+                sleep ${{ parameters.loadTestStartSeconds }}
+
+      - task: AzureCLI@2
+        displayName: "Prepare AKS clusters as Chaos targets"
+        inputs:
+          azureSubscription: $(azureServiceConnection)
+          scriptType: pscore
+          scriptLocation: inlineScript
+          inlineScript: |
+
+                # load json data from downloaded pipeline artifact json
+                $releaseUnitInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputReleaseUnitInfra/*.json | Get-Content | ConvertFrom-JSON
+
+                $capabilities = "PodChaos-1.0", "StressChaos-1.0"
+
+                $targetResourceIds = @()
+
+                # onboard targets and capabilities for each AKS cluster to prepare for Chaos deployment
+                foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
+                    $resourceId = $stamp.aks_cluster_id
+
+                    # Target Resource Id is the ID of the AKS cluster with a child resource indicator
+                    $targetResourceId = "$resourceId/providers/Microsoft.Chaos/targets/Microsoft-AzureKubernetesServiceChaosMesh"
+                    $targetResourceIds += $targetResourceId
+
+                    echo "*** Creating Chaos Target sub-resource: $targetResourceId "
+                    # Create chaos target as AKS sub-resource
+                    $url = "https://management.azure.com$($targetResourceId)?api-version=$(chaosStudioApiVersion)"
+                    az rest --method put --url $url --body '{\"properties\":{}}'
+                    if($LastExitCode -ne 0)
+                    {
+                        throw "*** Error on chaos target creation against $targetResourceId" # This can, for instance, happen if the region is not supported by Chaos Studio
+                    }
+
+                    $targetCreationResult # print for debug
+
+                    # Enable all capabilities on the cluster
+                    foreach($capability in $capabilities)
+                    {
+                        echo "*** Enabling capability $capability on sub-resource: $targetResourceId "
+                        $url = "https://management.azure.com$($targetResourceId)/capabilities/$($capability)?api-version=$(chaosStudioApiVersion)"
+                        az rest --method put --url $url --body '{}'
+                        if($LastExitCode -ne 0)
+                        {
+                            throw "*** Error on chaos capability '$capability' against $targetResourceId"
+                        }
+                    }
+                }
+
+      - ${{ if eq(parameters.podKiller, 'true') }}:
+        - task: AzureCLI@2
+          displayName: "Run Pod Killer experiment"
+          inputs:
+            azureSubscription: $(azureServiceConnection)
+            scriptType: pscore
+            scriptLocation: scriptPath
+            scriptPath: '$(System.DefaultWorkingDirectory)/.ado/scripts/Invoke-ChaosMeshExperiment.ps1'
+            arguments:
+              -ExperimentName "${{ parameters.customPrefix }}-PodKiller"
+              -ExperimentJsonPath "$(System.DefaultWorkingDirectory)/src/testing/chaos-testing/experiment-json/aks_pod_killer.json"
+              -ExperimentLocation "$(chaosStudioLocation)"
+              -ExperimentDurationSeconds "${{ parameters.testDurationSeconds }}"
+              -ChaosStudioApiVersion "$(chaosStudioApiVersion)"
+
+      - ${{ if eq(parameters.cpuStress, 'true') }}:
+        - task: AzureCLI@2
+          displayName: "Run CPU stress experiment"
+          inputs:
+            azureSubscription: $(azureServiceConnection)
+            scriptType: pscore
+            scriptLocation: scriptPath
+            scriptPath: '$(System.DefaultWorkingDirectory)/.ado/scripts/Invoke-ChaosMeshExperiment.ps1'
+            arguments:
+              -ExperimentName "${{ parameters.customPrefix }}-CpuStress"
+              -ExperimentJsonPath "$(System.DefaultWorkingDirectory)/src/testing/chaos-testing/experiment-json/aks_cpu_stress.json"
+              -ExperimentLocation "$(chaosStudioLocation)"
+              -ExperimentDurationSeconds "${{ parameters.testDurationSeconds }}"
+              -ChaosStudioApiVersion "$(chaosStudioApiVersion)"
+
+      - ${{ if eq(parameters.memoryStress, 'true') }}:
+        - task: AzureCLI@2
+          displayName: "Run Memory stress experiment"
+          inputs:
+            azureSubscription: $(azureServiceConnection)
+            scriptType: pscore
+            scriptLocation: scriptPath
+            scriptPath: '$(System.DefaultWorkingDirectory)/.ado/scripts/Invoke-ChaosMeshExperiment.ps1'
+            arguments:
+              -ExperimentName "${{ parameters.customPrefix }}-MemoryStress"
+              -ExperimentJsonPath "$(System.DefaultWorkingDirectory)/src/testing/chaos-testing/experiment-json/aks_memory_stress.json"
+              -ExperimentLocation "$(chaosStudioLocation)"
+              -ExperimentDurationSeconds "${{ parameters.testDurationSeconds }}"
+              -ChaosStudioApiVersion "$(chaosStudioApiVersion)"

@@ -1,0 +1,21 @@
+parameters:
+  workingDirectory: ''
+
+steps:
+- task: PowerShell@2
+  displayName: 'Parse infrastructure Terraform outputs'
+  inputs:
+    targetType: inline
+    script: |
+      $terraformOutput = Get-ChildItem ${{ parameters.workingDirectory }}/*.json | Get-Content | ConvertFrom-JSON
+
+      # Read terraform output values which we need in the Release Unit terraform apply step
+      # Therefore they get stored as ADO pipeline variables so we can reference them in the next step as inputs
+
+      $keyValues = $terraformOutput.psobject.properties | select name,value
+      foreach($output in $keyValues)
+      {
+          echo "Setting '$($output.name)' as ADO variable. Value=$($output.value.value)"
+          echo "##vso[task.setvariable variable=$($output.name)]$($output.value.value)"
+          # Will look like this: ##vso[task.setvariable variable=cosmosdb_account_name]aoe2e3331-global-cosmos
+      }

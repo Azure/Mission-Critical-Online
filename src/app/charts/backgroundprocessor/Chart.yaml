@@ -1,0 +1,11 @@
+apiVersion: "v2"
+appVersion: 0.0.4
+name: backgroundprocessor
+description: "background processor worker"
+version: 0.0.4
+sources:
+- https://github.com/azure/alwayson
+kubeVersion: ">=1.19.0"
+maintainers:
+- name: alwayson
+  email: alwaysonappnet@microsoft.com

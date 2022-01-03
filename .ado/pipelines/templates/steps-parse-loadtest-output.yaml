@@ -1,0 +1,31 @@
+parameters:
+- name: customPrefix
+  type: string
+  default: "" 
+- name: statsPath # this directory path contains the locust *_stats.csv
+  type: string    
+
+steps:
+- task: PowerShell@2
+  displayName: "Analyze Results from the load and chaos tests"
+  continueOnError: true 
+  inputs:
+    targetType: inline
+    script: |
+
+          # load compare-locuststats powershell script
+          . ./.ado/scripts/Compare-LocustStats.ps1
+
+          $baselinePath = "./.ado/pipelines/config/loadtest-baseline.json"
+          echo "*** Using load test baseline $baselinePath"
+
+          $statsPath = "${{ parameters.statsPath }}/${{ parameters.customPrefix }}_stats.csv"
+          echo "*** Loading load test stats from pipeline artifacts $statsPath"
+
+          $result = Compare-LocustStats -baselineFile $baselinePath -statsFile $statsPath -Verbose
+          
+          if ($result -gt 0) {
+            throw "*** Load test results failed baseline comparison."
+          }
+
+

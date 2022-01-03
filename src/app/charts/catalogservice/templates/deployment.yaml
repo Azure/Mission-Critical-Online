@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}-deploy
+  labels:
+    app: {{ .Chart.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+spec:
+  replicas: {{ .Values.scale.minReplicas | default 3 }}
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+    spec:
+      containers:
+      - image: {{ .Values.containerimage }}
+        imagePullPolicy: {{ .Values.container.pullPolicy | default "Always" | quote }}
+        name: catalogservice
+        securityContext:
+          privileged: false
+        ports:
+        - containerPort: {{ .Values.workload.service.port | default 80 }}
+        livenessProbe:
+          httpGet:
+            path: /health/liveness
+            port: 80
+          initialDelaySeconds: 10
+          periodSeconds: 30
+          timeoutSeconds: 3
+        startupProbe:
+          httpGet:
+            path: /health/liveness
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 3
+        resources:
+          limits:
+            cpu:    "1"
+            memory: "756Mi"
+          requests:
+            cpu:    "1"
+            memory: "512Mi"
+        env:
+            - name: "AZURE_REGION" # This value only gets calculated at application deployment time so it does not exist in Key Vault as a secret (plus, it is not secret)
+              value: {{ .Values.azure.region }}
+        volumeMounts:
+          - name: secrets-store-inline
+            mountPath: "/mnt/secrets-store"
+            readOnly: true
+      volumes:
+        - name: secrets-store-inline
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: azure-kv

@@ -1,0 +1,65 @@
+steps:
+
+- task: PowerShell@2
+  name: 'getBranchName'
+  displayName: 'Gather branch name used to identify instance'
+  inputs:
+    targetType: inline
+    script: |
+      # The branch name is used as an Azure Resource Tag for all resources deployed, as well as to generate a unique identifier used for resource names to avoid naming conflicts
+      echo "*** Build.SourceBranch: $(Build.SourceBranch)"
+      $sourceBranch = $("$(Build.SourceBranch)" -replace "refs/heads/", "")
+      echo "*** Strip branch name from SourceBranch: $sourceBranch"
+      $branchName = $("$sourceBranch" -replace "/", "-")
+
+      $hashInput = $branchName
+
+      # This is for the special case of Release to INT env:
+      # It is running nightly on the main branch. In order to still get unique suffixes,
+      # we extend the branch name by the date to have a different hash input
+      if('$(dateBasedSuffix)' -eq [bool]::TrueString)
+      {
+        $hashInput += (Get-Date -AsUTC).ToString("yyyy-MM-dd")
+        echo "*** Parameter dateBasedSuffix is True. Extending suffix hash input"
+      }
+
+      echo "*** Hash input: $hashInput"
+
+      $hashInputStream = [IO.MemoryStream]::new([byte[]][char[]]$hashInput)
+
+      $suffix = (Get-FileHash -InputStream $hashInputStream -Algorithm md5).hash.ToString().Substring(0,4).ToLower() # taking only first 4 characters due to name length limits in Azure
+
+      echo "*** Setting customSuffix variable to $suffix (shortened md5 hash)"
+
+      # Set branchname (md5 hash) used as customSuffix as pipeline (stage) variable
+      echo "##vso[task.setvariable variable=customSuffix]$suffix" # used as a suffix for e2e deployment rgs
+
+      # Add the full resource prefix as an ADO build pipeline tag so we can easily find our resources in Azure
+      echo "##vso[build.addbuildtag]ResourcePrefix $(prefix)$suffix"
+
+      # Set branchname as pipeline (stage) variable sourceBranch used as a Azure Resource Tag later
+      echo "##vso[task.setvariable variable=sourceBranch]$sourceBranch" # used as a tag for azure resources
+
+- task: PowerShell@2
+  name: 'setGlobalPipelineVariables'
+  displayName: 'Set Terraform pipeline variables'
+  inputs:
+    targetType: inline
+    script: |
+      $globalSuffix = ""
+      if("$(environment)" -eq "e2e")
+      {
+        echo "*** Running e2e environment. Setting globalSuffix to '$(customSuffix)'"
+        $globalSuffix = "$(customSuffix)"
+      }
+
+      $terraformStateFileGlobal = "terraform-global-$(prefix)$globalSuffix.state"
+      $terraformStateFileReleaseUnit = "terraform-$(prefix)$(customSuffix).state"
+
+      echo "*** DEBUG: Setting globalSuffix to '$globalSuffix'"
+      echo "*** DEBUG: Setting terraformStateFileGlobal to '$terraformStateFileGlobal'"
+      echo "*** DEBUG: Setting terraformStateFileReleaseUnit to '$terraformStateFileReleaseUnit'"
+
+      echo "##vso[task.setvariable variable=globalSuffix]$globalSuffix"
+      echo "##vso[task.setvariable variable=terraformStateFileGlobal]$terraformStateFileGlobal"
+      echo "##vso[task.setvariable variable=terraformStateFileReleaseUnit]$terraformStateFileReleaseUnit"

@@ -1,0 +1,1 @@
+{"action":"pod-kill","mode":"one","value":"","selector":{"namespaces":["workload","kube-node-lease","kube-public","kube-system"]},"duration":"60s","scheduler":{"cron":"@every 5m"}}

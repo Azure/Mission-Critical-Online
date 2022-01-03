@@ -1,0 +1,34 @@
+parameters:
+  workingDirectory:         '' # working directory - path to where the application code is
+  jobName:                  '' # name for each build job - needs to be unique within a given stage/pipeline
+
+
+jobs:
+- job: ${{ parameters.jobName }}
+  displayName: 'Code tests and audits'
+  workspace: # cleanup workspace environment
+    clean: all
+  steps:
+
+  - task: UseDotNet@2
+    displayName: 'Use .NET Core SDK $(dotnetSdkVersion)'
+    inputs:
+      packageType: sdk
+      version: $(dotnetSdkVersion)
+      installationPath: $(Agent.ToolsDirectory)/dotnet
+
+  - task: DotNetCoreCLI@2
+    displayName: '.NET unit tests'
+    inputs:
+      command: 'test'
+      workingDirectory: ${{ parameters.workingDirectory }} # path to SLN
+
+  - task: Npm@1
+    displayName: 'NPM audit'
+    continueOnError: true # using just as non-blocking warning about vulnerable packages
+    inputs:
+      command: 'custom'
+      customCommand: 'audit --production'
+      workingDir: ${{ parameters.workingDirectory }}/AlwaysOn.UI
+
+  # Add more tasks here - linters, credential scanning etc.

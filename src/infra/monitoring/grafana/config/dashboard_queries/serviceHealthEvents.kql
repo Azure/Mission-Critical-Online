@@ -1,0 +1,9 @@
+servicehealthresources
+| where type == "microsoft.resourcehealth/events"
+| where properties.Status == "Active"
+| project 
+  Location = location,
+  Title = properties.Title,
+  EventLevel = properties.EventLevel,
+  ImpactStartTime = todatetime(properties.ImpactStartTime)
+| order by ImpactStartTime desc

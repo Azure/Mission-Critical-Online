@@ -1,0 +1,25 @@
+# Central configuration settings
+# used for E2E environment pipelines
+variables:
+
+# Resource prefix for this environment
+- name:  'prefix'
+  value: 'ao1e2e'          # Needs to be a unique prefix
+
+- name: 'stampLocations'
+  value: '["uksouth"]'    # Check which regions are valid. There is a list in /src/infra/README.md
+##### NOTE #####
+# If you want to run embedded Chaos Studio testing, only the following regions are supported as of 11-Oct-2021:
+# eastus, centralus, uksouth, westeurope, japaneast
+# westcentralus and westus3 are also supported by Chaos studio, but not by other parts of the reference implementation!
+######################
+
+# Terraform state variables
+- name:  'terraformResourceGroup'
+  value: 'terraformstate-rg'
+- name:  'terraformStorageAccount'
+  value: 'aoe2etfstatestore'      # Needs to be a globally unique name
+
+# Other settings
+- name:  'contactEmail'
+  value: 'noreply-alwaysonappnet@microsoft.com'

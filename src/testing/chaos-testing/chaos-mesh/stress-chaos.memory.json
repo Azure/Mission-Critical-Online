@@ -1,0 +1,1 @@
+{\"mode\":\"one\",\"value\":\"\",\"selector\":{\"namespaces\":[\"workload\"]},\"stressors\":{\"memory\":{\"workers\":1}},\"duration\":\"60s\",\"scheduler\":{\"cron\":\"@every 1m\"}}

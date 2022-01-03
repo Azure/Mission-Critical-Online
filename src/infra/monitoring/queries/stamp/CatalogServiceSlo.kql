@@ -1,0 +1,20 @@
+let _interval = 30d;
+let _approlename = 'CatalogService';
+let _timeslice = 10s;
+let _region = toscalar(AppRequests
+| where AppRoleName startswith _approlename
+| take 1
+| extend region = extract(@"^.+-(.+)$", 1, AppRoleName) // extract region name from appRoleName which is like CatalogService-uksouth
+| project region);
+let dataset=AppRequests
+| where TimeGenerated > ago(_interval)
+| where AppRoleName startswith _approlename
+| where OperationName != "GET /health/liveness"
+| summarize p99ProcessingTime = percentile(DurationMs,99), failureCount=countif(Success != true), count() by bin(TimeGenerated, _timeslice);
+dataset
+| where p99ProcessingTime > 500 or failureCount > 0
+| summarize SloFailedCount=count()
+| extend SloFailedTime = SloFailedCount*_timeslice
+| extend SloPercent = 100 - SloFailedTime/_interval * 100
+| extend Name = _approlename
+| extend Region = _region

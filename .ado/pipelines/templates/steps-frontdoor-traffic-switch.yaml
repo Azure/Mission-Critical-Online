@@ -1,0 +1,179 @@
+parameters:
+  - name: trafficWeightNewBackends # Percentage of traffic for new backends
+    type: number
+    default: 10
+  - name: removeDisabledBackends # if set to true, any backends in Front Door that are in a Disabled state (from a previous run of this script), will be now removed
+    type: boolean
+    default: false
+
+# We have this as both a stage-template and a steps-template.
+# Reason for this is that we use it in two different places:
+# Once we need the deployment job to have approvals and once we call it from inside another deployment job
+steps:
+
+# Global Resources terraform init
+- template: steps-terraform-init.yaml
+  parameters:
+    terraformStateFilename:     '$(terraformStateFileGlobal)'
+    terraformWorkingDirectory:  '$(workingDirectory)/globalresources'
+
+- task: AzureCLI@2
+  displayName: 'Create updated Front Door backend list'
+  inputs:
+    azureSubscription: $(azureServiceConnection)
+    scriptType: pscore
+    scriptLocation: inlineScript
+    inlineScript: |
+      # We need the az CLI Front Door extension
+      az extension add --name front-door
+
+      $globalInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputGlobalInfra/*.json | Get-Content | ConvertFrom-JSON
+
+      $rgName = $globalInfraDeployOutput.global_resource_group_name.value
+      $fdName = $globalInfraDeployOutput.frontdoor_name.value
+
+      $newBackendsWeight = ${{ parameters.trafficWeightNewBackends }}
+      $oldBackendsWeight = 100 - $newBackendsWeight # since the weight for the new backends is a percentage, we substract from 100 to get the remaining weights for the old backends
+
+      if($oldBackendsWeight -lt 1)
+      {
+        $oldBackendsWeight = 1 # needs to be 1 at a minimum, but we will set them now to disabled
+        $oldBackendsEnabled = "false"
+      }
+      else
+      {
+        $oldBackendsEnabled = "true"
+      }
+
+      $removeDisabledBackends = [System.Convert]::ToBoolean("${{ parameters.removeDisabledBackends }}") # parse parameter to make sure PS interprets it as a boolean
+      echo "*** Remove disabled backends? $removeDisabledBackends"
+
+      # These names must match what is defined in the Front Door Terraform template
+      $backendPools = @("BackendApis", "StaticStorage")
+
+      $newBackends = @{}
+      foreach($pool in $backendPools)
+      {
+        $newBackends[$pool] = @() # initialize a hashtable with a list of arrays per pool name
+      }
+
+      # Load and parse release unit terraform outputs
+      $releaseUnitInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputReleaseUnitInfra/*.json | Get-Content | ConvertFrom-JSON
+
+      # loop through stamps from pipeline artifact json
+      foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
+
+        # Build API backend config object for Front Door
+        $clusterFqdn = $stamp.aks_cluster_ingress_fqdn
+
+        $apiProperties = @{address=$clusterFqdn; weight=$newBackendsWeight; enabled="true"}
+        $apiBackend = New-Object PSObject –Property $apiProperties
+
+        echo "*** Adding API backend $apiBackend"
+
+        $newBackends["BackendApis"] += $apiBackend
+
+        # Build static storage backend config object for Front Door
+        $staticStorageUri = $stamp.storage_web_host
+
+        $storageProperties = @{address=$staticStorageUri; weight=$newBackendsWeight; enabled="true"}
+        $storageBackend = New-Object PSObject –Property $storageProperties
+
+        echo "*** Adding Storage backend $storageBackend"
+
+        $newBackends["StaticStorage"] += $storageBackend
+      }
+
+      # Loop through backend pools
+      foreach($pool in $backendPools)
+      {
+        $queryOptionEnabledOnly = ""
+        if($removeDisabledBackends)
+        {
+          $queryOptionEnabledOnly = "?enabledState=='Enabled'" # If the switch to remove disabled backends is true, we only fetch the currently enabled ones and thereby not re-adding the disabled ones
+        }
+
+        # Fetch existing backends in the pool from Front Door. We need the attributes "address", "weight" and "enabledState"
+        $backends = $(az network front-door backend-pool backend list `
+                        --front-door-name $fdName `
+                        --pool-name $pool `
+                        --resource-group $rgName `
+                        --query "[$queryOptionEnabledOnly].{address:address,weight:weight,enabled:enabledState}")
+
+        if($LastExitCode -ne 0)
+        {
+            throw "*** Error on fetching existing backends from Front Door $fdName for pool $pool"
+        }
+
+        $jsonBackends = $backends | ConvertFrom-Json -NoEnumerate
+
+        foreach($backend in $jsonBackends)
+        {
+          if(($newBackends[$pool] | Select-Object "address") -match $backend.address) # This is the case if the backend was already added from the Terraform output above
+          {
+            echo "*** Skipping backend $($backend.address) since it is already in the list"
+          }
+          else
+          {
+            if($backend.address -like "*.example.com") # In the Front Door Terraform template we use example.com for the very first creation of Front Door when we have no backends yet
+            {
+              echo "*** Ignoring dummy backend $($backend.address)"
+            }
+            else
+            {
+              $backend.weight = $oldBackendsWeight # set weight of existing (previous release) to what was calculated above
+
+              # Rewrite EnabledState into bool (true/false) for terraform input
+              if($backend.enabled -eq "Enabled")
+              {
+                $backend.enabled = $oldBackendsEnabled
+              }
+              else
+              {
+                $backend.enabled = "false"
+              }
+              $newBackends[$pool] += $backend
+            }
+          }
+        }
+        # Convert the list back to JSON (in a one-liner) so we can use it as Terraform input
+        $flatJsonApis = $newBackends[$pool] | ConvertTo-Json -Compress -Depth 100 -AsArray
+        echo "*** New backends to set for pool '$($pool)': " $flatJsonApis
+
+        $content = "-var='backends_$pool=$flatJsonApis'"
+
+        echo "##vso[task.setvariable variable=tfParameterFrontDoor$pool]$content"
+      }
+
+# Global Resources deployment which will apply the new backend config to Front Door
+- template: steps-terraform-apply.yaml # terraform validate, plan and apply for global resources
+  parameters:
+    jobName:                    'GlobalInfra'
+    terraformWorkingDirectory:  '$(workingDirectory)/globalresources'
+    customPrefix:               '$(prefix)$(globalSuffix)'      # custom resource prefix
+    customAttributes: '-var=branch="$(sourceBranch)"
+                       -var=queued_by="$(Build.QueuedBy)"
+                       -var=contact_email="$(contactEmail)"
+                       -var=''stamps=$(stampLocations)''
+                       $(tfParameterFrontDoorBackendApis)
+                       $(tfParameterFrontDoorStaticStorage)
+                       $(terraformAdditionalParametersCustomDomains)'
+
+# After new backends have been added to Front Door, we purge the cache so that content will be retrieved from the new backends as well
+- task: AzureCLI@2
+  displayName: 'Purge Front Door cache'
+  inputs:
+    azureSubscription: $(azureServiceConnection)
+    scriptType: pscore
+    scriptLocation: inlineScript
+    inlineScript: |
+      # We need the az CLI Front Door extension
+      az extension add --name front-door
+
+      $globalInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputGlobalInfra/*.json | Get-Content | ConvertFrom-JSON
+
+      $rgName = $globalInfraDeployOutput.global_resource_group_name.value
+      $fdName = $globalInfraDeployOutput.frontdoor_name.value
+
+      echo "*** Purging Front Door cache with path /*"
+      az network front-door purge-endpoint -g $rgName -n $fdName --content-paths "/*"

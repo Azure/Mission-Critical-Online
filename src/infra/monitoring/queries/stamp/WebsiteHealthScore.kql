@@ -1,0 +1,9 @@
+// This is the aggregate score for the whole website.
+AddCommentUserFlowHealthScore()
+| union ListCatalogItemsUserFlowHealthScore()
+| union ShowStaticContentUserFlowHealthScore()
+| summarize YellowScore = max(YellowScore), RedScore = max(RedScore) by bin(TimeGenerated, 2m)
+| extend HealthScore = 1 - (YellowScore * 0.25) - (RedScore * 0.5)
+| extend HealthScore = iff(isnull(HealthScore), 1.0, HealthScore) // For now, we assume no data means healthy. In a high volume scenario, this may mean the opposite.
+| order by TimeGenerated desc
+| extend ComponentName = "Website", Dependencies = "AddCommentUserFlow,ShowStaticContentUserFlow,ListCatalogItemsUserFlow"

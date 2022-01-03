@@ -1,0 +1,44 @@
+# Central configuration and versioning settings
+# used for all pipelines
+variables:
+- name: 'terraformVersion'    # Terraform Version
+  value: '1.0.11'
+- name: 'kubernetesVersion'   # kubernetes version used for aks clusters
+  value: '1.21.2'
+- name: 'helmVersion'         # helm package manager version
+  value: 'v3.7.2'
+- name: 'ingressNginxVersion' # nginx ingress controller helm chart version
+  value: '4.0.6'
+- name: 'certManagerVersion'  # cert-manager helm chart version
+  value: 'v1.5.4'
+- name: 'dotnetSdkVersion'
+  value: '6.0.100'
+
+- name: 'workloadNamespace'   # K8s namespace for workload deployment
+  value: 'workload'
+- name: 'chaosTestingNamespace'   # K8s namespace for chaos testing deployment
+  value: 'chaos-testing'
+- name: 'chaosStudioLocation'
+  value: 'uksouth'
+- name: 'chaosStudioApiVersion'
+  value: '2021-08-11-preview'
+
+# Docker image names and paths to the Dockerfiles for the different components
+- name: 'catalogserviceDockerfile'
+  value: 'AlwaysOn.CatalogService/Dockerfile'
+- name: 'catalogserviceImageName'
+  value: 'alwayson/catalogservice'
+- name: 'backgroundprocessorDockerfile'
+  value: 'AlwaysOn.BackgroundProcessor/Dockerfile'
+- name: 'backgroundprocessorImageName'
+  value: 'alwayson/backgroundprocessor'
+- name: 'healthserviceDockerfile'
+  value: 'AlwaysOn.HealthService/Dockerfile'
+- name: 'healthserviceImageName'
+  value: 'alwayson/healthservice'
+
+# Others
+- name: 'smokeTestRetryCount' # How many times a request in the smoke tests is retried before declared as failed (retries HTTP response codes from 400-599 as well as issues like certificate errors)
+  value: '20'
+- name: 'smokeTestRetryWaitSeconds' # How long to wait between each retry of the smoke tests
+  value: '60'

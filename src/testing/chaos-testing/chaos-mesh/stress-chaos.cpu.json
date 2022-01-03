@@ -1,0 +1,1 @@
+{"mode":"one","value":"","selector":{"namespaces":["workload","kube-node-lease","kube-public","kube-system"]},"stressors":{"cpu":{"workers":1,"load":100}},"duration":"60s","scheduler":{"cron":"@every 5m"}}

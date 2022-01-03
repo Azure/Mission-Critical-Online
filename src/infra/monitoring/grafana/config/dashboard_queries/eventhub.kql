@@ -1,0 +1,14 @@
+// This queries the number of incoming and outgoing messages on the Event Hub, as well as the EventHubLag metric as it gets recorded by the BackgroundProcessor
+let eventHubLag=
+AppMetrics
+| where $__timeFilter(TimeGenerated)
+| where Name == "EventHubLag"
+| summarize EventHubLag=toint(avg(Max)) by bin(TimeGenerated, 1m);
+AzureMetrics
+| where ResourceProvider == "MICROSOFT.EVENTHUB"
+| where $__timeFilter(TimeGenerated)
+| summarize IncomingMessages=avgif(Total, MetricName=="IncomingMessages"), OutgoingMessages=avgif(Total, MetricName =="OutgoingMessages") by bin(TimeGenerated, 1m)
+| join kind=leftouter eventHubLag on TimeGenerated
+| project TimeGenerated, IncomingMessages, OutgoingMessages, EventHubLag
+| where isnan(IncomingMessages) == false and isnan(OutgoingMessages) == false
+| order by TimeGenerated asc

@@ -1,0 +1,7 @@
+// HTTP requests against the CatalogService
+AppRequests
+| where $__timeFilter(TimeGenerated)
+| where AppRoleInstance startswith "catalogservice"
+| where OperationName != "GET /health/liveness" 
+| summarize RequestCount=count(), AvgDuration=avg(DurationMs) by bin(TimeGenerated, 1m)
+| order by TimeGenerated asc

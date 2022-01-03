@@ -1,0 +1,8 @@
+azure:
+  keyVaultName:             ""        # Name of the Key Vault
+  tenantId:                 ""        # GUID of the tenant which holds the Key Vault
+  managedIdentityClientId:  ""        # Client ID of the AKS Kubelet identity
+
+kvSecrets:
+- "MySecret-1"
+- "MySecret-2"

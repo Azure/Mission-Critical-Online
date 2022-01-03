@@ -1,0 +1,56 @@
+name: '$(BuildDefinitionName).$(DayOfYear)$(Rev:.r)'
+
+trigger: none
+
+pr: none
+
+pool:
+  vmImage: 'ubuntu-20.04'
+  #name: 'prod-private-agents' # (optional) self-hosted agentpool. Change this to switch between the Public and Private version of AlwaysOn
+
+variables:
+- name:  'environment' # set the environment name as variable
+  value: 'prod'
+
+- template: config/configuration.yaml # contains version numbers and global configuration settings
+- name:  'workingDirectory'    # Terraform root working directory
+  value: 'src/infra/workload'
+- name:  'azureServiceConnection' # environment specific service connection
+  value: 'alwayson-${{ variables.environment }}-serviceconnection'
+
+- template: config/variables-values-${{ variables.environment }}.yaml # contains environment-specific values (non-secret)
+
+- name: 'terraformAdditionalParametersCustomDomains'
+  ${{ if ne(variables.envDomainName, '') }}:
+    value: '-var custom_dns_zone_resourcegroup_name=$(envDnsZoneRG) -var custom_fqdn=www.$(envDomainName)'
+  ${{ else }}:
+    value: ''
+
+stages:
+
+- stage: checkreleasebranchstage
+  displayName: 'Check Release Branch'
+  jobs:
+  - job: checkreleasebranchjob
+    displayName: 'Check Release Branch'
+    steps:
+
+    - task: PowerShell@2
+      displayName: 'Verify that pipeline is running on a release/* branch'
+      inputs:
+        targetType: inline
+        script: |
+          echo "*** DEBUG: Build.SourceBranch: $(Build.SourceBranch)"
+          $sourceBranch = $("$(Build.SourceBranch)" -replace "refs/heads/", "")
+          if($sourceBranch -notlike "release/*")
+          {
+            throw "*** PROD Release pipeline must only be executed on a release/* branch!"
+          }
+
+- template: templates/stages-full-release.yaml
+  parameters:
+    environment: '${{ variables.environment }}'
+    trafficSwitchSteps:
+    - 10
+    - 50
+    - 100

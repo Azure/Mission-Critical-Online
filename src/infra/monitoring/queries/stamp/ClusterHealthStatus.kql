@@ -1,0 +1,78 @@
+// Return the health status of the cluster. 
+let _ResourceType = "CONTAINERSERVICE/MANAGEDCLUSTERS"; // Azure resource type to filter on
+let _Interval = 2d;
+let Thresholds=datatable(MetricName: string, YellowThreshold: double, RedThreshold: double) [
+    // Network errors in:
+    "err_in", 0, 5,
+    // Network errors out:
+    "err_out", 0, 5,
+    // Average node cpu usage %:
+    "node_cpu_usage_percentage", 60, 90,
+    // Average node disk usage %:
+    "node_disk_usage_percentage", 60, 80,
+    // Average node memory usage %:
+    "node_memory_rss_percentage", 60, 80,
+    // Percentage of how much did the HPA scaled out deployments to their maximum setting
+    "autoscaled_percentage", 60, 90,
+    "pod_restart_count", 1, 5,
+    "pod_avg_cpu_utilization", 80, 90,
+    ];
+//
+let podCpuLimits=
+Perf
+| where ObjectName == 'K8SContainer'
+| where CounterName == "cpuLimitNanoCores"
+| extend PodName = extract("^.+/(.+)$", 1, InstanceName)
+| take 100
+| summarize cpuLimit=max(CounterValue) by PodName;
+InsightsMetrics
+| where TimeGenerated > ago(_Interval)
+| project-rename MetricName=Name
+| lookup kind=inner Thresholds on MetricName
+| extend NodeName = extract("([a-z0-9-]*)(-)([a-z0-9]*)$", 3, Computer) // Add a column for the name of the cluster node
+| project TimeGenerated, NodeName, MetricName, Value=Val
+| union (
+    AzureMetrics
+    | where TimeGenerated > ago(_Interval)
+    | where extract("(PROVIDERS/MICROSOFT.)([A-Z]*/[A-Z]*)", 2, ResourceId) == _ResourceType
+    | project TimeGenerated, MetricName, Value=Average
+    | lookup kind=inner Thresholds on MetricName
+    )
+| union (
+    // Query HPA auto scaling to see if we are getting close to the max scale out settings
+    InsightsMetrics
+    | where TimeGenerated > ago(_Interval)
+    | where Name == "kube_hpa_status_current_replicas"
+    | extend TagsDynamic = parse_json(Tags)
+    | extend Service = extract("(.+)-autoscaler", 1, tostring(TagsDynamic['hpa']))
+    | where Service == "catalogservice" or Service == "backgroundprocessor"
+    | extend maxReplica = TagsDynamic['spec_max_replicas']
+    | extend PercentageAutoscaled = Val / maxReplica * 100
+    | project TimeGenerated, Service, Value=PercentageAutoscaled, currentReplicas=strcat(toint(Val)," / ", maxReplica), MetricName="autoscaled_percentage"
+    | lookup kind=inner Thresholds on MetricName
+)
+| union (
+    // Count number of pod restarts per service
+    KubePodInventory
+    | where TimeGenerated > ago(_Interval)
+    | where Namespace == "workload"
+    | extend Service = extract("(.+)-deploy.", 1, ControllerName)
+    | summarize Value=toreal(sum(PodRestartCount)) by TimeGenerated, Service, MetricName="pod_restart_count"
+    | lookup kind=inner Thresholds on MetricName
+)
+| union (
+    Perf
+    | where TimeGenerated > ago(_Interval)
+    | where ObjectName == 'K8SContainer'
+    | where InstanceName endswith "catalogservice" or InstanceName endswith "backgroundprocessor"
+    | extend Service= extract("^.+/(.+)$", 1, InstanceName)
+    | where CounterName == "cpuUsageNanoCores" //or CounterName == "cpuLimitNanoCores"
+    | summarize Value=avg(CounterValue) by bin(TimeGenerated, 1m), Service
+    | lookup kind = inner podCpuLimits on $left.Service == $right.PodName
+    | extend Value=Value / cpuLimit * 100, MetricName="pod_avg_cpu_utilization"
+    | project-away cpuLimit
+    | lookup kind=inner Thresholds on MetricName
+)
+| extend IsYellow = iff(Value > YellowThreshold and Value < RedThreshold, 1, 0)
+| extend IsRed = iff(Value > RedThreshold, 1, 0)
+| union (datatable(IsYellow: long, IsRed: long)[0, 0]) // Needed to ensure there is at least one result row to parse in the dashboard

@@ -1,0 +1,2057 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": 1,
+  "iteration": 1638785145194,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": null,
+      "gridPos": {
+        "h": 2,
+        "w": 20,
+        "x": 0,
+        "y": 0
+      },
+      "id": 6,
+      "options": {
+        "content": "<center><h1>Global Resources</h1></center>",
+        "mode": "html"
+      },
+      "pluginVersion": "8.2.3",
+      "targets": [
+        {
+          "appInsights": {
+            "dimension": [],
+            "metricName": "select",
+            "timeGrain": "auto"
+          },
+          "azureLogAnalytics": {
+            "query": "//change this example to create your own time series query\n<table name>                                                              //the table to query (e.g. Usage, Heartbeat, Perf)\n| where $__timeFilter(TimeGenerated)                                      //this is a macro used to show the full chart’s time range, choose the datetime column here\n| summarize count() by <group by column>, bin(TimeGenerated, $__interval) //change “group by column” to a column in your table, such as “Computer”. The $__interval macro is used to auto-select the time grain. Can also use 1h, 5m etc.\n| order by TimeGenerated asc",
+            "resultFormat": "time_series",
+            "workspace": ""
+          },
+          "azureMonitor": {
+            "aggOptions": [],
+            "dimensionFilter": "*",
+            "dimensionFilters": [],
+            "timeGrain": "auto",
+            "timeGrains": [],
+            "top": "10"
+          },
+          "azureResourceGraph": {
+            "resultFormat": "table"
+          },
+          "insightsAnalytics": {
+            "query": "",
+            "resultFormat": "time_series"
+          },
+          "queryType": "Azure Monitor",
+          "refId": "A",
+          "subscription": "",
+          "subscriptions": []
+        }
+      ],
+      "type": "text"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 9,
+        "x": 0,
+        "y": 2
+      },
+      "id": 14,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "appInsights": {
+            "dimension": [],
+            "metricName": "select",
+            "timeGrain": "auto"
+          },
+          "azureLogAnalytics": {
+            "query": "{{frontDoor_Requests.kql}}",
+            "resource": "$GlobalDataSource",
+            "resultFormat": "time_series",
+            "workspace": ""
+          },
+          "azureMonitor": {
+            "aggOptions": [],
+            "dimensionFilter": "*",
+            "dimensionFilters": [],
+            "timeGrain": "auto",
+            "timeGrains": [],
+            "top": "10"
+          },
+          "azureResourceGraph": {
+            "resultFormat": "table"
+          },
+          "insightsAnalytics": {
+            "query": "",
+            "resultFormat": "time_series"
+          },
+          "queryType": "Azure Log Analytics",
+          "refId": "A",
+          "subscription": "",
+          "subscriptions": []
+        }
+      ],
+      "title": "Frontdoor RequestCount",
+      "type": "timeseries"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 11,
+        "x": 9,
+        "y": 2
+      },
+      "id": 32,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "appInsights": {
+            "dimension": [],
+            "metricName": "select",
+            "timeGrain": "auto"
+          },
+          "azureLogAnalytics": {
+            "query": "{{frontDoor_BackendRequests.kql}}",
+            "resource": "$GlobalDataSource",
+            "resultFormat": "time_series",
+            "workspace": ""
+          },
+          "azureMonitor": {
+            "aggOptions": [],
+            "dimensionFilter": "*",
+            "dimensionFilters": [],
+            "timeGrain": "auto",
+            "timeGrains": [],
+            "top": "10"
+          },
+          "azureResourceGraph": {
+            "resultFormat": "table"
+          },
+          "insightsAnalytics": {
+            "query": "",
+            "resultFormat": "time_series"
+          },
+          "queryType": "Azure Log Analytics",
+          "refId": "A",
+          "subscription": "",
+          "subscriptions": []
+        }
+      ],
+      "title": "Frontdoor Backend RequestCount",
+      "type": "timeseries"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 1,
+            "pointSize": 7,
+            "scaleDistribution": {
+              "log": 10,
+              "type": "log"
+            },
+            "showPoints": "auto",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 9,
+        "x": 0,
+        "y": 8
+      },
+      "id": 8,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "appInsights": {
+            "dimension": [],
+            "metricName": "select",
+            "timeGrain": "auto"
+          },
+          "azureLogAnalytics": {
+            "query": "{{cosmosdb.kql}}",
+            "resource": "$GlobalDataSource",
+            "resultFormat": "time_series",
+            "workspace": ""
+          },
+          "azureMonitor": {
+            "aggOptions": [],
+            "dimensionFilter": "*",
+            "dimensionFilters": [],
+            "timeGrain": "auto",
+            "timeGrains": [],
+            "top": "10"
+          },
+          "azureResourceGraph": {
+            "resultFormat": "table"
+          },
+          "insightsAnalytics": {
+            "query": "",
+            "resultFormat": "time_series"
+          },
+          "queryType": "Azure Log Analytics",
+          "refId": "A",
+          "subscription": "",
+          "subscriptions": []
+        }
+      ],
+      "title": "CosmosDB Resource Utilization",
+      "type": "timeseries"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Location"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 75
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Title"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 630
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "EventLevel"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 125
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 11,
+        "x": 9,
+        "y": 8
+      },
+      "id": 23,
+      "options": {
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "ImpactStartTime"
+          }
+        ]
+      },
+      "pluginVersion": "8.2.3",
+      "targets": [
+        {
+          "appInsights": {
+            "dimension": [],
+            "metricName": "select",
+            "timeGrain": "auto"
+          },
+          "azureLogAnalytics": {
+            "query": "//change this example to create your own time series query\n<table name>                                                              //the table to query (e.g. Usage, Heartbeat, Perf)\n| where $__timeFilter(TimeGenerated)                                      //this is a macro used to show the full chart’s time range, choose the datetime column here\n| summarize count() by <group by column>, bin(TimeGenerated, $__interval) //change “group by column” to a column in your table, such as “Computer”. The $__interval macro is used to auto-select the time grain. Can also use 1h, 5m etc.\n| order by TimeGenerated asc",
+            "resultFormat": "time_series",
+            "workspace": ""
+          },
+          "azureMonitor": {
+            "aggOptions": [],
+            "dimensionFilter": "*",
+            "dimensionFilters": [],
+            "timeGrain": "auto",
+            "timeGrains": [],
+            "top": "10"
+          },
+          "azureResourceGraph": {
+            "query": "{{serviceHealthEvents.kql}}",
+            "resultFormat": "table"
+          },
+          "insightsAnalytics": {
+            "query": "",
+            "resultFormat": "time_series"
+          },
+          "queryType": "Azure Resource Graph",
+          "refId": "A",
+          "subscription": "",
+          "subscriptions": []
+        }
+      ],
+      "title": "Active Service Health Incidents",
+      "type": "table"
+    },
+    {
+      "datasource": null,
+      "gridPos": {
+        "h": 2,
+        "w": 20,
+        "x": 0,
+        "y": 14
+      },
+      "id": 12,
+      "options": {
+        "content": "# ",
+        "mode": "markdown"
+      },
+      "pluginVersion": "8.2.3",
+      "targets": [
+        {
+          "appInsights": {
+            "dimension": [],
+            "metricName": "select",
+            "timeGrain": "auto"
+          },
+          "azureLogAnalytics": {
+            "query": "//change this example to create your own time series query\n<table name>                                                              //the table to query (e.g. Usage, Heartbeat, Perf)\n| where $__timeFilter(TimeGenerated)                                      //this is a macro used to show the full chart’s time range, choose the datetime column here\n| summarize count() by <group by column>, bin(TimeGenerated, $__interval) //change “group by column” to a column in your table, such as “Computer”. The $__interval macro is used to auto-select the time grain. Can also use 1h, 5m etc.\n| order by TimeGenerated asc",
+            "resultFormat": "time_series",
+            "workspace": ""
+          },
+          "azureMonitor": {
+            "aggOptions": [],
+            "dimensionFilter": "*",
+            "dimensionFilters": [],
+            "timeGrain": "auto",
+            "timeGrains": [],
+            "top": "10"
+          },
+          "azureResourceGraph": {
+            "resultFormat": "table"
+          },
+          "insightsAnalytics": {
+            "query": "",
+            "resultFormat": "time_series"
+          },
+          "queryType": "Azure Monitor",
+          "refId": "A",
+          "subscription": "",
+          "subscriptions": []
+        }
+      ],
+      "type": "text"
+    },
+    {
+      "datasource": null,
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 10,
+        "x": 0,
+        "y": 16
+      },
+      "id": 15,
+      "interval": "60m",
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "/^LocationString$/",
+          "values": false
+        },
+        "text": {
+          "titleSize": 1
+        },
+        "textMode": "value"
+      },
+      "pluginVersion": "8.2.3",
+      "targets": [
+        {
+          "appInsights": {
+            "dimension": [],
+            "metricName": "select",
+            "timeGrain": "auto"
+          },
+          "azureLogAnalytics": {
+            "query": "{{stampname.kql}}",
+            "resource": "$StampADataSource",
+            "resultFormat": "time_series",
+            "workspace": ""
+          },
+          "azureMonitor": {
+            "aggOptions": [],
+            "dimensionFilter": "*",
+            "dimensionFilters": [],
+            "timeGrain": "auto",
+            "timeGrains": [],
+            "top": "10"
+          },
+          "azureResourceGraph": {
+            "resultFormat": "table"
+          },
+          "insightsAnalytics": {
+            "query": "",
+            "resultFormat": "time_series"
+          },
+          "queryType": "Azure Log Analytics",
+          "refId": "A",
+          "subscription": "",
+          "subscriptions": []
+        }
+      ],
+      "type": "stat"
+    },
+    {
+      "datasource": null,
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 10,
+        "x": 10,
+        "y": 16
+      },
+      "id": 16,
+      "interval": "60m",
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "/^LocationString$/",
+          "values": false
+        },
+        "text": {
+          "titleSize": 1
+        },
+        "textMode": "value"
+      },
+      "pluginVersion": "8.2.3",
+      "targets": [
+        {
+          "appInsights": {
+            "dimension": [],
+            "metricName": "select",
+            "timeGrain": "auto"
+          },
+          "azureLogAnalytics": {
+            "query": "{{stampname.kql}}",
+            "resource": "$StampBDataSource",
+            "resultFormat": "time_series",
+            "workspace": ""
+          },
+          "azureMonitor": {
+            "aggOptions": [],
+            "dimensionFilter": "*",
+            "dimensionFilters": [],
+            "timeGrain": "auto",
+            "timeGrains": [],
+            "top": "10"
+          },
+          "azureResourceGraph": {
+            "resultFormat": "table"
+          },
+          "insightsAnalytics": {
+            "query": "",
+            "resultFormat": "time_series"
+          },
+          "queryType": "Azure Log Analytics",
+          "refId": "A",
+          "subscription": "",
+          "subscriptions": []
+        }
+      ],
+      "type": "stat"
+    },
+    {
+      "datasource": null,
+      "gridPos": {
+        "h": 12,
+        "w": 10,
+        "x": 0,
+        "y": 19
+      },
+      "id": 2,
+      "links": [],
+      "options": {
+        "redThreshold": "0.5",
+        "yellowThreshold": "0.75"
+      },
+      "targets": [
+        {
+          "appInsights": {
+            "dimension": [],
+            "metricName": "select",
+            "timeGrain": "auto"
+          },
+          "azureLogAnalytics": {
+            "query": "{{healthmodel.kql}}",
+            "resource": "$StampADataSource",
+            "resultFormat": "time_series",
+            "workspace": ""
+          },
+          "azureMonitor": {
+            "aggOptions": [],
+            "dimensionFilter": "*",
+            "dimensionFilters": [],
+            "timeGrain": "auto",
+            "timeGrains": [],
+            "top": "10"
+          },
+          "azureResourceGraph": {
+            "resultFormat": "table"
+          },
+          "hide": false,
+          "insightsAnalytics": {
+            "query": "",
+            "resultFormat": "time_series"
+          },
+          "queryType": "Azure Log Analytics",
+          "refId": "A",
+          "subscription": "",
+          "subscriptions": []
+        },
+        {
+          "appInsights": {
+            "dimension": [],
+            "metricName": "select",
+            "timeGrain": "auto"
+          },
+          "azureLogAnalytics": {
+            "query": "WebsiteHealthScore\n| union AddCommentUserFlowHealthScore\n| union GetPlayerStatsUserFlowHealthScore\n| union ShowStaticContentUserFlowHealthScore\n| union PublicBlobStorageHealthScore\n| union KeyvaultHealthScore\n| union CatalogServiceHealthScore\n| union BackgroundProcessorHealthScore\n| union ClusterHealthScore \n| summarize arg_max(TimeGenerated, *) by ComponentName,Dependencies\n| project-away TimeGenerated\n| mv-expand Dependencies = split(Dependencies, \",\") to typeof(string)\n| project id=strcat(ComponentName,Dependencies), source=ComponentName, target=Dependencies\n| where target != \"\"",
+            "resource": "$StampADataSource",
+            "resultFormat": "time_series",
+            "workspace": ""
+          },
+          "azureMonitor": {
+            "aggOptions": [],
+            "dimensionFilter": "*",
+            "dimensionFilters": [],
+            "timeGrain": "auto",
+            "timeGrains": [],
+            "top": "10"
+          },
+          "azureResourceGraph": {
+            "resultFormat": "table"
+          },
+          "hide": false,
+          "insightsAnalytics": {
+            "query": "",
+            "resultFormat": "time_series"
+          },
+          "queryType": "Azure Log Analytics",
+          "refId": "B",
+          "subscription": "",
+          "subscriptions": []
+        }
+      ],
+      "title": "Solution Health Model",
+      "type": "alwayson-healthmodelpanel"
+    },
+    {
+      "datasource": null,
+      "gridPos": {
+        "h": 12,
+        "w": 10,
+        "x": 10,
+        "y": 19
+      },
+      "id": 17,
+      "links": [],
+      "options": {
+        "redThreshold": "0.5",
+        "yellowThreshold": "0.75"
+      },
+      "targets": [
+        {
+          "appInsights": {
+            "dimension": [],
+            "metricName": "select",
+            "timeGrain": "auto"
+          },
+          "azureLogAnalytics": {
+            "query": "{{healthmodel.kql}}",
+            "resource": "$StampBDataSource",
+            "resultFormat": "time_series",
+            "workspace": ""
+          },
+          "azureMonitor": {
+            "aggOptions": [],
+            "dimensionFilter": "*",
+            "dimensionFilters": [],
+            "timeGrain": "auto",
+            "timeGrains": [],
+            "top": "10"
+          },
+          "azureResourceGraph": {
+            "resultFormat": "table"
+          },
+          "insightsAnalytics": {
+            "query": "",
+            "resultFormat": "time_series"
+          },
+          "queryType": "Azure Log Analytics",
+          "refId": "A",
+          "subscription": "",
+          "subscriptions": []
+        }
+      ],
+      "title": "Solution Health Model",
+      "type": "alwayson-healthmodelpanel"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "points",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "log": 2,
+              "type": "log"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "AvgDuration"
+            },
+            "properties": [
+              {
+                "id": "custom.axisPlacement",
+                "value": "right"
+              },
+              {
+                "id": "unit",
+                "value": "ms"
+              },
+              {
+                "id": "max",
+                "value": 512
+              },
+              {
+                "id": "min",
+                "value": 1
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 5,
+        "x": 0,
+        "y": 31
+      },
+      "id": 4,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "appInsights": {
+            "dimension": [],
+            "metricName": "select",
+            "timeGrain": "auto"
+          },
+          "azureLogAnalytics": {
+            "query": "{{httpRequests.kql}}",
+            "resource": "$StampADataSource",
+            "resultFormat": "time_series",
+            "workspace": ""
+          },
+          "azureMonitor": {
+            "aggOptions": [],
+            "dimensionFilter": "*",
+            "dimensionFilters": [],
+            "timeGrain": "auto",
+            "timeGrains": [],
+            "top": "10"
+          },
+          "azureResourceGraph": {
+            "resultFormat": "table"
+          },
+          "insightsAnalytics": {
+            "query": "",
+            "resultFormat": "time_series"
+          },
+          "queryType": "Azure Log Analytics",
+          "refId": "A",
+          "subscription": "",
+          "subscriptions": []
+        }
+      ],
+      "title": "Incoming HTTP Requests",
+      "type": "timeseries"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "QueueDepth"
+            },
+            "properties": [
+              {
+                "id": "custom.lineWidth",
+                "value": 3
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "OutgoingMessages"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "purple",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 5,
+        "x": 5,
+        "y": 31
+      },
+      "id": 20,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "appInsights": {
+            "dimension": [],
+            "metricName": "select",
+            "timeGrain": "auto"
+          },
+          "azureLogAnalytics": {
+            "query": "{{eventhub.kql}}",
+            "resource": "$StampADataSource",
+            "resultFormat": "time_series",
+            "workspace": ""
+          },
+          "azureMonitor": {
+            "aggOptions": [],
+            "dimensionFilter": "*",
+            "dimensionFilters": [],
+            "timeGrain": "auto",
+            "timeGrains": [],
+            "top": "10"
+          },
+          "azureResourceGraph": {
+            "resultFormat": "table"
+          },
+          "insightsAnalytics": {
+            "query": "",
+            "resultFormat": "time_series"
+          },
+          "queryType": "Azure Log Analytics",
+          "refId": "A",
+          "subscription": "",
+          "subscriptions": []
+        }
+      ],
+      "title": "EventHub Messages",
+      "type": "timeseries"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "points",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "log": 2,
+              "type": "log"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "AvgDuration"
+            },
+            "properties": [
+              {
+                "id": "custom.axisPlacement",
+                "value": "right"
+              },
+              {
+                "id": "unit",
+                "value": "ms"
+              },
+              {
+                "id": "max",
+                "value": 512
+              },
+              {
+                "id": "min",
+                "value": 1
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 5,
+        "x": 10,
+        "y": 31
+      },
+      "id": 18,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "appInsights": {
+            "dimension": [],
+            "metricName": "select",
+            "timeGrain": "auto"
+          },
+          "azureLogAnalytics": {
+            "query": "{{httpRequests.kql}}",
+            "resource": "$StampBDataSource",
+            "resultFormat": "time_series",
+            "workspace": ""
+          },
+          "azureMonitor": {
+            "aggOptions": [],
+            "dimensionFilter": "*",
+            "dimensionFilters": [],
+            "timeGrain": "auto",
+            "timeGrains": [],
+            "top": "10"
+          },
+          "azureResourceGraph": {
+            "resultFormat": "table"
+          },
+          "insightsAnalytics": {
+            "query": "",
+            "resultFormat": "time_series"
+          },
+          "queryType": "Azure Log Analytics",
+          "refId": "A",
+          "subscription": "",
+          "subscriptions": []
+        }
+      ],
+      "title": "Incoming HTTP Requests",
+      "type": "timeseries"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "QueueDepth"
+            },
+            "properties": [
+              {
+                "id": "custom.lineWidth",
+                "value": 3
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "OutgoingMessages"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "purple",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "__systemRef": "hideSeriesFrom",
+            "matcher": {
+              "id": "byNames",
+              "options": {
+                "mode": "exclude",
+                "names": [
+                  "OutgoingMessages"
+                ],
+                "prefix": "All except:",
+                "readOnly": true
+              }
+            },
+            "properties": [
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": true
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 5,
+        "x": 15,
+        "y": 31
+      },
+      "id": 21,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "appInsights": {
+            "dimension": [],
+            "metricName": "select",
+            "timeGrain": "auto"
+          },
+          "azureLogAnalytics": {
+            "query": "{{eventhub.kql}}",
+            "resource": "$StampBDataSource",
+            "resultFormat": "time_series",
+            "workspace": ""
+          },
+          "azureMonitor": {
+            "aggOptions": [],
+            "dimensionFilter": "*",
+            "dimensionFilters": [],
+            "timeGrain": "auto",
+            "timeGrains": [],
+            "top": "10"
+          },
+          "azureResourceGraph": {
+            "resultFormat": "table"
+          },
+          "insightsAnalytics": {
+            "query": "",
+            "resultFormat": "time_series"
+          },
+          "queryType": "Azure Log Analytics",
+          "refId": "A",
+          "subscription": "",
+          "subscriptions": []
+        }
+      ],
+      "title": "EventHub Messages",
+      "type": "timeseries"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "fillOpacity": 100,
+            "lineWidth": 5
+          },
+          "mappings": [],
+          "max": 1,
+          "min": 0,
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 0.75
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 10,
+        "x": 0,
+        "y": 39
+      },
+      "id": 26,
+      "options": {
+        "alignValue": "left",
+        "legend": {
+          "displayMode": "hidden",
+          "placement": "bottom"
+        },
+        "mergeValues": true,
+        "rowHeight": 1,
+        "showValue": "never",
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "pluginVersion": "8.1.2",
+      "targets": [
+        {
+          "appInsights": {
+            "dimension": [],
+            "metricName": "select",
+            "timeGrain": "auto"
+          },
+          "azureLogAnalytics": {
+            "query": "{{healthScoreOverTime.kql}}",
+            "resource": "$StampADataSource",
+            "resultFormat": "time_series",
+            "workspace": ""
+          },
+          "azureMonitor": {
+            "aggOptions": [],
+            "dimensionFilter": "*",
+            "dimensionFilters": [],
+            "timeGrain": "auto",
+            "timeGrains": [],
+            "top": "10"
+          },
+          "azureResourceGraph": {
+            "resultFormat": "table"
+          },
+          "insightsAnalytics": {
+            "query": "",
+            "resultFormat": "time_series"
+          },
+          "queryType": "Azure Log Analytics",
+          "refId": "A",
+          "subscription": "",
+          "subscriptions": []
+        }
+      ],
+      "title": "Health status over time",
+      "type": "state-timeline"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "fillOpacity": 100,
+            "lineWidth": 5
+          },
+          "mappings": [],
+          "max": 1,
+          "min": 0,
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 0.75
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 10,
+        "x": 10,
+        "y": 39
+      },
+      "id": 25,
+      "options": {
+        "alignValue": "left",
+        "legend": {
+          "displayMode": "hidden",
+          "placement": "bottom"
+        },
+        "mergeValues": true,
+        "rowHeight": 1,
+        "showValue": "never",
+        "tooltip": {
+          "mode": "none"
+        }
+      },
+      "pluginVersion": "8.1.2",
+      "targets": [
+        {
+          "appInsights": {
+            "dimension": [],
+            "metricName": "select",
+            "timeGrain": "auto"
+          },
+          "azureLogAnalytics": {
+            "query": "{{healthScoreOverTime.kql}}",
+            "resource": "$StampBDataSource",
+            "resultFormat": "time_series",
+            "workspace": ""
+          },
+          "azureMonitor": {
+            "aggOptions": [],
+            "dimensionFilter": "*",
+            "dimensionFilters": [],
+            "timeGrain": "auto",
+            "timeGrains": [],
+            "top": "10"
+          },
+          "azureResourceGraph": {
+            "resultFormat": "table"
+          },
+          "insightsAnalytics": {
+            "query": "",
+            "resultFormat": "time_series"
+          },
+          "queryType": "Azure Log Analytics",
+          "refId": "A",
+          "subscription": "",
+          "subscriptions": []
+        }
+      ],
+      "title": "Health status over time",
+      "type": "state-timeline"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "green",
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto",
+            "filterable": true,
+            "minWidth": 50
+          },
+          "mappings": [
+            {
+              "options": {
+                "red": {
+                  "color": "red",
+                  "index": 1
+                },
+                "yellow": {
+                  "color": "yellow",
+                  "index": 0
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Metric"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 178
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Value"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 68
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Component Name"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 109
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "YellowThreshold"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 122
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "TimeStamp"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 177
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Status"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 100
+              },
+              {
+                "id": "custom.displayMode",
+                "value": "color-background"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 10,
+        "x": 0,
+        "y": 43
+      },
+      "id": 28,
+      "options": {
+        "showHeader": true,
+        "sortBy": []
+      },
+      "pluginVersion": "8.2.3",
+      "targets": [
+        {
+          "appInsights": {
+            "dimension": [],
+            "metricName": "select",
+            "timeGrain": "auto"
+          },
+          "azureLogAnalytics": {
+            "query": "{{metricAnomalies.kql}}",
+            "resource": "$StampADataSource",
+            "resultFormat": "table",
+            "workspace": ""
+          },
+          "azureMonitor": {
+            "aggOptions": [],
+            "dimensionFilter": "*",
+            "dimensionFilters": [],
+            "timeGrain": "auto",
+            "timeGrains": [],
+            "top": "10"
+          },
+          "azureResourceGraph": {
+            "resultFormat": "table"
+          },
+          "insightsAnalytics": {
+            "query": "",
+            "resultFormat": "time_series"
+          },
+          "queryType": "Azure Log Analytics",
+          "refId": "A",
+          "subscription": "",
+          "subscriptions": []
+        }
+      ],
+      "title": "Metric Anomalies",
+      "type": "table"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "green",
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto",
+            "filterable": true,
+            "minWidth": 50
+          },
+          "mappings": [
+            {
+              "options": {
+                "red": {
+                  "color": "red",
+                  "index": 1
+                },
+                "yellow": {
+                  "color": "yellow",
+                  "index": 0
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Metric"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 178
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Value"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 68
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Component Name"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 109
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "YellowThreshold"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 122
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "TimeStamp"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 177
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Status"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 100
+              },
+              {
+                "id": "custom.displayMode",
+                "value": "color-background"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 10,
+        "x": 10,
+        "y": 43
+      },
+      "id": 29,
+      "options": {
+        "showHeader": true,
+        "sortBy": []
+      },
+      "pluginVersion": "8.2.3",
+      "targets": [
+        {
+          "appInsights": {
+            "dimension": [],
+            "metricName": "select",
+            "timeGrain": "auto"
+          },
+          "azureLogAnalytics": {
+            "query": "{{metricAnomalies.kql}}",
+            "resource": "$StampBDataSource",
+            "resultFormat": "table",
+            "workspace": ""
+          },
+          "azureMonitor": {
+            "aggOptions": [],
+            "dimensionFilter": "*",
+            "dimensionFilters": [],
+            "timeGrain": "auto",
+            "timeGrains": [],
+            "top": "10"
+          },
+          "azureResourceGraph": {
+            "resultFormat": "table"
+          },
+          "insightsAnalytics": {
+            "query": "",
+            "resultFormat": "time_series"
+          },
+          "queryType": "Azure Log Analytics",
+          "refId": "A",
+          "subscription": "",
+          "subscriptions": []
+        }
+      ],
+      "title": "Metric Anomalies",
+      "type": "table"
+    }
+  ],
+  "refresh": false,
+  "schemaVersion": 31,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "allValue": null,
+        "current": {
+          "selected": false,
+          "text": "aoint-global-log",
+          "value": ""
+        },
+        "datasource": null,
+        "definition": "workspaces()",
+        "description": null,
+        "error": null,
+        "hide": 0,
+        "includeAll": false,
+        "label": null,
+        "multi": false,
+        "name": "GlobalDataSource",
+        "options": [],
+        "query": "workspaces()",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "allValue": null,
+        "current": {
+          "selected": false,
+          "text": "aoint-northeuro-log",
+          "value": ""
+        },
+        "datasource": null,
+        "definition": "workspaces()",
+        "description": null,
+        "error": null,
+        "hide": 0,
+        "includeAll": false,
+        "label": null,
+        "multi": false,
+        "name": "StampADataSource",
+        "options": [],
+        "query": "workspaces()",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "allValue": null,
+        "current": {
+          "selected": false,
+          "text": "aoint-canadacen-log",
+          "value": ""
+        },
+        "datasource": null,
+        "definition": "workspaces()",
+        "description": null,
+        "error": null,
+        "hide": 0,
+        "includeAll": false,
+        "label": null,
+        "multi": false,
+        "name": "StampBDataSource",
+        "options": [],
+        "query": "workspaces()",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-30m",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Always On - Solution Health"
+}

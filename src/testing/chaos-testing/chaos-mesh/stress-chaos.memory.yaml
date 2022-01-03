@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: burn-memory
+  namespace: chaos-testing
+spec:
+  mode: random-max-percent
+  value: '50'
+  selector:
+    namespaces:
+      - workload
+  stressors:
+    memory:
+      workers: 1
+  duration: '60s'
+  scheduler:
+    cron: '@every 5m'

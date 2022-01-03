@@ -1,0 +1,92 @@
+parameters:
+  testStampEndpoints: true # run tests against stamp endpoints? default to true
+  testGlobalEndpoint: true # run tests against front door? default to true
+
+jobs:
+
+- ${{ if eq(parameters.testStampEndpoints, true) }}:
+  - job: smoketestingStamps
+    displayName: 'Smoke Testing Stamp Endpoints'
+    steps:
+
+    - download: current # download pipeline artifacts
+
+    - task: PowerShell@2
+      displayName: 'Verify individual stamp endpoints'
+      inputs:
+        targetType: 'filePath'
+        filePath: $(System.DefaultWorkingDirectory)/.ado/scripts/SmokeTest.ps1
+        arguments: > # avoid newline characters in multiline string
+          -mode "stamp"
+          -smokeTestRetryCount $(smokeTestRetryCount)
+          -smokeTestRetryWaitSeconds $(smokeTestRetryWaitSeconds)
+
+- ${{ if eq(parameters.testGlobalEndpoint, true) }}:
+  - job: smoketestingGlobalEndpoints
+    displayName: 'Smoke Testing Global Endpoints'
+    steps:
+
+    - download: current # download pipeline artifacts
+
+    - task: AzureCLI@2
+      displayName: 'Verify global Front Foor state configuration'
+      inputs:
+        azureSubscription: $(azureServiceConnection)
+        scriptType: pscore
+        scriptLocation: inlineScript
+        inlineScript: |
+
+          # load json data from downloaded terraform artifact
+          $infraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputGlobalInfra/*.json | Get-Content | ConvertFrom-JSON
+
+          # Print Front Door Deployment details for troubleshooting and debugging purposes
+          $frontdoorResourceId = $infraDeployOutput.frontdoor_resource_id.value # Front Door Resource ID
+          $frontdoorResource = $(az resource show --id $frontdoorResourceId `
+                                  --query '{enabledState:properties.enabledState,provisioningState:properties.provisioningState,resourceState:properties.resourceState}')
+          $frontdoorState = $frontdoorResource | ConvertFrom-Json
+
+          echo "*** Front Door Deployment State ***"
+          echo "***********************************"
+          echo "*** enabledState: $($frontdoorState.enabledState)"
+          echo "*** provisioningState:  $($frontdoorState.provisioningState)"
+          echo "*** resourceState:  $($frontdoorState.resourceState)"
+
+    - task: PowerShell@2
+      displayName: 'Verify global Front Door endpoint'
+      inputs:
+        targetType: 'filePath'
+        filePath: $(System.DefaultWorkingDirectory)/.ado/scripts/SmokeTest.ps1
+        arguments: > # avoid newline characters in multiline string
+          -mode "global"
+          -smokeTestRetryCount $(smokeTestRetryCount)
+          -smokeTestRetryWaitSeconds $(smokeTestRetryWaitSeconds)
+
+
+    - task: PowerShell@2
+      displayName: 'Capture UI screenshots from global endpoint'
+      inputs:
+        targetType: inline
+        script: |
+
+          # load json data from downloaded terraform artifact
+          $infraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputGlobalInfra/*.json | Get-Content | ConvertFrom-JSON
+
+          # Azure Front Door Endpoint URI
+          $frontdoorFqdn = $infraDeployOutput.frontdoor_fqdn.value
+
+          # install Playwright dependencies
+          echo "Installing Playwright dependencies..."
+          npx playwright install-deps chromium
+
+          echo "Taking a screenshot of the UI root - https://$frontDoorFqdn/"
+          npx playwright screenshot --wait-for-timeout=1000 --full-page --browser=chromium "https://$frontDoorFqdn/" screenshots/root.png
+
+          echo "Taking screenshot of the catalog page - https://$frontDoorFqdn/#/catalogitem"
+          npx playwright screenshot --wait-for-timeout=1000 --full-page --browser=chromium "https://$frontDoorFqdn/#/catalogitem" screenshots/catalog.png
+
+          #echo "Taking screenshot of a catalog item - https://$frontDoorFqdn/#/catalog/TODO-CHANGE"
+          #npx playwright screenshot --wait-for-timeout=3000 --full-page --browser=chromium "https://$frontDoorFqdn/#/catalog/TODO-CHANGE" screenshots/catalog-item.png
+
+    - publish:  'screenshots/'
+      artifact: 'uiScreenshots' # artifact name
+      displayName: 'Publish UI screenshots'

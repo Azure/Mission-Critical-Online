@@ -1,0 +1,84 @@
+{
+  "geos": [
+    {
+      "name": "EMEA",
+      "timezone": "UTC+01:00",
+      "enabled":  true,
+      "timeframes": [
+        {
+          "start": "00:00:00",
+          "end": "03:00:00",
+          "numberOfUsers": 0,
+          "transitionTimeMinutes": 40
+        },
+        {
+          "start": "03:00:00",
+          "end": "06:40:00",
+          "numberOfUsers": 50,
+          "transitionTimeMinutes": 80
+        },
+        {
+          "start": "06:40:00",
+          "end": "10:30:00",
+          "numberOfUsers": 120,
+          "transitionTimeMinutes": 40
+        },
+        {
+          "start": "10:30:00",
+          "end": "15:00:00",
+          "numberOfUsers": 220,
+          "transitionTimeMinutes": 30
+        },
+        {
+          "start": "15:00:00",
+          "end": "17:15:00",
+          "numberOfUsers": 500,
+          "transitionTimeMinutes": 60
+        },
+        {
+          "start": "17:15:00",
+          "end": "20:15:00",
+          "numberOfUsers": 750,
+          "transitionTimeMinutes": 60
+        },
+        {
+          "start": "20:15:00",
+          "end": "00:00:00",
+          "numberOfUsers": 250,
+          "transitionTimeMinutes": 90
+        }
+      ]
+    },
+    {
+      "name": "AMERICAS",
+      "timezone": "UTC-07:00",
+      "enabled": false,
+      "timeframes": [
+        {
+          "start": "01:00:00",
+          "end": "08:30:00",
+          "numberOfUsers": 20,
+          "transitionTimeMinutes": 30
+        },
+        {
+          "start": "08:30:00",
+          "end": "12:00:00",
+          "numberOfUsers": 100,
+          "transitionTimeMinutes": 10
+        },
+        {
+          "start": "12:00:00",
+          "end": "20:00:00",
+          "numberOfUsers": 400,
+          "transitionTimeMinutes": 180
+        },
+        {
+          "start": "20:00:00",
+          "end": "01:00:00",
+          "numberOfUsers": 150,
+          "transitionTimeMinutes": 60
+        }
+      ]
+    }
+  ]
+}

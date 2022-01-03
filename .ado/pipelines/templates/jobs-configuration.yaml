@@ -1,0 +1,212 @@
+parameters:
+  - name: runChaosTesting
+    type: boolean
+    default: true
+
+jobs:
+- job: deployconfiguration
+  displayName: 'Deploy K8s Configuration'
+  steps:
+
+  - download: current # download pipeline artifacts
+
+  - template: steps-buildagent-prerequisites.yaml
+
+  - task: AzureCLI@2
+    displayName: 'Install ingress-nginx $(ingressNginxVersion) on AKS clusters'
+    inputs:
+      azureSubscription: $(azureServiceConnection)
+      scriptType: pscore
+      scriptLocation: inlineScript
+      inlineScript: |
+
+        # load json data from downloaded pipeline artifact json
+        $releaseUnitInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputReleaseUnitInfra/*.json | Get-Content | ConvertFrom-JSON
+
+        # loop through stamps from pipeline artifact json
+        foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
+
+          echo "*** Configuring stamp in region $($stamp.location)"
+
+          $aksClusterName = $stamp.aks_cluster_name
+          $aksClusterResourceGroup = $stamp.resource_group_name
+          echo "*** Load credentials for AKS Cluster $aksClusterName in $aksClusterResourceGroup"
+
+          # Load AKS credentials
+          az aks get-credentials --name $aksClusterName --resource-group $aksClusterResourceGroup --overwrite-existing
+
+          # Gather Ingress Load Balancer IP from pipeline artifact json
+          $aksIngressIp = $stamp.aks_cluster_ingress_ip_address
+
+          # Deploy ingress-nginx (helm) configuration
+          echo "*** Installing nginx ingress controller ($aksIngressIp) on $aksClusterName in $aksClusterResourceGroup"
+          helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+          helm repo update
+
+          # Deploy helm chart for ingress-nginx using a custom load balancer ip and resource group
+          helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx `
+                --namespace kube-system `
+                --values src/config/ingress/nginx.yaml `
+                --set controller.service.loadBalancerIP="$aksIngressIp" `
+                --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-resource-group"="$aksClusterResourceGroup" `
+                --version "$(ingressNginxVersion)"
+        }
+
+  - task: AzureCLI@2
+    displayName: 'Configure OMSAgent (Container Insights) on AKS clusters'
+    inputs:
+      azureSubscription: $(azureServiceConnection)
+      scriptType: pscore
+      scriptLocation: inlineScript
+      inlineScript: |
+
+        # load json data from downloaded pipeline artifact json
+        $releaseUnitInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputReleaseUnitInfra/*.json | Get-Content | ConvertFrom-JSON
+
+        # loop through stamps from pipeline artifact json
+        foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
+
+          $aksClusterName = $stamp.aks_cluster_name
+          $aksClusterResourceGroup = $stamp.resource_group_name
+          echo "*** Load credentials for AKS Cluster $aksClusterName in $aksClusterResourceGroup"
+
+          # load AKS cluster credentials
+          az aks get-credentials --name $aksClusterName --resource-group $aksClusterResourceGroup --overwrite-existing
+
+          # Deploy required custom resource definitions needed for cert-manager
+          echo "*** Apply configmap for OMSAgent (Container Insights) on $aksClusterName"
+          kubectl apply -f src/config/monitoring/container-azm-ms-agentconfig.yaml
+        }
+
+  - task: AzureCLI@2
+    displayName: 'Install cert-manager $(certManagerVersion) on AKS clusters'
+    inputs:
+      azureSubscription: $(azureServiceConnection)
+      scriptType: pscore
+      scriptLocation: inlineScript
+      inlineScript: |
+
+        # load json data from downloaded pipeline artifact json
+        $releaseUnitInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputReleaseUnitInfra/*.json | Get-Content | ConvertFrom-JSON
+
+        # loop through stamps from pipeline artifact json
+        foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
+
+          $aksClusterName = $stamp.aks_cluster_name
+          $aksClusterResourceGroup = $stamp.resource_group_name
+          echo "*** Load credentials for AKS Cluster $aksClusterName in $aksClusterResourceGroup"
+
+          # load AKS cluster credentials
+          az aks get-credentials --name $aksClusterName --resource-group $aksClusterResourceGroup --overwrite-existing
+
+          # Deploy required custom resource definitions needed for cert-manager
+          echo "*** Apply cert-manager CRDs on $aksClusterName"
+          kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/$(certManagerVersion)/cert-manager.crds.yaml
+
+          # Preparations to deploy cert-manager into it's own cert-manager namespace
+          echo "*** Create a separate namespace for cert-manager on $aksClusterName"
+          kubectl apply -f src/config/cert-manager/cert-manager.yaml
+
+          echo "*** Installing cert-manager via helm on $aksClusterName"
+          helm repo add jetstack https://charts.jetstack.io
+          helm repo update
+          helm upgrade --install cert-manager jetstack/cert-manager `
+                --namespace cert-manager --version "$(certManagerVersion)"
+        }
+
+  - task: AzureCLI@2
+    displayName: 'Install KeyVault CSI driver on AKS clusters'
+    inputs:
+      azureSubscription: $(azureServiceConnection)
+      scriptType: pscore
+      scriptLocation: inlineScript
+      inlineScript: |
+
+        # load json data from downloaded pipeline artifact json
+        $releaseUnitInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputReleaseUnitInfra/*.json | Get-Content | ConvertFrom-JSON
+
+        # Retrieve current TenantID
+        $tenantId = $(az account show --query "tenantId" --output tsv)
+
+        # loop through stamps from pipeline artifact json
+        foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
+
+          $aksClusterName = $stamp.aks_cluster_name
+          $aksClusterResourceGroup = $stamp.resource_group_name
+          echo "*** Load credentials for AKS Cluster $aksClusterName in $aksClusterResourceGroup"
+
+          # load AKS cluster credentials
+          az aks get-credentials --name $aksClusterName --resource-group $aksClusterResourceGroup --overwrite-existing
+
+          echo "*** Create namespace $(workloadNamespace) on AKS cluster $aksClusterName via kubectl"
+          kubectl create namespace $(workloadNamespace) `
+                    --dry-run=client --output yaml | kubectl apply -f -
+
+          echo "*** Configuring CSI secret driver on $aksClusterName via helm"
+
+          # Gather Azure KeyVault name from terraform artifact
+          $keyVaultName = $stamp.key_vault_name
+          echo "*** Retrieved Key Vault name $keyVaultName"
+
+          $allSecretNames = $(az keyvault secret list --vault-name $keyVaultName --query "join(',',[].name)" --output tsv)
+          echo "*** Retrieved the names of $($allSecretNames.Split(',').Count) secrets in Key Vault $keyVaultName"
+
+          $kubeletIdentityClientId = $(az aks show --resource-group $aksClusterResourceGroup --name $aksClusterName `
+                                                   --query "identityProfile.kubeletidentity.clientId" --output tsv)
+
+          echo "*** Retrieved Kubelet clientId $kubeletIdentityClientId for cluster $clusterName"
+
+          helm upgrade --install csi-secrets-driver src/config/charts/csi-secrets-driver `
+                        --namespace "$(workloadNamespace)" `
+                        --set azure.tenantId=$tenantId `
+                        --set azure.keyVaultName="$keyVaultName" `
+                        --set azure.managedIdentityClientId="$kubeletIdentityClientId" `
+                        --set kvSecrets="{$allSecretNames}"
+        }
+
+  - ${{ if eq(parameters.runChaosTesting, 'true') }}:
+    - task: AzureCLI@2
+      displayName: "Install Chaos Mesh on AKS clusters"
+      inputs:
+        azureSubscription: $(azureServiceConnection)
+        scriptType: pscore
+        scriptLocation: inlineScript
+        inlineScript: |
+
+          # load json data from downloaded pipeline artifact json
+          $releaseUnitInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputReleaseUnitInfra/*.json | Get-Content | ConvertFrom-JSON
+
+          # loop through stamps from pipeline artifact json
+          foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
+
+            $aksClusterName = $stamp.aks_cluster_name
+            $aksClusterResourceGroup = $stamp.resource_group_name
+            echo "*** Load credentials for AKS Cluster $aksClusterName in $aksClusterResourceGroup"
+
+            # load AKS cluster credentials
+            az aks get-credentials --name $aksClusterName --resource-group $aksClusterResourceGroup --overwrite-existing
+
+            echo "*** Create namespace $(chaosTestingNamespace) on AKS cluster $aksClusterName via kubectl"
+            kubectl create namespace $(chaosTestingNamespace) --dry-run=client --output yaml | kubectl apply -f -
+
+            $helmOutput = helm list --namespace=$(chaosTestingNamespace) -o json | ConvertFrom-Json
+            if($helmOutput.name.length.equals(0))
+            {
+              echo "*** Chaos mesh does not exist on the cluster yet -- installing now"
+
+              echo "*** Add Chaos Mesh Helm repo"
+              # Add Chaos Mesh Helm Repo
+              helm repo add chaos-mesh https://charts.chaos-mesh.org
+              helm repo update
+
+              # create crd definitions
+              curl -sSL https://mirrors.chaos-mesh.org/v1.2.3/crd.yaml | kubectl apply --validate=false -f -
+              echo "*** Install Chaos Mesh"
+              # Install Chaos Mesh version 1.2.3 is the currently supported by Azure Chaos studio. This maps to helm version --version v0.5.3
+              helm install chaos-mesh chaos-mesh/chaos-mesh --namespace=$(chaosTestingNamespace) --version v0.5.3 --set chaosDaemon.runtime=containerd --set chaosDaemon.socketPath=/run/containerd/containerd.sock
+            }
+            else
+            {
+              echo "*** Chaos mesh already exists on the cluster"
+            }
+          }

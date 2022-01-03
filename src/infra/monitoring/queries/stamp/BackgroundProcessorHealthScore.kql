@@ -1,0 +1,9 @@
+BackgroundProcessorHealthStatus()
+| union ClusterHealthStatus()
+| union KeyvaultHealthStatus()
+| union CheckpointStorageHealthStatus()
+| summarize YellowScore = max(IsYellow), RedScore = max(IsRed) by bin(TimeGenerated, 2m)
+| extend HealthScore = 1 - (YellowScore * 0.25) - (RedScore * 0.5)
+| extend HealthScore = iff(isnull(HealthScore), 1.0, HealthScore) // For now, we assume no data means healthy. In a high volume scenario, this may mean the opposite.
+| extend ComponentName = "BackgroundProcessor", Dependencies="Cluster,Keyvault,CheckpointStorage" // These values are added to build the dependency visualization.
+| order by TimeGenerated desc

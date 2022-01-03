@@ -1,0 +1,67 @@
+// Query to calculate the availability of the BackgroundProcessor
+// Is mostly the same query as the one used in the BackgroundProcessorHealthStatus:
+// Looks at:
+// - p99 processing duration
+// - Number of failed message processings
+// - Number of outgoing messages in the Event Hub
+//
+let _interval = 30d;
+let _intervalsec = _interval * 86400;
+let _approlename = 'BackgroundProcessor';
+let _timeslice = 1m; // The EventHub metrics are on a 1m timegrain, so we cannot go lower
+let timespanStart= todatetime(format_datetime(now(-_interval), 'yyyy-MM-dd HH:ss')); // We need to remove any sub-second part from the start, otherwise the series are not to the seconds
+let timespanEnd = now(-2m); // there is some ingestion lag, so we account for this by stripping the last 2m
+//
+let Thresholds=datatable(MetricName: string, RedThreshold: double) [
+    // p99 processing time on the BackgroundProcessor
+    "p99ProcessingTime", 1000,
+    // Failed processing attempts
+    "failureCount", 3,
+    // Number of outgoing messages from the Event Hub. 0 means that no BackgroundProcessor is consuming any messages
+    "eventHubOutgoingMessages", 0
+    ];
+//
+let _region = toscalar(AppRequests
+| where AppRoleName startswith _approlename
+| take 1
+| extend region = extract(@"^.+-(.+)$", 1, AppRoleName) // extract region name from appRoleName which is like BackgroundProcessor-uksouth
+| project region);
+// Calculate the number of exceptions
+let exceptions = AppExceptions
+| where AppRoleInstance startswith _approlename
+| make-series Value=count() default=0 on TimeGenerated from timespanStart to timespanEnd step _timeslice
+| mv-expand TimeGenerated, Value
+| extend TimeGenerated = todatetime(TimeGenerated), Value=toreal(Value), MetricName='failureCount'
+| lookup kind = inner Thresholds on MetricName
+| extend IsRed = iff(todouble(Value) > RedThreshold, 1, 0);
+// Calculate the average processing duration for each message
+let avgProcessDuration = AppRequests
+| where AppRoleInstance startswith _approlename
+| where Name == "EventProcessor.Process"
+| make-series Value=percentile(DurationMs, 99) default=0 on TimeGenerated from timespanStart to timespanEnd step _timeslice
+| mv-expand TimeGenerated, Value
+| extend TimeGenerated = todatetime(TimeGenerated), Value=toreal(Value), MetricName='p99ProcessingTime'
+| lookup kind = inner Thresholds on MetricName
+| extend IsRed = iff(todouble(Value) > RedThreshold, 1, 0);
+// Calculate the average time since enqueued
+let eventHubOutgoingMessages = AzureMetrics
+| where ResourceProvider == "MICROSOFT.EVENTHUB"
+| where MetricName in ("OutgoingMessages")
+| make-series Value=sum(Total) default=0 on TimeGenerated from timespanStart to timespanEnd step _timeslice
+| mv-expand TimeGenerated, Value
+| extend TimeGenerated = todatetime(TimeGenerated), Value=toreal(Value), MetricName='eventHubOutgoingMessages'
+| lookup kind = inner Thresholds on MetricName
+| extend IsRed = iff(todouble(Value) <= RedThreshold, 1, 0);
+// Build final table
+let dataset = avgProcessDuration
+| union eventHubOutgoingMessages
+| union exceptions
+| project-reorder TimeGenerated, MetricName, Value, IsRed, RedThreshold
+| order by TimeGenerated, MetricName;
+dataset
+| where IsRed == 1
+| summarize SloFailedCount=count()
+| extend SloFailedTime = SloFailedCount * _timeslice
+| extend SloPercent = 100 - SloFailedTime / _interval * 100
+| extend Name = _approlename
+| extend Region = _region

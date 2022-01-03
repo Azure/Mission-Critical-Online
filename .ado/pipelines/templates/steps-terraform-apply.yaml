@@ -1,0 +1,57 @@
+parameters:
+  terraformWorkingDirectory:       ''
+  customPrefix:                    ''         # custom prefix for resources
+  customAttributes:                ''         # custom attributes for terraform
+  jobName:                         ''
+
+steps:
+- task: Bash@3
+  name: 'terraformvalidate'
+  displayName: 'Terraform validate'
+  inputs:
+    workingDirectory: ${{ parameters.terraformWorkingDirectory }}
+    targetType: 'inline'
+    script: |
+      set -eux  # fail on error
+      terraform validate
+
+- task: Bash@3
+  displayName: 'Terraform plan'
+  name: 'terraformplan'
+  inputs:
+    workingDirectory: ${{ parameters.terraformWorkingDirectory }}
+    targetType: 'inline'
+    script: |
+      set -eux  # fail on error
+
+      # To have access to the input ARM_CLIENT_SECRET which was marked as secret, we need to explicitly reference it in the script
+      export ARM_CLIENT_SECRET="$(ARM_CLIENT_SECRET)"
+
+      terraform plan -input=false -out=tf_plan \
+                     -var=environment="$(environment)" \
+                     -var=prefix="${{ parameters.customPrefix }}" \
+                     -var-file="variables-$(environment).tfvars" \
+                     ${{ parameters.customAttributes }}
+
+- task: Bash@3
+  displayName: 'Terraform apply'
+  name: 'terraformapply'
+  inputs:
+    workingDirectory: ${{ parameters.terraformWorkingDirectory }}
+    targetType: 'inline'
+    script: |
+      set -eux  # fail on error
+
+      # To have access to the input ARM_CLIENT_SECRET which was marked as secret, we need to explicitly reference it in the script
+      export ARM_CLIENT_SECRET="$(ARM_CLIENT_SECRET)"
+
+      terraform apply -parallelism=20 -auto-approve tf_plan
+
+      echo "Writing Terraform output file to tfoutput.json"
+      terraform output -json >> tfoutput.json
+
+# Publish Terraform Outputs
+- publish:  '${{ parameters.terraformWorkingDirectory }}/tfoutput.json'
+  artifact: 'terraformOutput${{ parameters.jobName }}' # artifact name
+  condition: succeeded()
+  displayName: 'Publish Terraform Outputs JSON'

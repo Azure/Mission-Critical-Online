@@ -1,0 +1,8 @@
+// Returns the health score for the 'loadwebsite' user flow
+// This is the _lowest_ value of the PublicBlobStorage component
+PublicBlobStorageHealthStatus
+| summarize YellowScore = max(IsYellow), RedScore = max(IsRed) by bin(TimeGenerated, 2m)
+| extend HealthScore = 1 - (YellowScore * 0.25) - (RedScore * 0.5)
+| extend HealthScore = iff(isnull(HealthScore), 1.0, HealthScore) // For now, we assume no data means healthy. In a high volume scenario, this may mean the opposite.
+| order by TimeGenerated desc
+| extend ComponentName = "ShowStaticContentUserFlow", Dependencies = "PublicBlobStorage"

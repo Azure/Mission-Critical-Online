@@ -1,0 +1,24 @@
+// Return the health status of CosmosDB
+let _ResourceType = "DOCUMENTDB"; // Azure resource type to filter on
+let _Interval = 3d;
+let Thresholds=datatable(MetricName: string, YellowThreshold: double, RedThreshold: double) [
+    // Disk Usage:
+    "ServiceAvailability", 100, 100, 
+    // Network errors in:
+    "ServerSideLatency", 20, 40,
+    ];
+//
+AzureMetrics
+| where TimeGenerated > ago(_Interval)
+| summarize Value=avg(Maximum) by TimeGenerated, ResourceGroup, Resource, MetricName // We're averaging the metrics from all services per node
+| extend Resource = extract("([a-z0-9-]*)(-)([a-z0-9]*)$", 3, Resource) // Add a column for the name of the cluster node
+| union (
+    AzureMetrics
+    | where TimeGenerated > ago(_Interval)
+    | where extract("(PROVIDERS/MICROSOFT.)([A-Z]*/[A-Z]*)", 2, ResourceId) == _ResourceType
+    | project TimeGenerated, MetricName, Namespace = "AzureMetrics", Value=Average
+    )
+| lookup kind=inner Thresholds on MetricName
+| extend IsYellow = iff(Value > YellowThreshold and Value < RedThreshold, 1, 0)
+| extend IsRed = iff(Value > RedThreshold, 1, 0)
+| union (datatable(IsYellow: long, IsRed: long)[0, 0]) // Needed to ensure there is at least one result row to parse in the dashboard

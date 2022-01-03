@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "AlwaysOn.CatalogService": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

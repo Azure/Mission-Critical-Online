@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "AlwaysOn.BackgroundProcessor": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

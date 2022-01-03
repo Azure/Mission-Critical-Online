@@ -1,0 +1,6 @@
+AzureMetrics
+| where $__timeFilter(TimeGenerated)
+| where ResourceProvider == "MICROSOFT.DOCUMENTDB"
+| summarize NormalizedRUConsumption=avgif(Total, MetricName=="NormalizedRUConsumption"), AutoscaleMaxThroughput=avgif(Average, MetricName=="AutoscaleMaxThroughput"), ProvisionedThroughput=avgif(Total, MetricName=="ProvisionedThroughput") by bin(TimeGenerated, 5m)
+| extend NormalizedRUConsumption=(NormalizedRUConsumption/100)*ProvisionedThroughput
+| order by TimeGenerated asc

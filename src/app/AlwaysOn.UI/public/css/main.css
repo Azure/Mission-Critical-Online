@@ -1,0 +1,198 @@
+#app {
+  font-family: Tenorite, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 10px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #2c3e50;
+  margin-top: 0px;
+  padding-top: 10px;
+}
+
+h1,
+h2 {
+  margin-top: 10pt;
+}
+
+h2 {
+  font-weight: normal;
+}
+
+hr {
+  border: 1px solid #DDDDDD;
+}
+
+.form-style-7{
+	max-width:400px;
+	margin:50px auto;
+	background:#fff;
+	border-radius:2px;
+	padding:20px;
+}
+.form-style-7 h1{
+	display: block;
+	text-align: center;
+	padding: 0;
+	margin: 0px 0px 20px 0px;
+	color: #5C5C5C;
+	font-size:x-large;
+}
+.form-style-7 ul{
+	list-style:none;
+	padding:0;
+	margin:0;	
+}
+.form-style-7 li{
+	display: block;
+	padding: 9px;
+	border:1px solid #DDDDDD;
+	margin-bottom: 30px;
+	border-radius: 3px;
+}
+.form-style-7 li:last-child{
+	border:none;
+	margin-bottom: 0px;
+	text-align: center;
+}
+.form-style-7 li > label{
+	display: block;
+	float: left;
+	margin-top: -19px;
+	background: #FFFFFF;
+	height: 14px;
+	padding: 2px 5px 2px 5px;
+	color: #5c5c5c;
+	font-size: 14px;
+	overflow: hidden;
+	font-family: Arial, Helvetica, sans-serif;
+}
+.form-style-7 input[type="text"],
+.form-style-7 input[type="date"],
+.form-style-7 input[type="datetime"],
+.form-style-7 input[type="email"],
+.form-style-7 input[type="number"],
+.form-style-7 input[type="search"],
+.form-style-7 input[type="time"],
+.form-style-7 input[type="url"],
+.form-style-7 input[type="password"],
+.form-style-7 textarea,
+.form-style-7 select 
+{
+	box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	width: 100%;
+	display: block;
+	outline: none;
+	border: none;
+	height: 25px;
+	line-height: 25px;
+	font-size: 16px;
+	padding: 0;
+}
+
+.form-style-7 textarea {
+  height: auto;
+}
+/* .form-style-7 input[type="text"]:focus,
+.form-style-7 input[type="date"]:focus,
+.form-style-7 input[type="datetime"]:focus,
+.form-style-7 input[type="email"]:focus,
+.form-style-7 input[type="number"]:focus,
+.form-style-7 input[type="search"]:focus,
+.form-style-7 input[type="time"]:focus,
+.form-style-7 input[type="url"]:focus,
+.form-style-7 input[type="password"]:focus,
+.form-style-7 textarea:focus,
+.form-style-7 select:focus 
+{
+} */
+.form-style-7 li > span{
+	background: #F3F3F3;
+	display: block;
+	padding: 3px;
+	margin: 0 -9px -9px -9px;
+	text-align: center;
+	color: #C0C0C0;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+}
+
+.form-style-7 input[type="submit"],
+.form-style-7 input[type="button"]{
+	background: #2471FF;
+	border: none;
+	padding: 10px 20px 10px 20px;
+	border-bottom: 3px solid #5994FF;
+	border-radius: 3px;
+	color: #D2E2FF;
+}
+.form-style-7 input[type="submit"]:hover,
+.form-style-7 input[type="button"]:hover{
+	background: #6B9FFF;
+	color:#fff;
+}
+
+.success {
+  color: green;
+}
+
+.error {
+  color: red;
+}
+
+th, td {
+  border: 1px solid #DDDDDD;
+  padding: 10px;
+}
+table tr:nth-child(odd) {
+  background: #ffffff;
+}
+table tr:nth-child(even) {
+  background: #f4f4f4;
+}
+
+table.innertable {
+  width: 100%;
+  border: none;
+}
+table.innertable td {
+  border: none;
+}
+table.innertable tr {
+  background: transparent;
+}
+
+button.action-button {
+  color: white;
+  background-color: green;
+  padding: 6px;
+  border: 2px solid green;
+  border-radius: 5px;
+  font-weight: bold;
+  margin-top: 12px;
+  cursor: pointer;
+}
+button.action-button:hover {
+  background-color: rgb(0, 180, 0);
+  color: white;
+}
+
+button.play {
+  background-color: white;
+  padding: 22px;
+  border: 2px solid blueviolet;
+  border-radius: 5px;
+  font-weight: bold;
+  font-size: 20pt;
+  margin-top: 12px;
+  width: 30%; /* Aligned with the table */
+}
+button.play:hover {
+  background-color: blueviolet;
+  color: white;
+}
+
+.winner {
+  font-weight: bold;
+  color: green;
+}

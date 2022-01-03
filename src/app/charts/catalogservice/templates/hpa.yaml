@@ -1,0 +1,17 @@
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ .Chart.Name }}-autoscaler
+  labels:
+    app: {{ .Chart.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+spec:
+  maxReplicas: {{ .Values.scale.maxReplicas | default 6 }}
+  minReplicas: {{ .Values.scale.minReplicas | default 3 }}
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ .Chart.Name }}-deploy
+  targetCPUUtilizationPercentage: 80

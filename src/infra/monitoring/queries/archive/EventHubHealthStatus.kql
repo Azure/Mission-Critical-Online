@@ -1,0 +1,17 @@
+// Returns the health status of the event hub.
+let _ResourceType = "EVENTHUB/NAMESPACES";
+let Thresholds = datatable(MetricName: string, YellowThreshold: double, RedThreshold: double) [
+    // Miscellaneous errors:
+    "MISCERR", 1, 10
+    ];
+//
+AzureMetrics
+| where TimeGenerated > ago(2d)
+| extend ResourceType = extract("(PROVIDERS/MICROSOFT.)([A-Z]*/[A-Z]*)", 2, ResourceId)
+| where ResourceType == _ResourceType
+| summarize any(Average) by TimeGenerated, MetricName // Get the latest value for each metric
+| project-rename Value=any_Average
+| lookup kind=inner Thresholds on MetricName
+| extend IsYellow = iff(Value > YellowThreshold and Value < RedThreshold, 1, 0)
+| extend IsRed = iff(Value > RedThreshold, 1, 0)
+| union (datatable(IsYellow: long, IsRed: long)[0, 0]) // Needed to ensure there is at least one result row to parse in the dashboard

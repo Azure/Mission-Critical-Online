@@ -1,0 +1,32 @@
+{
+  "catalogItems": [
+    {
+      "id": "fbb6593a-9ce4-4f1a-89b4-e1f218a594ef",
+      "name": "City Bike",
+      "description": "A super cool, blue bicycle.",
+      "price": 999.95,
+      "imageUrl": "https://c.pxhere.com/photos/d8/84/bike_bicycle_basket_street_blue-121797.jpg!d"
+    },
+    {
+      "id": "61be42a0-3e54-4561-8f49-28fd509badf4",
+      "name": "French Flag",
+      "description": "Big, great French flag",
+      "price": 48.49,
+      "imageUrl": "https://c.pxhere.com/photos/20/e0/flag_french_flag_france_nation-848099.jpg!d"
+    },
+    {
+      "id": "6892b16b-91d7-4a1d-bb4a-c8f22f0efe20",
+      "name": "Blue Jeans",
+      "description": "Classical, blue jeans",
+      "price": 75.0,
+      "imageUrl": "https://c.pxhere.com/photos/fd/86/jeans_pants_clothing_blue_blue_jeans-1087981.jpg!d"
+    },
+    {
+      "id": "25f05539-df72-4272-972a-16f32ffc5e68",
+      "name": "Notebook",
+      "description": "Paper. Notebook.",
+      "price": 9.29,
+      "imageUrl": "https://c.pxhere.com/photos/68/65/notebook_paper_page_empty_blank_office_book_business-883478.jpg!d"
+    }
+  ]
+}

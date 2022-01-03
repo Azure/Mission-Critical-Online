@@ -1,0 +1,33 @@
+
+// For that timeframe, compare the averages to the following threshold values:
+let Thresholds=datatable(MetricName: string, YellowThreshold: double, RedThreshold: double) [
+    // Failed requests. Anything non-200. We allow a few more than 0 for user-caused errors like 404s. 
+    "failureCount", 10, 50,
+    // Average duration of the request, in ms
+    "avgProcessingTime", 150, 500
+    ];
+//
+let timespanStart= todatetime(format_datetime(now(-2d), 'yyyy-MM-dd HH:ss')); // We need to remove any sub-second part from the start, otherwise the series are not to the seconds
+let timespanEnd = now(-2m); // there is some ingestion lag, so we account for this by stripping the last 2m
+// Calculate average processing time for each request
+let avgProcessingTime = AppRequests
+| where AppRoleName startswith "CatalogService"
+| where OperationName != "GET /health/liveness" // Since the liveness requests don't do any processing, including them would skew the results. 
+| make-series Value = avg(DurationMs)  default=0 on TimeGenerated from timespanStart to timespanEnd step 1m
+| mv-expand TimeGenerated, Value
+| extend TimeGenerated = todatetime(TimeGenerated), Value=toreal(Value), MetricName= 'avgProcessingTime';
+// Calculate failed requests
+let failureCount = AppRequests
+| where AppRoleName startswith "CatalogService"
+| where OperationName != "GET /health/liveness" // Since the liveness requests don't do any processing, including them would skew the results. 
+| make-series Value=countif(Success != true) default=0 on TimeGenerated from timespanStart to timespanEnd step 1m
+| mv-expand TimeGenerated, Value
+| extend TimeGenerated = todatetime(TimeGenerated), Value=toreal(Value), MetricName= 'failureCount';
+// Union all together and join with the thresholds
+avgProcessingTime
+| union failureCount
+| lookup kind = inner Thresholds on MetricName
+| extend IsYellow = iff(todouble(Value) > YellowThreshold and todouble(Value) < RedThreshold, 1, 0)
+| extend IsRed = iff(todouble(Value) > RedThreshold, 1, 0)
+| project-reorder TimeGenerated, MetricName, Value, IsYellow, IsRed, YellowThreshold, RedThreshold
+| order by TimeGenerated, MetricName

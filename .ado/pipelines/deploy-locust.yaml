@@ -1,0 +1,49 @@
+name: '[${{ parameters.environment }}] $(BuildDefinitionName).$(DayOfYear)$(Rev:.r)'
+
+trigger: none
+
+pr: none
+
+pool:
+  vmImage: 'ubuntu-20.04'
+
+parameters:
+- name: environment
+  displayName: 'Environment (Subscriptions)'
+  type: string
+  default: 'int'
+  values:
+  - int
+  - prod
+
+- name: numberOfWorkerNodes
+  displayName: 'Number of Worker Nodes. Set to 0 to also destroy the master node.'
+  type: number
+  default: 0
+
+- name: locustTargetUrl
+  displayName: 'Loadtest Target URL (can be overriden later)'
+  type: string
+  default: "https://www.int.always-on.app"
+
+variables:
+- template: config/configuration.yaml # contains version numbers and global configuration settings
+- name:  'workingDirectory' # Terraform working directory (containing the locust infra definition)
+  value: 'src/testing/loadtest-locust/infra'
+- name:  'environment' # set the environment name as variable
+  value: '${{ parameters.environment }}'
+- name:  'azureServiceConnection' # environment specific service connection
+  value: 'alwayson-${{ parameters.environment }}-serviceconnection'
+
+- group: '${{ parameters.environment }}-env-vg' # contains environment-specific values (secrets which cannot be stored in the config file)
+- template: config/variables-values-${{ parameters.environment }}.yaml # contains environment-specific values (non-secret)
+
+stages:
+
+- template: templates/stages-locust.yaml
+  parameters:
+    terraformWorkingDirectory: '$(workingDirectory)'
+    customPrefix: '$(prefix)'
+    locustTargetUrl: ${{ parameters.locustTargetUrl }}
+    numberOfWorkerNodes: ${{ parameters.numberOfWorkerNodes }}
+    locustHeadless: false # set to false to run in webui mode

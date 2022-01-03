@@ -1,0 +1,68 @@
+# To get started with Dependabot version updates, you'll need to specify which
+# package ecosystems to update and where the package manifests are located.
+# Please see the documentation for all configuration options:
+# https://help.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
+
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/src/app/AlwaysOn.UI"
+    schedule:
+      interval: "daily" 
+    allow:
+    - dependency-type: direct
+    - dependency-type: production # check only dependencies, which are going to the compiled app, not supporting tools like @vue-cli
+    target-branch: "component-updates"
+
+  - package-ecosystem: "npm" # yarn is referenced as "npm" here
+    directory: "/src/infra/monitoring/grafanapanel"
+    schedule:
+      interval: "daily" # default = every day at 5:00 UTC
+    allow:
+    - dependency-type: direct
+    - dependency-type: production # check only dependencies, which are going to the compiled app, not supporting tools like @grafana/ui
+    target-branch: "component-updates"
+
+  - package-ecosystem: "nuget"
+    directory: "/src/app/" # contains the SLN file
+    schedule:
+      interval: "daily" # default = every day at 5:00 UTC
+    target-branch: "component-updates"
+    
+  # directories containing terraform files
+  - package-ecosystem: "terraform"
+    directory: "/src/infra/workload/globalresources"
+    schedule:
+      interval: "daily" # default = every day at 5:00 UTC
+    target-branch: "component-updates"
+
+  - package-ecosystem: "terraform"
+    directory: "/src/infra/workload/releaseunit"
+    schedule:
+      interval: "daily" # default = every day at 5:00 UTC
+    target-branch: "component-updates"
+
+  - package-ecosystem: "terraform"
+    directory: "/src/testing/loadtest-locust/infra"
+    schedule:
+      interval: "daily" # default = every day at 5:00 UTC
+    target-branch: "component-updates"
+
+  # directories containing docker files
+  - package-ecosystem: "docker"
+    directory: "/src/app/AlwaysOn.CatalogService"
+    schedule:
+      interval: "daily" # default = every day at 5:00 UTC
+    target-branch: "component-updates"
+
+  - package-ecosystem: "docker"
+    directory: "/src/app/AlwaysOn.HealthService"
+    schedule:
+      interval: "daily" # default = every day at 5:00 UTC
+    target-branch: "component-updates"
+
+  - package-ecosystem: "docker"
+    directory: "/src/app/AlwaysOn.BackgroundProcessor"
+    schedule:
+      interval: "daily" # default = every day at 5:00 UTC
+    target-branch: "component-updates"

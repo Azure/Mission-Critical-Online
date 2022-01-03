@@ -1,0 +1,484 @@
+parameters:
+  - name: environment
+    type: string
+  - name: runLoadTesting # embedded load testing
+    type: boolean
+    default: false
+  - name: runChaosTesting # Chaos testing
+    type: boolean
+    default: false
+  - name: destroyOldEnvironment
+    type: boolean
+    default: true
+  - name: trafficSwitchSteps # in which steps (weights) the gradual traffic switch in Front Door should happen
+    type: object
+    default:
+    - 10
+    - 50
+    - 100
+
+stages:
+
+- stage: deployglobalinfrastructure
+  displayName: 'Deploy Global Infrastructure' # Deploy Global Azure Infrastructure
+  jobs:
+
+  - deployment: deployterraformglobalresources
+    displayName: 'Deploy Terraform Global Resources'
+    timeoutInMinutes: 120 # extend the default timeout of 60min since getting a certificate when using a custom domain name can take a while
+    environment: '$(environment)'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - checkout: self # checkout github repository
+
+          - template: steps-set-pipeline-variables.yaml # load the set-pipeline-variables function (used for tags and prefixes)
+
+          # Global Resources terraform init
+          - template: steps-terraform-init.yaml # Initialize Terraform
+            parameters:
+              terraformStateFilename:            '$(terraformStateFileGlobal)'
+              terraformWorkingDirectory:         '$(workingDirectory)/globalresources'
+
+          - task: AzureCLI@2
+            displayName: 'Fetch current Front Door backends'
+            inputs:
+              azureSubscription: '$(azureServiceConnection)'
+              scriptType: pscore
+              scriptLocation: inlineScript
+              inlineScript: |
+                # We need the az CLI Front Door extension
+                az extension add --name front-door
+
+                $rgName = "$(prefix)$(globalSuffix)-global-rg"
+                $fdName = "$(prefix)$(globalSuffix)-global-fd"
+
+                # check if Front Door exists
+                $frontDoor = $(az network front-door list --query "[?name=='$fdName']" -o tsv)
+
+                if($LastExitCode -ne 0)
+                {
+                    throw "*** Error on checking existing Front Door $fdName"
+                }
+
+                $backendPools = @("BackendApis", "StaticStorage")
+
+                if($frontDoor)
+                {
+                  foreach($pool in $backendPools)
+                  {
+                    $backends = $(az network front-door backend-pool backend list `
+                                    --front-door-name $fdName `
+                                    --pool-name $pool -g $rgName `
+                                    --query "[].{address:address,weight:weight,enabled:enabledState}")
+
+                    if($LastExitCode -ne 0)
+                    {
+                        throw "*** Error on fetching existing backends from Front Door $fdName for pool $pool"
+                    }
+
+                    $jsonBackends = $backends | ConvertFrom-Json -NoEnumerate
+                    # Rewrite EnabledState into bool (true/false)
+                    foreach($backend in $jsonBackends)
+                    {
+                      if($backend.enabled -eq "Enabled")
+                      {
+                        $backend.enabled = "true"
+                      }
+                      else
+                      {
+                        $backend.enabled = "false"
+                      }
+                    }
+
+                    $flatJsonApis = $jsonBackends | ConvertTo-Json -Compress -Depth 100 -AsArray
+                    echo "*** Current backends in pool $($pool): " $flatJsonApis
+                    $contentBackends = "-var='backends_$pool=$flatJsonApis'"
+
+                    echo "##vso[task.setvariable variable=tfParameterFrontDoor$pool]$contentBackends"
+                  }
+                }
+                else
+                {
+                  echo "*** Front Door $fdName does not exist. Using dummy backends from TF variable defaults"
+
+                  # Writing empty ADO variables for each backend pool
+                  foreach($pool in $backendPools)
+                  {
+                    echo "##vso[task.setvariable variable=tfParameterFrontDoor$pool]"
+                  }
+                }
+
+          # Global Resources deployment
+          - template: steps-terraform-apply.yaml # terraform validate, plan and apply for global resources
+            parameters:
+              jobName:                    'GlobalInfra'
+              terraformWorkingDirectory:  '$(workingDirectory)/globalresources'
+              customPrefix:               '$(prefix)$(globalSuffix)'      # custom resource prefix
+              customAttributes:           '-var=branch="$(sourceBranch)"
+                                          -var=queued_by="$(Build.QueuedBy)"
+                                          -var=contact_email="$(contactEmail)"
+                                          -var=''stamps=$(stampLocations)''
+                                          $(tfParameterFrontDoorBackendApis)
+                                          $(tfParameterFrontDoorStaticStorage)
+                                          $(terraformAdditionalParametersCustomDomains)'
+
+          # Install Function Core Tools for publishing the SLO Query Function
+          - task: Bash@3
+            displayName: 'Install Function Core Tools'
+            inputs:
+              targetType: 'inline'
+              script: |
+
+                echo "*** Installing Function-core-tools@4"
+                curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
+                sudo mv microsoft.gpg /etc/apt/trusted.gpg.d/microsoft.gpg
+                sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-$(lsb_release -cs)-prod $(lsb_release -cs) main" > /etc/apt/sources.list.d/dotnetdev.list'
+                sudo apt-get update
+                sudo apt-get install azure-functions-core-tools-4
+                echo "*** Installed Azure Function Core Tools version: $(func -v)"
+
+          - task: UseDotNet@2
+            displayName: 'Use .NET Core SDK $(dotnetSdkVersion)'
+            inputs:
+              packageType: sdk
+              version: $(dotnetSdkVersion)
+              installationPath: $(Agent.ToolsDirectory)/dotnet
+
+          # Deploying the SLO Query Function using the Function Core tools
+          - task: AzureCLI@2
+            displayName: 'Deploy SLO Function'
+            inputs:
+              azureSubscription: $(azureServiceConnection)
+              scriptType: pscore
+              scriptLocation: inlineScript
+              inlineScript: |
+
+                # load json data from downloaded terraform artifact
+                $infraDeployOutput = Get-ChildItem $(workingDirectory)/globalresources/tfoutput.json | Get-Content | ConvertFrom-JSON
+
+                $rgName = $infraDeployOutput.monitoring_resource_group_name.value
+                $sloFunctionName = $infraDeployOutput.slo_function_name.value
+
+                echo "*** Deploying to SLO Function App $sloFunctionName in resource group $rgName"
+                cd "src/infra/monitoring/AlwaysOn.SloProcessor"
+                func azure functionapp publish $sloFunctionName --csharp
+
+- stage: deployreleaseinfrastructure
+  displayName: 'Deploy Release Unit Infrastructure' # Deploy Release Unit Azure Infrastructure
+  dependsOn: deployglobalinfrastructure
+  jobs:
+  - job: deployterraform
+    displayName: 'Deploy Terraform Release Unit Resources'
+    timeoutInMinutes: 120 # extend the default timeout of 60min since getting a certificate when using a custom domain name can take a while
+    steps:
+    - checkout: self # checkout github repository
+    - download: current # download pipeline artifacts
+
+    - template: steps-set-pipeline-variables.yaml # load the set-pipeline-variables function (used for tags and prefixes)
+
+    - template: steps-parse-terraform-output.yaml
+      parameters:
+        workingDirectory: '$(Pipeline.Workspace)/terraformOutputGlobalInfra'  # Global infra deploy output directory
+
+    # Release Unit Resources terraform init
+    - template: steps-terraform-init.yaml
+      parameters:
+        terraformStateFilename:             '$(terraformStateFileReleaseUnit)'
+        terraformWorkingDirectory:          '$(workingDirectory)/releaseunit'
+
+    # Release Unit Resources deployment
+    - template: steps-terraform-apply.yaml # terraform validate, plan and apply for global resources
+      parameters:
+        jobName:                    'ReleaseUnitInfra'
+        terraformWorkingDirectory:  '$(workingDirectory)/releaseunit'
+        customPrefix:               '$(prefix)$(customSuffix)'
+        customAttributes:           '-var=branch="$(sourceBranch)"
+                                    -var=queued_by="$(Build.QueuedBy)"
+                                    -var=contact_email="$(contactEmail)"
+                                    -var=''stamps=$(stampLocations)''
+                                    -var=kubernetes_version="$(kubernetesVersion)"
+                                    -var=global_resource_group_name="$(global_resource_group_name)"
+                                    -var=monitoring_resource_group_name="$(monitoring_resource_group_name)"
+                                    -var=cosmosdb_account_name="$(cosmosdb_account_name)"
+                                    -var=cosmosdb_database_name="$(cosmosdb_database_name)"
+                                    -var=acr_name="$(acr_name)"
+                                    -var=frontdoor_resource_id="$(frontdoor_resource_id)"
+                                    -var=frontdoor_name="$(frontdoor_name)"
+                                    -var=frontdoor_id_header="$(frontdoor_id_header)"
+                                    -var=global_storage_account_name="$(global_storage_account_name)"
+                                    -var=azure_monitor_action_group_resource_id="$(azure_monitor_action_group_resource_id)"'
+
+- stage: deployconfiguration
+  displayName: 'Deploy Configuration' # Apply configuration to Azure Infrastructure
+  dependsOn: deployreleaseinfrastructure
+  jobs:
+  - template: jobs-configuration.yaml
+    parameters:
+      runChaosTesting: ${{ parameters.runChaosTesting }}
+
+- stage: testcode
+  displayName: 'Test Application Code'
+  dependsOn: [] # can run in parallel to the global infra deployment at the very start
+  jobs:
+  - template: jobs-code-tests.yaml
+    parameters:
+      jobName:          'CodeTests'
+      workingDirectory: 'src/app'
+
+- stage: buildapplication
+  displayName: 'Build Application Code'
+  dependsOn:
+   - testcode
+   - deployglobalinfrastructure # requires the global infra to be deployed which contains the Container Registry
+  jobs: # using jobs so they each runs in parallel
+
+  - template: jobs-container-build.yaml
+    parameters:
+      jobName:                  'catalogservice' # unique pipeline job name
+      containerImageName:       '$(catalogserviceImageName)'  # container image name for CatalogService
+      containerImageDockerFile: '$(catalogserviceDockerfile)' # dockerfile used to build the CatalogService
+
+  - template: jobs-container-build.yaml
+    parameters:
+      jobName:                  'backgroundprocessor' # unique pipeline job name
+      containerImageName:       '$(backgroundprocessorImageName)'   # container image name for BackgroundProcessor
+      containerImageDockerFile: '$(backgroundprocessorDockerfile)'  # dockerfile used to build the BackgroundProcessor
+
+  - template: jobs-container-build.yaml
+    parameters:
+      jobName:                  'healthservice' # unique pipeline job name
+      containerImageName:       '$(healthserviceImageName)'  # container image name for healthservice
+      containerImageDockerFile: '$(healthserviceDockerfile)' # dockerfile used to build the healthservice
+
+  - template: jobs-ui-app-build.yaml
+    parameters:
+      jobName:          'buildui'
+      workingDirectory: 'src/app/AlwaysOn.UI'
+
+- stage: deployworkload # Deploy workload to previously created infrastructure
+  displayName: 'Deploy Workload'
+  dependsOn:
+  - deployconfiguration
+  - testcode
+  - buildapplication
+  jobs:
+  - template: jobs-workload-deploy.yaml
+
+- stage: importSampleData # Import sample data
+  displayName: 'Import sample data'
+  dependsOn: deployworkload
+  jobs:
+  - template: jobs-init-sampledata.yaml
+
+- stage: testingOnlyStampEndpoints # smoke-testing the stamp endpoints
+  displayName: 'Testing Stamp Endpoints'
+  dependsOn: importSampleData
+  jobs:
+  - template: jobs-smoke-testing.yaml
+    parameters:
+      testStampEndpoints: true
+      testGlobalEndpoint: false
+
+- ${{ each step in parameters.trafficSwitchSteps }}: # based on the list parameter trafficSwitchSteps this step will be repeated n number of times
+  - template: stages-configure-frontdoor.yaml
+    parameters:
+      trafficWeightNewBackends: ${{ step }}
+
+- stage: testingGlobalEndpoints # smoke-testing global endpoint only after the switchover has happened
+  displayName: 'Testing Global Endpoint'
+  jobs:
+  - template: jobs-smoke-testing.yaml
+    parameters:
+      testStampEndpoints: false
+      testGlobalEndpoint: true
+
+# headless load testing for e2e (optional) with locust. Runs if either Load test or Chaos test was selected by the user
+- ${{ if and(eq(parameters.environment, 'e2e'), or(eq(parameters.runLoadTesting, 'true'), eq(parameters.runChaosTesting, 'true'))) }}: # only in e2e and when either runLoadTesting or runChaosTesting is true
+  - template: stages-locust.yaml # headless load testing
+    parameters:
+      terraformWorkingDirectory: 'src/testing/loadtest-locust/infra'
+      customPrefix: '$(prefix)$(customSuffix)'
+      numberOfWorkerNodes: 10 # number of locust worker nodes
+      testDurationSeconds: 300 # locust test duration
+      locustUser: 500 # locust number of simulated users
+      locustSpawnRate: 10 # locust spawn rate users / per second
+      locustHeadless: true # run locust in headless mode
+
+# Chaos testing for e2e (optional) with Azure Chaos Studio
+- ${{ if and(eq(parameters.environment, 'e2e'), eq(parameters.runChaosTesting, 'true')) }}: # only in e2e and when runChaosTesting is true
+  - template: stages-chaos.yaml # chaos testing pipline
+    parameters:
+      stageName: 'deployChaosExperiments'
+      customPrefix: '$(prefix)$(customSuffix)'
+      testDurationSeconds: 180 # Chaos test duration for each experiment
+      memoryStress: true # run Chaos Memory stress
+      cpuStress: true # run Chaos CPU stress
+      podKiller: true # run Chaos Pod Killer
+      dependsOn:
+      - testingGlobalEndpoints
+
+- ${{ if eq(parameters.destroyOldEnvironment, 'true') }}: # Only for E2E the user could have manually chosen not to destroy the environment
+  - stage: destroyOldInfrastructure                # In E2E this will destroy the infrastructure that was deployed from the same branch. For int/prod, this will fetch the previous release infra and destroy that
+    displayName: 'Destroy Infrastructure'
+    jobs:
+    - deployment: 'destroyOldReleaseStampsJob' # Using a deployment job so that we can have manual approves, which are configured on the environment specificed below
+      displayName: 'Destroy Old Release Unit Deployment'
+      environment: '$(environment)'
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+
+            - checkout: self # checkout github repository
+
+            - template: steps-set-pipeline-variables.yaml # load set-pipeline-variables function
+
+            - template: steps-buildagent-prerequisites.yaml # Install tools like kubectl
+
+            - ${{ if ne(parameters.environment, 'e2e') }}: # Only in int/prod
+              - task: AzureCLI@2
+                displayName: 'Fetch previous release prefix through disabled Front Door backends'
+                inputs:
+                  azureSubscription: '$(azureServiceConnection)'
+                  scriptType: pscore
+                  scriptLocation: inlineScript
+                  inlineScript: |
+                    # We need the az CLI Front Door extension
+                    az extension add --name front-door
+
+                    $globalInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputGlobalInfra/*.json | Get-Content | ConvertFrom-JSON
+
+                    $rgName = $globalInfraDeployOutput.global_resource_group_name.value
+                    $fdName = $globalInfraDeployOutput.frontdoor_name.value
+
+                    # Fetch disabled backends from the BackendApis pool. We only fetch the first one, assuming it represents all the stamps of the previous release unit
+                    $disabledBackendAddress = $(az network front-door backend-pool backend list `
+                                      --front-door-name $fdName `
+                                      --pool-name BackendApis `
+                                      --resource-group $rgName `
+                                      --query "[?enabledState=='Disabled'].{address:address}[0]" -o tsv)
+
+                    if($LastExitCode -ne 0)
+                    {
+                        throw "*** Error on fetching existing backends from Front Door $fdName for pool 'BackendApis'"
+                    }
+
+                    $extractedPrefix = ""
+                    # Only valid if we found any disabled backend (=an old release unit)
+                    if($disabledBackendAddress)
+                    {
+                      echo "*** Found disabled backend $disabledBackendAddress"
+                      # Extract prefix from address. Expected format like "aoint5445-cluster.northeurope.cloudapp.azure.com" (prefix-cluster....)
+                      $disabledBackendAddress -match "^(?<prefix>.+)-cluster"
+                      $extractedPrefix = $Matches.prefix
+                      echo "*** Extracted prefix $extractedPrefix"
+                      echo "##vso[task.setvariable variable=oldReleasePrefix]$extractedPrefix" # set pipeline variable
+                    }
+
+                    if((-not $disabledBackendAddress) -or ($extractedPrefix -eq ""))
+                    {
+                      # This should not happen - if it does, we need to stop the pipeline and investigate. Otherwise the terraform destry task will fail because of the empty prefix variable
+                      throw "*** No disabled backends found or extractedPrefix empty. Nothing to destroy."
+                    }
+
+            - ${{ if eq(parameters.environment, 'e2e') }}: # Special case for E2E only
+              - task: PowerShell@2
+                displayName: '(E2E-only) Set oldReleasePrefix to prefix-customSuffix'
+                inputs:
+                  targetType: inline
+                  script: |
+                    # Setting oldReleasePrefix=prefix-customSuffix means that we target the same release unit that was deployed earlier by this very pipeline
+                    echo "*** Setting pipeline variable oldReleasePrefix = $(prefix)$(customSuffix)"
+                    echo "##vso[task.setvariable variable=oldReleasePrefix]$(prefix)$(customSuffix)"
+
+            - template: steps-parse-terraform-output.yaml
+              parameters:
+                workingDirectory: '$(Pipeline.Workspace)/terraformOutputGlobalInfra'  # Global infra deploy output directory
+
+
+            # Delete all deployments in the workload namespace. This will make sure the application is not running anymore before we destroy the infrastructure in the next step.
+            # This prevents side effects in the logging in which errors might show up which are only related to the destructions of the infra
+            - task: AzureCLI@2
+              displayName: 'Delete application deployments on AKS prior to destroy'
+              inputs:
+                azureSubscription: $(azureServiceConnection)
+                scriptType: pscore
+                scriptLocation: inlineScript
+                inlineScript: |
+
+                  # Find AKS clusters with the prefix $(oldReleasePrefix)
+                  $aksClusters = az resource list --tag prefix="$(oldReleasePrefix)" --query "[?type == 'Microsoft.ContainerService/managedClusters']" | ConvertFrom-Json
+
+                  echo "*** Found $($aksClusters.Count) AKS cluster(s) for prefix $(oldReleasePrefix)"
+
+                  # loop through all clusters
+                  foreach($cluster in $aksClusters) {
+
+                    $aksClusterName = $cluster.name
+                    $aksClusterResourceGroup = $cluster.resourceGroup
+
+                    echo "*** Load credentials for AKS Cluster $aksClusterName in $aksClusterResourceGroup"
+                    az aks get-credentials --name $aksClusterName --resource-group $aksClusterResourceGroup --overwrite-existing
+
+                    echo "*** Deleting all deployments in namespace $(workloadNamespace)"
+                    kubectl delete --all deployments --namespace=$(workloadNamespace)
+                  }
+
+            # Initialize Terraform for destroy
+            - template: steps-terraform-destroy.yaml
+              parameters:
+                terraformStateFilename:      'terraform-$(oldReleasePrefix).state'
+                terraformWorkingDirectory:   '$(workingDirectory)/releaseunit'
+                customAttributes:        '-var=prefix="$(oldReleasePrefix)"
+                                          -var=branch="$(sourceBranch)"
+                                          -var=queued_by="$(Build.QueuedBy)"
+                                          -var=contact_email="$(contactEmail)"
+                                          -var=''stamps=$(stampLocations)''
+                                          -var=kubernetes_version="$(kubernetesVersion)"
+                                          -var=global_resource_group_name="$(global_resource_group_name)"
+                                          -var=monitoring_resource_group_name="$(monitoring_resource_group_name)"
+                                          -var=cosmosdb_account_name="$(cosmosdb_account_name)"
+                                          -var=cosmosdb_database_name="$(cosmosdb_database_name)"
+                                          -var=acr_name="$(acr_name)"
+                                          -var=frontdoor_resource_id="$(frontdoor_resource_id)"
+                                          -var=frontdoor_name="$(frontdoor_name)"
+                                          -var=frontdoor_id_header="$(frontdoor_id_header)"
+                                          -var=global_storage_account_name="$(global_storage_account_name)"
+                                          -var=azure_monitor_action_group_resource_id="$(azure_monitor_action_group_resource_id)"'
+
+            # Remove disabled backends from Front Door and reset weight on current ones to 50. (Not required for E2E since we destroy E2E Front Door anyway below)
+            - ${{ if ne(parameters.environment, 'e2e') }}:
+              - template: steps-frontdoor-traffic-switch.yaml
+                parameters:
+                  trafficWeightNewBackends: 50
+                  removeDisabledBackends: true
+
+    - ${{ if eq(parameters.environment, 'e2e') }}: # Only happens in E2E
+      - deployment: 'destroyE2EGlobalResourcesJob'  # Destroy globally shared resources for this E2E env
+        displayName: 'Destroy E2E Global Resources'
+        environment: '$(environment)'
+        dependsOn: 'destroyOldReleaseStampsJob'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+
+              - checkout: self # checkout github repository
+
+              - download: current # download pipeline artifacts
+
+              - template: steps-set-pipeline-variables.yaml # load set-pipeline-variables function
+
+              # Initialize Terraform for destroy
+              - template: steps-terraform-destroy.yaml
+                parameters:
+                  terraformStateFilename:     '$(terraformStateFileGlobal)'
+                  terraformWorkingDirectory:  '$(workingDirectory)/globalresources'
+                  customAttributes:           '-var=prefix="$(prefix)$(globalSuffix)"
+                                              -var=branch="$(sourceBranch)"
+                                              -var=queued_by="$(Build.QueuedBy)"
+                                              -var=contact_email="$(contactEmail)"
+                                              -var=''stamps=$(stampLocations)''
+                                              $(terraformAdditionalParametersCustomDomains)'

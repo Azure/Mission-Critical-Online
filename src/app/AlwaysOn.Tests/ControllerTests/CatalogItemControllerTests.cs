@@ -22,37 +22,37 @@ namespace AlwaysOn.Tests
         {
             mockLogger = new Mock<ILogger<CatalogItemController>>().Object;
         }
-/*
+
         [Test]
-        public async Task ListGameResults_Returns_GameResults()
+        public async Task ListCatalogItems_Returns_CatalogItems()
         {
             // Arrange
             var mockDatabase = new Mock<IDatabaseService>();
-            mockDatabase.Setup(db => db.GetLatestGameResultsAsync(100))
-                        .ReturnsAsync(GetTestGameResults());
+            mockDatabase.Setup(db => db.ListCatalogItemsAsync(100))
+                        .ReturnsAsync(GetTestCatalogItems());
 
-            var controller = new CatalogItemController(mockLogger, mockDatabase.Object);
+            var controller = new CatalogItemController(mockLogger, mockDatabase.Object, null, null);
 
             // Act
-            var result = await controller.ListGameResultsAsync();
+            var result = await controller.ListCatalogItemsAsync();
 
             // Assert
-            Assert.IsInstanceOf<ActionResult<IEnumerable<GameResult>>>(result); // expecting list of gameresults
+            Assert.IsInstanceOf<ActionResult<IEnumerable<CatalogItem>>>(result); // expecting list of gameresults
             Assert.IsInstanceOf<OkObjectResult>(result.Result); // expecting HTTP 200 result
         }
 
         [Test]
-        public async Task ListGameResults_DatabaseUnavailable_Returns_InternalServerError()
+        public async Task ListCatalogItems_DatabaseUnavailable_Returns_InternalServerError()
         {
             // Arrange
             var mockDatabase = new Mock<IDatabaseService>();
-            mockDatabase.Setup(db => db.GetLatestGameResultsAsync(100))
+            mockDatabase.Setup(db => db.ListCatalogItemsAsync(100))
                         .Throws(new AlwaysOnDependencyException(HttpStatusCode.ServiceUnavailable));
 
-            var controller = new GameController(mockLogger, mockDatabase.Object, null, null);
+            var controller = new CatalogItemController(mockLogger, mockDatabase.Object, null, null);
 
             // Act
-            var result = await controller.ListGameResultsAsync();
+            var result = await controller.ListCatalogItemsAsync();
 
             // Assert
             Assert.IsInstanceOf<ObjectResult>(result.Result);
@@ -60,17 +60,17 @@ namespace AlwaysOn.Tests
         }
 
         [Test]
-        public async Task ListGameResults_TooManyRequests_Returns_ServiceUnavailable()
+        public async Task ListCatalogItems_TooManyRequests_Returns_ServiceUnavailable()
         {
             // Arrange
             var mockDatabase = new Mock<IDatabaseService>();
-            mockDatabase.Setup(db => db.GetLatestGameResultsAsync(100))
+            mockDatabase.Setup(db => db.ListCatalogItemsAsync(100))
                         .Throws(new AlwaysOnDependencyException(HttpStatusCode.TooManyRequests));
 
-            var controller = new GameController(mockLogger, mockDatabase.Object, null, null);
+            var controller = new CatalogItemController(mockLogger, mockDatabase.Object, null, null);
 
             // Act
-            var result = await controller.ListGameResultsAsync();
+            var result = await controller.ListCatalogItemsAsync();
 
             // Assert
             Assert.IsInstanceOf<ObjectResult>(result.Result);
@@ -78,71 +78,49 @@ namespace AlwaysOn.Tests
         }
 
         [Test]
-        public async Task DeleteGameResult_NotExisting_Returns_Accepted()
+        public async Task DeleteCatalogItem_NotExisting_Returns_Accepted()
         {
             // Arrange
-            Guid gameResultId = Guid.Empty;
+            Guid itemId = Guid.Empty;
             var mockDatabase = new Mock<IDatabaseService>();
 
-            mockDatabase.Setup(db => db.GetCatalogItemByIdAsync(gameResultId))
-                        .ReturnsAsync((GameResult)null);
+            mockDatabase.Setup(db => db.GetCatalogItemByIdAsync(itemId))
+                        .ReturnsAsync((CatalogItem)null);
 
-            mockDatabase.Setup(db => db.DeleteObjectAsync<GameResult>(gameResultId.ToString()));
+            mockDatabase.Setup(db => db.DeleteDocumentAsync<CatalogItem>(itemId.ToString(), itemId.ToString()));
 
-            var controller = new GameController(mockLogger, mockDatabase.Object, null, null);
+            var controller = new CatalogItemController(mockLogger, mockDatabase.Object, null, null);
 
             // Act
-            var result = await controller.DeleteGameResultAsync(gameResultId);
+            var result = await controller.DeleteCatalogItemAsync(itemId);
 
             // Assert
             Assert.IsInstanceOf<ObjectResult>(result);
         }
 
-        private List<GameResult> GetTestGameResults()
+        private List<CatalogItem> GetTestCatalogItems()
         {
-            var g1 = new List<PlayerGesture>();
-            g1.Add(new PlayerGesture()
+            return new List<CatalogItem>()
             {
-                Gesture = Gesture.Rock,
-                PlayerId = Guid.NewGuid()
-            });
-            g1.Add(new PlayerGesture()
-            {
-                Gesture = Gesture.Paper,
-                PlayerId = Guid.Parse("8b1f7d55-6ec4-45c7-aa4a-98d08e67c2ff")
-            });
-
-            var g2 = new List<PlayerGesture>();
-            g2.Add(new PlayerGesture()
-            {
-                Gesture = Gesture.Lizard,
-                PlayerId = Guid.NewGuid()
-            });
-            g2.Add(new PlayerGesture()
-            {
-                Gesture = Gesture.Lizard,
-                PlayerId = Guid.NewGuid()
-            });
-
-            return new List<GameResult>()
-            {
-                new GameResult()
+                new CatalogItem()
                 {
-                    GameDate = DateTime.UtcNow,
+                    LastUpdated = DateTime.UtcNow,
                     Id = Guid.NewGuid(),
-                    PlayerGestures= g1,
-                    WinningPlayerId = Guid.Parse("8b1f7d55-6ec4-45c7-aa4a-98d08e67c2ff")
+                    Description= "First test item",
+                    Name = "First Item",
+                    Price = 11111.11m
                 },
-                new GameResult() {
-                    GameDate = DateTime.UtcNow.AddDays(-1),
+                new CatalogItem() {
+                    LastUpdated = DateTime.UtcNow.AddDays(-1),
                     Id = Guid.NewGuid(),
-                    PlayerGestures= g2,
-                    WinningPlayerId = Guid.Empty
+                    Description= "Second test item",
+                    Name = "Second Item",
+                    Price = 99.99m
 
                 }
             };
 
         }
-*/
+
     }
 }

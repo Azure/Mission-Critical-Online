@@ -99,6 +99,7 @@ foreach($target in $targets) {
   $listCatalogUrl = "https://$targetFqdn/api/1.0/catalogitem"
   Write-Output "*** Call - List Catalog ($mode)"
   $responseListCatalog = Invoke-WebRequestWithRetry -Uri $listCatalogUrl -Method 'get' -Headers $header -MaximumRetryCount $smokeTestRetryCount -RetryWaitSeconds $smokeTestRetryWaitSeconds
+  $responseListCatalog
 
   $allItems = $responseListCatalog.Content | ConvertFrom-JSON
   $randomItem = Get-Random $allItems
@@ -111,6 +112,7 @@ foreach($target in $targets) {
   Write-Output "*** Call - Post new comment to item $($randomItem.id) ($mode)"
 
   $responsePostComment = Invoke-WebRequestWithRetry -Uri $postCommentUrl -Method 'POST' -Headers $header -Body $post_comment_body -MaximumRetryCount $smokeTestRetryCount -RetryWaitSeconds $smokeTestRetryWaitSeconds -ExpectedResponseCode 202
+  $responsePostComment
 
   Write-Output "*** Sleeping for 10 seconds to give the system time to create the comment"
   Start-Sleep 10
@@ -128,6 +130,7 @@ foreach($target in $targets) {
 
   Write-Output "*** Call - UI app for $mode"
   $responseUi = Invoke-WebRequestWithRetry -Uri https://$targetUiFqdn -Method 'GET' -MaximumRetryCount $smokeTestRetryCount -RetryWaitSeconds $smokeTestRetryWaitSeconds
+  $responseUi
 
   if (!$responseUi.Content.Contains("<title>AlwaysOn Catalog</title>")) # Check in the HTML content of the response for a known string (the page title in this case)
   {

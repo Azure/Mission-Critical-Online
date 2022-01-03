@@ -27,7 +27,6 @@ The process to deploy AlwaysOn is comprised of the following steps:
 1) Create an [Azure DevOps organization + project](#create-a-new-azure-devops-project)
 1) Create a fork of the [AlwaysOn GitHub](https://github.com/azure/alwayson) repository
 1) Import [deployment pipelines](#3-import-pipelines)
-1) Re-use or create an [Azure B2C Tenant](./Security-B2C-Provisioning.md)
 1) Create [Service Principals](#create-azure-service-principal) for each individual Azure subscription
 1) Create [Service Connections](#configure-service-connections) and [Variable Groups](#configure-variable-groups) in Azure DevOps
 1) Access to an Azure Subscription (it is recommended to use multiple subscriptions to separate environments types i.e. dev, test and prod) with RP and preview features enabled for each of the subscriptions
@@ -127,17 +126,8 @@ az pipelines create --name "Azure.AlwaysOn PROD Release" --description "Azure.Al
 
 You need to run the "import a YAML pipeline" CLI command above for each YAML file to import. You can browse the repo you forked to see the YAML files in the `/.ado/pipelines/` folder.
 
-### 4) Create or bring an existing Azure B2C tenant
 
-Follow the guide [here](./Security-B2C-Provisioning.md) on how to create and/or configure the required Azure AD B2C tenant.
-
-Note: You may be prompted that your Azure subscription does not have the Microsoft.AzureActiveDirectory Resource Provider installed. If so, you can register the provider in your Azure subscription via the `az provider` CLI:
-
-```bash
- az provider register --namespace Microsoft.AzureActiveDirectory
- ```
-
-### 5) Create Azure Service Principal
+### 4) Create Azure Service Principal
 
 All pipelines require an Azure DevOps service connection to access the target Azure Subscription where the resources are deployed. These service connections use Service Principals to access Azure which can be configured automatically, when proper access is given, or manually in Azure DevOps by providing a pre-created Azure Service Principal with the required permissions.
 
@@ -169,7 +159,7 @@ Take a note of the `appId` and `password` from the output of that command as you
 
 More information about the required permissions needed to deploy via Terraform can be found [here](/src/infra/workload/README.md).
 
-### 6) Create Azure Service Connections
+### 5) Create Azure Service Connections
 
 Our AlwaysOn reference implementation knows three different environments: prod, int and e2e. These three environments can be selected for each individual pipeline run and can refer to the same or different (recommended) Azure subscriptions for proper separation. These environments are represented by service connections in Azure DevOps:
 
@@ -209,7 +199,7 @@ az devops service-endpoint azurerm create \
 
 > `AZURE_DEVOPS_EXT_AZURE_RM_SERVICE_PRINCIPAL_KEY` is used for automation purposes. If not set, `az devops` will prompt you for the service principal client secret. See [az devops service-endpoint azurerm](https://docs.microsoft.com/cli/azure/devops/service-endpoint/azurerm?view=azure-cli-latest) for more information about parameters and options.
 
-### 7) Access to an Azure Subscriptions with RP and preview features enabled
+### 6) Access to an Azure Subscriptions with RP and preview features enabled
 
 #### (Optional) Register Azure Resource Providers
 
@@ -231,7 +221,7 @@ az feature register --namespace Microsoft.ContainerService -n AutoUpgradePreview
 
 See [Azure Preview feature ](/src/infra/workload/README.md#preview-feature-registration-on-subscription) for additional information.
 
-### 8) Adjust configuration
+### 7) Adjust configuration
 
 There are three variables files in the `/.ado/pipelines/config` folder, one for each environment. You need to edit those file to reflect your own workspace before you execute the first deployments.
 
@@ -297,15 +287,6 @@ You can now go to the Azure Portal and check the provisioned resources. In the R
 **Stamp Resources**
 ![Azure Stamp Resources](/docs/media/e2e_azure_resources_stamp.png)
 
-### Activate B2C login and browse the UI
-
-Before we can use the UI with its full functionality, we need to add the newly deployed in the B2C application config.
-
-For this, you need to perform [the additional step](./Security-B2C-Provisioning.md#update-redirect-uris) of adding this URL to the accepted redirect URL in your B2C application.
-
-Once this is done, you can test the user interface. For this you can navigate to `https://<your-resource-prefix>-global.azurefd.net`, e.g. `https://aoe2efad5-global-fd.azurefd.net`.
-
-![Landing page](/docs/media/alwayson_landingpage.png)
 
 ## Additional information to learn more
 

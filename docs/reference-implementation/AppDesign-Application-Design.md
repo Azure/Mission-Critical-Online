@@ -9,12 +9,12 @@ The AlwaysOn reference implementation considers a simple game workflow where end
 The workload consists of three components:
 
 1. **User interface (UI) application** - This is used by both requestors and reviewers.
-1. **API application** (`GameService`) - This is called by the the UI application, but also available as REST API for other potential clients.
-1. **Worker application** (`ResultWorker`) - This processes write requests to the database by listening to new events on the message bus. This component does not expose any APIs.
+1. **API application** (`CatalogService`) - This is called by the the UI application, but also available as REST API for other potential clients.
+1. **Worker application** (`BackgroundProcessor`) - This processes write requests to the database by listening to new events on the message bus. This component does not expose any APIs.
 
 ## Queue-based asynchronous processing
 
-In order to achieve high responsiveness for all operations, AlwaysOn implements the [Queue-Based Load leveling pattern](https://docs.microsoft.com/azure/architecture/patterns/queue-based-load-leveling) combined with [Competing Consumers pattern](https://docs.microsoft.com/azure/architecture/patterns/competing-consumers) where multiple producer instances (`GameService` in our case) generate messages which are then asynchronously processed by consumers (`ResultWorker`). This allows the API to accept the request and return to the caller quickly whilst the more demanding database write operation is processed separately.
+In order to achieve high responsiveness for all operations, AlwaysOn implements the [Queue-Based Load leveling pattern](https://docs.microsoft.com/azure/architecture/patterns/queue-based-load-leveling) combined with [Competing Consumers pattern](https://docs.microsoft.com/azure/architecture/patterns/competing-consumers) where multiple producer instances (`CatalogService` in our case) generate messages which are then asynchronously processed by consumers (`ResultWorker`). This allows the API to accept the request and return to the caller quickly whilst the more demanding database write operation is processed separately.
 
 ![Competing consumers diagram](/docs/media/competing-consumers-diagram.png)
 
@@ -76,100 +76,15 @@ The following table is a summary of operations and their expected permissions:
 |Get list of current player's games |Player | |
 |Delete player |Game Master | |
 
-If an unauthenticated user attempts to perform an operation which requires login, they will be prompted to sign in with a popup from Azure AD B2C. If successful, the app will proceed with the operation.
-
-In terms of security, there's no permission validation done on the UI itself. We're using a custom attribute to hide/reveal parts of the UI depending on role, but all requests are validated on the API layer.
-
-To replicate our configuration, see [B2C Provisioning](/src/config/identity/B2C-Provisioning.md).
-
-### Headless access
-
-In order to enable API access without using the UI (a method used mostly for smoke and load testing), there's a secondary sign-in flow which uses [ROPC (Resource owner password credentials)](https://docs.microsoft.com/azure/active-directory-b2c/add-ropc-policy?tabs=app-reg-ga&pivots=b2c-user-flow). This allows users to send a username and password to the AAD `/token` endpoint and receive a response with access token which can then be validated on the API side.
-
-To obtain an access token the ROPC user flow must be [provisioned](/src/config/identity/B2C-Provisioning.md#Create-ROPC-user-flow) properly on the tenant. Once done, use the following REST API:
-
-```HTTP
-POST https://<tenant>.b2clogin.com/<tenant>.onmicrosoft.com/<ropc policy>/oauth2/v2.0/token?client_id=<client ID>&username=<user>@<tenant>.onmicrosoft.com&password=<password>&grant_type=password&tenant=<tenant>.onmicrosoft.com&scope=https://<tenant>.onmicrosoft.com/<client ID>/<scope>
-```
-
-Parameters:
-
-- `tenant`: Name of the Azure AD B2C tenant used for authentication.
-- `ropc policy`: Name of the ROPC user flow (e.g. `b2c_1_ropc_signin`).
-- `client ID`: Application (client) ID of the application registered in B2C. This application needs to have granted permissions to access the `scope` (as described in the provisioning article).
-- `user`: Username of the identity dedicated for testing - create a separate account with only Player permissions for this.
-- `password`: Literal password of the testing user.
-- `scope`: Full URL of the scope created during provisioning (e.g. `https://alwaysondev.onmicrosoft.com/04162f80-c8ab-3d3e-b284-2f4c41819a93/Games.Access`).
-
-> There is a set of pre-provisioned sample accounts. See [B2C - Create users](/src/config/identity/B2C-Provisioning.md#Create-Users).
-
-Response:
-
-```json
-{
-  "access_token": "eyJ0eXAiOiJKV1QiLC...",
-  "token_type": "Bearer",
-  "expires_in": "3600"
-}
-```
-
-Then use the access token in a request like this:
-
-```http
-GET https://ao4220-global-fd.azurefd.net/api/1.0/game/4c35845c-4a72-4534-9a78-505b2c899552
-Authorization: Bearer <access_token>
-```
-
-Troubleshooting notes:
-
-- Use **https://** when calling the API.
-- Do not forget to include **/api** and **version number** after the domain name.
-- Make sure that the Client ID is aligned in both the HTTP request and API configuration (`B2C_UI_CLIENTID`).
-- Copy and paste the access_token value to https://jwt.ms to verify its contents. It should contain the correct username, contain the `extension_GameMaster` attribute and `tfp` value should be `B2C_1_ropc_signin`.
-
-### Microsoft Graph
-
-Microsoft Graph is used to fetch player names in the ResultWorker when adding new game results to the database, generating leaderboards and updating players.
-
-After proper [registration](/src/config/identity/B2C-Provisioning.md#Microsoft-Graph-Access), a standard `GraphServiceClient` from the **Microsoft.Graph** NuGet package can be used.
-
-Initialization ([/src/app/AlwaysOn.ResultWorker/Program.cs](/src/app/AlwaysOn.ResultWorker/Program.cs)):
-
-```csharp
-services.AddSingleton<GraphServiceClient>(sp =>
-{
-    var sysConfig = sp.GetService<SysConfiguration>();
-
-    var scopes = new[] { "https://graph.microsoft.com/.default" }; // for B2C this needs to be .default
-    var tenantId = $"{sysConfig.B2CTenantName}.onmicrosoft.com";
-    var options = new TokenCredentialOptions
-    {
-        AuthorityHost = AzureAuthorityHosts.AzurePublicCloud
-    };
-
-    var clientSecretCredential = new ClientSecretCredential(tenantId, sysConfig.B2CResultWorkerClientID, sysConfig.B2CResultWorkerClientSecret, options);
-
-    return new GraphServiceClient(clientSecretCredential, scopes);
-});
-```
-
-Usage ([/src/app/AlwaysOn.ResultWorker/Services/PlayerNameResolutionService.cs](/src/app/AlwaysOn.ResultWorker/Services/PlayerNameResolutionService.cs)):
-
-```csharp
-// Get Player Name from B2C
-var user = await _graphClient.Users[playerIdString].Request().GetAsync();
-playerName = user.DisplayName;
-```
-
 ## Scalability
 
-`GameService` as well as the `ResultWorker` can scale in and out individually. Both services are stateless, deployed via Helm charts to each of the (regional) stamps, have proper requests and limits in place and have a pre-configured auto-scaling (HPA) rule in place.
+`CatalogService` as well as the `BackgroundProcessor` can scale in and out individually. Both services are stateless, deployed via Helm charts to each of the (regional) stamps, have proper requests and limits in place and have a pre-configured auto-scaling (HPA) rule in place.
 
-`GameService` performance has a direct impact on the end user experience. The service is expected to be able to scale out automatically to provide a positive user experience and performance at any time.
+`CatalogService` performance has a direct impact on the end user experience. The service is expected to be able to scale out automatically to provide a positive user experience and performance at any time.
 
-`GameService` has at least 3 instances per cluster to spread across three Availability Zones per Azure Region. Each instance requests one CPU core and a given amount of memory based on upfront load testing. Each instance is expected to serve ~250 requests/second based on a standardized usage pattern. `GameService` has a 3:1 relationship to the nginx-based Ingress controller.
+`CatalogService` has at least 3 instances per cluster to spread across three Availability Zones per Azure Region. Each instance requests one CPU core and a given amount of memory based on upfront load testing. Each instance is expected to serve ~250 requests/second based on a standardized usage pattern. `CatalogService` has a 3:1 relationship to the nginx-based Ingress controller.
 
-The `ResultWorker` service has very different requirements and is considered a background worker which has no direct impact on the user experience. As such, `ResultWorker` has a different auto-scaling configuration than `GameService` and it can scale between 2 and 32 instances (which matches the max. no. of EventHub partitions). The ratio between `GameService` and `ResultWorker` is around 20:2.
+The `BackgroundProcessor` service has very different requirements and is considered a background worker which has no direct impact on the user experience. As such, `BackgroundProcessor` has a different auto-scaling configuration than `CatalogService` and it can scale between 2 and 32 instances (which matches the max. no. of EventHub partitions). The ratio between `CatalogService` and `BackgroundProcessor` is around 20:2.
 
 ---
 

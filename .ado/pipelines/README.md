@@ -16,11 +16,6 @@ Additionally there are some auxiliary pipelines:
 
 - **Azure.AlwaysOn Deploy Locust (Standalone)** (`deploy-locust.yaml`) deploys a standalone Locust-based load testing infrastructure using Terraform and Azure Container Instances. The environment can be scaled out by setting the number of worker nodes to >=1 or scaled down by setting the number to 0. The `terraform apply` task returns the FQDN of the load testing web interface. The web interface is protected with basic authentication, the required credentials to access the web interface are stored in Azure Key Vault. Check out the [Locust](/src/testing/loadtest-locust/README.md) specific documentation for more.
 
-- **Azure.AlwaysOn Deploy Azure Load Generator.** (`azure-deploy-loadgenerator.yaml`) deploys a standalone Azure Functions-based load generator for simulating user activity. See the article on the [load generator](/src/testing/userload-generator/README.md) for more information.
-
-- **Azure.AlwaysOn Deploy Self-hosted Build Agents** (`azure-deploy-private-build-agents.yaml`) deploys the required infrastructure for private build agents. This is only required when running AlwaysOn in [private mode](/docs/reference-implementation/GettingStarted-Private-AlwaysOn.md).
-
-
 All pipelines are defined in YAML and are stored in the AlwaysOn GitHub repository in the `.ado/pipelines` directory:
 
  ![img](/docs/media/devops1.png)
@@ -47,11 +42,9 @@ In summary, the following tasks are currently automated via pipelines:
 - Build Container Images and UI app
 - Configure AKS clusters
 - Deploy the container workloads to AKS and the UI app to static storage
-- Update Redirect URI in Azure AD B2C with the newly created endpoint
 - Smoke-test the API and the UI
 - (Gradually) reconfigure Front Door to direct traffic to the newly deployed stamps
 - Remove the previous release unit (plus the global infrastructure in case of the E2E pipeline)
-- Remove the Redirect URI in Azure AD B2C (for E2E pipeline with destroy)
 
 All pipelines use pipeline artifacts to share information like FQDNs, Resource IDs etc. between stages. This is needed as the deployment of the infrastructure is dynamic and can create a varying number of regional deployments (stamps). For example, the output of the two Terraform deployment tasks (global resources and release unit resources) are stored as JSON files as artifacts. Similarly, the container image names are stored as artifacts to transfer the exact image name and tag from the build stage to the deployment stage.
 
@@ -81,9 +74,6 @@ Environment config files are stored in `.ado/pipelines/config` and are named `va
 | terraformStorageAccount | Azure Storage Account name used to store Terraform state (has to be globally unique) | myterraformstate |
 | envDnsZoneRG | OPTIONAL: Name of the Azure Resource group which holds the Azure DNS Zone for your custom domain. Not required if you do not plan to use a custom DNS name | mydns-rg |
 | envDomainName | OPTIONAL: Name of the Azure DNS Zone. Not required if you do not plan to use a custom DNS name | example.com |
-| b2cTenantName | Azure AD B2C tenant name without ".onmicrosoft.com". You have configured this [here](/docs/reference-implementation/Security-B2C-Provisioning.md) | alwaysondev |
-| b2cUIClientID | Azure AD B2C Client ID of the UI application. You have configured this [here](/docs/reference-implementation/Security-B2C-Provisioning.md) | 14162f80-c8ab-4a4e-c283-2f4c41829a93 |
-| b2cResultWorkerClientID | Azure AD B2C Client ID of the application for the ResultWorker, registered to read-access Microsoft Graph. You have configured this [here](/docs/reference-implementation/Security-B2C-Provisioning.md) | 14162f80-c8ab-4a4e-c283-2f4c41829a93 |
 | contactEmail | E-mail alias used for alerting. **Be careful which address you put in here as it will potentially receive a lot of notification emails** | alwaysonappnet@example.com |
 
 ## Variable Groups
@@ -94,21 +84,8 @@ The variable groups in Azure DevOps only contain sensitive (secret) values, whic
 
 | Key | Description | Sample value |
 | --- | --- | --- |
-| smokeUser | Username used for smoke tests - should be a dedicated testing user with non-admin permissions. The user needs to exist in the aforementioned B2C tenant | thomas@demo.always-on.app |
-| smokePassword | Password of the aforementioned user for the smoke tests | S0meV3rySecureP@ssw0rd |
-| loadtestUserPassword | [Optional]. Only required when running load tests. Password of the users for the load tests. We expect all users to have the same password for loadtesting. | Lo4dTestPass! |
-| b2cResultWorkerClientSecret | Client secret of the Azure AD B2C application for the ResultWorker, registered to access Microsoft Graph | 4.6dM-O234m9.-K-yxzGj21ZU0g36O~7CW |
-| b2cAdoClientId | Azure AD B2C Client ID of the application for the dedicated ADO client registered to read/write access applications in Microsoft Graph. You have configured this [here](/docs/reference-implementation/Security-B2C-Provisioning.md) | 14162f80-c8ab-4a4e-c283-2f4c41829a93 |
-| b2cAdoClientCertName | The name of ADO client certificate, which was uploaded to secure files | ADO_Graph_Client_e2e.pfx |
-| b2cAdoClientCertPassword | Password for the PFX certificate. | 4.6dM-O234m9.-K-yxzGj21ZU0g36O~7CW |
 
 These config files and variable groups are automatically loaded based on the environment selection (prod, int or e2e).
-
-## Secure files
-
-Each environment should have dedicated application registration with Microsoft Graph access and a corresponding private key (PFX file) for this application. The key needs to be uploaded to the **Secure files** section in Azure DevOps Library with name and password specified in Variable groups for each environment.
-
-See [B2C provisioning](/docs/reference-implementation/Security-B2C-Provisioning.md) for help with this step.
 
 ## Service Connections
 
@@ -124,23 +101,19 @@ All pipelines are using Azure DevOps service connections to connect to Microsoft
 
 As part of the pipelines, basic Smoke Tests against the APIs are executed:
 
-- Obtain access token for the testing user from Azure AD B2C.
 - GET call to the Health Service `/health/stamp` API. Expected result: HTTP 200
-- POST call to the GameService `/api/1.0/game` API to create a new game result with AI gesture provided by client. Expected result: HTTP 202
-- POST call to the GameService `/api/1.0/game/ai` API to create a new game result with AI gesture generated on the API. Expected result: HTTP 202
-- GET call the GameService `/api/1.0/player/me` API to retrieve statistics of the testing user. Expected result: HTTP 200
-- GET call the GameService `/api/1.0/player/me/games` API to retrieve list of current player's games. Expected result: HTTP 200
+- POST call to the CatalogService `/api/1.0/game` API to create a new game result with AI gesture provided by client. Expected result: HTTP 202
+- POST call to the CatalogService `/api/1.0/game/ai` API to create a new game result with AI gesture generated on the API. Expected result: HTTP 202
+- GET call the CatalogService `/api/1.0/player/me` API to retrieve statistics of the testing user. Expected result: HTTP 200
+- GET call the CatalogService `/api/1.0/player/me/games` API to retrieve list of current player's games. Expected result: HTTP 200
 
 The calls are first executed against the individual stamps to test the availability of each regional deployment and afterwards against the global Front Door endpoint, which distributes the requests to the different stamps.
 
 Additionally, two UI smoke tests are performed:
 
-1. GET request to each of the stamp's Static Storage Web endpoint and Front Door endpoint, which then validates that the website contains the HTML page title "AlwaysOn Game". Since PowerShell doesn't run JavaScript on the site, this serves as a simple check if the HTML page was deployed to the storage account and is available.
+1. GET request to each of the stamp's Static Storage Web endpoint and Front Door endpoint, which then validates that the website contains the HTML page title "AlwaysOn Catalog". Since PowerShell doesn't run JavaScript on the site, this serves as a simple check if the HTML page was deployed to the storage account and is available.
 1. UI test with [Playwright](/src/testing/ui-test-playwright/README.md) against the Front Door endpoint, which takes a screenshot of the home page, play game page and list game results page and publishes them as pipeline artifacts. Playwright uses actual web browser engine (Chromium in our case), so it's possible to navigate in the app and "see" how it really looks like.
 
-## Authentication in the UI
-
-Most operations in the UI application are protected with authentication. In order to make the login in the UI work, especially in E2E environments, one manual step is currently required: [add the newly created URL for the environment into *Redirect URI* list](/docs/reference-implementation/Security-B2C-Provisioning.md#update-redirect-uris). This needs to be done once for int and prod and for every E2E environment which will be used for UI testing/debugging (which will only happen on a subset of these).
 
 ## Scripting
 

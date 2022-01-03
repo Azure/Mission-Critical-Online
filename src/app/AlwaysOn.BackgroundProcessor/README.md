@@ -1,4 +1,4 @@
-# Result Worker
+# Background Processor
 
 The worker application is based on the [.NET Core Worker Service](https://docs.microsoft.com/aspnet/core/fundamentals/host/hosted-services?view=aspnetcore-5.0&tabs=visual-studio) template, using the Worker SDK which is designed for background task processing.
 
@@ -10,24 +10,22 @@ There's no UI or API as the worker is constantly listening for new events on the
 
 ## Configuration
 
-Refer to [GameService configuration](../AlwaysOn.GameService/README.md#Configuration) for details of the implementation.
+Refer to [CatalogService configuration](../AlwaysOn.CatalogService/README.md#Configuration) for details of the implementation.
 
-Apart from the configuration settings which are common between components, such as Cosmos DB connection settings, the following settings are used exclusively by the ResultWorker:
+Apart from the configuration settings which are common between components, such as Cosmos DB connection settings, the following settings are used exclusively by the BackgroundProcessor:
 
 - `BackendReaderEventHubConnectionString`: Connection string with `Listen` permissions to the Event Hub.
-- `BackendReaderEventHubConsumergroup`: Consumer group in the Event Hub to be used exclusively by the ResultWorker.
+- `BackendReaderEventHubConsumergroup`: Consumer group in the Event Hub to be used exclusively by the BackgroundProcessor.
 - `BackendStorageConnectionString`: Connection string to the storage account which is used for checkpointing, partition ownership management and poison message storage.
 - `BackendCheckpointBlobContainerName`: Name of the container on the aforementioned blob storage account.
 - `BackendCheckpointLoopSeconds`: Controls how often checkpointing on blob storage happens. The more frequent, the more overhead this creates and will slow down processing. Longer periods, however, can make for more duplicate processing on restart or partition ownership change.
 - `BackendStoragePoisonMessagesTableName`: Name of the table on the storage account to store poison messages if they cannot be processed.
-- `ResultWorkerMaxRetryCount`: How often the ResultWorker should retry to process a message if it fails, for example because Cosmos DB is not available.
-- `ResultWorkerRetryWaitSeconds`: How many seconds to wait between each retry attempt. Wait time is `RetryAttempt * ResultWorkerRetryWaitSeconds`
-- `B2CResultWorkerClientID`: Client ID of the Azure AD B2C application, which has assigned access to Microsoft Graph. The ResultsWorker is using it to fetch player names for a given user ID.
-- `B2CResultWorkerClientSecret`: Client secret of the Azure AD B2C application, which has assigned access to Microsoft Graph.
+- `BackgroundProcessorMaxRetryCount`: How often the BackgroundProcessor should retry to process a message if it fails, for example because Cosmos DB is not available.
+- `BackgroundProcessorRetryWaitSeconds`: How many seconds to wait between each retry attempt. Wait time is `RetryAttempt * BackgroundProcessorRetryWaitSeconds`
 
 ## Logging and tracing
 
-The ResultWorker uses the `Microsoft.ApplicationInsights.WorkerService` NuGet package to get out-of-the-box instrumentation from the application. Also, [Serilog](https://github.com/serilog/serilog-extensions-logging) is used for all logging inside the application with Azure Application Insights configured as a sink (next to the Console sink). Only when needed to track additional metrics, a `TelemetryClient` instance for ApplicationInsights is used directly.
+The BackgroundProcessor uses the `Microsoft.ApplicationInsights.WorkerService` NuGet package to get out-of-the-box instrumentation from the application. Also, [Serilog](https://github.com/serilog/serilog-extensions-logging) is used for all logging inside the application with Azure Application Insights configured as a sink (next to the Console sink). Only when needed to track additional metrics, a `TelemetryClient` instance for ApplicationInsights is used directly.
 
 ## Partition ownership and checkpointing
 
@@ -71,7 +69,7 @@ while (!stoppingToken.IsCancellationRequested)
 
 ## Event Processing, retries and poison message storage
 
-As an `EventProcessorClient` the ResultWorker can listen to one or more partitions of the Event Hub (managed by the aforementioned mechanism for partition ownership). Within each partition, events are received sequentially and need to be processed one by one. This is implemented in the `ProcessEventHandlerAsync(ProcessEventArgs eventArgs)` function. This function must only return once the processing of an event is fully completed. That means either:
+As an `EventProcessorClient` the BackgroundProcessor can listen to one or more partitions of the Event Hub (managed by the aforementioned mechanism for partition ownership). Within each partition, events are received sequentially and need to be processed one by one. This is implemented in the `ProcessEventHandlerAsync(ProcessEventArgs eventArgs)` function. This function must only return once the processing of an event is fully completed. That means either:
 - The event was successfully processed. Usually this means some write operation to the database was executed.
 - The event was discarded because it is a health check message (see below).
 - The event could not be processed and therefore was written to the poison message store for manual inspection.
@@ -86,15 +84,15 @@ catch (AlwaysOnDependencyException e)
     int retries = 1;
     retryCounters.TryGetValue(eventArgs.Partition.PartitionId, out retries);
 
-    if(retries > _sysConfig.ResultWorkerMaxRetryCount)
+    if(retries > _sysConfig.BackgroundProcessorMaxRetryCount)
     {
-        _logger.LogError("Retried event messageId={messageId} already {retries}/{maxRetries} times. Giving up, writing Event to poision queue.", eventArgs.Data.MessageId, retries, _sysConfig.ResultWorkerMaxRetryCount);
+        _logger.LogError("Retried event messageId={messageId} already {retries}/{maxRetries} times. Giving up, writing Event to poision queue.", eventArgs.Data.MessageId, retries, _sysConfig.BackgroundProcessorMaxRetryCount);
         await WriteErroredEventToPoisonMessageStoreAsync(eventArgs);
     }
     else
     {
-        var retryDelay = TimeSpan.FromSeconds(retries * _sysConfig.ResultWorkerRetryWaitSeconds); // Exponential backoff
-        _logger.LogError("AlwaysOnDependencyException occured while processing event messageId={messageId}, StatusCode={statusCode}. Will retry after {retryDelay}. Retry attempt: {retry}/{maxRetries}", eventArgs.Data.MessageId, e.StatusCode, retryDelay, retries, _sysConfig.ResultWorkerMaxRetryCount);
+        var retryDelay = TimeSpan.FromSeconds(retries * _sysConfig.BackgroundProcessorRetryWaitSeconds); // Exponential backoff
+        _logger.LogError("AlwaysOnDependencyException occured while processing event messageId={messageId}, StatusCode={statusCode}. Will retry after {retryDelay}. Retry attempt: {retry}/{maxRetries}", eventArgs.Data.MessageId, e.StatusCode, retryDelay, retries, _sysConfig.BackgroundProcessorMaxRetryCount);
         retries++;
         retryCounters.AddOrUpdate(eventArgs.Partition.PartitionId, retries, (key, existingValue) => { return retries; }); // Update retry counter for this partition
         await Task.Delay(retryDelay);
@@ -151,7 +149,7 @@ Currently, there is no correlation between sending and receiving of Event Hub me
 
 ## Kubernetes Liveness health probe
 
-Since the ResultWorker does not expose a HTTP interface, it needs a different mechanism for Kubernetes to probe for the pod's liveness. For this, it uses a [custom Health Check implementation](/src/app/AlwaysOn.ResultWorker/HealthCheckPublisher.cs) which writes a temporary file to the container filesystem and deletes it if the application needs to report "unhealthy". Kubernetes then uses the `exec` mode of the livenessProbe to validate if the file is present and was recently modified (see [deployment.yaml](/src/app/charts/resultworker/templates/deployment.yaml)).
+Since the BackgroundProcessor does not expose a HTTP interface, it needs a different mechanism for Kubernetes to probe for the pod's liveness. For this, it uses a [custom Health Check implementation](/src/app/AlwaysOn.BackgroundProcessor/HealthCheckPublisher.cs) which writes a temporary file to the container filesystem and deletes it if the application needs to report "unhealthy". Kubernetes then uses the `exec` mode of the livenessProbe to validate if the file is present and was recently modified (see [deployment.yaml](/src/app/charts/BackgroundProcessor/templates/deployment.yaml)).
 
 The health check currently does not implement any special logic, for now it mostly serves as an example how to implement such probes on headless (no HTTP interface) services.
 

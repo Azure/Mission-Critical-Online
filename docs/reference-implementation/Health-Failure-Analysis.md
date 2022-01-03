@@ -10,12 +10,11 @@ Composing the failure analysis is mostly a theoretical planning exercise. It can
 
 Each of the following sections lists risks for individual components and evaluate if their failure can cause an outage of the whole application (the **outage** column).
 
-### Azure Active Directory & B2C
+### Azure Active Directory
 
 | **Risk**              | **Impact/Mitigation/Comment**                | **Outage** |
 | ---------------------------------- | ------------------------------------------------------------ | ---------- |
 | **Azure AD becomes unavailable** | Currently **no possible mitigation** in place. Also, multi-region approach will likely not (fully) mitigate any outages here as it is a global service. This is a hard dependency we are taking. <br />Mostly AAD is being used for control plane operations like the creation of new AKS nodes, pulling container images from ACR or to access Key Vault on pod startup. Hence, **we expect that existing, running components should be able to keep running when AAD experiences issues**. However, we would likely not be able to spawn new pods or AKS nodes. So in scale operations are required during this time, it could lead to a decreased user experience and potentially to outages. | Partial    |
-| **Azure AD B2C becomes unavailable** | Currently **no possible mitigation** in place. Also, multi-region approach will likely not (fully) mitigate any outages here as it is a global service. This is a hard dependency we are taking. <br />When B2C experiences issues, user login will likely be impacted as they will not be able to fetch a new token. Existing, non-expired tokens might still continue to work.  | Partial    |
 
 ### Azure DNS
 

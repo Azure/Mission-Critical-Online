@@ -35,20 +35,12 @@ As with the AlwaysOn Design Guidelines, the Reference Implementation section is 
 
 - [Deployment - DevOps Design Decisions](DeployAndTest-DevOps-Design-Decisions.md)
 - [Deployment - Zero Downtime Update Strategy](DeployAndTest-DevOps-Zero-Downtime-Update-Strategy.md)
-- [Testing - Introduction](DeployAndTest-Testing-Introduction.md)
-- [Testing - Scale and Load Testing](DeployAndTest-Scaling-and-Load-Testing.md)
-- [Testing - Chaos Engineering](DeployAndTest-Testing-ChaosEngineering.md)
 - [Testing - Failure Injection](DeployAndTest-Testing-FailureInjection.md)
 
 ### Networking and Connectivity
 
 - [Networking Design Decisions](Networking-Design-Decisions.md)
 - [Networking Custom Domains](Networking-Custom-Domains.md)
-
-### Security
-
-- [Azure Active Directory B2C Provisioning](Security-B2C-Provisioning.md)
-- [Deploy AlwaysOn in Private Mode](GettingStarted-Private-AlwaysOn.md)
 
 ### Operational Procedures
 
@@ -61,9 +53,9 @@ As with the AlwaysOn Design Guidelines, the Reference Implementation section is 
   - [Terraform-based IaC](/src/infra/workload/README.md)
   - [Grafana](/src/infra/monitoring/grafana/README.md)
 - [Application](/src/app/README.md)
-  - [Game Service](/src/app/AlwaysOn.Gameservice/README.md)
+  - [Catalog Service](/src/app/AlwaysOn.Catalogservice/README.md)
   - [Health Service](/src/app/AlwaysOn.Healthservice/README.md)
-  - [Result Worker](/src/app/AlwaysOn.ResultWorker/README.md)
+  - [Background Processor](/src/app/AlwaysOn.BackgroundProcessor/README.md)
   - [UI Application](/src/app/AlwaysOn.UI/README.md)
 - [Deployment Pipelines](/.ado/pipelines/README.md)
 - [Configuration](/src/infra/README.md)

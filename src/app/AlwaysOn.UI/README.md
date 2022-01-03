@@ -62,11 +62,9 @@ Alternatively, you could make the config object part of the compiled app code an
 
 Settings to configure:
 
-* `window.API_URL` = URL of the API root which will be used, **without the trailing "/"**. For localhost this will be something like: *http://localhost:5000/api*, for cloud environment it will be: */api* (because the UI runs on the same domain as the API). This can also be the absolute URL of a published API, only make sure that no firewall and CORS restriction are in place.
-* `window.APPINSIGHTS_INSTRUMENTATIONKEY` = Instrumentation key for the Application Insights instance to be used.
-* `window.CLIENT_ID` = Client ID of the UI application registration in Azure AD B2C.
-* `window.TENANT_NAME` = Azure AD B2C tenant name.
-* `window.POLICY_NAME` = Azure AD B2C sign in policy name (`b2c_1_signin` in the reference implementation).
+- `window.API_URL` = URL of the API root which will be used, **without the trailing "/"**. For localhost this will be something like: *http://localhost:5000/api*, for cloud environment it will be: */api* (because the UI runs on the same domain as the API). This can also be the absolute URL of a published API, only make sure that no firewall and CORS restriction are in place.
+- `window.APPINSIGHTS_INSTRUMENTATIONKEY` = Instrumentation key for the Application Insights instance to be used.
+
 
 ## Implementation notes
 
@@ -83,7 +81,7 @@ public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
         // ...
 
-        // Production GameService API will run on the same domain, but for local development, CORS needs to be enabled.
+        // Production CatalogService API will run on the same domain, but for local development, CORS needs to be enabled.
         app.UseCors(builder => builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
     }
 }
@@ -91,12 +89,12 @@ public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 
 ### Headers
 
-The GameService API sends back a set of additional HTTP headers, which can be used for debugging:
+The CatalogService API sends back a set of additional HTTP headers, which can be used for debugging:
 
 ```http
 x-correlation-id: 48cc82c400ac4d85871bcba5efb26b9e
 x-server-location: North Europe
-x-server-name: GameService-deploy-85d9fc989d-rk6gb
+x-server-name: CatalogService-deploy-85d9fc989d-rk6gb
 ```
 
 * `X-Correlation-Id` can be traced back to Application Insights.
@@ -110,13 +108,13 @@ The Game API returns standard HTTP responses on both success and error.
 * **HTTP 200 (OK)** - request was successful and result is available immediately. Typically for GET requests which query for data.
 * **HTTP 202 (Accepted)** - operation was accepted, but the result is not immediately available. This is, for example, being used for sending new game results. For these, the response contains a `Location` header representing the URL where the new item will be accessible.
 * **HTTP 400 (Bad Request)** - operation was not successful, because client provided incorrect or missing information. This can happen, for example, when required fields (like `gesture`) are not present within the request.
-* **HTTP 401 (Unauthorized)** - most of the API operations require requests coming from an authenticated user. This means to include a valid bearer token from Azure AD B2C in the `Authorization` header of the request. Calls without this token will result in 401 errors.
+* **HTTP 401 (Unauthorized)** - some of the API operations require requests to provide a correct API key. Calls without this key will result in 401 errors.
 * **HTTP 500 (Internal Server Error)** - operation was not successful, because server-side processing encountered an exception. There's nothing the client can do in this case. These types of errors should be caught and highlighted in the monitoring. The user may inform the operator and pass the Correlation ID in the support request.
 * **HTTP 503 (Service Unavailable)** - operation was not successful, because the server is temporarily not able to fulfil. The client should retry. This can, for instance, happen when downstream components are overloaded.
 
 For demonstration purposes, the UI application is surfacing these error codes to the page, so that it can be observed what kind of response is coming from the server.
 
-Following the security principle of not sharing unnecessary debug information with the client, the GameService API provides only the Correlation ID in the failed response and doesn't share the failure reason (like an exception message).
+Following the security principle of not sharing unnecessary debug information with the client, the CatalogService API provides only the Correlation ID in the failed response and doesn't share the failure reason (like an exception message).
 
 ```
 Error in processing. Correlation ID: XXXXXXXXXXXXXXXXXXXXXX.

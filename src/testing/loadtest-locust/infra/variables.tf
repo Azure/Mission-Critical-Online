@@ -13,7 +13,7 @@ variable "environment" {
 variable "locust_container_image" {
   description = "Locust Container Image"
   type        = string
-  default     = "locustio/locust:2.2.3"
+  default     = "locustio/locust:2.5.1"
 }
 
 variable "queued_by" {

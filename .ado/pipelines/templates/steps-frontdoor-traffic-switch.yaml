@@ -14,6 +14,8 @@ steps:
 # Global Resources terraform init
 - template: steps-terraform-init.yaml
   parameters:
+    terraformStorageAccountName:       '$(terraformStorageAccount)'
+    terraformStorageResourceGroupName: '$(terraformResourceGroup)'
     terraformStateFilename:     '$(terraformStateFileGlobal)'
     terraformWorkingDirectory:  '$(workingDirectory)/globalresources'
 

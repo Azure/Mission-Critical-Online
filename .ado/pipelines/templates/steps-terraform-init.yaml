@@ -1,84 +1,10 @@
 parameters:
+  terraformStorageAccountName: ''
+  terraformStorageResourceGroupName: ''
   terraformStateFilename:    ''
   terraformWorkingDirectory: ''
 
 steps:
-
-# Check if Terraform state store exists and create it if not
-- task: AzureCLI@2
-  displayName: 'Terraform verify state store'
-  inputs:
-    azureSubscription: $(azureServiceConnection)
-    scriptType: pscore
-    scriptLocation: inlineScript
-    inlineScript: |
-
-      echo "*** Check if Resource Group $(terraformResourceGroup) exists"
-      $checkRg = az group exists --name $(terraformResourceGroup) | ConvertFrom-Json
-      if (!$checkRg) {
-        Write-Warning "*** WARN! Resource Group $(terraformResourceGroup) does not exist. Creating..."
-        $locations = '$(stampLocations)' | ConvertFrom-Json -NoEnumerate # get the stamp locations and use the first one to create the resource group there. The region does not really matter.
-        az group create --name $(terraformResourceGroup) --location $locations[0]
-      }
-      else
-      {
-        echo "*** Ok"
-      }
-
-      echo "*** Check if Storage Account $(terraformStorageAccount) exists"
-      $check = az storage account show --name $(terraformStorageAccount) `
-                                       --resource-group $(terraformResourceGroup) | ConvertFrom-Json
-      if (!$check) {
-        Write-Warning "*** WARN! Storage Account $(terraformStorageAccount) does not exist. Creating..."
-        az storage account create --name $(terraformStorageAccount) `
-                                  --resource-group $(terraformResourceGroup) `
-                                  --https-only true `
-                                  --sku Standard_GZRS
-      }
-      else
-      {
-        echo "*** Ok"
-      }
-
-      $servicePrincipalId = $(az account show --query "user.name" -o tsv)
-      $storageAccountId = $(az storage account show --name $(terraformStorageAccount) `
-                                                    --resource-group $(terraformResourceGroup) `
-                                                    --query "id" -o tsv)
-
-      echo "*** Creating role assignment Storage Blob Data Owner for $servicePrincipalId on $storageAccountId"
-      # Create role assignment for the deploying service principal on the storage account.
-      # Terraform will then use RBAC to access the storage account instead of account keys
-      # The command is idempotent, so we can run it every time without other checks
-      az role assignment create --assignee $servicePrincipalId --role "Storage Blob Data Owner" --scope $storageAccountId
-
-      $terraformContainerName = "tfstate" # do not change unless you have a strong reason to. If so, also change below in 'terraform init' step
-
-      echo "*** Check if Container $terraformContainerName exists"
-      $check = az storage container exists --account-name $(terraformStorageAccount) `
-                                           --name $terraformContainerName --auth-mode login | ConvertFrom-Json
-      if (!$check.exists) {
-        Write-Warning "*** WARN! Container $terraformContainerName does not exist. Creating..."
-        az storage container create --name $terraformContainerName `
-                                    --account-name $(terraformStorageAccount) `
-                                    --public-access off `
-                                    --auth-mode login
-      }
-      else
-      {
-        echo "*** Ok"
-      }
-
-      # Enable 7 days soft delete on container and blob-level for the TF state storage account
-      # The command is idempotent, so we can run it every time without other checks
-      echo "*** Enabling soft delete on container- and blob-level"
-      az storage account blob-service-properties update `
-                                                --account-name $(terraformStorageAccount) `
-                                                --resource-group $(terraformResourceGroup) `
-                                                --enable-delete-retention true `
-                                                --delete-retention-days 7 `
-                                                --enable-container-delete-retention true `
-                                                --container-delete-retention-days 7
-
 # Install Terraform tooling
 - task: Bash@3
   displayName: 'Install Terraform CLI v$(terraformVersion)'
@@ -123,10 +49,10 @@ steps:
 
       # terraform init sometimes fails intermittently, so we do a simple retry here. Based on https://serverfault.com/a/80897/247455
       until terraform init \
-        -backend-config=storage_account_name=$(terraformStorageAccount) \
+        -backend-config=resource_group_name=${{ parameters.terraformStorageResourceGroupName }} \
+        -backend-config=storage_account_name=${{ parameters.terraformStorageAccountName }} \
         -backend-config=container_name=tfstate \
         -backend-config=key=${{ parameters.terraformStateFilename }} \
-        -backend-config=resource_group_name=$(terraformResourceGroup) \
         -backend-config=subscription_id="$(ARM_SUBSCRIPTION_ID)" \
         -backend-config=tenant_id="$(ARM_TENANT_ID)" \
         -backend-config=client_id="$(ARM_CLIENT_ID)" \

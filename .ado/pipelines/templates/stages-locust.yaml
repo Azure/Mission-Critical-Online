@@ -38,6 +38,8 @@ stages:
 
     - template: steps-terraform-init.yaml
       parameters:
+        terraformStorageAccountName:       '$(terraformStorageAccount)'
+        terraformStorageResourceGroupName: '$(terraformResourceGroup)'
         terraformStateFilename:       'terraform-locust-${{ parameters.customPrefix }}.state'
         terraformWorkingDirectory:    '${{ parameters.terraformWorkingDirectory }}'
 
@@ -54,7 +56,7 @@ stages:
 
       # overwrite locustTargetUrl pipeline variable with frontdoor fqdn (used for headless-locust-only)
     - ${{ if eq(parameters.locustHeadless, 'true') }}:
-      - task: Bash@3 
+      - task: Bash@3
         name: 'bashsetvariable'
         displayName: 'Set locustTargetUrl variable'
         inputs:
@@ -146,6 +148,8 @@ stages:
       # Destroy Locust infrastructure at the end
       - template: steps-terraform-destroy.yaml
         parameters:
+          terraformStorageAccountName:        '$(terraformStorageAccount)'
+          terraformStorageResourceGroupName:  '$(terraformResourceGroup)'
           terraformStateFilename:     'terraform-locust-${{ parameters.customPrefix }}.state'
           terraformWorkingDirectory:  '${{ parameters.terraformWorkingDirectory }}'
           customAttributes:           '-var prefix="${{ parameters.customPrefix }}"'

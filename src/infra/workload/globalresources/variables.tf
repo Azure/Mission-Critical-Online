@@ -117,16 +117,3 @@ variable "private_mode" {
   type        = bool
   default     = false
 }
-
-# Build agent settings, required for Private Endpoint creations
-variable "buildagent_resource_group_name" {
-  description = "Name of the resource group of the build agent and its VNet etc. for Private Endpoint creation"
-  type        = string
-  default     = ""
-}
-
-variable "buildagent_vnet_name" {
-  description = "Name of the VNet of the build agent for Private Endpoint creation"
-  type        = string
-  default     = ""
-}

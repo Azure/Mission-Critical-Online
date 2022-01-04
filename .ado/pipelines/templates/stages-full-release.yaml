@@ -40,7 +40,6 @@ stages:
             parameters:
               storageAccountName: '$(terraformStorageAccount)'
               resourceGroupName: '$(terraformResourceGroup)'
-              usePrivateEndpoints: '$(privateModeEnabled)'
 
           # Global Resources terraform init
           - template: steps-terraform-init.yaml # Initialize Terraform

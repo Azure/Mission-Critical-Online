@@ -106,24 +106,3 @@ variable "api_key" {
   type        = string
   sensitive   = true
 }
-
-# Settings for private deployment mode
-
-variable "private_mode" {
-  description = "Restrict network access to private endpoints only? If set to True, this MUST be deployed through private build agents"
-  type        = bool
-  default     = false
-}
-
-# Build agent settings, required for Private Endpoint creations
-variable "buildagent_resource_group_name" {
-  description = "Name of the resource group of the build agent and its VNet etc. for Private Endpoint creation"
-  type        = string
-  default     = ""
-}
-
-variable "buildagent_vnet_name" {
-  description = "Name of the VNet of the build agent for Private Endpoint creation"
-  type        = string
-  default     = ""
-}

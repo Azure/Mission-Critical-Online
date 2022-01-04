@@ -12,11 +12,11 @@
                <p>Price: ${{ item.price }}</p>
                <p>Rating: {{ item.rating.averageRating }} ({{ item.rating.numberOfVotes }} vote{{ (item.rating.numberOfVotes > 1 || item.rating.numberOfVotes == 0) ? "s" : "" }})</p>
                <p class="rating-buttons" v-if="!ratedYet">
-                  <button v-on:click="rate(1)" :disabled="ratedYet">1</button>
-                  <button v-on:click="rate(2)" :disabled="ratedYet">2</button>
-                  <button v-on:click="rate(3)" :disabled="ratedYet">3</button>
-                  <button v-on:click="rate(4)" :disabled="ratedYet">4</button>
-                  <button v-on:click="rate(5)" :disabled="ratedYet">5</button>
+                  <button v-on:click="rate(1)" :disabled="ratedYet" id="rating-1">1</button>
+                  <button v-on:click="rate(2)" :disabled="ratedYet" id="rating-2">2</button>
+                  <button v-on:click="rate(3)" :disabled="ratedYet" id="rating-3">3</button>
+                  <button v-on:click="rate(4)" :disabled="ratedYet" id="rating-4">4</button>
+                  <button v-on:click="rate(5)" :disabled="ratedYet" id="rating-5">5</button>
                </p>
             </div>
          </div>
@@ -27,15 +27,15 @@
             <table>
                <tr>
                   <td>Your name:</td>
-                  <td><input v-model="newComment.authorName" /></td>
+                  <td><input v-model="newComment.authorName" id="comment-authorName" /></td>
                </tr>
                <tr>
                   <td>Comment:</td>
-                  <td colspan="2"><textarea v-model="newComment.text" cols="30" rows="10"></textarea></td>
+                  <td colspan="2"><textarea v-model="newComment.text" cols="30" rows="10" id="comment-text"></textarea></td>
                </tr>
                <tr>
                   <td></td>
-                  <td><button v-on:click="postComment()">Send</button></td>
+                  <td><button v-on:click="postComment()" id="submit-comment">Send</button></td>
                </tr>
             </table>
          </div>

@@ -1,19 +1,19 @@
 <template>
    <section>
       <h1>Catalog</h1>
-      
+
       <p v-show="loading">Loading...</p>
 
       <div v-show="items.length > 0">
-         
+
          <div class="grid-container">
-            <div v-for="item in items" v-bind:key="item.id" v-on:click="gotoDetail(item.id)">
+            <div v-for="item in items" v-bind:key="item.id" v-on:click="gotoDetail(item.id)" class="catalog-item">
                <img :src="item.imageUrl" width="200" /><br />
                   <strong>{{ item.name }}</strong> <br />
                   ${{ item.price }}
             </div>
          </div>
-         
+
          <p>Showing {{items.length}} item{{ (items.length > 1) ? "s" : "" }}.</p>
       </div>
 

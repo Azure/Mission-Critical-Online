@@ -1,12 +1,3 @@
-# We need to wait a while for the newly created Private Endpoint to Key Vault for the Build agent to become active before attempting to write secrets into KV
-# If not running in private mode (var.private_mode == true), this timer is not being used
-resource "time_sleep" "wait_keyvault_pe" {
-  count      = var.private_mode ? 1 : 0 # only relevant if we deploy a private stamp
-  depends_on = [azurerm_private_endpoint.buildagent_keyvault]
-
-  create_duration = "300s" # 5min should give us enough time. The entire deployment anyway takes much longer because of the CosmosDB private endpoint
-}
-
 # Add any secrets that should go into Key Vault to this list. Key is the name of the secret in Key Vault
 locals {
   secrets = {
@@ -29,7 +20,7 @@ locals {
 
 resource "azurerm_key_vault_secret" "secrets" {
   # Every secret is depended on a) the access policy for the deploying service principal being created and b) - only when running in private mode - on the build agent private endpoint being up and running
-  depends_on = [azurerm_key_vault_access_policy.devops_pipeline_all, time_sleep.wait_keyvault_pe]
+  depends_on = [azurerm_key_vault_access_policy.devops_pipeline_all]
   # Loop through the list of secrets from above
   for_each     = local.secrets
   name         = each.key

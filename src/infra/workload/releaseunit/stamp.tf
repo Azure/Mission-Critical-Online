@@ -49,8 +49,4 @@ module "stamp" {
 
   alerts_enabled = var.alerts_enabled
   api_key        = random_password.api_key.result
-
-  private_mode                   = var.private_mode
-  buildagent_resource_group_name = var.buildagent_resource_group_name
-  buildagent_vnet_name           = var.buildagent_vnet_name
 }

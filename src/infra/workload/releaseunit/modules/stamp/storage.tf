@@ -27,7 +27,7 @@ resource "azurerm_storage_account" "private" {
   min_tls_version          = "TLS1_2"
 
   network_rules {
-    default_action = var.private_mode ? "Deny" : "Allow" # If private_mode == true, then deny all access - except for the private endpoint connections
+    default_action = "Allow"
     bypass         = ["Metrics", "Logging"]
     ip_rules       = []
   }
@@ -35,18 +35,8 @@ resource "azurerm_storage_account" "private" {
   tags = var.default_tags
 }
 
-# We need to wait a while for the newly created Private Endpoints to Storage for the Build agent to become active before attempting to write containers or files into storage
-# If not running in private mode (var.private_mode == true), this timer is not being used
-resource "time_sleep" "wait_storage" {
-  count      = var.private_mode ? 1 : 0 # only relevant if we deploy a private stamp
-  depends_on = [azurerm_private_endpoint.buildagent_storage_blob, azurerm_private_endpoint.buildagent_storage_table]
-
-  create_duration = "300s" # 5min should give us enough time. The entire deployment anyway takes much longer because of the CosmosDB private endpoint
-}
-
 # Storage container for the checkpoints of the Event Hub processors
 resource "azurerm_storage_container" "deployment_eventhub_checkpoints" {
-  depends_on            = [time_sleep.wait_storage]
   name                  = "ehcheckpoints"
   storage_account_name  = azurerm_storage_account.private.name
   container_access_type = "private"
@@ -54,7 +44,6 @@ resource "azurerm_storage_container" "deployment_eventhub_checkpoints" {
 
 # Storage container for the healthservice
 resource "azurerm_storage_container" "deployment_healthservice" {
-  depends_on            = [time_sleep.wait_storage]
   name                  = "healthservice"
   storage_account_name  = azurerm_storage_account.private.name
   container_access_type = "private"
@@ -71,7 +60,6 @@ resource "azurerm_storage_blob" "healthservice_state_blob" {
 
 # Poison Messages Table for the BackgroundProcessor to store errored messages
 resource "azurerm_storage_table" "poison_messages" {
-  depends_on           = [time_sleep.wait_storage]
   name                 = "backgroundProcessorPoisonMessages"
   storage_account_name = azurerm_storage_account.private.name
 }

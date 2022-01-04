@@ -14,11 +14,7 @@ The reference implementation can be used to deploy to different flavors of the A
 - A "public" version which does not fully lock down all services, but in turn it can be deployed using Azure DevOps-hosted Build Agents. Plus, developers and administrators can more easily connect to the resources and debug them.
 - A fully "private" version which locks all traffic to the services down to Private Endpoints. This provides even tighter security but requires the use of self-hosted, VNet-integrated Build Agents. Also, for any debugging etc. users most connect through Azure Bastion and Jump Servers.
 
-The default version, which is what in configured in the `main` branch of this repository, is the "public" version. If you want to use the "private" version of AlwaysOn, a couple of steps have to be executed once.
-
-> Note: It is not recommended (or supported) to deploy public and private environments in parallel from the same repository.
-
-Follow [this guide](/docs/reference-implementation/GettingStarted-Private-AlwaysOn.md) for detailed instructions how to enable the private version.
+Head over to [this GitHub repository](https://github.com/Azure/AlwaysOn-foundational-private) for detailed instructions how to set up the private version.
 
 ## Get started
 

@@ -20,12 +20,6 @@ resource "azurerm_storage_share_file" "locustfile" {
   source           = "../locustfile.py"
 }
 
-resource "azurerm_storage_share_file" "usersfile" {
-  name             = "users.csv"
-  storage_share_id = azurerm_storage_share.locust.id
-  source           = "../../../config/identity/test-users-${var.tenant_name}.csv" # upload the corresponding users file for this environment
-}
-
 resource "azurerm_storage_share_directory" "locust-logs" {
   name                 = "logs"
   share_name           = azurerm_storage_share.locust.name

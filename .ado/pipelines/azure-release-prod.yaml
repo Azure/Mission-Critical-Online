@@ -6,7 +6,6 @@ pr: none
 
 pool:
   vmImage: 'ubuntu-20.04'
-  #name: 'prod-private-agents' # (optional) self-hosted agentpool. Change this to switch between the Public and Private version of AlwaysOn
 
 variables:
 - name:  'environment' # set the environment name as variable

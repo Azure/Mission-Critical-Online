@@ -74,10 +74,6 @@ resource "azurerm_container_group" "worker" {
       local.environment_variables_common, local.environment_variables_worker
     )
 
-    secure_environment_variables = {
-      "LOADTEST_USER_PASSWORD" = var.loadtest_user_password
-    }
-
     volume {
       name       = "locust"
       mount_path = "/home/locust/locust"

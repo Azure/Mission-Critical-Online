@@ -25,7 +25,6 @@ variables:
   value: 'alwayson-${{ parameters.environment }}-serviceconnection'
 
 - template: config/configuration.yaml # contains version numbers and global configuration settings
-- group: '${{ variables.environment }}-env-vg' # contains environment-specific values (secrets which cannot be stored in the config file)
 - template: config/variables-values-${{ parameters.environment }}.yaml # contains environment-specific values (non-secret)
 
 stages:

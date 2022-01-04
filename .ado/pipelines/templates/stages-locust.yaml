@@ -38,6 +38,8 @@ stages:
 
     - template: steps-terraform-init.yaml
       parameters:
+        terraformStorageAccountName:       '$(terraformStorageAccount)'
+        terraformStorageResourceGroupName: '$(terraformResourceGroup)'
         terraformStateFilename:       'terraform-locust-${{ parameters.customPrefix }}.state'
         terraformWorkingDirectory:    '${{ parameters.terraformWorkingDirectory }}'
 
@@ -54,7 +56,7 @@ stages:
 
       # overwrite locustTargetUrl pipeline variable with frontdoor fqdn (used for headless-locust-only)
     - ${{ if eq(parameters.locustHeadless, 'true') }}:
-      - task: Bash@3 
+      - task: Bash@3
         name: 'bashsetvariable'
         displayName: 'Set locustTargetUrl variable'
         inputs:
@@ -64,16 +66,15 @@ stages:
 
     - task: Bash@3
       name: 'terraformtaintlocustfile'
-      displayName: 'Terraform taint locustfile and users file'
+      displayName: 'Terraform taint locustfile file'
       inputs:
         workingDirectory: '${{ parameters.terraformWorkingDirectory }}'
         targetType: 'inline'
         script: |
           set -eux  # fail on error
 
-          # Taint the locustfile and the usersfile so it will always be replaced with the latest version
+          # Taint the locustfile so it will always be replaced with the latest version
           terraform taint -allow-missing azurerm_storage_share_file.locustfile
-          terraform taint -allow-missing azurerm_storage_share_file.usersfile
 
     # Deploy the locust infrastructure. If running in headless mode, the test will automatically start once the infra is provisioned.
     - template: steps-terraform-apply.yaml
@@ -87,11 +88,7 @@ stages:
                                     -var locust_runtime="${{ parameters.testDurationSeconds }}s"
                                     -var locust_spawn_rate=${{ parameters.locustSpawnRate }}
                                     -var locust_headless="${{ lower(parameters.locustHeadless) }}"
-                                    -var locust_number_of_users=${{ parameters.locustUser }}
-                                    -var tenant_name=$(b2cTenantName)
-                                    -var ropc_policy_name=$(b2cRopcPolicyName)
-                                    -var client_id=$(b2cUIClientID)
-                                    -var loadtest_user_password=$(loadtestUserPassword)'
+                                    -var locust_number_of_users=${{ parameters.locustUser }}'
 
     # All of the next tasks are only applicable in headless mode
     - ${{ if eq(parameters.locustHeadless, 'true') }}:
@@ -146,6 +143,8 @@ stages:
       # Destroy Locust infrastructure at the end
       - template: steps-terraform-destroy.yaml
         parameters:
+          terraformStorageAccountName:        '$(terraformStorageAccount)'
+          terraformStorageResourceGroupName:  '$(terraformResourceGroup)'
           terraformStateFilename:     'terraform-locust-${{ parameters.customPrefix }}.state'
           terraformWorkingDirectory:  '${{ parameters.terraformWorkingDirectory }}'
           customAttributes:           '-var prefix="${{ parameters.customPrefix }}"'

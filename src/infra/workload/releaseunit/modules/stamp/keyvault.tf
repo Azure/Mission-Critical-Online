@@ -4,10 +4,6 @@ resource "azurerm_key_vault" "stamp" {
   resource_group_name = azurerm_resource_group.stamp.name
   tenant_id           = data.azurerm_client_config.current.tenant_id
 
-  network_acls {
-    bypass         = "None"
-    default_action = var.private_mode ? "Deny" : "Allow" # If private_mode == true, then deny all access - except for the private endpoint connections
-  }
   sku_name = "standard"
 
   tags = var.default_tags

@@ -35,9 +35,17 @@ stages:
 
           - template: steps-set-pipeline-variables.yaml # load the set-pipeline-variables function (used for tags and prefixes)
 
+          # Check if terraform state store exists, and create it if not
+          - template: steps-terraform-setup-statestore.yaml
+            parameters:
+              storageAccountName: '$(terraformStorageAccount)'
+              resourceGroupName: '$(terraformResourceGroup)'
+
           # Global Resources terraform init
           - template: steps-terraform-init.yaml # Initialize Terraform
             parameters:
+              terraformStorageAccountName:       '$(terraformStorageAccount)'
+              terraformStorageResourceGroupName: '$(terraformResourceGroup)'
               terraformStateFilename:            '$(terraformStateFileGlobal)'
               terraformWorkingDirectory:         '$(workingDirectory)/globalresources'
 
@@ -185,6 +193,8 @@ stages:
     # Release Unit Resources terraform init
     - template: steps-terraform-init.yaml
       parameters:
+        terraformStorageAccountName:        '$(terraformStorageAccount)'
+        terraformStorageResourceGroupName:  '$(terraformResourceGroup)'
         terraformStateFilename:             '$(terraformStateFileReleaseUnit)'
         terraformWorkingDirectory:          '$(workingDirectory)/releaseunit'
 
@@ -429,8 +439,10 @@ stages:
             # Initialize Terraform for destroy
             - template: steps-terraform-destroy.yaml
               parameters:
-                terraformStateFilename:      'terraform-$(oldReleasePrefix).state'
-                terraformWorkingDirectory:   '$(workingDirectory)/releaseunit'
+                terraformStorageAccountName:       '$(terraformStorageAccount)'
+                terraformStorageResourceGroupName: '$(terraformResourceGroup)'
+                terraformStateFilename:            'terraform-$(oldReleasePrefix).state'
+                terraformWorkingDirectory:         '$(workingDirectory)/releaseunit'
                 customAttributes:        '-var=prefix="$(oldReleasePrefix)"
                                           -var=branch="$(sourceBranch)"
                                           -var=queued_by="$(Build.QueuedBy)"
@@ -474,8 +486,10 @@ stages:
               # Initialize Terraform for destroy
               - template: steps-terraform-destroy.yaml
                 parameters:
-                  terraformStateFilename:     '$(terraformStateFileGlobal)'
-                  terraformWorkingDirectory:  '$(workingDirectory)/globalresources'
+                  terraformStorageAccountName:        '$(terraformStorageAccount)'
+                  terraformStorageResourceGroupName:  '$(terraformResourceGroup)'
+                  terraformStateFilename:             '$(terraformStateFileGlobal)'
+                  terraformWorkingDirectory:          '$(workingDirectory)/globalresources'
                   customAttributes:           '-var=prefix="$(prefix)$(globalSuffix)"
                                               -var=branch="$(sourceBranch)"
                                               -var=queued_by="$(Build.QueuedBy)"

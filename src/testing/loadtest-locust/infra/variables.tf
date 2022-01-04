@@ -13,7 +13,7 @@ variable "environment" {
 variable "locust_container_image" {
   description = "Locust Container Image"
   type        = string
-  default     = "locustio/locust:2.2.3"
+  default     = "locustio/locust:2.5.1"
 }
 
 variable "queued_by" {
@@ -103,29 +103,4 @@ variable "prefix" {
     condition     = length(var.prefix) >= 5 && length(var.prefix) <= 10
     error_message = "Prefix must be between 5 and 10 characters long."
   }
-}
-
-variable "tenant_name" {
-  description = "Azure AD B2C tenant used for authentication."
-  type        = string
-  default     = ""
-}
-
-variable "ropc_policy_name" {
-  description = "Azure AD B2C ROPC signin policy name."
-  type        = string
-  default     = ""
-}
-
-variable "client_id" {
-  description = "Azure AD B2C Client ID used to authenticate."
-  type        = string
-  default     = ""
-}
-
-variable "loadtest_user_password" {
-  description = "Password of the testing users. We expect all users to have the same password for load testing"
-  type        = string
-  sensitive   = true
-  default     = ""
 }

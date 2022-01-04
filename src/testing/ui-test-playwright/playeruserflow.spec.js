@@ -37,7 +37,7 @@ test('shoppinguserflow', async ({ page }) => {
     for (var i = 0; i < numberOfItemsToVisit; i++) {
 
         // Pick a random item to visit
-        var pick = getRandomInt(0, 3);
+        var pick = getRandomInt(1, 4);
 
         await page.click(':nth-match(.catalog-item, ' + pick + ')');
         await page.waitForTimeout(getRandomWaitTimeMs());
@@ -51,8 +51,8 @@ test('shoppinguserflow', async ({ page }) => {
             await page.waitForTimeout(getRandomWaitTimeMs());
         }
 
-        // Randomly do or do not post a comment (in 10% of cases)
-        if (Math.random() < 0.1) {
+        // Randomly do or do not post a comment (in 30% of cases)
+        if (Math.random() < 0.3) {
             // Post a comment
             await page.fill('id=comment-authorName', 'Test User');
             await page.fill('id=comment-text', 'Just a random test comment');
@@ -69,6 +69,9 @@ test('shoppinguserflow', async ({ page }) => {
         await page.waitForTimeout(getRandomWaitTimeMs());
     }
 
+    // Got to the root page before leaving
+    await page.goto(`${baseUrl}/#/`);
+    await expect(page).toHaveURL(`${baseUrl}/#/`);
     // Wait once more before we finish the test and close the browser
     await page.waitForTimeout(getRandomWaitTimeMs());
 });

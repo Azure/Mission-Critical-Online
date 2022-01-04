@@ -7,9 +7,3 @@ aks_node_pool_autoscale_maximum = 3
 
 event_hub_thoughput_units     = 1
 event_hub_enable_auto_inflate = false
-
-# Change to true to switch into private mode
-private_mode = false
-## These values need to be filled if you want to deploy AlwaysOn in private mode
-buildagent_resource_group_name = ""
-buildagent_vnet_name           = ""

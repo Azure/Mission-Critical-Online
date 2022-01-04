@@ -111,9 +111,3 @@ variable "backends_StaticStorage" {
     enabled = true
   }]
 }
-
-variable "private_mode" {
-  description = "Restrict network access to private endpoints only? If set to True, this MUST be deployed through private build agents"
-  type        = bool
-  default     = false
-}

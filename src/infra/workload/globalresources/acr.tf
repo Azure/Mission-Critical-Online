@@ -5,8 +5,6 @@ resource "azurerm_container_registry" "main" {
   sku                 = "Premium"
   admin_enabled       = false
 
-  public_network_access_enabled = !var.private_mode # If using private_mode, we limit access to private endpoints, otherwise allow all so that the build agent can access
-
   zone_redundancy_enabled = false # Disabled for now as it is still in preview and not supported in all regions. Can be enabled if you know that all the stamp's regions support it already.
 
   dynamic "georeplications" {

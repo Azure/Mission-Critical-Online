@@ -104,28 +104,3 @@ variable "prefix" {
     error_message = "Prefix must be between 5 and 10 characters long."
   }
 }
-
-variable "tenant_name" {
-  description = "Azure AD B2C tenant used for authentication."
-  type        = string
-  default     = ""
-}
-
-variable "ropc_policy_name" {
-  description = "Azure AD B2C ROPC signin policy name."
-  type        = string
-  default     = ""
-}
-
-variable "client_id" {
-  description = "Azure AD B2C Client ID used to authenticate."
-  type        = string
-  default     = ""
-}
-
-variable "loadtest_user_password" {
-  description = "Password of the testing users. We expect all users to have the same password for load testing"
-  type        = string
-  sensitive   = true
-  default     = ""
-}

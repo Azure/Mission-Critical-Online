@@ -24,13 +24,8 @@ locals {
     "LOCUST_CSV"              = "locust/stats/${local.prefix}"
   }
 
-  # values which are needed when the Python script is evaluated
   environment_variables_worker = {
     "LOCUST_MODE_WORKER" = "true"
-    "TENANT_NAME"        = var.tenant_name,
-    "ROPC_POLICY_NAME"   = var.ropc_policy_name,
-    "CLIENT_ID"          = var.client_id,
-    "LOCUST_USERSFILE"   = "/home/locust/locust/${azurerm_storage_share_file.usersfile.name}"
   }
 
   # specifics for headless mode (doesn't apply to worker - that's always headless)

@@ -39,6 +39,8 @@ stages:
 
     - template: templates/steps-terraform-init.yaml # Initialize Terraform
       parameters:
+        terraformStorageAccountName:       '$(terraformStorageAccount)'
+        terraformStorageResourceGroupName: '$(terraformResourceGroup)'
         terraformStateFilename:            'terraform-loadgenerator-$(prefix).state'
         terraformWorkingDirectory:         '$(workingDirectory)/infra'
 
@@ -47,7 +49,7 @@ stages:
         jobName:                    'LoadgeneratorInfra'
         terraformWorkingDirectory:  '$(workingDirectory)/infra'
         customPrefix:               '$(prefix)'
-        customAttributes:           '-var targeturl="https://www.int.always-on.app"
+        customAttributes:           '-var targeturl="https://www.int.shop.always-on.app"
                                      -var=queued_by="$(Build.QueuedBy)"'
 
 - stage: deployRegionalFunctionsApps

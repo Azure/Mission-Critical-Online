@@ -79,16 +79,13 @@ stages:
             echo "*** Installed Azure Function Core Tools version: $(func -v)"
 
       - task: PowerShell@2
-        displayName: 'Copy test files' # the Playwright test definition and CSV file of testing users are not stored with the Function so we need to copy them over
+        displayName: 'Copy test files' # the Playwright test definition is not stored with the Function so we need to copy it over
         inputs:
           targetType: inline
           script: |
 
             echo "*** Copying Playwright test definition file src/testing/ui-test-playwright/playeruserflow.spec.js to $(workingDirectory)/AzureFunctions/RegionalLoadGenerator"
             Copy-Item "src/testing/ui-test-playwright/playeruserflow.spec.js" -Destination "$(workingDirectory)/AzureFunctions/RegionalLoadGenerator"
-
-            echo "*** Copying test user file src/config/identity/test-users-$(b2cTenantName).csv to $(workingDirectory)/AzureFunctions/RegionalLoadGenerator"
-            Copy-Item "src/config/identity/test-users-$(b2cTenantName).csv" -Destination "$(workingDirectory)/AzureFunctions/RegionalLoadGenerator"
 
       - task: PowerShell@2
         displayName: 'npm install'

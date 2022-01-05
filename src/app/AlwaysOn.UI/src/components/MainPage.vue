@@ -5,7 +5,7 @@
 
    <a href="https://github.com/Azure/AlwaysOn"><img src="/img/logo.png" title="AlwaysOn logo" style="width: 50%" /></a>
 
-   <p>You can find more details <a href="https://github.com/Azure/AlwaysOn">on GitHub</a>.</p>
+   <p>You can find more details <a href="https://github.com/Azure/AlwaysOn-foundational">on GitHub</a>.</p>
 
   </div>
 </template>

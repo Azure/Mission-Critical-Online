@@ -27,16 +27,17 @@ The process to deploy AlwaysOn is comprised of the following steps:
 1) Create an [Azure DevOps organization + project](#create-a-new-azure-devops-project)
 1) Create a fork of the [AlwaysOn GitHub](https://github.com/azure/alwayson) repository
 1) Import [deployment pipelines](#3-import-pipelines)
-1) Create [Service Principals](#create-azure-service-principal) for each individual Azure subscription
-1) Create [Service Connections](#configure-service-connections) in Azure DevOps
+1) Create [Service Principals](#4-create-azure-service-principal) for each individual Azure subscription
+1) Create [Service Connections](#5-create-azure-service-connections) in Azure DevOps
 1) Access to an Azure Subscription (it is recommended to use multiple subscriptions to separate environments types i.e. dev, test and prod) with RP and preview features enabled for each of the subscriptions
 1) Adjust configuration
+1) Execute the first deployment
 
 ### 1) Create a new Azure DevOps organization
 
 To deploy AlwaysOn, you need to create a new Azure DevOps organization, or re-use an existing one. In this organization we will then create a new project used to host all pipelines for AlwaysOn.
 
-* [Create an organization or project collection](https://docs.microsoft.com/azure/devops/organizations/accounts/create-organization?view=azure-devops)
+- [Create an organization or project collection](https://docs.microsoft.com/azure/devops/organizations/accounts/create-organization?view=azure-devops)
 
 > **Important!** The [Azure DevOps CLI](https://docs.microsoft.com/azure/devops/cli/?view=azure-devops) is used for the subsequent steps. Please make sure that it is installed.
 
@@ -81,9 +82,9 @@ You can find more details about any of the pipelines within the [pipelines docum
 
 To start, we will import only the following three pipelines from the `/.ado/pipelines/` directory:
 
-* `/.ado/pipelines/azure-release-e2e.yaml`
-* `/.ado/pipelines/azure-release-int.yaml`
-* `/.ado/pipelines/azure-release-prod.yaml`
+- `/.ado/pipelines/azure-release-e2e.yaml`
+- `/.ado/pipelines/azure-release-int.yaml`
+- `/.ado/pipelines/azure-release-prod.yaml`
 
 So repeat the steps below for each of these.
 
@@ -163,9 +164,9 @@ More information about the required permissions needed to deploy via Terraform c
 
 Our AlwaysOn reference implementation knows three different environments: prod, int and e2e. These three environments can be selected for each individual pipeline run and can refer to the same or different (recommended) Azure subscriptions for proper separation. These environments are represented by service connections in Azure DevOps:
 
-* alwayson-e2e-serviceconnection
-* alwayson-prod-serviceconnection
-* alwayson-int-serviceconnection
+- alwayson-e2e-serviceconnection
+- alwayson-prod-serviceconnection
+- alwayson-int-serviceconnection
 
 > If you only created one Service Principal above, you only need to create one Service Connection for now.
 
@@ -238,7 +239,7 @@ Deployment pipelines taking a dependency on ADO environments. Each pipeline requ
 
 Click on "Create"
 
-### Execute the first deployment
+### 8) Execute the first deployment
 
 After completing all previous steps in this guide, you can start executing the pipelines to spin up the infrastructure.
 Go the the **Pipelines** section of the Azure DevOps Portal and click on the E2E release pipeline.

@@ -48,8 +48,7 @@ stages:
         terraformWorkingDirectory:  '$(workingDirectory)/infra'
         customPrefix:               '$(prefix)'
         customAttributes:           '-var targeturl="https://www.int.always-on.app"
-                                     -var=queued_by="$(Build.QueuedBy)"
-                                     -var=test_user_password="$(loadtestUserPassword)"'
+                                     -var=queued_by="$(Build.QueuedBy)"'
 
 - stage: deployRegionalFunctionsApps
   displayName: 'Deploy Regional Function Apps'

@@ -28,13 +28,7 @@ variable "queued_by" {
 variable "targeturl" {
   description = "Target URL"
   type        = string
-  default     = "https://www.int.always-on.app"
-}
-
-variable "test_user_password" {
-  description = "Password of the test users. Assumes all users have the same password"
-  type        = string
-  sensitive   = true
+  default     = "https://www.int.shop.always-on.app"
 }
 
 variable "regional_functions_workers" {

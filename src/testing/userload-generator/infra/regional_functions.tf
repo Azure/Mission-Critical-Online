@@ -7,7 +7,6 @@ module "regional_functions" {
   resource_group_name = azurerm_resource_group.deployment.name
   additional_app_settings = {
     "APPINSIGHTS_INSTRUMENTATIONKEY" = azurerm_application_insights.deployment.instrumentation_key
-    "TEST_USER_PASSWORD"             = "@Microsoft.KeyVault(VaultName=${azurerm_key_vault.deployment.name};SecretName=${azurerm_key_vault_secret.test_user_password.name})"
     "TEST_BASEURL"                   = var.targeturl
   }
 

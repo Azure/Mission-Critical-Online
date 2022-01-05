@@ -35,16 +35,6 @@ resource "azurerm_key_vault_access_policy" "function_msi" {
   ]
 }
 
-resource "azurerm_key_vault_secret" "test_user_password" {
-  depends_on = [
-    azurerm_key_vault_access_policy.devops_pipeline
-  ]
-
-  name         = "test-user-password"
-  value        = var.test_user_password
-  key_vault_id = azurerm_key_vault.deployment.id
-}
-
 # Set each Function host key as a KV secret named "FUNCTIONKEY-MY-FUNCTION-NAME"
 resource "azurerm_key_vault_secret" "functionkeys" {
   depends_on = [

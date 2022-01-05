@@ -1,14 +1,4 @@
-﻿const csv = require('csv-parser')
-const fs = require('fs')
-const testUsers = [];
-
-const usersFileName = process.env.TEST_USERS_FILE_NAME || './test-users-alwaysondev.csv';
-const testTimeoutMs = process.env.TEST_TIMEOUT_MS || 120000;
-
-// Load users file
-fs.createReadStream(usersFileName)
-    .pipe(csv(headers = ['email', 'oid']))
-    .on('data', (data) => testUsers.push(data));
+﻿const testTimeoutMs = process.env.TEST_TIMEOUT_MS || 120000;
 
 /*
 * This Durable Activity-triggered function will run the actual playwright userflow tests
@@ -19,11 +9,7 @@ module.exports = async function (context) {
     try {
         const { exec } = require('child_process');
 
-        var randomUserIndex = Math.floor(Math.random() * testUsers.length);
-        var randomTestUserEmail = testUsers[randomUserIndex]['email'];
-
         context.log(`Starting Playwright tests against target ${process.env.TEST_BASEURL}`);
-        context.log(`Picked random test user: ${randomTestUserEmail}`);
 
         // Path to find playwright binaries
         let cmd = `${process.cwd()}/node_modules/.bin/playwright test --timeout ${testTimeoutMs}`;
@@ -39,8 +25,6 @@ module.exports = async function (context) {
                 {
                     env: {
                         'TEST_BASEURL': process.env.TEST_BASEURL,
-                        'TEST_USERNAME': randomTestUserEmail,
-                        'TEST_USER_PASSWORD': process.env.TEST_USER_PASSWORD, // all test users have the same password
                         ...process.env // Load all env vars from the Function runtime, too
                     }
                 },

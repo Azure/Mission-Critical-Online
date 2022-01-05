@@ -116,6 +116,12 @@ namespace AlwaysOn.CatalogService.Controllers
             };
             _logger.LogInformation("Received request to create new rating with ratingId={ratingId} for CatalogItemId={CatalogItemId}", rating.Id, rating.CatalogItemId);
 
+            // If this comment was sent as test data, set the TTL to a short value
+            if (Request.Headers.TryGetValue("X-TEST-DATA", out var testDataHeader) && testDataHeader.FirstOrDefault()?.ToLower() == "true")
+            {
+                rating.TimeToLive = 30;
+            }
+
             try
             {
                 var messageBody = Helpers.JsonSerialize(rating);

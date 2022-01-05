@@ -46,6 +46,7 @@ if ($mode -eq "stamp") {
   # setting header with X-Azure-FDID for HTTP-based smoke tests (required to access the individual stamps directly, bypassing Front Door)
   $header = @{
     "X-Azure-FDID"="$frontdoorHeaderId"
+    "X-TEST-DATA"="true" # Header to indicate that posted comments and rating are just for test and can be deleted again by the app
   }
 
   # loop through stamps from pipeline artifact json
@@ -65,7 +66,9 @@ if ($mode -eq "stamp") {
   }
 }
 else {
-  $header = @{}
+  $header = @{
+    "X-TEST-DATA"="true"
+  }
 
   $props = @{
     ApiEndpointFqdn = $frontdoorFqdn

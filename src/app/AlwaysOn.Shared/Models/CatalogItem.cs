@@ -17,6 +17,9 @@ namespace AlwaysOn.Shared.Models
         public DateTime LastUpdated { get; set; }
         public double? Rating { get; set; }
 
+        /// <summary>
+        /// Time to live in Cosmos DB. In Seconds
+        /// </summary>
         [JsonPropertyName("ttl")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public int? TimeToLive { get; set; }

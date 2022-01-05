@@ -11,6 +11,8 @@ from locust.exception import RescheduleTask, RescheduleTaskImmediately
 
 class WebsiteUserSequence(SequentialTaskSet):
 
+    headers = { "X-TEST-DATA": "true" }  # Header to indicate that posted comments and rating are just for testing and can be deleted again by the app
+
     randomItemId = ""
 
     @task(2)
@@ -39,7 +41,7 @@ class WebsiteUserSequence(SequentialTaskSet):
         json_body = {
             "rating": random.randint(1, 5)
         }
-        with self.client.post(f"/api/1.0/catalogitem/{self.randomItemId}/ratings", json=json_body, name="POST new rating", catch_response=True) as response:
+        with self.client.post(f"/api/1.0/catalogitem/{self.randomItemId}/ratings", json=json_body, name="POST new rating", headers=self.headers, catch_response=True) as response:
             if response.status_code != 202:
                 logging.error(f"(post_new_rating) - failed response. Code: {response.status_code}")
                 response.failure(f"Got wrong response. Code: {response.status_code}")
@@ -51,7 +53,7 @@ class WebsiteUserSequence(SequentialTaskSet):
             "authorName": "Locust Test User",
             "text": "This is a load test entry"
         }
-        with self.client.post(f"/api/1.0/catalogitem/{self.randomItemId}/comments", json=json_body, name="POST new comment", catch_response=True) as response:
+        with self.client.post(f"/api/1.0/catalogitem/{self.randomItemId}/comments", json=json_body, name="POST new comment", headers=self.headers, catch_response=True) as response:
             if response.status_code != 202:
                 logging.error(f"(post_new_comment) - failed response. Code: {response.status_code}")
                 response.failure(f"Got wrong response. Code: {response.status_code}")

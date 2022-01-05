@@ -17,6 +17,9 @@ const maxTaskWaitSeconds = process.env.TEST_MAX_TASK_WAIT_SECONDS || 6;
 
 test('shoppinguserflow', async ({ page }) => {
 
+    // Header to indicate that posted comments and rating are just for testing and can be deleted again by the app
+    page.setExtraHTTPHeaders({'X-TEST-DATA': 'true'});
+
     const baseUrl = process.env.TEST_BASEURL; // Needs to include protocol, e.g. https://
 
     // If this test file is being used for actual UI testing, set these variables both to the same value

@@ -41,7 +41,7 @@ namespace AlwaysOn.CatalogService.Controllers
         /// <returns></returns>
         [HttpGet("{commentId:guid}", Name = nameof(GetCommentByIdAsync))]
         [ProducesResponseType(typeof(ItemComment), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult<ItemComment>> GetCommentByIdAsync([FromRoute] Guid itemId,Guid commentId)
+        public async Task<ActionResult<ItemComment>> GetCommentByIdAsync([FromRoute] Guid itemId, Guid commentId)
         {
             _logger.LogInformation("Received request to get Comment {commentId}", commentId);
 
@@ -111,6 +111,12 @@ namespace AlwaysOn.CatalogService.Controllers
                 CatalogItemId = itemId
             };
             _logger.LogInformation("Received request to create new comment with commentId={commentId} for CatalogItemId={CatalogItemId}", comment.Id, comment.CatalogItemId);
+
+            // If this comment was sent as test data, set the TTL to a short value
+            if (Request.Headers.TryGetValue("X-TEST-DATA", out var testDataHeader) && testDataHeader.FirstOrDefault()?.ToLower() == "true")
+            {
+                comment.TimeToLive = 30;
+            }
 
             try
             {

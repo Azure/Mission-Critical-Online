@@ -12,7 +12,7 @@ namespace AlwaysOn.Shared
 
         public const string CosmosCatalogItemsContainerName = "catalogItems";
         public const string CosmosItemCommentsContainerName = "itemComments";
-        public const string CosmosItemRatingsContainerName = "itemRating";
+        public const string CosmosItemRatingsContainerName = "itemRatings";
 
         public const string BackendStoragePoisonMessagesTableName = "backgroundProcessorPoisonMessages";
 

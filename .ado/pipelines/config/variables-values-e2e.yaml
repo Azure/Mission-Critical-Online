@@ -4,7 +4,7 @@ variables:
 
 # Resource prefix for this environment
 - name:  'prefix'
-  value: 'ao1e2e'          # Needs to be a unique prefix
+  value: 'ao1e2e'          # <===== CHANGE THIS! Needs to be a unique prefix
 
 - name: 'stampLocations'
   value: '["uksouth"]'    # Check which regions are valid. There is a list in /src/infra/README.md
@@ -16,10 +16,10 @@ variables:
 
 # Terraform state variables
 - name:  'terraformResourceGroup'
-  value: 'terraformstate-rg'
+  value: 'terraformstate-rg'      # <===== CHANGE THIS VALUE IF NEEDED
 - name:  'terraformStorageAccount'
-  value: 'aoe2etfstatestore'      # Needs to be a globally unique name
+  value: 'aoe2etfstatestore'      # <===== CHANGE THIS VALUE! Needs to be a globally unique name
 
 # Other settings
 - name:  'contactEmail'
-  value: 'noreply-alwaysonappnet@microsoft.com'
+  value: 'noreply-alwaysonappnet@microsoft.com'  # <===== CHANGE THIS VALUE

@@ -4,7 +4,7 @@ variables:
 
 # Resource prefix for this environment
 - name:  'prefix'
-  value: 'ao1prod'          # Needs to be a unique prefix
+  value: 'ao1prod'          # <===== CHANGE THIS! Needs to be a unique prefix
 
 - name: 'stampLocations'
   value: '["northeurope", "canadacentral"]' # Check which regions are valid. There is a list in /src/infra/README.md
@@ -12,16 +12,16 @@ variables:
 
 # Terraform state variables
 - name:  'terraformResourceGroup'
-  value: 'terraformstate-rg'
+  value: 'terraformstate-rg'         # <===== CHANGE THIS VALUE IF NEEDED
 - name:  'terraformStorageAccount'
-  value: 'aoprodterraformstate'      # Needs to be a globally unique name
+  value: 'aoprodterraformstate'      # <===== CHANGE THIS VALUE! Needs to be a globally unique name
 
 # Custom DNS name settings
 - name: 'envDnsZoneRG'
-  value: 'ao-dns-rg'
+  value: 'ao-dns-rg'            # <===== CHANGE THIS OR LEAVE THE VALUE BLANK
 - name: 'envDomainName'
-  value: 'shop.always-on.app'
+  value: 'shop.always-on.app'   # <===== CHANGE THIS OR LEAVE THE VALUE BLANK
 
 # Other settings
 - name:  'contactEmail'
-  value: 'alwaysonappnet@microsoft.com'
+  value: 'alwaysonappnet@microsoft.com' # <===== CHANGE THIS VALUE

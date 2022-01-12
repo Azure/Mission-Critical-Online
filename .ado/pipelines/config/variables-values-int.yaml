@@ -4,7 +4,7 @@ variables:
 
 # Resource prefix for this environment
 - name:  'prefix'
-  value: 'ao1int'          # <===== CHANGE THIS! Needs to be a unique prefix
+  value: 'afint'          # <===== CHANGE THIS! Needs to be a unique prefix
 
 - name: 'stampLocations'
   value: '["northeurope", "canadacentral"]' # Check which regions are valid. There is a list in /src/infra/README.md

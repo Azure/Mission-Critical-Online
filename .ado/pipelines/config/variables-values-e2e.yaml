@@ -18,7 +18,7 @@ variables:
 - name:  'terraformResourceGroup'
   value: 'terraformstate-rg'      # <===== CHANGE THIS VALUE IF NEEDED
 - name:  'terraformStorageAccount'
-  value: 'aoe2etfstatestore'      # <===== CHANGE THIS VALUE! Needs to be a globally unique name
+  value: 'afe2etfstatestore'      # <===== CHANGE THIS VALUE! Needs to be a globally unique name
 
 # Other settings
 - name:  'contactEmail'

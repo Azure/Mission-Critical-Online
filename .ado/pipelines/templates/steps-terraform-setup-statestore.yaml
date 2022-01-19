@@ -23,6 +23,10 @@ steps:
         Write-Warning "*** WARN! Resource Group ${{ parameters.resourceGroupName }} does not exist. Creating..."
         $locations = '$(stampLocations)' | ConvertFrom-Json -NoEnumerate # get the stamp locations and use the first one to create the resource group there. The region does not really matter.
         az group create --name ${{ parameters.resourceGroupName }} --location $locations[0]
+
+        if ($LASTEXITCODE -eq 1) {
+          Write-Error "*** Error - could not create resource group"
+        }
       }
       else
       {
@@ -37,6 +41,9 @@ steps:
                                   --resource-group ${{ parameters.resourceGroupName }} `
                                   --https-only true `
                                   --sku Standard_GZRS
+        if ($LASTEXITCODE -eq 1) {
+          Write-Error "*** Error - could not create storage account"
+        }
       }
       else
       {
@@ -51,6 +58,11 @@ steps:
       # Terraform will then use RBAC to access the storage account instead of account keys
       # The command is idempotent, so we can run it every time without other checks
       az role assignment create --assignee $servicePrincipalId --role "Storage Blob Data Owner" --scope $storageAccountId
+
+      if ($LASTEXITCODE -eq 1) {
+        Write-Error "*** Error - could not create role assignment"
+      }
+
       $terraformContainerName = "tfstate" # do not change unless you have a strong reason to. If so, also change in 'terraform init' step template
       echo "*** Check if Container $terraformContainerName exists"
       $check = az storage container exists --account-name ${{ parameters.storageAccountName }} `
@@ -61,6 +73,10 @@ steps:
                                     --account-name ${{ parameters.storageAccountName }} `
                                     --public-access off `
                                     --auth-mode login
+
+        if ($LASTEXITCODE -eq 1) {
+          Write-Error "*** Error - could not create storage container"
+        }
       }
       else
       {
@@ -77,6 +93,11 @@ steps:
                                                 --delete-retention-days 7 `
                                                 --enable-container-delete-retention true `
                                                 --container-delete-retention-days 7
+
+      if ($LASTEXITCODE -eq 1) {
+        Write-Error "*** Error - could not update storage account properties"
+      }
+
       # In private mode, create Private Endpoints for the private Build Agents
       if('${{ parameters.usePrivateEndpoints }}' -eq [bool]::TrueString)
       {
@@ -102,6 +123,11 @@ steps:
           --private-connection-resource-id $storageAccountId `
           --group-id blob `
           --connection-name myConnection
+
+          if ($LASTEXITCODE -eq 1) {
+            Write-Error "*** Error - could not create storage private endpoint"
+          }
+
           # Create a DNS entry in the private blob.core.windows.net DNS zone of the build agent
           az network private-endpoint dns-zone-group create `
           --resource-group $(buildAgentResourceGroupName) `

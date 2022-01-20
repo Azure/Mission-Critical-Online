@@ -2,7 +2,7 @@
 # used for all pipelines
 variables:
 - name: 'terraformVersion'    # Terraform Version
-  value: '1.0.11'
+  value: '1.1.4'
 - name: 'kubernetesVersion'   # kubernetes version used for aks clusters
   value: '1.21.2'
 - name: 'helmVersion'         # helm package manager version

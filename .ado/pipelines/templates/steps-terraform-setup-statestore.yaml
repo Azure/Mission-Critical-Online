@@ -40,7 +40,8 @@ steps:
         az storage account create --name ${{ parameters.storageAccountName }} `
                                   --resource-group ${{ parameters.resourceGroupName }} `
                                   --https-only true `
-                                  --sku Standard_GZRS
+                                  --sku Standard_GZRS `
+                                  --min-tls-version TLS1_2
         if ($LASTEXITCODE -eq 1) {
           Write-Error "*** Error - could not create storage account"
         }

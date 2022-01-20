@@ -6,8 +6,6 @@ resource "azurerm_key_vault" "stamp" {
 
   sku_name = "standard"
 
-  purge_protection_enabled = true
-
   tags = var.default_tags
 }
 

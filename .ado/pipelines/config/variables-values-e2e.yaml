@@ -22,4 +22,4 @@ variables:
 
 # Other settings
 - name:  'contactEmail'
-  value: 'noreply-alwaysonappnet@microsoft.com'  # <===== CHANGE THIS VALUE
+  value: 'noreply@example.com'  # <===== CHANGE THIS VALUE TO ONE OF YOUR REAL EMAIL ADDRESSES (OR A GROUP)!

@@ -61,6 +61,9 @@ jobs:
           -smokeTestRetryCount $(smokeTestRetryCount)
           -smokeTestRetryWaitSeconds $(smokeTestRetryWaitSeconds)
 
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '12.x' # Playwright requires Node.js 12 or higher
 
     - task: PowerShell@2
       displayName: 'Capture UI screenshots from global endpoint'

@@ -14,13 +14,13 @@ resource "azurerm_private_dns_zone_virtual_network_link" "acr" {
 }
 
 resource "azurerm_private_endpoint" "acr" {
-  name                = "${local.prefix}-${local.location_short}-registry-pe"
+  name                = "${local.prefix}-${local.location_short}-acr-pe"
   location            = azurerm_resource_group.stamp.location
   resource_group_name = azurerm_resource_group.stamp.name
   subnet_id           = azurerm_subnet.private_endpoints.id
 
   private_dns_zone_group {
-    name                 = "privatednsregistry"
+    name                 = "privatednsacr"
     private_dns_zone_ids = [azurerm_private_dns_zone.acr.id]
   }
 

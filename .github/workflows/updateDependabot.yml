@@ -1,0 +1,38 @@
+name: Update Dependabot config
+
+on:
+  workflow_dispatch:
+
+jobs:
+  UpdateDependabot:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Update Dependabot
+        shell: pwsh
+        run: |
+          ./.github/scripts/update-dependabot.ps1 -targetBranch component-updates -outputFile ./.github/dependabot.yml
+
+      - name: Push files to repo
+        shell: pwsh
+        run: |
+
+          # Set the name on the commits as it will appear in Github
+          git config --global user.name 'Github Action'
+          git config --global user.email 'alwayson@users.noreply.github.com'
+
+          git add ./.github/dependabot.yml 
+
+          # Get the name of the commit that triggered the workflow, 
+          # so we can refer to it in our automated commit message.
+          $message = git log -1 --pretty=format:"%s"
+          # Only commit if there are changes to commit, otherwise commit will throw an error.
+          if(git status -uno --short) {
+            git commit -m "Auto update: $message"
+            git push origin
+          } 
+          else {
+            Write-Output "No changes to commit. Bye."
+          }

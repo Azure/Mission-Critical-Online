@@ -1,5 +1,8 @@
-FROM node:15.14 as build-env
+FROM node:17.4.0 as build-env
 WORKDIR /app
+
+# enable node 17 support for vue-cli
+ENV NODE_OPTIONS=--openssl-legacy-provider
 
 COPY . ./
 RUN npm install && \

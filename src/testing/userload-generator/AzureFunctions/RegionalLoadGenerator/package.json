@@ -8,7 +8,7 @@
   "dependencies": {
     "@playwright/test": "^1.16.3",
     "csv-parser": "^3.0.0",
-    "durable-functions": "^1.5.3",
+    "durable-functions": "^1.5.4",
     "playwright-chromium": "^1.16.3"
   }
 }

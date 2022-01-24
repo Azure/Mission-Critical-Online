@@ -1,5 +1,5 @@
 # Use a standard node image as the build container
-FROM node:16 as builder
+FROM node:17 as builder
 
 # Copy the files into the builder container
 WORKDIR /usr/src/app

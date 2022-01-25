@@ -20,6 +20,9 @@ spec:
       containers:
       - image: {{ .Values.containerimage }}
         imagePullPolicy: {{ .Values.container.pullPolicy | default "Always" | quote }}
+        securityContext:
+          privileged: false
+          readOnlyRootFilesystem: true
         name: backgroundprocessor
         livenessProbe:
         # For the liveness probe we check if the file exists and was modified in the last minute. Source: https://medium.com/spire-labs/utilizing-kubernetes-liveness-and-readiness-probes-to-automatically-recover-from-failure-2fe0314f2b2e
@@ -51,6 +54,10 @@ spec:
           - name: secrets-store-inline
             mountPath: "/mnt/secrets-store"
             readOnly: true
+          - name: tmp-volume
+            mountPath: "/tmp"
+          - name: var-log-volume
+            mountPath: "/var/log"
       volumes:
         - name: secrets-store-inline
           csi:
@@ -58,3 +65,7 @@ spec:
             readOnly: true
             volumeAttributes:
               secretProviderClass: azure-kv
+        - name: tmp-volume
+          emptyDir: {}
+        - name: var-log-volume
+          emptyDir: {}

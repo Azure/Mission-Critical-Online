@@ -23,6 +23,7 @@ spec:
         name: healthservice
         securityContext:
           privileged: false
+          readOnlyRootFilesystem: true
         ports:
         - containerPort: {{ .Values.workload.service.port | default 80 }}
         livenessProbe:
@@ -46,6 +47,10 @@ spec:
           - name: secrets-store-inline
             mountPath: "/mnt/secrets-store"
             readOnly: true
+          - name: tmp-volume
+            mountPath: "/tmp"
+          - name: var-log-volume
+            mountPath: "/var/log"
       volumes:
         - name: secrets-store-inline
           csi:
@@ -53,3 +58,7 @@ spec:
             readOnly: true
             volumeAttributes:
               secretProviderClass: azure-kv
+        - name: tmp-volume
+          emptyDir: {}
+        - name: var-log-volume
+          emptyDir: {}

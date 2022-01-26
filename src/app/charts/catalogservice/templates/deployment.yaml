@@ -22,7 +22,9 @@ spec:
         imagePullPolicy: {{ .Values.container.pullPolicy | default "Always" | quote }}
         name: catalogservice
         securityContext:
-          privileged: false
+          privileged: false # Running a container as privileged gives all capabilities to the container, and it also lifts all the limitations enforced by the device cgroup controller.
+          readOnlyRootFilesystem: true # If a container does not need to write files, it should be run with a read-only filesystem.
+          allowPrivilegeEscalation: false # Controls whether a process can gain more privileges than its parent process.
         ports:
         - containerPort: {{ .Values.workload.port | default 8080 }}
         livenessProbe:
@@ -55,6 +57,10 @@ spec:
           - name: secrets-store-inline
             mountPath: "/mnt/secrets-store"
             readOnly: true
+          - name: tmp-volume
+            mountPath: "/tmp"
+          - name: var-log-volume
+            mountPath: "/var/log"
       volumes:
         - name: secrets-store-inline
           csi:
@@ -62,3 +68,7 @@ spec:
             readOnly: true
             volumeAttributes:
               secretProviderClass: azure-kv
+        - name: tmp-volume
+          emptyDir: {}
+        - name: var-log-volume
+          emptyDir: {}

@@ -21,7 +21,7 @@ resource "azurerm_resource_group_policy_assignment" "readonly_filesystem" {
 # Kubernetes clusters should not allow container privilege escalation (BuiltIn)
 # https://github.com/Azure/azure-policy/blob/master/built-in-policies/policyDefinitions/Kubernetes/ContainerNoPrivilegeEscalation.json
 resource "azurerm_resource_group_policy_assignment" "no_privilege_escalation" {
-  name                 = "no_privilege_escalation"
+  name                 = "no-privilege-escalation"
   resource_group_id    = azurerm_resource_group.stamp.id
   policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/1c6e92c9-99f0-4e55-9cf2-0c234dc48f99"
   display_name         = "Kubernetes clusters should not allow container privilege escalation"

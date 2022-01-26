@@ -9,7 +9,7 @@ metadata:
     helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
 spec:
   ports:
-  - port: {{ .Values.workload.service.port | default 8080 }}
+  - port: {{ .Values.workload.service.port | default 80 }}
     protocol: TCP
     targetPort: {{ .Values.workload.port | default 8080 }}
   selector:

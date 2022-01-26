@@ -9,9 +9,9 @@ metadata:
     helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
 spec:
   ports:
-  - port: {{ .Values.workload.service.port | default 80 }}
+  - port: {{ .Values.workload.service.port | default 8080 }}
     protocol: TCP
-    targetPort: 80
+    targetPort: {{ .Values.workload.port | default 8080 }}
   selector:
     app: {{ .Chart.Name }}
   type: {{ .Values.workload.service.type | default "ClusterIP" }} 

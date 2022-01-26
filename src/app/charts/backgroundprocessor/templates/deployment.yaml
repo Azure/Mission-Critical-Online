@@ -18,12 +18,14 @@ spec:
         app: {{ .Chart.Name }}
     spec:
       containers:
-      - image: {{ .Values.containerimage }}
+      - name: backgroundprocessor
+        image: {{ .Values.containerimage }}
         imagePullPolicy: {{ .Values.container.pullPolicy | default "Always" | quote }}
         securityContext:
-          privileged: false
-          readOnlyRootFilesystem: true
-        name: backgroundprocessor
+          privileged: false # Running a container as privileged gives all capabilities to the container, and it also lifts all the limitations enforced by the device cgroup controller.
+          runAsNonRoot: true # Containers should be run as a non-root user with the minimum required permissions (principle of least privilege).
+          readOnlyRootFilesystem: true # If a container does not need to write files, it should be run with a read-only filesystem.
+          allowPrivilegeEscalation: false # Controls whether a process can gain more privileges than its parent process.
         livenessProbe:
         # For the liveness probe we check if the file exists and was modified in the last minute. Source: https://medium.com/spire-labs/utilizing-kubernetes-liveness-and-readiness-probes-to-automatically-recover-from-failure-2fe0314f2b2e
           exec:

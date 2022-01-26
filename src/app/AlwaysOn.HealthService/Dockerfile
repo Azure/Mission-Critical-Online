@@ -22,4 +22,4 @@ WORKDIR /app
 COPY --from=build-env /app/AlwaysOn.HealthService/out .
 
 ENTRYPOINT ["dotnet", "AlwaysOn.HealthService.dll"]
-EXPOSE 80
+EXPOSE 8080

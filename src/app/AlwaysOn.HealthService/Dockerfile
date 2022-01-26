@@ -21,5 +21,6 @@ WORKDIR /app
 # Copy build artifacts from previous stage build-env
 COPY --from=build-env /app/AlwaysOn.HealthService/out .
 
-ENTRYPOINT ["dotnet", "AlwaysOn.HealthService.dll"]
+ENV ASPNETCORE_URLS=http://+:8080
 EXPOSE 8080
+ENTRYPOINT ["dotnet", "AlwaysOn.HealthService.dll"]

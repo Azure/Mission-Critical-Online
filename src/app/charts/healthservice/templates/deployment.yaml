@@ -42,6 +42,8 @@ spec:
         env:
             - name: "AZURE_REGION" # This value only gets calculated at application deployment time so it does not exist in Key Vault as a secret (plus, it is not secret)
               value: {{ .Values.azure.region }}
+            - name: "ASPNETCORE_URLS" # Port used to start the ASP.NET Core application
+              value: "http://+:{{ .Values.workload.port | default 8080 }}"
         volumeMounts:
           - name: secrets-store-inline
             mountPath: "/mnt/secrets-store"

@@ -21,5 +21,6 @@ WORKDIR /app
 # Copy build artifacts from previous stage build-env
 COPY --from=build-env /app/AlwaysOn.CatalogService/out .
 
+ENV ASPNETCORE_URLS=http://+:8080
 EXPOSE 8080
 ENTRYPOINT ["dotnet", "AlwaysOn.CatalogService.dll"]

@@ -21,5 +21,5 @@ WORKDIR /app
 # Copy build artifacts from previous stage build-env
 COPY --from=build-env /app/AlwaysOn.CatalogService/out .
 
-EXPOSE 80
+EXPOSE 8080
 ENTRYPOINT ["dotnet", "AlwaysOn.CatalogService.dll"]

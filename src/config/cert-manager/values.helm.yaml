@@ -1,4 +1,5 @@
-securityContext:
-  readOnlyRootFilesystem: true
-  allowPrivilegeEscalation: false
-  privileged: false
+cainjector:
+  securityContext:
+    readOnlyRootFilesystem: true
+    allowPrivilegeEscalation: false
+    privileged: false

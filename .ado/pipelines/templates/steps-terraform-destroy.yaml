@@ -1,4 +1,6 @@
 parameters:
+  terraformStorageAccountName: ''
+  terraformStorageResourceGroupName: ''
   terraformStateFilename:           ''
   terraformWorkingDirectory:        ''
   customAttributes:                 ''  # custom attributes for terraform
@@ -8,6 +10,8 @@ steps:
 # Initialize Terraform for destroy
 - template: steps-terraform-init.yaml
   parameters:
+    terraformStorageAccountName:        '${{ parameters.terraformStorageAccountName }}'
+    terraformStorageResourceGroupName:  '${{ parameters.terraformStorageResourceGroupName }}'
     terraformStateFilename:             '${{ parameters.terraformStateFilename }}'
     terraformWorkingDirectory:          '${{ parameters.terraformWorkingDirectory }}'
 

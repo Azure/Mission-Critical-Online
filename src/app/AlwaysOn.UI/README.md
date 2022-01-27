@@ -39,8 +39,6 @@ docker build -t aoui .
 docker run -p 8080:80 aoui
 ```
 
-
-
 ## Configuration
 
 Configuration is handled through a static `config.js` file, which is linked directly to the page in `index.html`:
@@ -62,9 +60,8 @@ Alternatively, you could make the config object part of the compiled app code an
 
 Settings to configure:
 
-- `window.API_URL` = URL of the API root which will be used, **without the trailing "/"**. For localhost this will be something like: *http://localhost:5000/api*, for cloud environment it will be: */api* (because the UI runs on the same domain as the API). This can also be the absolute URL of a published API, only make sure that no firewall and CORS restriction are in place.
-- `window.APPINSIGHTS_INSTRUMENTATIONKEY` = Instrumentation key for the Application Insights instance to be used.
-
+* `window.API_URL` = URL of the API root which will be used, **without the trailing "/"**. For localhost this will be something like: *http://localhost:5000/api*, for cloud environment it will be: */api* (because the UI runs on the same domain as the API). This can also be the absolute URL of a published API, only make sure that no firewall and CORS restriction are in place.
+* `window.APPINSIGHTS_INSTRUMENTATIONKEY` = Instrumentation key for the Application Insights instance to be used.
 
 ## Implementation notes
 
@@ -116,7 +113,7 @@ For demonstration purposes, the UI application is surfacing these error codes to
 
 Following the security principle of not sharing unnecessary debug information with the client, the CatalogService API provides only the Correlation ID in the failed response and doesn't share the failure reason (like an exception message).
 
-```
+```console
 Error in processing. Correlation ID: XXXXXXXXXXXXXXXXXXXXXX.
 ```
 
@@ -125,7 +122,6 @@ With this ID (and with the help of the `X-Server-Location` header) an operator i
 ### Data validation
 
 The UI is currently not performing any data validation when sending requests. But invalid data will result in a 400 Bad Request response which will cause the error banner to indicate failure.
-
 
 ## Security
 

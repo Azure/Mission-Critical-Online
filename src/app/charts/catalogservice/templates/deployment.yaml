@@ -26,18 +26,18 @@ spec:
           readOnlyRootFilesystem: true # If a container does not need to write files, it should be run with a read-only filesystem.
           allowPrivilegeEscalation: false # Controls whether a process can gain more privileges than its parent process.
         ports:
-        - containerPort: {{ .Values.workload.service.port | default 80 }}
+        - containerPort: {{ .Values.workload.port | default 8080 }}
         livenessProbe:
           httpGet:
             path: /health/liveness
-            port: 80
+            port: {{ .Values.workload.port | default 8080 }}
           initialDelaySeconds: 10
           periodSeconds: 30
           timeoutSeconds: 3
         startupProbe:
           httpGet:
             path: /health/liveness
-            port: 80
+            port: {{ .Values.workload.port | default 8080 }}
           initialDelaySeconds: 5
           periodSeconds: 10
           timeoutSeconds: 3
@@ -51,6 +51,8 @@ spec:
         env:
             - name: "AZURE_REGION" # This value only gets calculated at application deployment time so it does not exist in Key Vault as a secret (plus, it is not secret)
               value: {{ .Values.azure.region }}
+            - name: "ASPNETCORE_URLS" # Port used to start the ASP.NET Core application
+              value: "http://+:{{ .Values.workload.port | default 8080 }}"
         volumeMounts:
           - name: secrets-store-inline
             mountPath: "/mnt/secrets-store"

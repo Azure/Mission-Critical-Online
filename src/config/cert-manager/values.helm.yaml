@@ -1,0 +1,4 @@
+securityContext:
+  readOnlyRootFilesystem: true
+  allowPrivilegeEscalation: false
+  privileged: false

@@ -26,3 +26,21 @@ resource "azurerm_resource_group_policy_assignment" "no_privilege_escalation" {
   policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/1c6e92c9-99f0-4e55-9cf2-0c234dc48f99"
   display_name         = "Kubernetes clusters should not allow container privilege escalation"
 }
+
+# Azure Policy Add-on for Kubernetes service (AKS) should be installed and enabled on your clusters (BuiltIn)
+# https://github.com/Azure/azure-policy/blob/master/built-in-policies/policyDefinitions/Kubernetes/AKS_AzurePolicyAddOn_Audit.json
+resource "azurerm_resource_group_policy_assignment" "azure_policy_on_aks" {
+  name                 = "azure-policy-enabled-on-aks"
+  resource_group_id    = azurerm_resource_group.stamp.id
+  policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/0a15ec92-a229-4763-bb14-0ea34a568f8d"
+  display_name         = "Azure Policy Add-on for Kubernetes service (AKS) should be installed and enabled on your clusters"
+}
+
+# Kubernetes cluster should not allow privileged containers (BuiltIn)
+# https://github.com/Azure/azure-policy/blob/master/built-in-policies/policyDefinitions/Kubernetes/ContainerNoPrivilege.json
+resource "azurerm_resource_group_policy_assignment" "no_privileged_containers" {
+  name                 = "no-privileged-containers"
+  resource_group_id    = azurerm_resource_group.stamp.id
+  policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/95edb821-ddaf-4404-9732-666045e056b4"
+  display_name         = "Kubernetes cluster should not allow privileged containers"
+}

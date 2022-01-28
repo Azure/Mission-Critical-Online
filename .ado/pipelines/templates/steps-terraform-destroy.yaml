@@ -18,6 +18,7 @@ steps:
 - task: Bash@3
   displayName: 'Terraform destroy'
   name: 'terraformdestroy'
+  retryCountOnTaskFailure: 1
   inputs:
     workingDirectory: '${{ parameters.terraformWorkingDirectory }}'
     targetType: 'inline'

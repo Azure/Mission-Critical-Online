@@ -24,7 +24,7 @@ In order to achieve high responsiveness for all operations, AlwaysOn implements 
 - **ASP.NET Core API** is used to implement the producer REST API.
 - **.NET Core Worker Service** is used to implement the consumer service.
 
-Read operations (e.g. *get leaderboard, get player, list games etc.*) are processed directly by the API and immediately return data back to the user.
+Read operations are processed directly by the API and immediately return data back to the user.
 
 ![List games reaches to database directly](/docs/media/application-design-operations-1.png)
 

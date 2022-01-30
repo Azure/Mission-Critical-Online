@@ -1,24 +1,23 @@
-[![Always On Application](./icon.png "Azure AlwaysOn Application")](./README.md)
+[![Always On Application](./icon.png "Azure AlwaysOn Foundational Online")](./README.md)
 
-## Welcome to Azure AlwaysOn
+## Welcome to Azure AlwaysOn Foundational Online reference implementation
 
-AlwaysOn is a **design methodology and approach to building highly-reliable cloud-native applications on Microsoft Azure for business-critical and mission-critical workloads**. AlwaysOn extends the [Well-Architected Framework](https://docs.microsoft.com/en-us/azure/architecture/framework) by providing prescriptive and opinionated guidance for business-critical scenarios where certain application characteristics are implicit, such as maximum reliability.
-
-This repository contains everything required to understand and implement an AlwaysOn application on Azure, and is comprised of the following:
-
-1. **Prescriptive Design Guidelines**: A cloud-native design methodology to guide readers through the architectural process of building a mature business-critical application on Microsoft Azure, articulating key design considerations and requisite design decisions along with associated trade-offs.
-
-2. **Fully Functional Production-Ready Reference Implementation**: An end-to-end reference implementation intended to provide a solution orientated basis to showcase business critical application development on Microsoft Azure, leveraging Azure-native platform capabilities to maximize reliability and operational effectiveness. More specifically, the reference implementation consists of:
+AlwaysOn is an open source project that provides a **prescriptive architectural approach to building highly-reliable cloud-native applications on Microsoft Azure for mission-critical workloads**. This repository contains the *foundational online* AlwaysOn reference implementation a **Fully Functional Production-Ready AlwaysOn Reference Implementation**: An end-to-end reference implementation intended to provide a solution orientated basis to showcase mission-critical application development on Microsoft Azure, leveraging Azure-native platform capabilities to maximize reliability and operational effectiveness. More specifically, the reference implementation consists of:
 
     * Design and implementation guidance to help readers understand and use the AlwaysOn design methodology in the context of a particular industry scenario.
     * Production-ready technical artifacts including Infrastructure-as-Code (IaC) resources and Continuous-Integration/Continuous-Deployment (CI/CD) pipelines (GitHub and Azure DevOps) to deploy an AlwaysOn application with mature end-to-end operational wrappers.
 
+This repository contains the reference implementation for an AlwaysOn enterprise connected scenario. The pipeline deploys the application Azure Subscription security and compliance guardrails and has no network connectivity requirements. It will be used if the AlwaysOn application is access over a public endpoint without additional dependencies to other company resources.
+
 ## AlwaysOn Repository - Table of Contents
 
-* [Introduction - What is AlwaysOn?](./docs/introduction/README.md) - Detailed introduction into AlwaysOn, the problem it is intended to solve and the value it can provide.
-* [Design Guidelines](./docs/design-guidelines/README.md) - Prescriptive guidance aligned to 8 critical design areas guides users to design and build an AlwaysOn application, outlining a recommended decision process.
 * [Reference Implementation Solution Guide](./docs/reference-implementation/README.md) - Everything required to understand and build a copy of the reference implementation
 * [Reference Implementation Build Artifacts](./src/infra/README.md) - Contains the Infrastructure-as-Code artifacts, CI/CD pipelines, and application code required to deploy the preconfigured reference solution
+
+## More information about AlwaysOn
+
+* [Introduction - What is AlwaysOn?](https://github.com/Azure/AlwaysOn/blob/repo-go-live-changes/docs/introduction/README.md){target="_blank"} - Detailed introduction into AlwaysOn, the problem it is intended to solve and the value it can provide.
+* [Design Guidelines](https://github.com/Azure/AlwaysOn/blob/repo-go-live-changes/docs/design-methodology/README.md){target="_blank"} - Prescriptive guidance aligned to 8 critical design areas guides users to design and build an AlwaysOn application, outlining a recommended decision process.
 
 ## Helpful Information
 

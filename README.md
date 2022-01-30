@@ -13,12 +13,12 @@ This repository contains the reference implementation for an AlwaysOn enterprise
 ## Reference implementation - Table of Contents
 
 - [Reference Implementation Solution Guide](./docs/reference-implementation/README.md) - Everything required to understand and build a copy of the reference implementation
-- [Reference Implementation Build Artifacts](./src/infra/README.md) - Contains the Infrastructure-as-Code artifacts, CI/CD pipelines, and application code required to deploy the preconfigured reference solution
+- [Reference Implementation Build Artifacts](./src/infra/README.md) - Contains the Infrastructure-as-Code artifacts, CI/CD pipelines, and application code required to deploy the pre-configured reference solution
 
 ## More information about AlwaysOn
 
-- [Introduction - What is AlwaysOn?](https://github.com/Azure/AlwaysOn/blob/repo-go-live-changes/docs/introduction/README.md){target="_blank"} - Detailed introduction into AlwaysOn, the problem it is intended to solve and the value it can provide.
-- [Design Guidelines](https://github.com/Azure/AlwaysOn/blob/repo-go-live-changes/docs/design-methodology/README.md){target="_blank"} - Prescriptive guidance aligned to 8 critical design areas guides users to design and build an AlwaysOn application, outlining a recommended decision process.
+- [Introduction - What is AlwaysOn?](https://github.com/Azure/AlwaysOn/blob/repo-go-live-changes/docs/introduction/README.md) - Detailed introduction into AlwaysOn, the problem it is intended to solve and the value it can provide.
+- [Design Guidelines](https://github.com/Azure/AlwaysOn/blob/repo-go-live-changes/docs/design-methodology/README.md) - Prescriptive guidance aligned to 8 critical design areas guides users to design and build an AlwaysOn application, outlining a recommended decision process.
 
 ## Helpful Information
 

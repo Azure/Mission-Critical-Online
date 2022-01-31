@@ -2,7 +2,7 @@
 kind: NetworkPolicy
 apiVersion: networking.k8s.io/v1
 metadata:
-  name: {{ .Chart.Name }}-policy-allow-external
+  name: {{ .Chart.Name }}-allow-external
   labels:
     app.kubernetes.io/managed-by: {{ .Release.Service }}
     app.kubernetes.io/instance: {{ .Release.Name }}

@@ -3,7 +3,7 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: default-deny
+  name: {{ .Chart.Name }}-deny-all
   labels:
     app.kubernetes.io/managed-by: {{ .Release.Service }}
     app.kubernetes.io/instance: {{ .Release.Name }}
@@ -14,11 +14,29 @@ spec:
   - Ingress
   - Egress
 ---
+# Network Policy to allow ingress traffic from * on Port 80 to the cert-manager HTTP issuer.
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: {{ .Chart.Name }}-allow-ingress-for-cert-manager-http
+  labels:
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+spec:
+  podSelector:
+    matchLabels:
+      acme.cert-manager.io/http01-solver: true
+  ingress:
+  - from: []
+    ports:
+    - port: 80
+---
 # Network Policy to allow ingress traffic from * to the workload.
 kind: NetworkPolicy
 apiVersion: networking.k8s.io/v1
 metadata:
-  name: {{ .Chart.Name }}-policy-allow-external
+  name: {{ .Chart.Name }}-allow-ingress-from-external
   labels:
     app.kubernetes.io/managed-by: {{ .Release.Service }}
     app.kubernetes.io/instance: {{ .Release.Name }}

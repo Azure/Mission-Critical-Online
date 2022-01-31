@@ -38,7 +38,7 @@ steps:
 
         if ($LASTEXITCODE -ne 0) {
           $retrycount++;
-          echo "terraform destroy failed. Retrying... $retrycount/$maxretrycount";
+          echo "*** terraform destroy failed. Retrying... $retrycount/$maxretrycount";
           start-sleep $($retrydelay*$retrycount) # sleep for <retry> * 60 seconds
         } else {
           $retrycount = $maxretrycount

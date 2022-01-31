@@ -1,0 +1,13 @@
+# Network policy to allow egress / outbound traffic from the workload.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Chart.Name }}-allow-all-egress
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  egress:
+  - {}
+  policyTypes:
+  - Egress

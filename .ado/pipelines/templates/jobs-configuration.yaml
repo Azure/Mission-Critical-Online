@@ -168,7 +168,7 @@ jobs:
 
   - ${{ if eq(parameters.runChaosTesting, 'true') }}:
     - task: AzureCLI@2
-      displayName: "Install Chaos Mesh on AKS clusters"
+      displayName: "Install Chaos Mesh $(chaosMeshVersion) on AKS clusters"
       inputs:
         azureSubscription: $(azureServiceConnection)
         scriptType: pscore
@@ -201,13 +201,10 @@ jobs:
               helm repo add chaos-mesh https://charts.chaos-mesh.org
               helm repo update
 
-              # create crd definitions
-              curl -sSL https://mirrors.chaos-mesh.org/$(chaosMeshCrdVersion)/crd.yaml | kubectl apply --validate=false -f -
-              echo "*** Install Chaos Mesh"
-              # Install Chaos Mesh version 1.2.3 is the currently supported by Azure Chaos studio. This maps to helm version --version v0.5.3
+              # Install Chaos Mesh 
               helm install chaos-mesh chaos-mesh/chaos-mesh `
                             --namespace=$(chaosTestingNamespace) `
-                            --version=$(chaosMeshChartVersion) `
+                            --version=$(chaosMeshVersion) `
                             --set chaosDaemon.runtime=containerd `
                             --set chaosDaemon.socketPath=/run/containerd/containerd.sock
             }

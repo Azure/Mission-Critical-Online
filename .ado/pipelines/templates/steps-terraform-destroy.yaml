@@ -1,9 +1,11 @@
 parameters:
-  terraformStorageAccountName: ''
+  terraformStorageAccountName:       ''
   terraformStorageResourceGroupName: ''
-  terraformStateFilename:           ''
-  terraformWorkingDirectory:        ''
-  customAttributes:                 ''  # custom attributes for terraform
+  terraformStateFilename:            ''
+  terraformWorkingDirectory:         ''
+  customAttributes:                  ''  # custom attributes for terraform
+  retryCount:                        1   # how often this task will retry
+  retryDelayInSeconds:               90  # wait period before retrying
 
 steps:
 
@@ -18,7 +20,6 @@ steps:
 - task: Bash@3
   displayName: 'Terraform destroy'
   name: 'terraformdestroy'
-  retryCountOnTaskFailure: 1
   inputs:
     workingDirectory: '${{ parameters.terraformWorkingDirectory }}'
     targetType: 'inline'
@@ -26,7 +27,21 @@ steps:
       # To have access to the input ARM_CLIENT_SECRET which was marked as secret, we need to explicitly reference it in the script
       export ARM_CLIENT_SECRET="$(ARM_CLIENT_SECRET)"
 
-      terraform destroy -auto-approve -input=false -parallelism=20 -var-file="variables-$(environment).tfvars" ${{ parameters.customAttributes }}
+      $retrycount = 0
+      $maxretrycount = ${{ parameters.retryCount }}
+      $retrydelay = ${{ parameters.retryDelayInSeconds }}
+
+      do {
+        terraform destroy -auto-approve -input=false -parallelism=20 -var-file="variables-$(environment).tfvars" ${{ parameters.customAttributes }}
+
+        if ($LASTEXITCODE -ne 0) {
+          $retrycount++;
+          echo "terraform destroy failed. Retrying... $retrycount/$maxretrycount";
+          start-sleep $($retrydelay*$retrycount) # sleep for <retry> * 60 seconds
+        } else {
+          $retrycount = $maxretrycount
+        }
+      } while ( ($retrycount -lt $maxretrycount) )
 
 # Delete Terraform state file. We need to run this in any case, even if variables.oldReleaseCustomSuffix=='' since Terrraform init also will always run and thereby create an empty state file
 - task: AzureCLI@2

@@ -27,14 +27,15 @@ steps:
       # To have access to the input ARM_CLIENT_SECRET which was marked as secret, we need to explicitly reference it in the script
       $Env:ARM_CLIENT_SECRET="$(ARM_CLIENT_SECRET)"
 
-      $retrycount = 0
-      $maxretrycount = ${{ parameters.retryCount }}
-      $retrydelay = ${{ parameters.retryDelayInSeconds }}
+      $retrycount = 0 # initialize retry count (set to 0)
+      $maxretrycount = ${{ parameters.retryCount }} # max. number of retries
+      $retrydelay = ${{ parameters.retryDelayInSeconds }} # delay before each retry operation
+      $varfile = "variables-$environment.tfvars" # construct terraform variables file name
 
       do {
         Write-Host "*** Terraform destroy ($retrycount / $maxretrycount)"
         try {
-          terraform destroy -auto-approve -input=false -parallelism=20 -var-file="variables-$(environment).tfvars" ${{ parameters.customAttributes }}
+          terraform destroy -auto-approve -input=false -parallelism=20 -var-file=$varfile ${{ parameters.customAttributes }}
           $isSuccess = $true
         } catch {
           Write-Host "*** Terraform destroy failed. Retrying in $retrydelay seconds."

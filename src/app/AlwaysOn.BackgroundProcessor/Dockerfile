@@ -13,8 +13,8 @@ RUN apt-get update && apt-get upgrade -y \
 RUN mkdir -p /tmp/appinsightschannel
 
 # Create a new user group and user to run the workload as non-root
-RUN groupadd -r workload && useradd -u 1001 --no-log-init -r -g workload workload
-USER 1001 # needs to be numeric for K8s SecurityContext runAsNonRoot
+RUN groupadd -r workload && useradd --no-log-init -r -g workload workload
+USER workload
 
 WORKDIR /app
 

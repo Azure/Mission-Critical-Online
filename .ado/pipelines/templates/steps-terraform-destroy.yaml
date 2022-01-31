@@ -25,7 +25,7 @@ steps:
     targetType: inline
     script: |
       # To have access to the input ARM_CLIENT_SECRET which was marked as secret, we need to explicitly reference it in the script
-      export ARM_CLIENT_SECRET="$(ARM_CLIENT_SECRET)"
+      $Env:ARM_CLIENT_SECRET="$(ARM_CLIENT_SECRET)"
 
       $retrycount = 0
       $maxretrycount = ${{ parameters.retryCount }}

@@ -32,11 +32,12 @@ steps:
       $retrydelay = ${{ parameters.retryDelayInSeconds }}
 
       do {
+        Write-Host "*** Terraform destroy ($retrycount / $maxretrycount)"
         try {
           terraform destroy -auto-approve -input=false -parallelism=20 -var-file="variables-$(environment).tfvars" ${{ parameters.customAttributes }}
           $isSuccess = $true
         } catch {
-          Write-Host "Terraform destroy failed. Retrying in $retrydelay seconds."
+          Write-Host "*** Terraform destroy failed. Retrying in $retrydelay seconds."
           $isSuccess = $false
           $retrycount++
           Start-Sleep -s $retrydelay

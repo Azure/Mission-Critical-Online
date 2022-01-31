@@ -32,16 +32,16 @@ steps:
       $retrydelay = ${{ parameters.retryDelayInSeconds }}
 
       do {
-        terraform destroy -auto-approve -input=false -parallelism=20 -var-file="variables-$(environment).tfvars" ${{ parameters.customAttributes }}
-
-        if ($LASTEXITCODE -ne 0) {
-          $retrycount++;
-          echo "*** terraform destroy failed. Retrying... $retrycount/$maxretrycount";
-          start-sleep $($retrydelay*$retrycount) # sleep for <retry> * 60 seconds
-        } else {
-          $retrycount = $maxretrycount
+        try {
+          terraform destroy -auto-approve -input=false -parallelism=20 -var-file="variables-$(environment).tfvars" ${{ parameters.customAttributes }}
+          $isSuccess = $true
+        } catch {
+          Write-Host "Terraform destroy failed. Retrying in $retrydelay seconds."
+          $isSuccess = $false
+          $retrycount++
+          Start-Sleep -s $retrydelay
         }
-      } while ( ($retrycount -lt $maxretrycount) )
+      } while ( -not $isSuccess -and $retrycount -lt $maxretrycount )
 
 # Delete Terraform state file. We need to run this in any case, even if variables.oldReleaseCustomSuffix=='' since Terrraform init also will always run and thereby create an empty state file
 - task: AzureCLI@2

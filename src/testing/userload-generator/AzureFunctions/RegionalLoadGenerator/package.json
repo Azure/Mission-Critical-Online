@@ -9,6 +9,6 @@
     "@playwright/test": "^1.18.1",
     "csv-parser": "^3.0.0",
     "durable-functions": "^1.5.4",
-    "playwright-chromium": "^1.18.0"
+    "playwright-chromium": "^1.18.1"
   }
 }

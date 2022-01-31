@@ -17,13 +17,15 @@ steps:
     terraformStateFilename:             '${{ parameters.terraformStateFilename }}'
     terraformWorkingDirectory:          '${{ parameters.terraformWorkingDirectory }}'
 
-- task: Bash@3
+- task: AzureCLI@2
   displayName: 'Terraform destroy'
   name: 'terraformdestroy'
   inputs:
     workingDirectory: '${{ parameters.terraformWorkingDirectory }}'
-    targetType: 'inline'
-    script: |
+    azureSubscription: $(azureServiceConnection)
+    scriptType: pscore
+    scriptLocation: inlineScript
+    inlineScript: |
       # To have access to the input ARM_CLIENT_SECRET which was marked as secret, we need to explicitly reference it in the script
       export ARM_CLIENT_SECRET="$(ARM_CLIENT_SECRET)"
 

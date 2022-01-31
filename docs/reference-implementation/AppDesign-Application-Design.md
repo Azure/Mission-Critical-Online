@@ -34,8 +34,6 @@ Messages from the queue are then processed by BackgroundProcessor instances whic
 
 ![Post rating is asynchronous](/docs/media/application-design-operations-2.png)
 
-![Delete comment is asynchronous](/docs/media/application-design-operations-3.png)
-
 There is no backchannel which communicates to the client if the operation completed successfully and so the client application has to proactively poll the API to for updates.
 
 ## Authentication

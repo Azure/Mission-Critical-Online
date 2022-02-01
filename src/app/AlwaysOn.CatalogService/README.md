@@ -7,6 +7,7 @@ As described in the [conceptual description](/docs/reference-implementation/AppD
 The CatalogService application is packaged and deployed as a Helm chart. The chart is stored in the `src/app/charts` directory. It offers a set of parameters that can be used to customize the deployment (see `values.yaml` for all).
 
 | Parameter | Description |
+| --- | --- |
 | scale.minReplicas | Minimum number of replicas to deploy |
 | scale.maxReplicas | Maximum number of replicas to deploy |
 | networkpolicy.enabled | Whether to enable network policies |

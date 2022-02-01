@@ -2,6 +2,19 @@
 
 As described in the [conceptual description](/docs/reference-implementation/AppDesign-Application-Design.md), the CatalogService provides APIs that the UI, and all other users of the service, interact with.
 
+## Deployment
+
+The CatalogService application is packaged and deployed as a Helm chart. The chart is stored in the `src/app/charts` directory. It offers a set of parameters that can be used to customize the deployment (see `values.yaml` for all).
+
+| Parameter | Description |
+| scale.minReplicas | Minimum number of replicas to deploy |
+| scale.maxReplicas | Maximum number of replicas to deploy |
+| networkpolicy.enabled | Whether to enable network policies |
+
+## Networking and Security
+
+When CatalogService is deployed with `.Values.networkpolicy.enabled` set to `true` (default), it uses a custom network policy that allows ingress traffic (which is needed to expose the workload via the Ingress controller) and egress traffic. It also enables ingress traffic for cert-manager (which is needed to provision certificates) and denies everything else (default deny).
+
 ## Configuration
 
 Configuration settings are maintained in the `AlwaysOn.Shared/SysConfig.cs` file and either defined with default values there or loaded through the .NET IConfiguration provider. When running inside AKS, settings get injected via environment variables as well as through key-value files (by the [CSI secret driver for Key Vault](/src/config/charts/csi-secrets-driver)). While ENV variables are loaded automatically, to read settings from the files, we need to add this line in the `CreateHostBuilder()` method:
@@ -35,7 +48,6 @@ Wherever possible, we use Dependency Injection with interfaces for common servic
 ### API Authorization
 
 To demonstrate how authentication and authorization works, we [implemented Azure AD B2C](/docs/reference-implementation/AppDesign-Application-Design.md#Authentication) selectively on individual APIs within the `GameController`. There are two key initialization steps in `Startup.cs`: adding authentication and adding authorization.
-
 
 ### Logging and tracing
 
@@ -93,10 +105,10 @@ public async Task<ActionResult<CatalogItem>> GetCatalogItemByIdAsyncV2(Guid item
 }
 ```
 
-* Providing version string in the URL is mandatory (e.g. `https://localhost:5000/1.0/catalogitem/` or `https://ao6bd5-global-fd.azurefd.net/api/1.0/catalogitem`).
-* If version is `1.0`, the first implementation will get called (`GetCatalogItemByIdAsync`).
-* If version is `2.0`, the second implementation will get called (`GetCatalogItemByIdAsyncV2`).
-* If version `3.0` is specified on the controller, but no actions map to it, first implementation will be called.
+- Providing version string in the URL is mandatory (e.g. `https://localhost:5000/1.0/catalogitem/` or `https://ao6bd5-global-fd.azurefd.net/api/1.0/catalogitem`).
+- If version is `1.0`, the first implementation will get called (`GetCatalogItemByIdAsync`).
+- If version is `2.0`, the second implementation will get called (`GetCatalogItemByIdAsyncV2`).
+- If version `3.0` is specified on the controller, but no actions map to it, first implementation will be called.
 
 ---
 

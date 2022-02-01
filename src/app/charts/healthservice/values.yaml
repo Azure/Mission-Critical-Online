@@ -10,5 +10,8 @@ workload:
 
 replicas: 3
 
+networkpolicy:
+  enabled: true # Enable Network Policy
+
 azure:
   region: "East US 2"

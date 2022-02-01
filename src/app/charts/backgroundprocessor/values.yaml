@@ -6,5 +6,8 @@ scale:
   minReplicas: 2 # Min Replicas
   maxReplicas: 8 # Max Replicas
 
+networkpolicy:
+  enabled: true # Enable Network Policy
+
 azure:
   region: "East US 2"

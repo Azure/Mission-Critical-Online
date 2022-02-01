@@ -18,6 +18,9 @@ ingress:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
     kubernetes.io/ingress.class: nginx
 
+networkpolicy:
+  enabled: true # Enable Network Policy
+
 azure:
   frontdoorid: "" # Azure Front Door Header ID (blank = disabled)
   region: "East US 2"

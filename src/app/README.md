@@ -29,6 +29,20 @@ The `/src/app/charts` directory contains individual Helm charts for each of the 
 
 These workload Helm charts used in AlwaysOn are currently not uploaded into a Helm registry, they're applied directly via Helm via an [Azure DevOps pipeline](/docs/reference-implementation/DeployAndTest-DevOps-Design-Decisions.md) from within the repository.
 
+### Security Context
+
+All Helm charts contain foundational security measures following K8s best practices. These security measures are:
+
+* `readOnlyFilesystem` The root filesystem `/` in each container is set to read-only. This is to prevent the container from accidentally writing to the host filesystem. Directories that require read-write access are mounted as volumes.
+* `privileged` All containers are set to run as **non-privileged**. Running a container as privileged gives all capabilities to the container, and it also lifts all the limitations enforced by the device cgroup controller.
+* `allowPrivilegeEscalation` Prevents inside of a container to gain more privileges than its parent process.
+
+These security measures are also configured for 3rd-party containers and helm charts (i.e. cert-manager) when possible and audited by Azure Policy.
+
+### Network Policy
+
+Each of our workload Helm charts contains foundational Network Policies. These policies are enabled by default and can be disabled per chart via `.Values.networkpolicy.enabled`. The `CatalogService` contains a `default-deny` rule that denies all traffic in the `workload` namespace, that is not explicitly allowed. See the individual workload readme for more details.
+
 ---
 
 [Back to documentation root](/docs/README.md)

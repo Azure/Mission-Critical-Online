@@ -25,9 +25,9 @@ The UI is compiled in the CI pipeline and uploaded to Azure Storage accounts in 
 
 ## Helm Charts
 
-The `/src/app/charts` directory contains individual Helm charts for each of the application components like CatalogService, BackgroundProcessor and HealthService. Helm is used to package the YAML manifests needed to deploy the individual components together including their deployment, services as well as the auto-scaling (HPA) configuration.
+The `/src/app/charts` directory contains individual Helm charts for each of the application components like CatalogService, BackgroundProcessor and HealthService. Helm is used to package the YAML manifests needed to deploy the individual components together including their deployment, services as well as the auto-scaling (HPA) configuration. Each Helm chart contains a `values.yaml` file that contains default values and is used as an argument reference.
 
-These Helm charts are currently not uploaded into a Helm registry, they're applied directly via Helm via an [Azure DevOps pipeline](/docs/reference-implementation/DeployAndTest-DevOps-Design-Decisions.md) from within the repository.
+These workload Helm charts used in AlwaysOn are currently not uploaded into a Helm registry, they're applied directly via Helm via an [Azure DevOps pipeline](/docs/reference-implementation/DeployAndTest-DevOps-Design-Decisions.md) from within the repository.
 
 ---
 

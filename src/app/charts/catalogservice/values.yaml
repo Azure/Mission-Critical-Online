@@ -9,9 +9,9 @@ workload:
     port: 80 # Service Port (not used for Ingress)
     type: "ClusterIP" # Service Type (default ClusterIP)
 
-scale:
-  minReplicas: 3 # Min Replicas
-  maxReplicas: 20 # Max Replicas
+scale: # Horizontal Pod Autoscaler (HPA) configuration
+  minReplicas: 3 # Min. number of replicas used for HPA
+  maxReplicas: 20 # Max. number of replicas used for HPA
 
 ingress:
   annotations:

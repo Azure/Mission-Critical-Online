@@ -113,6 +113,10 @@ public async Task<ActionResult<CatalogItem>> GetCatalogItemByIdAsyncV2(Guid item
 - If version is `2.0`, the second implementation will get called (`GetCatalogItemByIdAsyncV2`).
 - If version `3.0` is specified on the controller, but no actions map to it, first implementation will be called.
 
+### Container Image
+
+The container image for `CatalogService` is built using a `Dockerfile` in `/src/app/AlwaysOn.CatalogService`. It's using a multi-stage process to build a lightweight container image without the overhead needed for the dotnet build process.
+
 ---
 
 [Back to documentation root](/docs/README.md)

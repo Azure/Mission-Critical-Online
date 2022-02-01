@@ -18,7 +18,7 @@ spec:
 kind: NetworkPolicy
 apiVersion: networking.k8s.io/v1
 metadata:
-  name: {{ .Chart.Name }}-allow-ingress-for-cert-manager-http
+  name: {{ .Chart.Name }}-allow-cert-manager-resolver-ingress
   labels:
     app.kubernetes.io/managed-by: {{ .Release.Service }}
     app.kubernetes.io/instance: {{ .Release.Name }}
@@ -26,7 +26,7 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      acme.cert-manager.io/http01-solver: true
+      acme.cert-manager.io/http01-solver: "true"
   ingress:
   - from: []
     ports:

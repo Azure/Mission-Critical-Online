@@ -117,6 +117,19 @@ public async Task<ActionResult<CatalogItem>> GetCatalogItemByIdAsyncV2(Guid item
 
 The container image for `CatalogService` is built using a `Dockerfile` in `/src/app/AlwaysOn.CatalogService`. It's using a multi-stage process to build a lightweight container image without the overhead needed for the dotnet build process.
 
+```docker
+# Create build environment
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env
+...
+
+# Create application container
+FROM mcr.microsoft.com/dotnet/aspnet:6.0
+...
+
+# Copy build artifacts from previous stage build-env
+COPY --from=build-env /app/AlwaysOn.CatalogService/out .
+```
+
 ---
 
 [Back to documentation root](/docs/README.md)

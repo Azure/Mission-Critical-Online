@@ -34,7 +34,7 @@ Metric alerts are limited to the built-in metrics that Azure provides for a give
 - AKS - Unschedulable pods greater than 0 for sustained period
 - Storage Account - Availability dropping under threshold
 
-#### Front Door - Backend Health
+#### Azure Front Door - Backend Health
 
 > This alert is implemented as a sample as part of the reference implementation.
 

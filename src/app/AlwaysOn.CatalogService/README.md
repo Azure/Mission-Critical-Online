@@ -32,11 +32,6 @@ In addition to the controllers, an [ASP.NET Core HealthCheck](https://docs.micro
 
 Wherever possible, we use Dependency Injection with interfaces for common services (for example for the message and database service). All implementations are placed in the `AlwaysOn.Shared` class library, so no package references for the actual underlying services such as Cosmos DB are required in the CatalogService.
 
-### API Authorization
-
-To demonstrate how authentication and authorization works, we [implemented Azure AD B2C](/docs/reference-implementation/AppDesign-Application-Design.md#Authentication) selectively on individual APIs within the `GameController`. There are two key initialization steps in `Startup.cs`: adding authentication and adding authorization.
-
-
 ### Logging and tracing
 
 We use the `Microsoft.ApplicationInsights.AspNetCore` NuGet package to get out-of-the-box instrumentation from the Web API. Also, [Serilog](https://github.com/serilog/serilog-extensions-logging) is used for all logging inside the application with Azure Application Insights configured as a sink (in addition to the Console sink). Only when needed to track additional metrics, we use the `TelemetryClient` for ApplicationInsights directly.

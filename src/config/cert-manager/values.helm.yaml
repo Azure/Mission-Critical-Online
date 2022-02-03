@@ -1,0 +1,16 @@
+containerSecurityContext: # security context for cert-manager
+  readOnlyRootFilesystem: true # If a container does not need to write files, it should be run with a read-only filesystem. 
+  allowPrivilegeEscalation: false # Controls whether a process can gain more privileges than its parent process.
+  privileged: false # Running a container as privileged gives all capabilities to the container, and it also lifts all the limitations enforced by the device cgroup controller.
+
+cainjector: # security context for cert-manager ca injector
+  containerSecurityContext:
+    readOnlyRootFilesystem: true # If a container does not need to write files, it should be run with a read-only filesystem. 
+    allowPrivilegeEscalation: false # Controls whether a process can gain more privileges than its parent process.
+    privileged: false # Running a container as privileged gives all capabilities to the container, and it also lifts all the limitations enforced by the device cgroup controller.
+
+webhook: # security context for cert-manager webhook
+  containerSecurityContext:
+    readOnlyRootFilesystem: true # If a container does not need to write files, it should be run with a read-only filesystem. 
+    allowPrivilegeEscalation: false # Controls whether a process can gain more privileges than its parent process.
+    privileged: false # Running a container as privileged gives all capabilities to the container, and it also lifts all the limitations enforced by the device cgroup controller.

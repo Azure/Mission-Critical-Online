@@ -46,7 +46,7 @@ jobs:
           # Deploy helm chart for ingress-nginx using a custom load balancer ip and resource group
           helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx `
                 --namespace kube-system `
-                --values src/config/ingress/nginx.yaml `
+                --values src/config/ingress/values.helm.yaml `
                 --set controller.service.loadBalancerIP="$aksIngressIp" `
                 --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-resource-group"="$aksClusterResourceGroup" `
                 --version "$(ingressNginxVersion)"
@@ -111,7 +111,9 @@ jobs:
           helm repo add jetstack https://charts.jetstack.io
           helm repo update
           helm upgrade --install cert-manager jetstack/cert-manager `
-                --namespace cert-manager --version "$(certManagerVersion)"
+                       --values src/config/cert-manager/values.helm.yaml `
+                       --namespace cert-manager `
+                       --version "$(certManagerVersion)"
         }
 
   - task: AzureCLI@2
@@ -166,7 +168,7 @@ jobs:
 
   - ${{ if eq(parameters.runChaosTesting, 'true') }}:
     - task: AzureCLI@2
-      displayName: "Install Chaos Mesh on AKS clusters"
+      displayName: "Install Chaos Mesh $(chaosMeshVersion) on AKS clusters"
       inputs:
         azureSubscription: $(azureServiceConnection)
         scriptType: pscore
@@ -199,11 +201,12 @@ jobs:
               helm repo add chaos-mesh https://charts.chaos-mesh.org
               helm repo update
 
-              # create crd definitions
-              curl -sSL https://mirrors.chaos-mesh.org/v1.2.3/crd.yaml | kubectl apply --validate=false -f -
-              echo "*** Install Chaos Mesh"
-              # Install Chaos Mesh version 1.2.3 is the currently supported by Azure Chaos studio. This maps to helm version --version v0.5.3
-              helm install chaos-mesh chaos-mesh/chaos-mesh --namespace=$(chaosTestingNamespace) --version v0.5.3 --set chaosDaemon.runtime=containerd --set chaosDaemon.socketPath=/run/containerd/containerd.sock
+              # Install Chaos Mesh 
+              helm install chaos-mesh chaos-mesh/chaos-mesh `
+                            --namespace=$(chaosTestingNamespace) `
+                            --version=$(chaosMeshVersion) `
+                            --set chaosDaemon.runtime=containerd `
+                            --set chaosDaemon.socketPath=/run/containerd/containerd.sock
             }
             else
             {

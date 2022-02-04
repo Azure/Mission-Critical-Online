@@ -74,7 +74,7 @@ This will let you create a repository in your own account or organization. This 
 
 ### 3) Import Pipelines
 
-Now that we have our own fork, let us start to import the pre-created pipelines into Azure Pipelines. You can do this either manually in the Azure DevOps Portal, or via the Azure DevOps Command Line Interface (CLI). Below you find instructions for both paths.
+Now that we have our own repo, let us start to import the pre-created pipelines into Azure Pipelines. You can do this either manually in the Azure DevOps Portal, or via the Azure DevOps Command Line Interface (CLI). Below you find instructions for both paths.
 
 > **Whether using Portal or CLI Pipeline import, you will need to import each Pipeline YAML file individually.**
 
@@ -82,13 +82,14 @@ The files to import are the YAML files stored in the `/.ado/pipelines/` director
 
 You can find more details about any of the pipelines within the [pipelines documentation](/.ado/pipelines/README.md).
 
-To start, we will import only the following three pipelines from the `/.ado/pipelines/` directory:
+To start, we will import only the following pipeline from the `/.ado/pipelines/` directory:
 
 - `/.ado/pipelines/azure-release-e2e.yaml`
+
+When you are later ready to also deploy further environments such as INT (integration) and PROD (production), repeat the same steps (and consecutive actions below) for the respective  pipelines:
 - `/.ado/pipelines/azure-release-int.yaml`
 - `/.ado/pipelines/azure-release-prod.yaml`
 
-So repeat the steps below for each of these.
 
 #### Import in Azure DevOps Portal
 
@@ -117,17 +118,23 @@ Using the `az devops` / `az pipelines` CLI:
 
 > Note: If you are using Azure DevOps Repos instead of GitHub, change `--repository-type github` to `--repository-type tfsgit` in the command below. Also, if your branch is not called `main` but, for example, `master` change this accordingly.
 
+First, you need to create a PAT (personal access token) on GitHub to use with ADO. This is required to be able to import the pipelines. For this, create a new token [here](https://github.com/settings/tokens).
+
+Save the token securely. Then, set it as an environment variable in your shell:
+```bash
+export AZURE_DEVOPS_EXT_GITHUB_PAT=<your PAT>
+```
+Now your session is authenticated and the ADO CLI will be able to import the pipelines from GitHub.
+
 ```bash
 # set the org/project context
 az devops configure --defaults organization=https://dev.azure.com/<your-org> project=<your-project>
 
 # import a YAML pipeline
-az pipelines create --name "Azure.AlwaysOn PROD Release" --description "Azure.AlwaysOn PROD Release" \
+az pipelines create --name "Azure.AlwaysOn E2E Release" --description "Azure.AlwaysOn E2E Release" \
                     --branch main --repository https://github.com/<your-fork>/ --repository-type github \
-                    --skip-first-run true --yaml-path "/.ado/pipelines/azure-release-prod.yaml"
+                    --skip-first-run true --yaml-path "/.ado/pipelines/azure-release-e2e.yaml"
 ```
-
-You need to run the "import a YAML pipeline" CLI command above for each YAML file to import. You can browse the repo you forked to see the YAML files in the `/.ado/pipelines/` folder.
 
 
 ### 4) Create Azure Service Principal
@@ -146,13 +153,12 @@ az account show --query id -o tsv
 xxx-xxxxxxx-xxxxxxx-xxxx
 
 # Make sure to change the name to a unique one within your tenant
-az ad sp create-for-rbac --scopes "/subscriptions/xxx-xxxxxxx-xxxxxxx-xxxx" --role "Owner" --name my-alwayson-deployment-sp
+az ad sp create-for-rbac --scopes "/subscriptions/xxx-xxxxxxx-xxxxxxx-xxxx" --role "Owner" --name <CHANGE-MY-NAME-alwayson-deployment-sp>
 
 # Output:
 {
   "appId": "d37d23d3-d3d3-460b-a4ab-aa7a11504e76",
   "displayName": "my-alwayson-deployment-sp",
-  "name": "d37d23d3-d3d3-460b-a4ab-aa7a11504e76",
   "password": "notARealP@assword-h3re",
   "tenant": "64f988bf-86f1-42af-91ab-2d7gh011db47"
 }
@@ -226,13 +232,15 @@ See [Azure Preview feature ](/src/infra/workload/README.md#preview-feature-regis
 
 ### 7) Adjust configuration
 
-There are three variables files in the `/.ado/pipelines/config` folder, one for each environment. You need to edit those file to reflect your own workspace before you execute the first deployments.
+There are variables files in the `/.ado/pipelines/config` folder, one for each environment. You need to edit those file to reflect your own workspace before you execute the first deployments. Based on which environment(s) you are deploying right now (E2E and/or INT/PROD), you only need to modify the respective variables file.
 
-**Please follow [this guide](/.ado/pipelines/README.md#configuration-files) to adjust the values for the different configuration files.**
+**Please follow [this guide](/.ado/pipelines/README.md#configuration-files) to adjust the values for the different configuration files. Then come back here.**
 
 #### Create environments
 
 Deployment pipelines taking a dependency on ADO environments. Each pipeline requires an environment created on the ADO project.
+
+> **Note:** Based on your ADO organizational settings, the environments will have already been created for you when you imported the pipelines.
 
 1. Click on Pipelines->Environment on the ADO project
 1. Create a "New environment"
@@ -250,13 +258,23 @@ Then click **Run pipeline**:
 
 ![Run pipeline](/docs/media/devops_e2e_pipeline_header.png 'Run pipeline')
 
-In the popup window, uncheck the box "Destroy Environment at the end" and then click **Run**.
+In the popup window, **uncheck** the box **Destroy Environment at the end** and then click **Run**.
 
 ![Start pipeline](/docs/media/devops_run_e2e_pipeline.png 'Start E2E pipeline run')
 
 This will now kick off your first full pipeline run. You can follow the progress in the run screen:
 
 ![Pipeline run overview](/docs/media/devops_e2e_pipeline_run_screen.png)
+
+Upon the first execution of a pipeline, Azure DevOps might ask you to grant permissions on the required service connection to Azure, as well as the environment.
+
+![Pipeline permission](/docs/media/AlwaysOnGettingStarted2PipelinePermission.png)
+
+Click on **View** and then on **Permit** for each required permission.
+
+![Pipeline permission](/docs/media/AlwaysOnGettingStarted2PipelinePermissionGrant.png)
+
+After this, the pipeline execution will kick off.
 
 The full run, which deploys all resources from scratch, might take around 30-40 minutes. Once all jobs are finished, take a note of the resource prefix which is now shown in the header of your pipeline screen:
 

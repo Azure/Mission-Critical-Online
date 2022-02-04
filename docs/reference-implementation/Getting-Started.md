@@ -6,6 +6,8 @@ This guide describes the process and the steps to deploy AlwaysOn in your own en
 
 AlwaysOn project is using a GitHub-based repository for version control of code artifacts and manifest files. The project leverages Azure DevOps Pipelines for build and deployment (CI/CD) pipelines.
 
+> Instead of GitHub the also other Git-based repositories can be used, such as *Azure DevOps Repos*.
+
 All relevant code artifacts and manifest files are stored in the GitHub repository and can easily be forked into your own account or organization.
 
 The document describes end-to-end process for setting up pre-requisites and other dependencies before deploying AlwaysOn in a subscription of your choice.
@@ -25,11 +27,11 @@ Following tools and applications must be installed on the client machine which y
 The process to deploy AlwaysOn is comprised of the following steps:
 
 1) Create an [Azure DevOps organization + project](#create-a-new-azure-devops-project)
-1) Create a fork of the [AlwaysOn GitHub](https://github.com/azure/alwayson) repository
+1) Generate your own repository based on the [AlwaysOn GitHub template](https://github.com/Azure/AlwaysOn-Foundational-Online/generate) repository
 1) Import [deployment pipelines](#3-import-pipelines)
 1) Create [Service Principals](#4-create-azure-service-principal) for each individual Azure subscription
 1) Create [Service Connections](#5-create-azure-service-connections) in Azure DevOps
-1) Access to an Azure Subscription (it is recommended to use multiple subscriptions to separate environments types i.e. dev, test and prod) with RP and preview features enabled for each of the subscriptions
+1) Access to an Azure Subscription (it is recommended to use multiple subscriptions to separate environments types i.e. dev, test and prod)
 1) Adjust configuration
 1) Execute the first deployment
 
@@ -60,15 +62,15 @@ For all the subsequent tasks done via `az devops` or `az pipelines` the context 
 az devops configure --defaults organization=https://dev.azure.com/<your-org> project=<your-project>
 ```
 
-### 2) Fork the AlwaysOn GitHub repository
+### 2) Generate your own repository based on the AlwaysOn GitHub template
 
-Azure DevOps Repos would allow us to import the AlwaysOn GitHub repository into Azure DevOps as well. For this guide we have decided to fork the repository on GitHub and use it from there.
+Azure DevOps Repos would allow us to import the AlwaysOn GitHub repository into Azure DevOps as well. For this guide we have decided to generate our own repository based on the template on GitHub and use it from there.
 
-Go to the AlwaysOn repository on GitHub and click on "Fork" in the top right corner:
+Go to the AlwaysOn repository on GitHub and click on "Use this template" in the top right corner:
 
 ![Fork GitHub Repo](/docs/media/AlwaysOnGettingStarted2Fork.png)
 
-This will let you create a fork in your own account or organization. This is needed to allow you to make modification to our code within your own repository.
+This will let you create a repository in your own account or organization. This is needed to allow you to make modification to our code within your own repository.
 
 ### 3) Import Pipelines
 

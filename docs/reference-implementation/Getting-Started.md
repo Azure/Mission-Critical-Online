@@ -276,7 +276,7 @@ Click on **View** and then on **Permit** for each required permission.
 
 After this, the pipeline execution will kick off.
 
-The full run, which deploys all resources from scratch, might take around 30-40 minutes. Once all jobs are finished, take a note of the resource prefix which is now shown in the header of your pipeline screen:
+The full run, which deploys all resources from scratch, might take around 30-40 minutes. Once all jobs are finished, **take a note of the resource prefix** which is now shown in the header of your pipeline screen:
 
 ![Resource tag](/docs/media/e2e_pipeline_prefix_tag.png)
 

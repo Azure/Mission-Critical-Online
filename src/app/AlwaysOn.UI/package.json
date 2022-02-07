@@ -12,7 +12,7 @@
   "dependencies": {
     "@azure/msal-browser": "^2.20.0",
     "@microsoft/applicationinsights-web": "^2.7.3",
-    "vue": "^2.6.14",
+    "vue": "^3.2.30",
     "vue-router": "^3.5.3"
   },
   "devDependencies": {

@@ -10,11 +10,11 @@ The AlwaysOn project is using a GitHub-based repository for version control of c
 
 All relevant code artifacts and manifest files are stored in the GitHub repository and can easily be forked into your own account or organization.
 
-This guide describes the end-to-end process for setting up all pre-requisites and  dependencies before deploying AlwaysOn into an Azure subscription of your choice.
+This guide describes the end-to-end process for setting up all pre-requisites and dependencies before deploying AlwaysOn into an Azure subscription of your choice.
 
 ## Pre-requisites
 
-Following tools and applications must be installed on the client machine which you are using to deploy AlwaysOn reference implementation:
+The following tools and applications must be installed on the client machine used to deploy AlwaysOn reference implementation:
 
 - Install [Azure CLI](https://docs.microsoft.com/cli/azure/service-page/azure%20cli?view=azure-cli-latest)
 
@@ -52,7 +52,7 @@ az devops configure --defaults organization=https://dev.azure.com/<your-org>
 az devops project create --name <your-project>
 ```
 
-This will result in a new project, _<your-project>_ in your Azure DevOps organization:
+This will result in a new project, `<your-project>` in your Azure DevOps organization:
 
 ![New ADO Project](/docs/media/AlwaysOnGettingStarted1.png)
 
@@ -87,9 +87,9 @@ To start, we will import only the following pipeline from the `/.ado/pipelines/`
 - `/.ado/pipelines/azure-release-e2e.yaml`
 
 When you are later ready to also deploy further environments such as INT (integration) and PROD (production), repeat the same steps (and consecutive actions below) for the respective  pipelines:
+
 - `/.ado/pipelines/azure-release-int.yaml`
 - `/.ado/pipelines/azure-release-prod.yaml`
-
 
 #### Import in Azure DevOps Portal
 
@@ -121,9 +121,11 @@ Using the `az devops` / `az pipelines` CLI:
 First, you need to create a PAT (personal access token) on GitHub to use with ADO. This is required to be able to import the pipelines. For this, create a new token [here](https://github.com/settings/tokens).
 
 Save the token securely. Then, set it as an environment variable in your shell:
+
 ```bash
 export AZURE_DEVOPS_EXT_GITHUB_PAT=<your PAT>
 ```
+
 Now your session is authenticated and the ADO CLI will be able to import the pipelines from GitHub.
 
 ```bash
@@ -135,7 +137,6 @@ az pipelines create --name "Azure.AlwaysOn E2E Release" --description "Azure.Alw
                     --branch main --repository https://github.com/<your-fork>/ --repository-type github \
                     --skip-first-run true --yaml-path "/.ado/pipelines/azure-release-e2e.yaml"
 ```
-
 
 ### 4) Create Azure Service Principal
 
@@ -228,7 +229,7 @@ The reference implementation deployment takes a dependency on Azure Kubernetes S
 az feature register --namespace Microsoft.ContainerService -n AutoUpgradePreview
 ```
 
-See [Azure Preview feature ](/src/infra/workload/README.md#preview-feature-registration-on-subscription) for additional information.
+See [Azure Preview feature](/src/infra/workload/README.md#preview-feature-registration-on-subscription) for additional information.
 
 ### 7) Adjust configuration
 
@@ -291,7 +292,6 @@ You can now go to the Azure Portal and check the provisioned resources. In the R
 
 **Stamp Resources**
 ![Azure Stamp Resources](/docs/media/e2e_azure_resources_stamp.png)
-
 
 ## Additional information to learn more
 

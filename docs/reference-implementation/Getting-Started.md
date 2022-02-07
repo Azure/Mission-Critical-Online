@@ -1,16 +1,16 @@
 # Getting started
 
-This guide describes the process and the steps to deploy AlwaysOn in your own environment/subscription from the beginning. In the end you will have an Azure DevOps organization and project set up to deploy a copy of AlwaysOn into an Azure Subscription.
+This step-by-step guide describes the process to deploy AlwaysOn in your own environment from the beginning. At the end of this guide you will have an Azure DevOps organization and project set up to deploy a copy of AlwaysOn into an Azure Subscription.
 
 ## How to deploy?
 
-AlwaysOn project is using a GitHub-based repository for version control of code artifacts and manifest files. The project leverages Azure DevOps Pipelines for build and deployment (CI/CD) pipelines.
+The AlwaysOn project is using a GitHub-based repository for version control of code artifacts and manifest files. The project leverages Azure DevOps Pipelines for build and deployment (CI/CD) pipelines.
 
 > Instead of GitHub the also other Git-based repositories can be used, such as *Azure DevOps Repos*.
 
 All relevant code artifacts and manifest files are stored in the GitHub repository and can easily be forked into your own account or organization.
 
-The document describes end-to-end process for setting up pre-requisites and other dependencies before deploying AlwaysOn in a subscription of your choice.
+This guide describes the end-to-end process for setting up all pre-requisites and  dependencies before deploying AlwaysOn into an Azure subscription of your choice.
 
 ## Pre-requisites
 

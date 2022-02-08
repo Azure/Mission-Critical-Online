@@ -1,6 +1,6 @@
 # Frequently Asked Questions (FAQ)
 
-In this section we document all the FAQ related to this reference implementation. There is another FAQ section covering general and non reference related questions in the [AlwaysOn repo](https://github.com/Azure/AlwaysOn/blob/docs/main/docs/FAQ.md).
+In this section we document all the FAQ related to this reference implementation. There is another FAQ section covering general and non reference related questions in the [AlwaysOn repo](https://github.com/Azure/AlwaysOn/blob/docs/main/docs/FAQ.md) (➡️ `Azure/AlwaysOn`).
 
 ## General
 

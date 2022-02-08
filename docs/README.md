@@ -6,7 +6,7 @@
 
 ## Introduction to AlwaysOn
 
-* [Introduction](https://github.com/Azure/AlwaysOn/blob/main/docs/introduction/README.md)
+* [Introduction](https://github.com/Azure/AlwaysOn/blob/main/docs/introduction/README.md) (➡️ `Azure/AlwaysOn`)
 
 ## AlwaysOn Reference Implementation Guide
 

@@ -7,12 +7,13 @@ COPY . .
 
 # Build the healthmodel panel project
 WORKDIR /usr/src/app/healthmodelpanel
+RUN ["yarn", "install"]
 RUN ["yarn", "build"]
 
 # We also need to edit the dashboard file and insert the queries from separate files
 # We have a separate script to do this, called insertqueries.sh
 WORKDIR /usr/src/app/config
-RUN "./insertqueries.sh"
+RUN chmod +x insertqueries.sh && ./insertqueries.sh
 
 # Build phase is done, now build the container. Start with latest Grafana image
 FROM grafana/grafana:latest

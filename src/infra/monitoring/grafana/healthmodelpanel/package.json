@@ -13,7 +13,7 @@
   "author": "nielsb@microsoft.com",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@grafana/data": "^8.2.2",
+    "@grafana/data": "^8.3.5",
     "@grafana/toolkit": "^8.3.4",
     "@grafana/ui": "^8.2.5"
   },

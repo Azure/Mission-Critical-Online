@@ -1140,13 +1140,34 @@
   resolved "https://registry.yarnpkg.com/@grafana/aws-sdk/-/aws-sdk-0.0.3.tgz#bc632c6c77971a5474acbe45847420503679fc75"
   integrity sha512-V0PJLk+oU1C33knurXp8BkT5N2ctDu9b21zpK16vkJAs5aOiH/OaOhQ/IP9ipxYhB+b9PFjr8RXagV/8XJ8xwg==
 
-"@grafana/data@8.3.4", "@grafana/data@^8.2.2":
+"@grafana/data@8.3.4":
   version "8.3.4"
   resolved "https://registry.yarnpkg.com/@grafana/data/-/data-8.3.4.tgz#f22a90c4af04017033832783f0785379a4e72581"
   integrity sha512-/4c+zdizTm6U9y+LA0GZNGb3MUg7KhTtKrJ5Bx0HnwczcIbLc8n1ZVxKRK6WaXWjhLWhL3Zme7qpdL7Jzwoxzw==
   dependencies:
     "@braintree/sanitize-url" "5.0.2"
     "@grafana/schema" "8.3.4"
+    "@types/d3-interpolate" "^1.4.0"
+    d3-interpolate "1.4.0"
+    date-fns "2.21.3"
+    eventemitter3 "4.0.7"
+    lodash "4.17.21"
+    marked "4.0.0"
+    moment "2.29.1"
+    moment-timezone "0.5.33"
+    ol "6.7.0"
+    papaparse "5.3.0"
+    rxjs "7.3.0"
+    uplot "1.6.16"
+    xss "1.0.6"
+
+"@grafana/data@^8.3.5":
+  version "8.3.5"
+  resolved "https://registry.yarnpkg.com/@grafana/data/-/data-8.3.5.tgz#111cfeb0267d5289fbd885390ea9c50fa574e54c"
+  integrity sha512-WPLUe2J/psSDUlT6OSiZ0iN56sx2CWnRwL/cljsx5YyUrMYzKmj1xPJB80KBp8s4/c0p+PMVdqy3FQFml3m/Ag==
+  dependencies:
+    "@braintree/sanitize-url" "5.0.2"
+    "@grafana/schema" "8.3.5"
     "@types/d3-interpolate" "^1.4.0"
     d3-interpolate "1.4.0"
     date-fns "2.21.3"
@@ -1192,6 +1213,11 @@
   version "8.3.4"
   resolved "https://registry.yarnpkg.com/@grafana/schema/-/schema-8.3.4.tgz#144fcd3549d2dfedc189c7f32a8690fb49405b98"
   integrity sha512-xa7zQb0F/7RxF4moMHB2Rq8YI13snKwWY5HInopwenxWThz900WN1jQ+U/IjHU9qltLLE+2P7z6K8EHFXbiqbQ==
+
+"@grafana/schema@8.3.5":
+  version "8.3.5"
+  resolved "https://registry.yarnpkg.com/@grafana/schema/-/schema-8.3.5.tgz#048f42e02ce3e3000f8f667644426e0cc9ea2838"
+  integrity sha512-kS4eb6ghlDyROrdauWCRK8vwJbigYm/d/i1P1BtHHOLH8AMsganofOltfMqAIWlzIJii01dg6MsyjR3Yt/DV0g==
 
 "@grafana/slate-react@0.22.10-grafana":
   version "0.22.10-grafana"

@@ -29,9 +29,9 @@ resource "azurerm_app_service" "appservice" {
   // these env variables are specific to postgres backend supported by grafana
   app_settings = {
     "GF_DATABASE_TYPE"     = "postgres"
-    "GF_DATABASE_HOST"     = join(".", [azurerm_postgresql_server.pgprimary.name, azurerm_private_dns_zone.pgdb[each.key].name])
+    "GF_DATABASE_HOST"     = "${azurerm_postgresql_server.pgprimary.name}.postgres.database.azure.com"
     "GF_DATABASE_NAME"     = azurerm_postgresql_database.pgdb.name
-    "GF_DATABASE_USER"     = join("", ["${var.db_admin_user}@", join(".", [azurerm_postgresql_server.pgprimary.name, azurerm_private_dns_zone.pgdb[each.key].name])])
+    "GF_DATABASE_USER"     = "${var.db_admin_user}@${azurerm_postgresql_server.pgprimary.name}"
     "GF_DATABASE_PASSWORD" = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.postgres_password[each.key].id})"
     "GF_DATABASE_SSL_MODE" = "require"
 
@@ -39,6 +39,7 @@ resource "azurerm_app_service" "appservice" {
     "GRAFANA_PASSWORD"           = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.grafana_password[each.key].id})"
     "AZURE_DEFAULT_SUBSCRIPTION" = data.azurerm_subscription.current.subscription_id
     "WEBSITES_PORT"              = "3000"
+    "WEBSITE_VNET_ROUTE_ALL"     = "1"
   }
 
   site_config {

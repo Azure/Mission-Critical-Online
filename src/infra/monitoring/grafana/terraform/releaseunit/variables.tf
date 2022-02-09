@@ -60,6 +60,7 @@ variable "db_sku_name" {
 
 variable "db_ver" {
   description = "Azure Database for PostgreSQL version."
+  default     = 11
   type        = string
 }
 

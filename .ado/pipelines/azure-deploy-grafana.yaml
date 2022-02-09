@@ -94,8 +94,8 @@ stages:
           workingDirectory:           '$(pipeline.workspace)'
           imageName:                  'alwayson_grafana'
 
-      - task: AzureCLI@2
-        displayName: 'Set up release unit stamps'
+      - task: PowerShell@2
+        displayName: 'Prepare stamp input variables'
         inputs:
           azureSubscription: '$(azureServiceConnection)'
           scriptType: pscore

@@ -1,4 +1,4 @@
-# Create a random password for PGDB. This password is then stored in AKV as a secret in the primary region.
+# Create a random password for PGDB. This password is then stored in Azure Key Vault.
 resource "random_password" "postgres_password" {
   length           = 10
   min_lower        = 1
@@ -9,6 +9,7 @@ resource "random_password" "postgres_password" {
   override_special = "_%@"
 }
 
+# Random password used to log into the Grafana portal
 resource "random_password" "grafana_password" {
   length           = 10
   min_lower        = 1

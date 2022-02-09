@@ -5,7 +5,7 @@
       
       <div v-if="!loading && item != null">
          <div class="grid-container">
-            <img v-bind:src="item.imageUrl" width="540px" />
+            <img :src="item.imageUrl" width="540px" />
             <div>
                <h1>{{ item.name }}</h1>
                <p>{{ item.description }}</p>

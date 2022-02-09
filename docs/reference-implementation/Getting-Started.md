@@ -233,19 +233,21 @@ See [Azure Preview feature](/src/infra/workload/README.md#preview-feature-regist
 
 ### 7) Adjust configuration
 
-There are three variables files in the `/.ado/pipelines/config` folder, one for each environment. You need to edit those file to reflect your own workspace before you execute the first deployments. They are named `variables-values-[env].yaml`.
+There are three variables files in the `/.ado/pipelines/config` folder, one for each environment. You need to edit these files to reflect your own workspace before you execute the first deployments. They are named `variables-values-[env].yaml`.
 
 Modify the respective file for the environment which you want to deploy. At least the variables which are marked as `required` in the table below need to be changed.
 
 | Required to modify | Key | Description | Sample value |
 | --- | --- | --- | --- |
-| YES | prefix | Custom prefix used for Azure resources.  | int: myaoint, prod: myaoprod, e2e: myaoe2e |
+| YES | prefix | Custom prefix used for Azure resources.  | myaoe2e |
 | YES | terraformResourceGroup | Resource Group where the Terraform state Storage account will be deployed | terraformstate-rg |
 | YES | terraformStorageAccount | Azure Storage Account name used to store Terraform state (has to be globally unique) | myterraformstate |
 | YES | contactEmail | E-mail alias used for alerting. **Be careful which address you put in here as it will potentially receive a lot of notification emails** | alwaysonappnet@example.com |
 | NO | stampLocations | List of locations (Azure Regions) where this environment will be deployed into. You can keep the default to start with.  | ["northeurope", "eastus2"] |
 | NO | envDnsZoneRG | OPTIONAL: Name of the Azure Resource group which holds the Azure DNS Zone for your custom domain. Not required if you do not plan to use a custom DNS name | mydns-rg |
 | NO | envDomainName | OPTIONAL: Name of the Azure DNS Zone. Not required if you do not plan to use a custom DNS name | example.com |
+
+**After modifying the file, make sure to commit and push the changes to your Git repository.**
 
 For more details on the variables, you can consult [this guide](/.ado/pipelines/README.md#configuration-files).
 

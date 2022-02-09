@@ -50,7 +50,7 @@ stages:
           terraformWorkingDirectory:  '$(workingDirectory)/terraform/globalresources'
           customPrefix:               '$(prefix)graf'
           customAttributes:           '-var=queued_by="$(Build.QueuedBy)"
-                                      -var=branch="$(sourceBranch)"
+                                      -var=branch="$(Build.SourceBranch)"
                                       -var=contact_email="$(contactEmail)"
                                       -var=environment="$(environment)"
                                       -var=''stamps=$(stampLocations)'''
@@ -129,7 +129,7 @@ stages:
           terraformWorkingDirectory:  '$(workingDirectory)/terraform/releaseunit'
           customPrefix:               '$(prefix)graf'
           customAttributes:           '-var=queued_by="$(Build.QueuedBy)"
-                                      -var=branch="$(sourceBranch)"
+                                      -var=branch="$(Build.SourceBranch)"
                                       -var=contact_email="$(contactEmail)"
                                       -var=environment="$(environment)"
                                       -var=wapp_container_image="$(ImageName-alwayson_grafana)"

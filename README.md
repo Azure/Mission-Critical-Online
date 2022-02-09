@@ -19,8 +19,8 @@ This repository contains the reference implementation for an AlwaysOn enterprise
 
 The following articles provides more information about AlwaysOn design guidelines and design areas located in the [AlwaysOn GitHub](https://github.com/Azure/AlwaysOn) repo:
 
-- [Introduction - What is AlwaysOn?](https://github.com/Azure/AlwaysOn/blob/main/docs/introduction/README.md) - Detailed introduction into AlwaysOn, the problem it is intended to solve and the value it can provide.
-- [Design Guidelines](https://github.com/Azure/AlwaysOn/blob/main/docs/design-methodology/README.md) - Prescriptive guidance aligned to 8 critical design areas guides users to design and build an AlwaysOn application, outlining a recommended decision process.
+- [Introduction - What is AlwaysOn?](https://github.com/Azure/AlwaysOn/blob/main/docs/introduction/README.md) (➡️ `Azure/AlwaysOn`) - Detailed introduction into AlwaysOn, the problem it is intended to solve and the value it can provide.
+- [Design Guidelines](https://github.com/Azure/AlwaysOn/blob/main/docs/design-methodology/README.md) (➡️ `Azure/AlwaysOn`) - Prescriptive guidance aligned to 8 critical design areas guides users to design and build an AlwaysOn application, outlining a recommended decision process.
 
 ## Helpful Information
 

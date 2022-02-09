@@ -2,12 +2,6 @@
 /.github/CODEOWNERS @calcof
 /README.md @calcof
 
-# Owners for positioning docs
-/docs/introduction/ @calcof
-
-# Owners of design guideline docs
-/docs/design-guidelines/  @calcof @hjscherer
-
 # Owners of reference implementation docs
 /docs/reference-implementation/ @calcof @sebader @msimecek @heoelri @hjscherer @nielsams
 

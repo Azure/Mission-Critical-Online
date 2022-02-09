@@ -26,7 +26,7 @@ As with the AlwaysOn Design Guidelines, the Reference Implementation section is 
 
 - [Application Health Service](/src/app/AlwaysOn.HealthService/README.md)
 - [Monitoring](./Health-Monitoring.md)
-- [Alerting]./Health-Alerting.md)
+- [Alerting](./Health-Alerting.md)
 - [Failure Analysis](./Health-Failure-Analysis.md)
 
 ### Deployment and Testing

@@ -36,13 +36,13 @@ stages:
       displayName: 'Deploy Resources'
       steps:
       - checkout: self # checkout github repository
-      
+
       - template: templates/steps-terraform-init.yaml # Initialize Terraform
         parameters:
           terraformStorageAccountName:        '$(terraformStorageAccount)'
           terraformStorageResourceGroupName:  '$(terraformResourceGroup)'
-          terraformStateFilename:            'terraform-grafana-$(prefix).state'
-          terraformWorkingDirectory:         '$(workingDirectory)/terraform/globalresources'
+          terraformStateFilename:             'terraform-grafana-$(prefix).state'
+          terraformWorkingDirectory:          '$(workingDirectory)/terraform/globalresources'
 
       - template: templates/steps-terraform-apply.yaml
         parameters:
@@ -65,7 +65,7 @@ stages:
       containerImageName:             'alwayson-grafana'   # container image name for Grafana
       containerImageDockerFile:       './Dockerfile'  # dockerfile used to build Grafana
       workingDirectory:               '$(workingDirectory)'
-            
+
 
 - stage: deploystampinfra
   displayName: 'Deploy Stamp Infra'
@@ -80,8 +80,8 @@ stages:
         parameters:
           terraformStorageAccountName:        '$(terraformStorageAccount)'
           terraformStorageResourceGroupName:  '$(terraformResourceGroup)'
-          terraformStateFilename:     'terraform-grafana-stamp-$(prefix).state'
-          terraformWorkingDirectory:  '$(workingDirectory)/terraform/releaseunit'
+          terraformStateFilename:             'terraform-grafana-stamp-$(prefix).state'
+          terraformWorkingDirectory:          '$(workingDirectory)/terraform/releaseunit'
 
       # Get the deployment output from the global resources. We need this for the FDID.
       - template: templates/steps-parse-terraform-output.yaml
@@ -89,7 +89,7 @@ stages:
           workingDirectory:           '$(pipeline.workspace)/terraformOutputGlobalInfra'
 
       # Get the full image name/tags from the artefact created during build
-      - template: templates/steps-parse-containerimagename.yaml 
+      - template: templates/steps-parse-containerimagename.yaml
         parameters:
           workingDirectory:           '$(pipeline.workspace)'
           imageName:                  'alwayson_grafana'

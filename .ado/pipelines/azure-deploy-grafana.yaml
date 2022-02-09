@@ -97,10 +97,8 @@ stages:
       - task: PowerShell@2
         displayName: 'Prepare stamp input variables'
         inputs:
-          azureSubscription: '$(azureServiceConnection)'
-          scriptType: pscore
-          scriptLocation: inlineScript
-          inlineScript: |
+          targetType: inline
+          script: |
 
             $locations = '$(stampLocations)' | ConvertFrom-Json
 

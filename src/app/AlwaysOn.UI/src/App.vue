@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div>
     <router-link :to="{ path: '/' }">Home</router-link> |
     <router-link :to="{ name: 'catalogPage' }">Catalog</router-link>
 

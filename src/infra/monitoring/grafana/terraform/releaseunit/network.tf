@@ -1,8 +1,8 @@
 # Deploy foundational networking capabilities such as VNETs; subnets and peerings. 
 
 module "subnet_addrs" {
-  source = "hashicorp/subnets/cidr"
-  for_each            = var.stamps
+  source   = "hashicorp/subnets/cidr"
+  for_each = var.stamps
 
   base_cidr_block = each.value["vnet_address_space"]
   networks = [

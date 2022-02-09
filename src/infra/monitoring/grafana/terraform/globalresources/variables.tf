@@ -35,7 +35,6 @@ variable "contact_email" {
 variable "environment" {
   description = "Environment name i.e. PRD, TEST etc."
   type        = string
-  default     = "PROD"
 }
 
 variable "custom_fqdn" {

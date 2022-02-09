@@ -5,31 +5,32 @@ resource "azurerm_postgresql_server" "pgprimary" {
   resource_group_name          = azurerm_resource_group.rg["primary"].name
   administrator_login          = var.db_admin_user
   administrator_login_password = random_password.postgres_password.result
-  sku_name                     = var.db_sku_name
-  version                      = var.db_ver
-  storage_mb                   = var.db_storage_mb
-  backup_retention_days        = var.db_bkp_retention
-  geo_redundant_backup_enabled = var.db_geo_bkp
-  auto_grow_enabled            = var.db_auto_grow
+  sku_name                     = "GP_Gen5_4"
+  version                      = 11
+  storage_mb                   = 5120
+  backup_retention_days        = 7
+  geo_redundant_backup_enabled = true
+  auto_grow_enabled            = true
 
   #VNET rules work once this option is set to TRUE. Refer https://github.com/hashicorp/terraform-provider-azurerm/issues/8534
-  public_network_access_enabled    = var.db_net_pub_access
-  ssl_enforcement_enabled          = var.db_ssl
-  ssl_minimal_tls_version_enforced = var.db_ssl_ver
+  public_network_access_enabled    = false
+  ssl_enforcement_enabled          = true
+  ssl_minimal_tls_version_enforced = "TLS1_2"
 }
 
 # Create database on the primary server. This block is executed for primary alone because we are using "replica" creation method for secondary which by default copies
-# across all the databases from primary. 
+# across all the databases from primary.
 resource "azurerm_postgresql_database" "pgdb" {
   name                = "grafana"
   resource_group_name = azurerm_resource_group.rg["primary"].name
   server_name         = azurerm_postgresql_server.pgprimary.name
-  charset             = var.db_charset
-  collation           = var.db_collation
+  charset             = "UTF8"
+  collation           = "English_United States.1252"
 }
 
 # Separate resource definition for secondary PGDB as it must be deployed only once parent (primary DB) has been deployed.
 resource "azurerm_postgresql_server" "pgreplica" {
+  depends_on                       = [azurerm_postgresql_database.pgdb]
   name                             = "${local.prefix}-${substr(var.stamps["secondary"].location, 0, 5)}-pgdb"
   location                         = azurerm_resource_group.rg["secondary"].location
   resource_group_name              = azurerm_resource_group.rg["secondary"].name
@@ -37,14 +38,13 @@ resource "azurerm_postgresql_server" "pgreplica" {
   creation_source_server_id        = azurerm_postgresql_server.pgprimary.id
   administrator_login              = var.db_admin_user
   administrator_login_password     = random_password.postgres_password.result
-  sku_name                         = var.db_sku_name
-  version                          = var.db_ver
-  storage_mb                       = var.db_storage_mb
-  backup_retention_days            = var.db_bkp_retention
-  geo_redundant_backup_enabled     = var.db_geo_bkp
-  auto_grow_enabled                = var.db_auto_grow
-  public_network_access_enabled    = var.db_net_pub_access
-  ssl_enforcement_enabled          = var.db_ssl
-  ssl_minimal_tls_version_enforced = var.db_ssl_ver
-  depends_on                       = [azurerm_postgresql_server.pgprimary, azurerm_postgresql_database.pgdb]
+  sku_name                         = azurerm_postgresql_server.pgprimary.sku_name
+  version                          = azurerm_postgresql_server.pgprimary.version
+  storage_mb                       = azurerm_postgresql_server.pgprimary.storage_mb
+  backup_retention_days            = azurerm_postgresql_server.pgprimary.backup_retention_days
+  geo_redundant_backup_enabled     = azurerm_postgresql_server.pgprimary.geo_redundant_backup_enabled
+  auto_grow_enabled                = azurerm_postgresql_server.pgprimary.auto_grow_enabled
+  public_network_access_enabled    = azurerm_postgresql_server.pgprimary.public_network_access_enabled
+  ssl_enforcement_enabled          = azurerm_postgresql_server.pgprimary.ssl_enforcement_enabled
+  ssl_minimal_tls_version_enforced = azurerm_postgresql_server.pgprimary.ssl_minimal_tls_version_enforced
 }

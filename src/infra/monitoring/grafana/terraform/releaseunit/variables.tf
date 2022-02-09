@@ -28,15 +28,8 @@ variable "contact_email" {
 }
 
 variable "environment" {
-  description = "(Optional) Environment to deploy workloads in."
+  description = "Environment to deploy workloads in."
   type        = string
-  default     = "PROD"
-}
-
-variable "alerts_enabled" {
-  description = "Enable alerts?"
-  type        = bool
-  default     = false
 }
 
 variable "acr_resource_id" {
@@ -50,81 +43,7 @@ variable "acr_resource_id" {
 variable "db_admin_user" {
   description = "Admin user account for backend database."
   type        = string
-  sensitive   = true
-}
-
-variable "db_sku_name" {
-  description = "Azure Database for PostgreSQL SKU."
-  type        = string
-}
-
-variable "db_ver" {
-  description = "Azure Database for PostgreSQL version."
-  default     = 11
-  type        = string
-}
-
-variable "db_storage_mb" {
-  description = "Azure Database for PostgreSQL size in MB."
-  type        = number
-}
-
-variable "db_bkp_retention" {
-  description = "Database backup retention period."
-  type        = number
-  default     = 7
-}
-
-variable "db_geo_bkp" {
-  description = "DB geo redundant backups toggle."
-  type        = bool
-  default     = true
-}
-
-variable "db_auto_grow" {
-  description = "DB auto grow enabled toggle."
-  type        = bool
-  default     = true
-}
-
-variable "db_net_pub_access" {
-  description = "DB network public access toggle. This is set to TRUE due to a bug which causes template to fail. We are enabling private endpoint for backend database to address this."
-  type        = bool
-  default     = true
-}
-
-variable "db_ssl" {
-  description = "Toggle to enable SSL for database."
-  type        = bool
-  default     = true
-}
-
-variable "db_ssl_ver" {
-  description = "DB SSL version."
-  type        = string
-  default     = "TLS1_2"
-}
-
-variable "db_charset" {
-  description = "DB character set."
-  type        = string
-  default     = "UTF8"
-}
-
-variable "db_collation" {
-  description = "DB collation."
-  type        = string
-  default     = "English_United States.1252"
-}
-
-variable "asp_tier" {
-  description = "ASP SKU tier."
-  type        = string
-}
-
-variable "asp_size" {
-  description = "ASP size to deploy."
-  type        = string
+  default     = "psqladmin"
 }
 
 variable "wapp_container_image" {

@@ -7,8 +7,8 @@ resource "azurerm_app_service_plan" "asp" {
   reserved            = true
 
   sku {
-    tier = var.asp_tier
-    size = var.asp_size
+    tier = "PremiumV2"
+    size = "P1v2"
   }
 
   tags = local.default_tags
@@ -21,7 +21,7 @@ resource "azurerm_app_service" "appservice" {
   location            = azurerm_resource_group.rg[each.key].location
   resource_group_name = azurerm_resource_group.rg[each.key].name
   app_service_plan_id = azurerm_app_service_plan.asp[each.key].id
- 
+
   identity {
     type = "SystemAssigned"
   }
@@ -32,7 +32,7 @@ resource "azurerm_app_service" "appservice" {
     "GF_DATABASE_HOST"     = join(".", [azurerm_postgresql_server.pgprimary.name, azurerm_private_dns_zone.pgdb[each.key].name])
     "GF_DATABASE_NAME"     = azurerm_postgresql_database.pgdb.name
     "GF_DATABASE_USER"     = join("", ["${var.db_admin_user}@", join(".", [azurerm_postgresql_server.pgprimary.name, azurerm_private_dns_zone.pgdb[each.key].name])])
-    "GF_DATABASE_PASSWORD" = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.postgres_password[each.key].id})" 
+    "GF_DATABASE_PASSWORD" = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.postgres_password[each.key].id})"
     "GF_DATABASE_SSL_MODE" = "require"
 
     "GRAFANA_USERNAME"           = "alwayson"

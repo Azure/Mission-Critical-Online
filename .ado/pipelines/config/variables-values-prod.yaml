@@ -7,8 +7,7 @@ variables:
   value: 'afprod'          # <===== CHANGE THIS! Needs to be a unique prefix
 
 - name: 'stampLocations'
-  value: '["northeurope", "canadacentral"]' # Check which regions are valid. There is a list in /src/infra/README.md
-
+  value: '["northeurope", "brazilsouth"]' # Check which regions are valid. There is a list in /src/infra/README.md
 
 # Terraform state variables
 - name:  'terraformResourceGroup'

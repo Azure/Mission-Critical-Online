@@ -1,5 +1,5 @@
 import { createApp } from 'vue'
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 import { ApplicationInsights } from '@microsoft/applicationinsights-web'
 import emitter from 'tiny-emitter/instance'
 
@@ -41,7 +41,7 @@ export const EventBus = {
 }
 
 const router = createRouter({
-   history: createWebHistory(),
+   history: createWebHashHistory(),
    routes: [
    {
       path: "/",

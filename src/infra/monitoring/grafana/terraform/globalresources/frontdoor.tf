@@ -23,7 +23,7 @@ resource "azurerm_frontdoor" "afdgrafana" {
   backend_pool_health_probe {
     name     = "backendHealthGrafana"
     enabled  = true
-    path     = "/"
+    path     = "/api/health"
     protocol = "Https"
   }
 

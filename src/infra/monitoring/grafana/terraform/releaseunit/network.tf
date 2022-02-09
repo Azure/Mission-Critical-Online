@@ -38,7 +38,8 @@ resource "azurerm_subnet" "snet_app_outbound" {
   delegation {
     name = "delegation"
     service_delegation {
-      name = "Microsoft.Web/serverFarms"
+      name    = "Microsoft.Web/serverFarms"
+      actions = ["Microsoft.Network/virtualNetworks/subnets/action"]
     }
   }
 }

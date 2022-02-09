@@ -1,6 +1,7 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
+import { createApp } from 'vue'
+import { createRouter, createWebHistory } from 'vue-router'
 import { ApplicationInsights } from '@microsoft/applicationinsights-web'
+import emitter from 'tiny-emitter/instance'
 
 import App from './App.vue'
 import components from "@/components"
@@ -24,18 +25,24 @@ const appInsights = new ApplicationInsights(
 appInsights.loadAppInsights();
 appInsights.trackPageView();
 
-Vue.prototype.$CatalogService = new CatalogService()
-Vue.prototype.$CommentService = new CommentService()
-Vue.prototype.$RatingService = new RatingService()
+const app = createApp(App);
 
-export const EventBus = new Vue(); // global event bus to send events across components
+app.config.globalProperties.$CatalogService = new CatalogService();
+app.config.globalProperties.$CommentService = new CommentService();
+app.config.globalProperties.$RatingService = new RatingService();
 
-Vue.config.productionTip = false
+// global event bus to send events across components
+// migrated to emitter based on https://v3.vuejs.org/guide/migration/events-api.html#event-bus
+export const EventBus = {
+   $on: (...args) => emitter.on(...args),
+   $once: (...args) => emitter.once(...args),
+   $off: (...args) => emitter.off(...args),
+   $emit: (...args) => emitter.emit(...args)
+}
 
-Vue.use(VueRouter);
-
-const router = new VueRouter({
-  routes: [
+const router = createRouter({
+   history: createWebHistory(),
+   routes: [
    {
       path: "/",
       name: "mainPage",
@@ -54,7 +61,4 @@ const router = new VueRouter({
   ]
 });
 
-new Vue({
-  router,
-  render: function (h) { return h(App) },
-}).$mount('#app')
+app.use(router).mount("#app");

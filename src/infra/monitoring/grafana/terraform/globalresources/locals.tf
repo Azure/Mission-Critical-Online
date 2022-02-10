@@ -12,7 +12,7 @@ locals {
 
   location                   = var.stamps[0]                # we use the first location in the list of stamps as the "main" location to root our global resources in
   location_short             = substr(local.location, 0, 9) # shortened location name used for resource naming
-  frontdoor_name             = "${lower(var.prefix)}-global-fd"
+  frontdoor_name             = "${lower(local.prefix)}-global-fd"
   frontdoor_default_dns_name = "${local.frontdoor_name}.azurefd.net"
   prefix                     = "${lower(var.prefix)}grafana"
 

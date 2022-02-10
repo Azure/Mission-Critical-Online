@@ -16,7 +16,7 @@ WORKDIR /usr/src/app/config
 RUN chmod +x insertqueries.sh && ./insertqueries.sh
 
 # Build phase is done, now build the container. Start with latest Grafana image
-FROM grafana/grafana:8.3.4
+FROM grafana/grafana:latest
 
 # Load custom plugin that we built in the first stage
 # Since our plugin is unsigned, we have to specify it by name to allow it to run

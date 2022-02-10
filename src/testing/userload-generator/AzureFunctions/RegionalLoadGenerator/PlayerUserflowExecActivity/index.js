@@ -43,8 +43,8 @@ module.exports = async function (context) {
         }
 
         if ((output).stdout) {
-            responseMessage += "\r\nSTDOUT: " + (output).stdout;
             context.log("STDOUT: " + (output).stdout);
+            responseMessage += "\r\nSTDOUT: " + (output).stdout;
         }
 
         if ((output).stderr) {

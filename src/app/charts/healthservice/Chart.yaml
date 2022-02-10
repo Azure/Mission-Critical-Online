@@ -1,11 +1,11 @@
 apiVersion: "v2"
-appVersion: 0.0.1
+appVersion: 0.0.2
 name: healthservice
 description: "healthservice api"
-version: 0.0.1
+version: 0.0.2
 sources:
 - https://github.com/azure/alwayson
-kubeVersion: ">=1.19.0"
+kubeVersion: ">=1.20.0"
 maintainers:
 - name: alwayson
   email: alwaysonappnet@microsoft.com

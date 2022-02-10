@@ -3,8 +3,9 @@ container:
   pullPolicy: "IfNotPresent" # Container Image Pull Policy. Using IfNotPresent to enable pod starts even if ACR cannot be reached and image was pulled on the node previously
 
 workload:
+  port: 8080 # Port of the container workload
   service:
-    port: 80 # Service and Container Port (not used for Ingress)
+    port: 80 # Service Port (not used for Ingress)
     type: "ClusterIP" # Service Type (default ClusterIP)
 
 replicas: 3

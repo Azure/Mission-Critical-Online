@@ -4,8 +4,9 @@ container:
 
 workload:
   domainname: "OVERWRITE-cluster.eastus2.cloudapp.azure.com" # External Domain Name of the AKS cluster (used for Ingress)
+  port: 8080 # Port of the container workload
   service:
-    port: 80 # Service and Container Port (not used for Ingress)
+    port: 80 # Service Port (not used for Ingress)
     type: "ClusterIP" # Service Type (default ClusterIP)
 
 scale:

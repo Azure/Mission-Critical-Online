@@ -12,15 +12,15 @@ function packageEcosystem() {
         [string] $ecosystem,
         [string] $relPath,
         [string] $targetBranch = "main", # default = main
-        [string] $interval = "daily"
+        [string] $interval = "weekly" # default = weekly
     )
 
     $block = @"
 - package-ecosystem: "$ecosystem"
   directory: "$relPath"
   schedule:
-    interval: "$interval"
-  target-branch: "$targetBranch"
+    interval: "$interval" 
+  target-branch: "$targetBranch" 
 "@
 
     return $block
@@ -84,6 +84,7 @@ foreach ($file in $files) {
     } elseif ($file.FullName -like '*.github/workflows*' -and ($githubAction -ne $true)) {
         Write-Host "Found *.github/workflows* in $($file.FullName)"
         $ecosystem = "github-actions"
+        $githubAction = $true
         $block = packageEcosystem -ecosystem $ecosystem `
                                   -relpath "/" `
                                   -targetBranch "$targetBranch"

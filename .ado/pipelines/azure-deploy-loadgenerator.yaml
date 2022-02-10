@@ -97,8 +97,16 @@ stages:
 
             cd "$(workingDirectory)/AzureFunctions/RegionalLoadGenerator"
 
-            echo "*** Running npm install" # npm install will download - amongst the other packages - the Chromium browser binaries
+            echo "*** Running npm ci" # npm install will download - amongst the other packages - the Chromium browser binaries
             npm ci
+
+            echo "*** ls"
+
+            ls
+
+            echo "*** ls node_modules"
+
+            ls node_modules
 
       - task: AzureCLI@2
         displayName: 'Deploy regional load generator Functions'

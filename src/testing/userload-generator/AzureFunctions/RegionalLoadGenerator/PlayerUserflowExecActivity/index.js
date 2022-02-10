@@ -42,8 +42,11 @@ module.exports = async function (context) {
             responseMessage += "\r\nError running tests: " + JSON.stringify((output).error, null, 2);
         }
 
-        responseMessage += "\r\nSTDOUT: " + (output).stdout;
-        context.log("STDOUT: " + (output).stdout);
+        if ((output).stdout) {
+            responseMessage += "\r\nSTDOUT: " + (output).stdout;
+            context.log("STDOUT: " + (output).stdout);
+        }
+
         if ((output).stderr) {
             context.log("STDERR: " + (output).stderr);
             responseMessage += "\r\nSTDERR: " + (output).stderr;

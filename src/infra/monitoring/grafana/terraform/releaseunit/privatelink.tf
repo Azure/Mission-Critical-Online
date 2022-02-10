@@ -14,7 +14,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "pgdb" {
   virtual_network_id    = azurerm_virtual_network.vnet[each.key].id
 }
 
-resource "azurerm_private_endpoint" "pgdb" {
+resource "azurerm_private_endpoint" "pgdb_primary" {
   for_each            = var.stamps
   name                = "${local.prefix}-${substr(each.value["location"], 0, 5)}-pg-pe"
   location            = azurerm_resource_group.rg[each.key].location
@@ -28,15 +28,15 @@ resource "azurerm_private_endpoint" "pgdb" {
 
   private_service_connection {
     name                           = "${local.prefix}-${substr(each.value["location"], 0, 5)}-pg-psconn"
-    private_connection_resource_id = each.value["db_primary"] ? azurerm_postgresql_server.pgprimary.id : azurerm_postgresql_server.pgreplica.id
+    private_connection_resource_id = azurerm_postgresql_server.pgprimary.id
     subresource_names              = ["postgresqlServer"]
     is_manual_connection           = false
   }
   tags = local.default_tags
 }
 
-# Project PE into VNET of secondary region. This approach enables cross-regional connectivity for the App Service without deploying a VPN GW.
-resource "azurerm_private_endpoint" "pgdb_pe_project" {
+# Private Endpoint for the secondary region to the replica server
+resource "azurerm_private_endpoint" "pgdb_secondary" {
   name                = "${local.prefix}-secondary-privatepgdb"
   location            = azurerm_resource_group.rg["secondary"].location
   resource_group_name = azurerm_resource_group.rg["secondary"].name
@@ -49,7 +49,7 @@ resource "azurerm_private_endpoint" "pgdb_pe_project" {
 
   private_service_connection {
     name                           = "${local.prefix}-secondary-pg-psconn"
-    private_connection_resource_id = azurerm_postgresql_server.pgprimary.id
+    private_connection_resource_id = azurerm_postgresql_server.pgreplica.id
     subresource_names              = ["postgresqlServer"]
     is_manual_connection           = false
   }

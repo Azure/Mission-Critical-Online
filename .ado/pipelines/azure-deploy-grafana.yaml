@@ -48,7 +48,7 @@ stages:
         parameters:
           jobName:                    'GlobalInfra'
           terraformWorkingDirectory:  '$(workingDirectory)/terraform/globalresources'
-          customPrefix:               '$(prefix)graf'
+          customPrefix:               '$(prefix)'
           customAttributes:           '-var=queued_by="$(Build.QueuedBy)"
                                       -var=branch="$(Build.SourceBranch)"
                                       -var=contact_email="$(contactEmail)"
@@ -106,16 +106,10 @@ stages:
               primary = @{
                 location           = $locations[0]
                 vnet_address_space = "10.1.0.0/16"
-                db_primary         = $true
-                db_replica         = $false
-                db_create_mode     = "default"
               };
               secondary = @{
                 location           = $locations[1]
                 vnet_address_space = "10.2.0.0/16"
-                db_primary         = $false
-                db_replica         = $true
-                db_create_mode     = "replica"
               };
             }
 
@@ -127,7 +121,7 @@ stages:
         parameters:
           jobName:                    'StampInfra'
           terraformWorkingDirectory:  '$(workingDirectory)/terraform/releaseunit'
-          customPrefix:               '$(prefix)graf'
+          customPrefix:               '$(prefix)'
           customAttributes:           '-var=queued_by="$(Build.QueuedBy)"
                                       -var=branch="$(Build.SourceBranch)"
                                       -var=contact_email="$(contactEmail)"

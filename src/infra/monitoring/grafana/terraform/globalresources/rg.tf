@@ -1,5 +1,5 @@
 resource "azurerm_resource_group" "rg" {
-  name     = "${local.prefix}-grafana-global-rg"
+  name     = "${lower(var.prefix)}-grafana-global-rg"
   location = local.location
   tags = merge(local.default_tags,
     {

@@ -14,7 +14,7 @@ locals {
   location_short             = substr(local.location, 0, 9) # shortened location name used for resource naming
   frontdoor_name             = "${lower(var.prefix)}-global-fd"
   frontdoor_default_dns_name = "${local.frontdoor_name}.azurefd.net"
-  prefix                     = lower(var.prefix)
+  prefix                     = "${lower(var.prefix)}grafana"
 
   # var.custom_fqdn is expected to be something like "www.int.myapp.net"
   # custom_domain_subdomain will then be "www"

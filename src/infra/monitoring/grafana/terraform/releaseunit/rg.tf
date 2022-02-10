@@ -1,6 +1,6 @@
 resource "azurerm_resource_group" "rg" {
   for_each = var.stamps
-  name     = "${local.prefix}-${each.value["location"]}-grafana-rg"
+  name     = "${lower(var.prefix)}-grafana-${each.value["location"]}-rg"
   location = each.value["location"]
   tags = merge(local.default_tags,
     {

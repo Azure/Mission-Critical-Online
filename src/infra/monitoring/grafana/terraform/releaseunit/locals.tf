@@ -10,6 +10,6 @@ locals {
     Branch      = var.branch
   }
 
-  prefix = lower(var.prefix)
+  prefix = "${lower(var.prefix)}grafana"
 
 }

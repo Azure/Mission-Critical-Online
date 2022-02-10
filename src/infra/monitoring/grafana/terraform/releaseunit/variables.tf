@@ -61,8 +61,5 @@ variable "stamps" {
   type = map(object({
     location           = string
     vnet_address_space = string
-    db_primary         = bool
-    db_replica         = bool
-    db_create_mode     = string
   }))
 }

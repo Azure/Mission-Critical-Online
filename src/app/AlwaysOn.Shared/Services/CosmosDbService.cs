@@ -112,7 +112,7 @@ namespace AlwaysOn.Shared.Services
             return true;
         }
 
-        public async Task DeleteDocumentAsync<T>(string objectId, string partitionKey)
+        public async Task DeleteItemAsync<T>(string objectId, string partitionKey)
         {
             var startTime = DateTime.UtcNow;
             ItemResponse<T> response = null;

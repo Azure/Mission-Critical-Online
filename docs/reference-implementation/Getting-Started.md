@@ -41,16 +41,20 @@ To deploy AlwaysOn, you need to create a new Azure DevOps organization, or re-us
 
 - [Create an organization or project collection](https://docs.microsoft.com/azure/devops/organizations/accounts/create-organization?view=azure-devops)
 
-> **Important!** The [Azure DevOps CLI](https://docs.microsoft.com/azure/devops/cli/?view=azure-devops) is used for the subsequent steps. Please make sure that it is installed. The authentication is done via `az login` using credentials or `az devops login` using a Personal Access Token (PAT). Another solution is to store the PAT in the `AZURE_DEVOPS_EXT_PAT` environment variable (see [here](https://github.com/Azure/azure-devops-cli-extension/issues/1100#issuecomment-790207149)).
+> **Important!** The [Azure DevOps CLI](https://docs.microsoft.com/azure/devops/cli/?view=azure-devops) is used for the subsequent steps. Please make sure that it is installed. The authentication is done via a Personal Access Token (PAT). Another solution is to store the PAT in the `AZURE_DEVOPS_EXT_PAT` environment variable (see [here](https://github.com/Azure/azure-devops-cli-extension/issues/1100#issuecomment-790207149)).
 
 #### Create a new Azure DevOps project
 
-Before we start, make sure that the [Azure DevOps CLI](https://docs.microsoft.com/azure/devops/cli/?view=azure-devops) is configured to use the Azure DevOps organization that was created in the previous step:
+When using Azure DevOps CLI, make sure that the [Azure DevOps CLI](https://docs.microsoft.com/azure/devops/cli/?view=azure-devops) is configured to use the Azure DevOps organization that was created in the Step [1) Create a new Azure DevOps organization](#1-create-a-new-azure-devops-organization).
 
 ```bash
+export AZURE_DEVOPS_EXT_PAT="<azure-devops-personal-access-token>"
+
 az devops configure --defaults organization=https://dev.azure.com/<your-org>
 az devops project create --name <your-project>
 ```
+
+> `AZURE_DEVOPS_EXT_PAT` is used for automation purposes. If not set, `az devops login` will prompt you for the Personal Access Token (PAT).
 
 This will result in a new project, `<your-project>` in your Azure DevOps organization:
 

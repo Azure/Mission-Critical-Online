@@ -37,18 +37,18 @@ module.exports = async function (context) {
         let status = 200;
 
         if ((output).error) {
-            context.log("ERROR: " + JSON.stringify((output).error));
+            context.log.error("ERROR: " + JSON.stringify((output).error));
             status = 500;
             responseMessage += "\r\nError running tests: " + JSON.stringify((output).error, null, 2);
         }
 
         if ((output).stdout) {
-            responseMessage += "\r\nSTDOUT: " + (output).stdout;
             context.log("STDOUT: " + (output).stdout);
+            responseMessage += "\r\nSTDOUT: " + (output).stdout;
         }
 
         if ((output).stderr) {
-            context.log("STDERR: " + (output).stderr);
+            context.log.error("STDERR: " + (output).stderr);
             responseMessage += "\r\nSTDERR: " + (output).stderr;
         }
 
@@ -57,7 +57,7 @@ module.exports = async function (context) {
             message: responseMessage
         };
     } catch (ex) {
-        context.log("ERROR: Failed to run Playwright tests: " + ex);
+        context.log.error("ERROR: Failed to run Playwright tests: " + ex);
         return {
             status: 500,
             message: ex

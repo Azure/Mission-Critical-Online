@@ -63,22 +63,6 @@ Optionally, you can also check registration status of individual `Provider` by r
 az provider show --namespace <provider name> --query registrationState
 ```
 
-## Preview feature registration on Subscription
-
-The reference implementation deployment takes a dependency on Azure Kubernetes Service AutoUpgrade and PlannedMaintenance feature which is in public preview (October 2021). Configuring an `automatic_upgrade_channel` requires registering the Azure subscription for the AutoUpgradePreview. The following command can be used to register:
-
-``` bash
-az feature register --namespace Microsoft.ContainerService -n AutoUpgradePreview
-```
-
-> Note: In some cases, it can take a few minutes to register a feature. Please ensure that status of a feature is reported as **Registered** before you proceed with the deployment.
-
-Optionally, you can run the following command to check the registration status of `AutoUpgradePreview` feature.
-
-```bash
-az feature show --namespace Microsoft.ContainerService -n AutoupgradePreview --query properties.state
-```
-
 ## Terraform Provider configuration
 
 The Terraform providers used for the reference implementation are set by using a minimum supported version in the `required_providers` section.

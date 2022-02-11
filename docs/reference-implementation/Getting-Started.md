@@ -35,22 +35,25 @@ The process to deploy AlwaysOn is comprised of the following steps:
 1) Adjust configuration
 1) Execute the first deployment
 
-### 1) Create a new Azure DevOps organization
+### 1) Create a new Azure DevOps organization and project
 
 To deploy AlwaysOn, you need to create a new Azure DevOps organization, or re-use an existing one. In this organization we will then create a new project used to host all pipelines for AlwaysOn.
 
 - [Create an organization or project collection](https://docs.microsoft.com/azure/devops/organizations/accounts/create-organization?view=azure-devops)
 
-> **Important!** The [Azure DevOps CLI](https://docs.microsoft.com/azure/devops/cli/?view=azure-devops) is used for the subsequent steps. Please make sure that it is installed. The authentication is done via a Personal Access Token (PAT). Another solution is to store the PAT in the `AZURE_DEVOPS_EXT_PAT` environment variable (see [here](https://github.com/Azure/azure-devops-cli-extension/issues/1100#issuecomment-790207149)).
+> **Important!** The [Azure DevOps CLI](https://docs.microsoft.com/azure/devops/cli/?view=azure-devops) is used for the subsequent steps. Please make sure that it is installed. The authentication is done via a Personal Access Token (PAT). This can be done via `az devops login` or by storing the PAT token in the `AZURE_DEVOPS_EXT_PAT` environment variable.
 
 #### Create a new Azure DevOps project
 
-When using Azure DevOps CLI, make sure that the [Azure DevOps CLI](https://docs.microsoft.com/azure/devops/cli/?view=azure-devops) is configured to use the Azure DevOps organization that was created in the Step [1) Create a new Azure DevOps organization](#1-create-a-new-azure-devops-organization).
+When using Azure DevOps CLI, make sure that the [Azure DevOps CLI](https://docs.microsoft.com/azure/devops/cli/?view=azure-devops) is configured to use the Azure DevOps organization that was created in the previous task.
 
 ```bash
 export AZURE_DEVOPS_EXT_PAT="<azure-devops-personal-access-token>"
 
+# set the org context
 az devops configure --defaults organization=https://dev.azure.com/<your-org>
+
+# create a new project
 az devops project create --name <your-project>
 ```
 
@@ -315,9 +318,9 @@ You can now go to the Azure Portal and check the provisioned resources. In the R
 
 With the completion of at least one deployment pipeline it is now a good time to read more about the pipeline workflows and other available documentation:
 
-Guidance on [Azure DevOps Workflows](/.ado/pipelines/README.md)
+- Guidance on [Azure DevOps Workflows](/.ado/pipelines/README.md)
 
-Detailed information about the infrastructure layer - [Terraform documentation](/src/infra/workload/README.md#get-started).
+- Detailed information about the infrastructure layer - [Terraform documentation](/src/infra/workload/README.md#get-started).
 
 ---
 [AlwaysOn - Full List of Documentation](/docs/README.md)

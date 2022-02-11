@@ -149,7 +149,7 @@ As regional availability of services used in reference implementation and AZs ra
 
 - `sku` is set to *Premium* to allow geo-replication.
 - `georeplication_locations` is automatically set to reflect all regions that a regional stamp was deployed to.
-- `zone_redundancy_enabled` provides resiliency and high availability within a specific region. It is [not supported in all regions](https://docs.microsoft.com/azure/container-registry/zone-redundancy#preview-limitations), yet, and is therefore not enabled.
+- `zone_redundancy_enabled` provides resiliency and high availability within a specific region.
 - `admin_enabled` is set to *false*. The admin user access will not be used. Access to images stored in ACR, for example for AKS, is only possible using AzureAD role assignments.
 - Diagnostic settings are configured to store all log and metric data in Log Analytics.
 

@@ -275,7 +275,7 @@ namespace AlwaysOn.Shared.Services
                 }
                 else
                 {
-                    throw new AlwaysOnDependencyException(responseMessage.StatusCode, $"Unexpected status code in {nameof(GetCatalogItemByIdAsync)}. Code={responseMessage.StatusCode}");
+                    throw new AlwaysOnDependencyException(responseMessage.StatusCode, $"Unexpected status code in {nameof(GetCommentByIdAsync)}. Code={responseMessage.StatusCode}");
                 }
             }
             catch (CosmosException cex)
@@ -343,7 +343,7 @@ namespace AlwaysOn.Shared.Services
                 }
                 else
                 {
-                    throw new AlwaysOnDependencyException(responseMessage.StatusCode, $"Unexpected status code in {nameof(GetCatalogItemByIdAsync)}. Code={responseMessage.StatusCode}");
+                    throw new AlwaysOnDependencyException(responseMessage.StatusCode, $"Unexpected status code in {nameof(GetRatingByIdAsync)}. Code={responseMessage.StatusCode}");
                 }
             }
             catch (CosmosException cex)

@@ -5,11 +5,11 @@ resource "azurerm_postgresql_server" "pgprimary" {
   resource_group_name          = azurerm_resource_group.rg["primary"].name
   administrator_login          = var.db_admin_user
   administrator_login_password = random_password.postgres_password.result
-  sku_name                     = "B_Gen5_2"
+  sku_name                     = "GP_Gen5_2"
   version                      = 11
   storage_mb                   = 5120
   backup_retention_days        = 7
-  geo_redundant_backup_enabled = false  # not supported in Basic SKU
+  geo_redundant_backup_enabled = true
   auto_grow_enabled            = true
 
   public_network_access_enabled    = false

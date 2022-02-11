@@ -31,10 +31,9 @@ Before deploying this to your production environment, it is *highly recommended*
 When editing on Windows, ensure that for the dashboard queries as well as the .ts and .tsx files, line endings are set to **LF** to ensure a smooth docker build process.
 
 
-
 # Grafana Health Model Panel
 
-The AlwaysOn health model has been implemented in Azure Log Analytics using KQL queries. This is a custom Grafana visualization panel, which can be used to visualize that health model. It's main purpose is to visualize, in an intuitive way:
+The AlwaysOn health model has been implemented in Azure Log Analytics using KQL queries. This is a custom Grafana visualization panel, which can be used to visualize that health model. Its main purpose is to visualize, in an intuitive way:
 
 - The health state of each component
 - The hierarchical dependencies between components.

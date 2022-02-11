@@ -119,6 +119,7 @@ As of February 2022, following regions have been successfully tested with the re
 - japaneast
 - koreacentral
 
+>Note: Depending on which regions you select, you might need to first request quota with Azure Support for some of the services (mostly for AKS VMs and Cosmos DB).
 
 It's worth calling out that where an Azure service is not available, an equivalent service may be deployed in its place. Availability Zones are the main limiting factor as far as the reference implementation of AZ is concerned.
 

@@ -9,7 +9,6 @@ resource "azurerm_postgresql_server" "pgprimary" {
   version                      = 11
   storage_mb                   = 5120
   backup_retention_days        = 7
-  geo_redundant_backup_enabled = true
   auto_grow_enabled            = true
 
   public_network_access_enabled    = false

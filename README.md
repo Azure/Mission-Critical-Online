@@ -15,6 +15,8 @@ This repository contains the reference implementation for an AlwaysOn enterprise
 - [Reference Implementation Solution Guide](./docs/reference-implementation/README.md) - Everything required to understand and build a copy of the reference implementation
 - [Reference Implementation Build Artifacts](./src/infra/README.md) - Contains the Infrastructure-as-Code artifacts, CI/CD pipelines, and application code required to deploy the pre-configured reference solution
 
+![Architecture overview](/docs/media/Architecture-Foundational-Online.png)
+
 ## AlwaysOn overview and design guidelines
 
 The following articles provides more information about AlwaysOn design guidelines and design areas located in the [AlwaysOn GitHub](https://github.com/Azure/AlwaysOn) repo:

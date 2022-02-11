@@ -89,15 +89,17 @@ Each SU is deployed into an Azure region and is therefore primarily handling tra
 
 The reference implementation of AlwaysOn deploys a set of Azure services. These services are not available across all Azure regions. In addition, only regions which offer **[Availability Zones](https://docs.microsoft.com/azure/availability-zones/az-region)** (AZs) are considered for a stamp. AZs are gradually being rolled-out and are not yet available across all regions. Due to these constraints, the reference implementation cannot be deployed to all Azure regions.
 
-As of November 2021, following regions have been successfully tested with the reference implementation of AlwaysOn:
+As of February 2022, following regions have been successfully tested with the reference implementation of AlwaysOn:
 
-**Europe**
+**Europe/Africa**
 
 - northeurope
 - westeurope
 - germanywestcentral
 - francecentral
 - uksouth
+- norwayeast
+- southafricanorth
 
 **Americas**
 
@@ -115,6 +117,8 @@ As of November 2021, following regions have been successfully tested with the re
 - southeastasia
 - eastasia
 - japaneast
+- koreacentral
+
 
 It's worth calling out that where an Azure service is not available, an equivalent service may be deployed in its place. Availability Zones are the main limiting factor as far as the reference implementation of AZ is concerned.
 

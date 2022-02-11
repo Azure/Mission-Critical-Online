@@ -1,4 +1,4 @@
-# Create PL and PE for PGDB backend
+# Create Private Endpoints for PGDB backend
 resource "azurerm_private_dns_zone" "pgdb" {
   for_each            = var.stamps
   name                = "privatelink.postgres.database.azure.com"
@@ -14,6 +14,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "pgdb" {
   virtual_network_id    = azurerm_virtual_network.vnet[each.key].id
 }
 
+# Private endpoints for both stamps, pointing to the primary postgresql server
 resource "azurerm_private_endpoint" "pgdb_primary" {
   for_each            = var.stamps
   name                = "${local.prefix}-${substr(each.value["location"], 0, 5)}-pg-pe"

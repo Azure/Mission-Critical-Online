@@ -1,4 +1,3 @@
-# Deploy AKV in the primary region only.
 # We are using AKV to store PGDB password (secret) and need to ensure that the databases in primary and secondary always reference the same password.
 resource "azurerm_key_vault" "stamp" {
   for_each            = var.stamps

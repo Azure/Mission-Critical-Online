@@ -2,8 +2,7 @@
 
 ## Welcome to Azure AlwaysOn Foundational Online
 
-AlwaysOn is an open source project that provides a **prescriptive architectural approach to building highly-reliable cloud-native applications on Microsoft Azure for mission-critical workloads**. This repository contains the *foundational online* AlwaysOn reference implementation a **Fully Functional Production-Ready AlwaysOn Reference Implementation**:
-An end-to-end reference implementation intended to provide a solution orientated basis to showcase mission-critical application development on Microsoft Azure, leveraging Azure-native platform capabilities to maximize reliability and operational effectiveness. More specifically, the reference implementation consists of:
+AlwaysOn is an open source project that provides a **prescriptive architectural approach to building highly-reliable cloud-native applications on Microsoft Azure for mission-critical workloads**. This repository contains a **Fully Functional Production-Ready AlwaysOn Reference Implementation**, intended to provide a solution oriented basis to showcase mission-critical application development on Microsoft Azure, leveraging Azure-native platform capabilities to maximize reliability and operational effectiveness. More specifically, the reference implementation consists of:
 
 - Design and implementation guidance to help readers understand and use the AlwaysOn design methodology in the context of a particular industry scenario.
 - Production-ready technical artifacts including Infrastructure-as-Code (IaC) resources and Continuous-Integration/Continuous-Deployment (CI/CD) pipelines (GitHub and Azure DevOps) to deploy an AlwaysOn application with mature end-to-end operational wrappers.

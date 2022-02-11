@@ -100,9 +100,6 @@ When you are later ready to also deploy further environments such as INT (integr
 1) Click "Create pipeline" or "New pipeline"
 1) Select "GitHub (YAML)"
 1) Search for your repository in "Select a repository" (your fork or name of your template)
-
-   > In case you've decided to use a "Private" template in Step 2, you will need to grant Azure Pipelines access to your GitHub repository.
-
 1) Select "Existing Azure Pipelines YAML file"
 1) Select "Run" to save and run the pipeline now, or "Save" to save and run later (see below)
 1) Rename the pipeline and (optionally) move it into a folder (see below)

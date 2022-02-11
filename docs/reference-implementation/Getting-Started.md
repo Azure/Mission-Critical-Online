@@ -41,7 +41,7 @@ To deploy AlwaysOn, you need to create a new Azure DevOps organization, or re-us
 
 - [Create an organization or project collection](https://docs.microsoft.com/azure/devops/organizations/accounts/create-organization?view=azure-devops)
 
-> **Important!** The [Azure DevOps CLI](https://docs.microsoft.com/azure/devops/cli/?view=azure-devops) is used for the subsequent steps. Please make sure that it is installed.
+> **Important!** The [Azure DevOps CLI](https://docs.microsoft.com/azure/devops/cli/?view=azure-devops) is used for the subsequent steps. Please make sure that it is installed. The authentication is done via `az login` using credentials or `az devops login` using a Personal Access Token (PAT). Another solution is to store the PAT in the `AZURE_DEVOPS_EXT_PAT` environment variable (see [here](https://github.com/Azure/azure-devops-cli-extension/issues/1100#issuecomment-790207149)).
 
 #### Create a new Azure DevOps project
 
@@ -66,7 +66,7 @@ az devops configure --defaults organization=https://dev.azure.com/<your-org> pro
 
 Azure DevOps Repos would allow us to import the AlwaysOn GitHub repository into Azure DevOps as well. For this guide we have decided to generate our own repository based on the template on GitHub and use it from there.
 
-Go to the AlwaysOn repository on GitHub and click on "Use this template" in the top right corner:
+Go to the root of the AlwaysOn repository on GitHub and click on "Use this template" in the top right corner:
 
 ![Fork GitHub Repo](/docs/media/AlwaysOnGettingStarted2Fork.png)
 
@@ -99,7 +99,10 @@ When you are later ready to also deploy further environments such as INT (integr
 1) Go to "Pipelines"
 1) Click "Create pipeline" or "New pipeline"
 1) Select "GitHub (YAML)"
-1) Search for your repository in "Select a repository" (your fork)
+1) Search for your repository in "Select a repository" (your fork or name of your template)
+
+   > In case you've decided to use a "Private" template in Step 2, you will need to grant Azure Pipelines access to your GitHub repository.
+
 1) Select "Existing Azure Pipelines YAML file"
 1) Select "Run" to save and run the pipeline now, or "Save" to save and run later (see below)
 1) Rename the pipeline and (optionally) move it into a folder (see below)

@@ -129,7 +129,8 @@ namespace AlwaysOn.CatalogService.Controllers
                 return BadRequest("Missing required fields");
             }
 
-            var itemId = itemDto.Id ?? Guid.NewGuid();
+            //var itemId = itemDto.Id ?? Guid.Empty;
+            var itemId = Guid.Empty; // ignore any ID coming from the client - database service should handle it
 
             var newItem = new CatalogItem()
             {

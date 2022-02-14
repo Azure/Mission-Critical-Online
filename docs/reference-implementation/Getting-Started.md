@@ -304,6 +304,17 @@ You can now go to the Azure Portal and check the provisioned resources. In the R
 **Stamp Resources**
 ![Azure Stamp Resources](/docs/media/e2e_azure_resources_stamp.png)
 
+
+#### Browse to the demo app website
+
+We can now browse to the demo app website. Fetch the URL from the Front Door resource:
+
+1) Find the "Global Resource" group, e.g. `<myprefix>123-global-fd`
+1) Click on the Front Door resource (e.g. `<myprefix>123-global-fd`)
+1) Click on the "Frontend host" link
+![Frontend host](/docs/media/frontdoor-resource-hostlink.png)
+1) This opens the landing page of the demo app. Feel free to browse around!
+
 ## Additional information to learn more
 
 With the completion of at least one deployment pipeline it is now a good time to read more about the pipeline workflows and other available documentation:

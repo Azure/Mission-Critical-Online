@@ -6,9 +6,9 @@ The AlwaysOn architecture is based on the [deployment stamp pattern](https://doc
 
 AlwaysOn stamps share several global resources which are durable through stamp deployments. This document summarizes Business Continuity capabilities and configurations as well as Disaster Recovery processes for each global resource type shared by AlwaysOn stamps.
 
-## Azure Container Registry
+## Azure Container Registry (ACR)
 
-**Zone redundancy** is currently disabled in the reference implementation because this feature is in preview (as of September 2021) and not available in all regions where Availability Zones are present. It can be enabled if all required regions support it.
+ACR is used with active-active geo-replication to each region, in which a stamp is deployed. Also, **Zone redundancy** is enabled to provide in-region high availability.
 
 ## Cosmos DB
 

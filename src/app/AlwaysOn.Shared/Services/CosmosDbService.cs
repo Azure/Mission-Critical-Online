@@ -389,7 +389,8 @@ namespace AlwaysOn.Shared.Services
         public async Task UpsertCatalogItemAsync(CatalogItem item)
         {
             // If the ID is Guid.Empty, we're creating a new item and need to generate new ID for Cosmos.
-            string partitionKey = item.Id == Guid.Empty ? Guid.NewGuid().ToString() : item.Id.ToString();
+            item.Id = item.Id == Guid.Empty ? Guid.NewGuid() : item.Id;
+            string partitionKey = item.Id.ToString();
             var startTime = DateTime.UtcNow;
             var success = false;
             ItemResponse<CatalogItem> response = null;

@@ -113,7 +113,7 @@ When you are later ready to also deploy further environments such as INT (integr
 
    > **Note!** If requested, grant the Azure Pipelines app permissions to access your GitHub repository.
 
-1) Select "Existing Azure Pipelines YAML file"
+1) Select "Existing Azure Pipelines YAML file" in the "Configure your pipeline" dialog
 1) Select "Run" to save and run the pipeline now, or "Save" to save and run later (see below)
 1) Rename the pipeline and (optionally) move it into a folder (see below)
 

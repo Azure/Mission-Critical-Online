@@ -248,7 +248,7 @@ Modify the respective file for the environment which you want to deploy. At leas
 
 For more details on the variables, you can consult [this guide](/.ado/pipelines/README.md#configuration-files).
 
-#### Create environments
+#### Create environments in ADO
 
 Deployment pipelines taking a dependency on ADO environments. Each pipeline requires an environment created on the ADO project.
 

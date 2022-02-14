@@ -31,9 +31,9 @@ The process to deploy AlwaysOn is comprised of the following steps:
 1) Import [deployment pipelines](#3-import-pipelines)
 1) Create [Service Principals](#4-create-azure-service-principal) for each individual Azure subscription
 1) Create [Service Connections](#5-create-azure-service-connections) in Azure DevOps
-1) [Adjust configuration](#7-adjust-configuration)
-1) [Execute the first deployment](#8-execute-the-first-deployment)
-1) [Check deployed resources](#check-deployed-resources)
+1) [Adjust configuration](#6-adjust-configuration)
+1) [Execute the first deployment](#7-execute-the-first-deployment)
+1) [Check deployed resources](#8-check-deployed-resources)
 
 ### 1) Create a new Azure DevOps organization and project
 

@@ -4,7 +4,7 @@ variables:
 
 # Resource prefix for this environment
 - name:  'prefix'
-  value: 'afprod'          # <===== CHANGE THIS! Needs to be a unique prefix
+  value: 'afprod'          # <===== CHANGE THIS! Must not be longer than 6 characters! Needs to be a unique prefix
 
 - name: 'stampLocations'
   value: '["northeurope", "canadacentral"]' # Check which regions are valid. There is a list in /src/infra/README.md
@@ -14,7 +14,7 @@ variables:
 - name:  'terraformResourceGroup'
   value: 'terraformstate-rg'         # <===== CHANGE THIS VALUE IF NEEDED
 - name:  'terraformStorageAccount'
-  value: 'afprodterraformstate'      # <===== CHANGE THIS VALUE! Needs to be a globally unique name
+  value: '$(prefix)terraformstate'  # Needs to be a globally unique name
 
 # Custom DNS name settings
 - name: 'envDnsZoneRG'

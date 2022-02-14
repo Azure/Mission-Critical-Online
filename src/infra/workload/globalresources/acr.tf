@@ -5,14 +5,14 @@ resource "azurerm_container_registry" "main" {
   sku                 = "Premium"
   admin_enabled       = false
 
-  zone_redundancy_enabled = false # Disabled for now as it is still in preview and not supported in all regions. Can be enabled if you know that all the stamp's regions support it already.
+  zone_redundancy_enabled = true
 
   dynamic "georeplications" {
     for_each = [for location in var.stamps : location if azurerm_resource_group.global.location != location] # remove the location of the ACR iteself from the list of replicas
     content {
       location = georeplications.value
 
-      zone_redundancy_enabled = false # Disabled for now as it is still in preview and not supported in all regions. Can be enabled if you know that all the stamp's regions support it already.
+      zone_redundancy_enabled = true
     }
   }
 

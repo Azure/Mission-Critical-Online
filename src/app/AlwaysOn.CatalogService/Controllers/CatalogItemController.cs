@@ -200,14 +200,9 @@ namespace AlwaysOn.CatalogService.Controllers
                                                     SysConfiguration.GlobalStorageAccountImageContainerName,
                                                     blobName);
 
-                    var metadata = new Dictionary<string, string>
-                    {
-                        { "fileExtension", fileExtension }
-                    };
-
                     var options = new BlobUploadOptions()
                     {
-                        Metadata = metadata
+                        Metadata = new Dictionary<string, string> { { "fileExtension", fileExtension } }
                     };
 
                     // Upload will overwrite (i.e. create a new verison) of any existing blob

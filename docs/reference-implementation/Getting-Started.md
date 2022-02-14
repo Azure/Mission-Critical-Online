@@ -31,9 +31,9 @@ The process to deploy AlwaysOn is comprised of the following steps:
 1) Import [deployment pipelines](#3-import-pipelines)
 1) Create [Service Principals](#4-create-azure-service-principal) for each individual Azure subscription
 1) Create [Service Connections](#5-create-azure-service-connections) in Azure DevOps
-1) Access to an Azure Subscription (it is recommended to use multiple subscriptions to separate environments types i.e. dev, test and prod)
 1) Adjust configuration
 1) Execute the first deployment
+1) Check deployed resources
 
 ### 1) Create a new Azure DevOps organization and project
 
@@ -216,29 +216,7 @@ az devops service-endpoint azurerm create \
 
 > `AZURE_DEVOPS_EXT_AZURE_RM_SERVICE_PRINCIPAL_KEY` is used for automation purposes. If not set, `az devops` will prompt you for the service principal client secret. See [az devops service-endpoint azurerm](https://docs.microsoft.com/cli/azure/devops/service-endpoint/azurerm?view=azure-cli-latest) for more information about parameters and options.
 
-### 6) Access to an Azure Subscriptions with RP and preview features enabled
-
-#### (Optional) Register Azure Resource Providers
-
-> This step is also done automatically by Terraform. However, if the Service Principal that you created before does not have the required permissions to register Resource Providers, you need to do this manually with a user that has sufficient permissions.
-
-When a new Azure Subscription is used for the first time, the required [Azure Resource Providers](/src/infra/workload/README.md#azure-resource-providers) need to be registered within the Azure Subscription.
-
-This can be done at any time. For convenience, our infrastructure deployment pipelines do this automatically, so we are noting the need for Resource Providers here for reference only.
-
-See [Azure Resource Providers](/src/infra/workload/README.md#azure-resource-providers) for a full list of resource providers used for AlwaysOn.
-
-#### Register Azure preview feature
-
-The reference implementation deployment takes a dependency on Azure Kubernetes Service AutoUpgrade and PlannedMaintenance feature which is in public preview (October 2021). Configuring an `automatic_upgrade_channel` requires registering the Azure subscription for the AutoUpgradePreview. The following command can be used to register:
-
-``` bash
-az feature register --namespace Microsoft.ContainerService -n AutoUpgradePreview
-```
-
-See [Azure Preview feature](/src/infra/workload/README.md#preview-feature-registration-on-subscription) for additional information.
-
-### 7) Adjust configuration
+### 6) Adjust configuration
 
 There are three variables files in the `/.ado/pipelines/config` folder, one for each environment. You need to edit these files to reflect your own workspace before you execute the first deployments. They are named `variables-values-[env].yaml`.
 
@@ -271,7 +249,7 @@ Deployment pipelines taking a dependency on ADO environments. Each pipeline requ
 
 Click on "Create"
 
-### 8) Execute the first deployment
+### 7) Execute the first deployment
 
 After completing all previous steps in this guide, you can start executing the pipelines to spin up the infrastructure.
 Go the the **Pipelines** section of the Azure DevOps Portal and click on the E2E release pipeline.
@@ -302,7 +280,7 @@ The full run, which deploys all resources from scratch, might take around 30-40 
 
 ![Resource tag](/docs/media/e2e_pipeline_prefix_tag.png)
 
-### Check deployed resources
+### 8) Check deployed resources
 
 You can now go to the Azure Portal and check the provisioned resources. In the Resource Groups blade, locate the groups which start with the aforementioned prefix. You will see two resources groups (or more, depending if you changed the number of desired stamps):
 

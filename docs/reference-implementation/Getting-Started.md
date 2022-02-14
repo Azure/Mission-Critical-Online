@@ -109,6 +109,8 @@ When you are later ready to also deploy further environments such as INT (integr
 
    > **Note!** If requested, grant the Azure Pipelines app permissions to access your GitHub repository.
 
+   ![github authorization](/docs/media/github-ado-auth-1.png)
+
 1) Search for your repository in "Select a repository" (name of your template)
 
    > **Note!** If requested, grant the Azure Pipelines app permissions to access your GitHub repository.
@@ -116,6 +118,8 @@ When you are later ready to also deploy further environments such as INT (integr
 1) Select "Existing Azure Pipelines YAML file" in the "Configure your pipeline" dialog
 
    > **Note!** In the "Select an existing YAML file" dialog, select the YAML file you want to import. For the e2e pipeline this is `/.ado/pipelines/azure-release-e2e.yaml`.
+
+   ![select yaml pipline](/docs/media\AlwaysOnGettingStarted2Pipeline_select_yaml_pipeline.png)
 
 1) Select "Save" (from the dropdown menu under the "Run" button) to save the pipeline
 
@@ -202,6 +206,8 @@ These service connections can be created in the Azure DevOps Portal or via the `
 1) Select "Azure Resource Manager"
 1) Select "Service principal (manual)"
 1) Set the subscription details and credentials
+1) Set the service connection name to one of the three above
+1) Click on "Verify and save"
 
 #### Use Azure DevOps CLI
 

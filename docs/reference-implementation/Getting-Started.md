@@ -117,12 +117,12 @@ When you are later ready to also deploy further environments such as INT (integr
 
    > **Note!** In the "Select an existing YAML file" dialog, select the YAML file you want to import. For the e2e pipeline this is `/.ado/pipelines/azure-release-e2e.yaml`.
 
+   ![Run or save Pipeline](/docs/media/AlwaysOnGettingStarted2RunOrSavePipeline.png 'Run or save Pipeline')
+
 1) Select "Save" (from the dropdown menu under the "Run" button) to save the pipeline
 1) Rename the pipeline and (optionally) move it into a folder (see below)
 
-_Save Pipeline_
 
-![Run or save Pipeline](/docs/media/AlwaysOnGettingStarted2RunOrSavePipeline.png 'Run or save Pipeline')
 
 _Rename/move pipeline_
 

@@ -7,7 +7,7 @@ AlwaysOn is an open source project that provides a **prescriptive architectural 
 - Design and implementation guidance to help readers understand and use the AlwaysOn design methodology in the context of a particular industry scenario.
 - Production-ready technical artifacts including Infrastructure-as-Code (IaC) resources and Continuous-Integration/Continuous-Deployment (CI/CD) pipelines (GitHub and Azure DevOps) to deploy an AlwaysOn application with mature end-to-end operational wrappers.
 
-This repository contains the reference implementation for an AlwaysOn enterprise connected scenario. The pipeline deploys the application Azure Subscription security and compliance guardrails and has no network connectivity requirements. It will be used if the AlwaysOn application is access over a public endpoint without additional dependencies to other company resources.
+This repository contains the reference implementation for an AlwaysOn "online" scenario, i.e. a workload which does not require direct connectivity to other company resources (such as via a hub-and-spoke model). The pipeline deploys the application Azure Subscription security and compliance guardrails and has no network connectivity requirements. It will be used if the AlwaysOn application is access over a public endpoint without additional dependencies to other company resources.
 
 ## Reference implementation - Table of Contents
 

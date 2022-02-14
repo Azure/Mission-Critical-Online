@@ -315,6 +315,10 @@ We can now browse to the demo app website. Fetch the URL from the Front Door res
 ![Frontend host](/docs/media/frontdoor-resource-hostlink.png)
 1) This opens the landing page of the demo app. Feel free to browse around!
 
+![landingpage](/docs/media/website_landingpage.png)
+
+![catalogpage](/docs/media/website_catalogpage.png)
+
 ## Additional information to learn more
 
 With the completion of at least one deployment pipeline it is now a good time to read more about the pipeline workflows and other available documentation:

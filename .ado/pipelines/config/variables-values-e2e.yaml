@@ -4,10 +4,10 @@ variables:
 
 # Resource prefix for this environment
 - name:  'prefix'
-  value: 'afe2e'          # <===== CHANGE THIS! Needs to be a unique prefix
+  value: 'afe2e'          # <===== CHANGE THIS! Must not be longer than 6 characters! Needs to be a unique prefix
 
 - name: 'stampLocations'
-  value: '["uksouth"]'    # Check which regions are valid. There is a list in /src/infra/README.md
+  value: '["northeurope"]'    # Check which regions are valid. There is a list in /src/infra/README.md
 ##### NOTE #####
 # If you want to run embedded Chaos Studio testing, only the following regions are supported as of 11-Oct-2021:
 # eastus, centralus, uksouth, westeurope, japaneast
@@ -18,7 +18,7 @@ variables:
 - name:  'terraformResourceGroup'
   value: 'terraformstate-rg'      # <===== CHANGE THIS VALUE IF NEEDED
 - name:  'terraformStorageAccount'
-  value: 'afe2etfstatestore'      # <===== CHANGE THIS VALUE! Needs to be a globally unique name
+  value: '$(prefix)tfstatestore'  # Needs to be a globally unique name
 
 # Other settings
 - name:  'contactEmail'

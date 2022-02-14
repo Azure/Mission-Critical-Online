@@ -75,7 +75,7 @@ Azure DevOps Repos would allow us to import the AlwaysOn GitHub repository into 
 
 Go to the root of the AlwaysOn repository on GitHub and click on "Use this template" in the top right corner:
 
-![Fork GitHub Repo](/docs/media/AlwaysOnGettingStarted2Fork.png)
+![Use GitHub Repo template](/docs/media/AlwaysOnGettingStarted2Fork.png)
 
 This will let you create a repository in your own account or organization. This is needed to allow you to make modification to our code within your own repository.
 
@@ -89,7 +89,7 @@ The files to import are the YAML files stored in the `/.ado/pipelines/` director
 
 You can find more details about any of the pipelines within the [pipelines documentation](/.ado/pipelines/README.md).
 
-To start, we will import only the following pipeline from the `/.ado/pipelines/` directory:
+To start, we will import **only** the following pipeline from the `/.ado/pipelines/` directory:
 
 - `/.ado/pipelines/azure-release-e2e.yaml`
 
@@ -106,7 +106,7 @@ When you are later ready to also deploy further environments such as INT (integr
 1) Go to "Pipelines"
 1) Click "Create pipeline" or "New pipeline"
 1) Select "GitHub (YAML)"
-1) Search for your repository in "Select a repository" (your fork or name of your template)
+1) Search for your repository in "Select a repository" (name of your template)
 1) Select "Existing Azure Pipelines YAML file"
 1) Select "Run" to save and run the pipeline now, or "Save" to save and run later (see below)
 1) Rename the pipeline and (optionally) move it into a folder (see below)
@@ -141,7 +141,7 @@ az devops configure --defaults organization=https://dev.azure.com/<your-org> pro
 
 # import a YAML pipeline
 az pipelines create --name "Azure.AlwaysOn E2E Release" --description "Azure.AlwaysOn E2E Release" \
-                    --branch main --repository https://github.com/<your-fork>/ --repository-type github \
+                    --branch main --repository https://github.com/<your-template>/ --repository-type github \
                     --skip-first-run true --yaml-path "/.ado/pipelines/azure-release-e2e.yaml"
 ```
 

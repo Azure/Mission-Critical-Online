@@ -1,7 +1,7 @@
 # Central configuration and versioning settings
 # used for all pipelines
 variables:
-- name: 'riVariant' # Reference implementation variant - each repository should have its own identification
+- name: 'riVariant' # Reference implementation variant - each repository should have its own identification. This value is surfaced to the UI.
   value: 'foundational-online'
 
 - name: 'terraformVersion'    # Terraform Version

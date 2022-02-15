@@ -4,6 +4,25 @@ The HealthService is an app component that is running along other components lik
 
 ![HealthService conceptual diagram](/docs/media/health-service-high-level.png)
 
+```mermaid
+stateDiagram
+    direction LR
+    [*] --> StampHealthCheck
+    state FrontDoor {
+    StampHealthCheck --> HealthService
+    }
+    HealthService --> CosmosDB: Able to query?
+    HealthService --> Storage: File exists?
+    HealthService --> EventHubs: Able to sent message?
+    state AKS {
+        direction RL
+        Application --> HealthService: LivenessProbe
+        BackendProcess --> HealthService: LivenessProbe
+    }
+
+```
+
+
 The idea is, first of all, if the cluster itself is down, the health service won't respond at all. When the service is up and running, it performs periodic checks against various components of the solution:
 
 - It attempts to do a simple query against Cosmos DB

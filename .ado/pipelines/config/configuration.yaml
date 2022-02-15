@@ -1,6 +1,9 @@
 # Central configuration and versioning settings
 # used for all pipelines
 variables:
+- name: 'riVariant' # Reference implementation variant - each repository should have its own identification
+  value: 'foundational-online'
+
 - name: 'terraformVersion'    # Terraform Version
   value: '1.1.4'
 - name: 'kubernetesVersion'   # kubernetes version used for aks clusters

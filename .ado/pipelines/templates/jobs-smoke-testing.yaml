@@ -84,8 +84,8 @@ jobs:
           echo "Taking a screenshot of the UI root - https://$frontDoorFqdn/"
           npx playwright screenshot --wait-for-timeout=1000 --full-page --browser=chromium "https://$frontDoorFqdn/" screenshots/root.png
 
-          echo "Taking screenshot of the catalog page - https://$frontDoorFqdn/#/catalogitem"
-          npx playwright screenshot --wait-for-timeout=1000 --full-page --browser=chromium "https://$frontDoorFqdn/#/catalogitem" screenshots/catalog.png
+          echo "Taking screenshot of the catalog page - https://$frontDoorFqdn/#/catalog"
+          npx playwright screenshot --wait-for-timeout=1000 --full-page --browser=chromium "https://$frontDoorFqdn/#/catalog" screenshots/catalog.png
 
           #echo "Taking screenshot of a catalog item - https://$frontDoorFqdn/#/catalog/TODO-CHANGE"
           #npx playwright screenshot --wait-for-timeout=3000 --full-page --browser=chromium "https://$frontDoorFqdn/#/catalog/TODO-CHANGE" screenshots/catalog-item.png

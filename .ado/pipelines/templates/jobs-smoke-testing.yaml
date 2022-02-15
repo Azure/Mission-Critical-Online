@@ -77,6 +77,8 @@ jobs:
           # Azure Front Door Endpoint URI
           $frontdoorFqdn = $infraDeployOutput.frontdoor_fqdn.value
 
+          # We are using Playwright to browse the UI and capture screenshots
+
           # install Playwright dependencies
           echo "Installing Playwright dependencies..."
           npx playwright install-deps chromium
@@ -86,9 +88,6 @@ jobs:
 
           echo "Taking screenshot of the catalog page - https://$frontDoorFqdn/#/catalog"
           npx playwright screenshot --wait-for-timeout=1000 --full-page --browser=chromium "https://$frontDoorFqdn/#/catalog" screenshots/catalog.png
-
-          #echo "Taking screenshot of a catalog item - https://$frontDoorFqdn/#/catalog/TODO-CHANGE"
-          #npx playwright screenshot --wait-for-timeout=3000 --full-page --browser=chromium "https://$frontDoorFqdn/#/catalog/TODO-CHANGE" screenshots/catalog-item.png
 
     - publish:  'screenshots/'
       artifact: 'uiScreenshots' # artifact name

@@ -22,6 +22,7 @@ stateDiagram
     HealthService --> EventHubs: Able to sent message?
 ```
 
+
 The idea is, first of all, if the cluster itself is down, the health service won't respond at all. When the service is up and running, it performs periodic checks against various components of the solution:
 
 - It attempts to do a simple query against Cosmos DB

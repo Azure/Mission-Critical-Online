@@ -36,7 +36,7 @@ Infrastructure layer contains all infrastructure components and underlying found
 
 ## Architecture
 
-![Architecture overview](/docs/media/Architecture-Foundational-Public.png)
+![Architecture overview](/docs/media/Architecture-Foundational-Online.png)
 
 ### Stamp independence
 
@@ -89,15 +89,17 @@ Each SU is deployed into an Azure region and is therefore primarily handling tra
 
 The reference implementation of AlwaysOn deploys a set of Azure services. These services are not available across all Azure regions. In addition, only regions which offer **[Availability Zones](https://docs.microsoft.com/azure/availability-zones/az-region)** (AZs) are considered for a stamp. AZs are gradually being rolled-out and are not yet available across all regions. Due to these constraints, the reference implementation cannot be deployed to all Azure regions.
 
-As of November 2021, following regions have been successfully tested with the reference implementation of AlwaysOn:
+As of February 2022, following regions have been successfully tested with the reference implementation of AlwaysOn:
 
-**Europe**
+**Europe/Africa**
 
 - northeurope
 - westeurope
 - germanywestcentral
 - francecentral
 - uksouth
+- norwayeast
+- southafricanorth
 
 **Americas**
 
@@ -115,6 +117,9 @@ As of November 2021, following regions have been successfully tested with the re
 - southeastasia
 - eastasia
 - japaneast
+- koreacentral
+
+>Note: Depending on which regions you select, you might need to first request quota with Azure Support for some of the services (mostly for AKS VMs and Cosmos DB).
 
 It's worth calling out that where an Azure service is not available, an equivalent service may be deployed in its place. Availability Zones are the main limiting factor as far as the reference implementation of AZ is concerned.
 
@@ -144,7 +149,7 @@ As regional availability of services used in reference implementation and AZs ra
 
 - `sku` is set to *Premium* to allow geo-replication.
 - `georeplication_locations` is automatically set to reflect all regions that a regional stamp was deployed to.
-- `zone_redundancy_enabled` provides resiliency and high availability within a specific region. It is [not supported in all regions](https://docs.microsoft.com/azure/container-registry/zone-redundancy#preview-limitations), yet, and is therefore not enabled.
+- `zone_redundancy_enabled` provides resiliency and high availability within a specific region.
 - `admin_enabled` is set to *false*. The admin user access will not be used. Access to images stored in ACR, for example for AKS, is only possible using AzureAD role assignments.
 - Diagnostic settings are configured to store all log and metric data in Log Analytics.
 

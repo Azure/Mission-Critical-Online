@@ -73,7 +73,6 @@ Environment config files are stored in `.ado/pipelines/config` and are named `va
 | prefix | Custom prefix used for Azure resources.  | int: myaoint, prod: myaoprod, e2e: myaoe2e |
 | stampLocations | List of locations (Azure Regions) where this environment will be deployed into  | ["northeurope", "eastus2"] |
 | terraformResourceGroup | Resource Group where the Terraform state Storage account will be deployed | terraformstate-rg |
-| terraformStorageAccount | Azure Storage Account name used to store Terraform state (has to be globally unique) | myterraformstate |
 | envDnsZoneRG | OPTIONAL: Name of the Azure Resource group which holds the Azure DNS Zone for your custom domain. Not required if you do not plan to use a custom DNS name | mydns-rg |
 | envDomainName | OPTIONAL: Name of the Azure DNS Zone. Not required if you do not plan to use a custom DNS name | example.com |
 | contactEmail | E-mail alias used for alerting. **Be careful which address you put in here as it will potentially receive a lot of notification emails** | alwaysonappnet@example.com |
@@ -93,7 +92,7 @@ All pipelines are using Azure DevOps service connections to connect to Microsoft
 
 As part of the pipelines, basic Smoke Tests against the APIs are executed:
 
-- GET call to the Health Service `/health/stamp` API. Expected result: HTTP 200
+- GET call to the HealthService `/health/stamp` API. Expected result: HTTP 200
 - GET call the CatalogService `/api/1.0/catalogitem` API to retrieve a list of existing items. Expected result: HTTP 200
 - POST call to the CatalogService `/api/1.0/catalogitem/{itemId}/comments` API to create a new comment for an existing item. Expected result: HTTP 202
 - GET call to the CatalogService `/api/1.0/catalogitem/{itemId}/comments/{commentId}` API to retrieve the previously created comment. Expected result: HTTP 200

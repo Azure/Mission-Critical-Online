@@ -65,6 +65,6 @@ jobs:
         Set-Content -Value $imageNameTagSpecific -Path "${{ parameters.jobName }}.txt"
 
   - publish:  '${{ parameters.workingDirectory }}/${{ parameters.jobName }}.txt'
-    artifact: '${{ parameters.jobName }}-contaimerImageName' # artifact name
+    artifact: '${{ parameters.jobName }}-containerImageName' # artifact name
     condition: succeeded()
     displayName: 'Publish Container image name'

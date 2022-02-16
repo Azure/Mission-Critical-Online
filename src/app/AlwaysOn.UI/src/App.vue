@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div>
     <router-link :to="{ path: '/' }">Home</router-link> |
     <router-link :to="{ name: 'catalogPage' }">Catalog</router-link>
 
@@ -11,7 +11,7 @@
   
     <hr/>
 
-    <footer>This is a reference implementation of <a href="https://github.com/Azure/AlwaysOn">Azure AlwaysOn</a>. Built in 2021.</footer>
+    <footer>This is a reference implementation of <a href="https://github.com/Azure/AlwaysOn">Azure AlwaysOn</a>. Built in 2021-2022. Version: {{ versionLabel }}</footer>
   </div>
 </template>
 
@@ -20,7 +20,9 @@ import SystemMessage from "./components/SystemMessage";
 
 export default {
   data: function() {
-     return { }
+     return {
+        versionLabel: window.VERSION_LABEL
+      }
   },
   created() { },
   methods: { },

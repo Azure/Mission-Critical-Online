@@ -1,22 +1,12 @@
 # Frequently Asked Questions (FAQ)
 
-## Deployment
+In this section we document all the FAQ related to this reference implementation. There is another FAQ section covering general and non reference related questions in the [AlwaysOn repo](https://github.com/Azure/AlwaysOn/blob/docs/main/docs/FAQ.md) (➡️ `Azure/AlwaysOn`).
 
-> How is the infrastructure getting deployed?
+## General
 
-The infrastructure is deployed using [Terraform](/src/infra/workload/README.md). Other toolkits like ARM Templates and Bicep were planned but not implemented, yet.
+> Why is the reference implementation called *foundational-online* and when should I use it?
 
-## Patch & Update
-
-> How is the infrastructure getting updated?
-
-Most infrastructure components used for AlwaysOn are PaaS services and are maintained by Microsoft. Some service like for example Azure Kubernetes Service (AKS) require dedicated maintenance. For AKS this is done via [automatic node image upgrades](https://docs.microsoft.com/azure/aks/upgrade-cluster#set-auto-upgrade-channel) in combination with [planned maintenance windows](https://docs.microsoft.com/azure/aks/planned-maintenance) to automatically update the nodes to the most recent AKS node OS image. Larger changes like an upgrade of the used K8s version are done as-code by changing the K8s version in `.ado/pipeline/config/configuration.yaml` and re-running the infrastructure pipeline.
-
-## Security
-
-> What is used to store secrets in AlwaysOn?
-
-Wherever possible, Azure Managed Identities are used to avoid exposing any sensitive values like Service Principal client secrets (password). All secrets are stored in Azure Key Vault at deployment time via Terraform. These secrets are then loaded into Azure Kubernetes Service as Kubernetes secrets (and where required as environment variables in the pods) or handed over at deployment time as parameters for helm charts etc. Some temporary secrets like for example SSL/TLS certificates managed by [cert-manager](/src/config#cert-manager) are stored within the Kubernetes cluster only.
+AlwaysOn can be leveraged in different scenarios and the reference implementation represent a customer implementation pattern and scenario. You should use the *foundational-online* reference implementation for a publicly exposed application without connectivity requirement to your on-premises data center. There is almost no pre-requisite required and the pipeline deploys all the required resources into an Azure Subscription.
 
 ---
 [AlwaysOn - Full List of Documentation](/docs/README.md)

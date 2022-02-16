@@ -116,9 +116,9 @@ namespace AlwaysOn.HealthService
         private async Task<bool> GetLivenessEndpoint1Status(CancellationToken cancellationToken = default (CancellationToken))
         {
             var result = true;
-
+            _log.LogInformation("Initiated liveness endpoint 1 {livenessEndpoint1} probe check", _sysConfig.LivenessEndpoint1);
             try {
-                _log.LogInformation("Initiated liveness endpoint 1 {livenessEndpoint1} probe check", _sysConfig.LivenessEndpoint1);
+                
                 var status = await GetStatusCodes(_sysConfig.LivenessEndpoint1);
 
                 if (status==HttpStatusCode.OK) {
@@ -127,12 +127,15 @@ namespace AlwaysOn.HealthService
                     _log.LogInformation("Liveness probe for {livenessEndpoint1} responded with HTTP != 200", _sysConfig.LivenessEndpoint1);
                     result=false;
                 }
+
+                return result;
+
             } catch (Exception e) {
-                result=false;
                 _log.LogError(e, "Could not check liveness endpoint 1 probe. Responding with UNHEALTHY state");
+                return false;
             }
 
-            return result;
+
 
         }
 

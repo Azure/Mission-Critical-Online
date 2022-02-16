@@ -14,4 +14,4 @@ azure:
   region: "East US 2"
 
 probes:
-  catalogservice: "http://catalogservice:8080/health/liveness"
+  catalogservice: "http://catalogservice-service:8080/health/liveness"

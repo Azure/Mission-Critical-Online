@@ -118,13 +118,13 @@ namespace AlwaysOn.HealthService
             var result = true;
 
             try {
-                _log.LogInformation("Initiated liveness endpoint 1 probe check");
+                _log.LogInformation("Initiated liveness endpoint 1 {livenessEndpoint1} probe check", _sysConfig.LivenessEndpoint1);
                 var status = await GetStatusCodes(_sysConfig.LivenessEndpoint1);
 
                 if (status==HttpStatusCode.OK) {
                     result=true;
                 } else {
-                    _log.LogInformation("Liveness probe responded with HTTP != 200");
+                    _log.LogInformation("Liveness probe for {livenessEndpoint1} responded with HTTP != 200", _sysConfig.LivenessEndpoint1);
                     result=false;
                 }
             } catch (Exception e) {

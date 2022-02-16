@@ -19,7 +19,7 @@ ingress:
     kubernetes.io/ingress.class: nginx
 
 networkpolicy:
-  enabled: true # Enable Network Policy
+  enabled: true # Enable Network Policy (contains a default-deny policy)
 
 azure:
   frontdoorid: "" # Azure Front Door Header ID (blank = disabled)

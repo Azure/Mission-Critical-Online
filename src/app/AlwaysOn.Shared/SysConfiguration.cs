@@ -138,6 +138,8 @@ namespace AlwaysOn.Shared
             }
         }
 
+        public string LivenessEndpoint1 => Configuration["LIVENESS_ENDPOINT_1"];
+
         public string HealthServiceStorageConnectionString => Configuration["STORAGEACCOUNT_CONNECTIONSTRING"];
         public string HealthServiceBlobContainerName => Configuration["STORAGEACCOUNT_HEALTHSERVICE_CONTAINERNAME"];
         public string HealthServiceBlobName => Configuration["STORAGEACCOUNT_HEALTHSERVICE_BLOBNAME"];

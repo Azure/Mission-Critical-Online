@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Net;
+using System.Net.Http;
 using AlwaysOn.Shared;
 using AlwaysOn.Shared.Interfaces;
 using Azure.Storage.Blobs;
@@ -18,10 +20,12 @@ namespace AlwaysOn.HealthService
         private const string STATE_BLOB_CACHE_KEY = "stateBlobHealth";
         private const string STATE_MESSAGE_PRODUCER_CACHE_KEY = "stateMessageProducerHealth";
         private const string STATE_DATABASE_CACHE_KEY = "stateDatabaseHealth";
+        private const string STATE_LIVENESS_ENDPOINT_1_CACHE_KEY = "stateLivenessEndpointHealth";
 
         private readonly ILogger<AlwaysOnHealthCheck> _log;
         private readonly SysConfiguration _sysConfig;
         private readonly IDatabaseService _databaseService;
+
         private readonly IMessageProducerService _messageProducerService;
         private IMemoryCache _cache;
 
@@ -68,6 +72,15 @@ namespace AlwaysOn.HealthService
                 return result;
             });
 
+            // Check (additional) liveness endpoint 1 health state
+            var livenessEndpoint1Healthy = _cache.GetOrCreateAsync(STATE_LIVENESS_ENDPOINT_1_CACHE_KEY, entry =>
+            {
+                var result = GetLivenessEndpoint1Status(cancellationToken);
+                _log.LogDebug("Probing liveness endpoint 1 health state - Cache empty or expired");
+                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(_sysConfig.HealthServiceCacheDurationSeconds);
+                return result;
+            });
+
             // Check database querying
             var databaseIsHealthyTask = _cache.GetOrCreateAsync(STATE_DATABASE_CACHE_KEY, entry =>
             {
@@ -78,20 +91,57 @@ namespace AlwaysOn.HealthService
             });
 
             // Run all checks in parallel
-            await Task.WhenAll(stateBlobIsHealthyTask, messageProducerIsHealthyTask, databaseIsHealthyTask);
+            await Task.WhenAll(stateBlobIsHealthyTask, messageProducerIsHealthyTask, databaseIsHealthyTask, livenessEndpoint1Healthy);
 
             var props = new Dictionary<string, object>();
             props.Add("StateBlobHealthy", stateBlobIsHealthyTask.Result);
             props.Add("MessageProducerServiceHealthy", messageProducerIsHealthyTask.Result);
             props.Add("DatabaseServiceHealthy", databaseIsHealthyTask.Result);
+            props.Add("LivenessEndpoint1Healthy", livenessEndpoint1Healthy.Result);
 
             // If any one of the three is not health, report overall unhealthy
-            if (!stateBlobIsHealthyTask.Result || !messageProducerIsHealthyTask.Result || !databaseIsHealthyTask.Result)
+            if (!stateBlobIsHealthyTask.Result || !messageProducerIsHealthyTask.Result || !databaseIsHealthyTask.Result || !livenessEndpoint1Healthy.Result)
             {
                 return HealthCheckResult.Unhealthy(data: props);
             }
 
             return HealthCheckResult.Healthy(data: props);
+        }
+
+        /// <summary>
+        /// Checks whether the catalogservice liveness endpoint responds with HTTP 200. HTTP 200 == Healthy
+        /// </summary>
+        /// <returns>True=HEALTHY, False=UNHEALTHY</returns>
+
+        private async Task<bool> GetLivenessEndpoint1Status(CancellationToken cancellationToken = default (CancellationToken))
+        {
+            var result = true;
+
+            try {
+                _log.LogInformation("Initiated liveness endpoint 1 probe check");
+                var status = await GetStatusCodes(_sysConfig.LivenessEndpoint1);
+
+                if (status==HttpStatusCode.OK) {
+                    result=true;
+                } else {
+                    _log.LogInformation("Liveness probe responded with HTTP != 200");
+                    result=false;
+                }
+            } catch (Exception e) {
+                result=false;
+                _log.LogError(e, "Could not check liveness endpoint 1 probe. Responding with UNHEALTHY state");
+            }
+
+            return result;
+
+        }
+
+        public async Task<HttpStatusCode> GetStatusCodes(string url)
+        {
+            var client = new HttpClient();
+            var response = await client.GetAsync(url);
+
+            return response.StatusCode;
         }
 
         /// <summary>

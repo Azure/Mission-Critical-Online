@@ -29,7 +29,7 @@ param
   # The branch name in your GitHub repo from which the Azure DevOps pipelines should be imported. Typically "main" but specify for your needs.
   [string] $GithubBranchName,
   # Whether pipelines should skip running immediately after import. Pass $true to skip (NOT run) pipelines immediately.
-  [bool] $SkipFirstPipelineRun = $true,
+  [bool] $SkipFirstPipelineRun = $true
 )
 
 # ##################################################

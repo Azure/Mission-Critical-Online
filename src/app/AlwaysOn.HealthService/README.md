@@ -11,17 +11,16 @@ stateDiagram
     state FrontDoor {
     StampHealthCheck --> HealthService
     }
+    state AKS {
+        direction RL
+        HealthService
+        Application --> Application: LivenessProbe
+        BackendProcess --> BackendProcess: LivenessProbe
+    }
     HealthService --> CosmosDB: Able to query?
     HealthService --> Storage: File exists?
     HealthService --> EventHubs: Able to sent message?
-    state AKS {
-        direction RL
-        Application --> HealthService: LivenessProbe
-        BackendProcess --> HealthService: LivenessProbe
-    }
-
 ```
-
 
 The idea is, first of all, if the cluster itself is down, the health service won't respond at all. When the service is up and running, it performs periodic checks against various components of the solution:
 

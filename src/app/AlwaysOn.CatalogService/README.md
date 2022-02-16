@@ -16,6 +16,8 @@ The CatalogService application is packaged and deployed as a Helm chart. The cha
 
 When CatalogService is deployed with `.Values.networkpolicy.enabled` set to `true` (default), it uses a custom network policy that allows ingress traffic (which is needed to expose the workload via the Ingress controller) and egress traffic. It also enables ingress traffic for cert-manager (which is needed to provision certificates) and denies everything else (default deny).
 
+> **NOTE:** The CatalogService contains a default-deny policy. When disabling NetworkPolicy per-helm chart, you've to disabled it for all charts deployed to a specific namespace.
+
 The CatalogService container is running its workload with the non-privileged user `workload`, created as part of the image build process (see its `Dockerfile` for more). It is also configured with `readOnlyFilesystem` set to `true` to set its root filesystem `/` to read-only. This is a recommended practice for containers running workloads that are not expected to modify the filesystem. Directories requiring read-write access like `/tmp` and `/var/log` are mounted as volumes.
 
 ## Configuration

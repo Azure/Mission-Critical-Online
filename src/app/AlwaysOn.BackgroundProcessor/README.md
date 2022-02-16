@@ -70,6 +70,7 @@ while (!stoppingToken.IsCancellationRequested)
 ## Event Processing, retries and poison message storage
 
 As an `EventProcessorClient` the BackgroundProcessor can listen to one or more partitions of the Event Hub (managed by the aforementioned mechanism for partition ownership). Within each partition, events are received sequentially and need to be processed one by one. This is implemented in the `ProcessEventHandlerAsync(ProcessEventArgs eventArgs)` function. This function must only return once the processing of an event is fully completed. That means either:
+
 - The event was successfully processed. Usually this means some write operation to the database was executed.
 - The event was discarded because it is a health check message (see below).
 - The event could not be processed and therefore was written to the poison message store for manual inspection.
@@ -125,12 +126,11 @@ private async Task WriteErroredEventToPoisonMessageStoreAsync(ProcessEventArgs e
 }
 ```
 
-
 ## Healthcheck messages
 
 Event Hub's health is verified by sending a message with a specific property (see [HealthService Readme](/src/app/AlwaysOn.HealthService/README.md)):
 
-```
+```bash
 HEALTHCHECK=TRUE
 ```
 

@@ -46,6 +46,8 @@ spec:
               value: {{ .Values.azure.region }}
             - name: "ASPNETCORE_URLS" # Port used to start the ASP.NET Core application
               value: "http://+:{{ .Values.workload.port | default 8080 }}"
+            - name: "LIVENESS_ENDPOINT_1" # Liveness Endpoint 1
+              value: "{{ .Values.probes.catalogservice }}"              
         volumeMounts:
           - name: secrets-store-inline
             mountPath: "/mnt/secrets-store"

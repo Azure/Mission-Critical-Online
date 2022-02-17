@@ -38,8 +38,8 @@ function Compare-LocustStats {
                 $values | Get-Member | Where-Object { $_.MemberType -eq "NoteProperty" } | ForEach-Object {
 
                     $name = $($_.name) # metric name
-                    $resultValue = $($statsCsvData."$($_.name)") # load test result value
-                    $baselineValue = $($values."$($_.name)") # base line target value
+                    $resultValue = [double]$($statsCsvData."$($_.name)") # load test result value
+                    $baselineValue = [double]$($values."$($_.name)") # base line target value
 
                     # switch based on the operator set in baseline json
                     switch ($operator)

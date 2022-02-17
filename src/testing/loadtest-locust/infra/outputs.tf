@@ -3,7 +3,7 @@ output "locust_webui_fqdn" {
 }
 
 output "locust_webui_url" {
-  value = "http://${azurerm_container_group.master.*.fqdn}:8089"
+  value = var.locust_workers >= 1 ? "http://${azurerm_container_group.master.0.fqdn}:8089" : null
 }
 
 output "locust_storage_url" {

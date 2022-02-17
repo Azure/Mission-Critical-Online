@@ -124,7 +124,7 @@ stages:
             azcopy copy "$storageurl/logs/*$sastoken" locust/
 
             # Creating an HTML report based on the locust results
-            wget https://github.com/benc-uk/locust-reporter/releases/download/v1.2.2/locust-reporter -O locust-reporter
+            wget https://github.com/benc-uk/locust-reporter/releases/download/v1.2.3/locust-reporter -O locust-reporter
             chmod u+x locust-reporter
             ./locust-reporter -dir locust -failures -outfile locust/Report_${{ parameters.customPrefix }}.html -prefix ${{ parameters.customPrefix }}
 

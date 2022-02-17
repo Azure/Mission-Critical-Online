@@ -20,8 +20,8 @@
         "operator": "le",
         "values": {
             "Failure Count":"3",
-            "Average Response Time": "160",
-            "Median Response Time": "140"
+            "Average Response Time": "190",
+            "Median Response Time": "160"
         }
     },
     {

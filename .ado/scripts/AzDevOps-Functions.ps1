@@ -283,6 +283,7 @@ function New-AzureServiceConnection {
   # Get the subscription name - required param for Azure service connection create
   $azureSubscriptionName = (az account show --subscription $azureSubscriptionId -o tsv --query 'name')
 
+  # If password is present, we can use it. Otherwise the script will ask for it interactively.
   if ($servicePrincipal.password) {
     # For automation have to set the Service Principal password to this env var
     # https://docs.microsoft.com/cli/azure/devops/service-endpoint/azurerm#az_devops_service_endpoint_azurerm_create

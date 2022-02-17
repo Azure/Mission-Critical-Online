@@ -2,101 +2,137 @@
 version: 2
 updates:
 - package-ecosystem: "terraform"
-  directory: "/src/infra/workload/releaseunit"
+  directory: "/src/testing/loadtest-locust/infra"
   schedule:
-    interval: "daily"
-  target-branch: "component-updates"
-
-- package-ecosystem: "terraform"
-  directory: "/src/infra/workload/releaseunit/modules/stamp"
-  schedule:
-    interval: "daily"
-  target-branch: "component-updates"
-
-- package-ecosystem: "terraform"
-  directory: "/src/infra/workload/globalresources"
-  schedule:
-    interval: "daily"
-  target-branch: "component-updates"
-
-- package-ecosystem: "docker"
-  directory: "/src/infra/monitoring/grafana"
-  schedule:
-    interval: "daily"
-  target-branch: "component-updates"
+    interval: "monthly" 
+  target-branch: "component-updates" 
 
 - package-ecosystem: "npm"
-  directory: "/src/infra/monitoring/grafana/healthmodelpanel"
+  directory: "/src/testing/userload-generator/AzureFunctions/RegionalLoadGenerator"
   schedule:
-    interval: "daily"
-  target-branch: "component-updates"
+    interval: "monthly" 
+  target-branch: "component-updates" 
   allow:
   - dependency-type: direct
   - dependency-type: production # check only dependencies, which are going to the compiled app, not supporting tools like @vue-cli
 
 - package-ecosystem: "nuget"
-  directory: "/src/app"
+  directory: "/src/testing/userload-generator/AzureFunctions/GlobalOrchestrator"
   schedule:
-    interval: "daily"
-  target-branch: "component-updates"
-
-- package-ecosystem: "docker"
-  directory: "/src/app/AlwaysOn.CatalogService"
-  schedule:
-    interval: "daily"
-  target-branch: "component-updates"
-
-- package-ecosystem: "docker"
-  directory: "/src/app/AlwaysOn.BackgroundProcessor"
-  schedule:
-    interval: "daily"
-  target-branch: "component-updates"
-
-- package-ecosystem: "docker"
-  directory: "/src/app/AlwaysOn.HealthService"
-  schedule:
-    interval: "daily"
-  target-branch: "component-updates"
-
-- package-ecosystem: "docker"
-  directory: "/src/app/AlwaysOn.UI"
-  schedule:
-    interval: "daily"
-  target-branch: "component-updates"
-
-- package-ecosystem: "npm"
-  directory: "/src/app/AlwaysOn.UI"
-  schedule:
-    interval: "daily"
-  target-branch: "component-updates"
-  allow:
-  - dependency-type: direct
-  - dependency-type: production # check only dependencies, which are going to the compiled app, not supporting tools like @vue-cli
+    interval: "monthly" 
+  target-branch: "component-updates" 
 
 - package-ecosystem: "terraform"
   directory: "/src/testing/userload-generator/infra"
   schedule:
-    interval: "daily"
-  target-branch: "component-updates"
+    interval: "monthly" 
+  target-branch: "component-updates" 
+
+- package-ecosystem: "nuget"
+  directory: "/src/app/AlwaysOn.Tests"
+  schedule:
+    interval: "monthly" 
+  target-branch: "component-updates" 
+
+- package-ecosystem: "nuget"
+  directory: "/src/app/AlwaysOn.CatalogService"
+  schedule:
+    interval: "monthly" 
+  target-branch: "component-updates" 
+
+- package-ecosystem: "docker"
+  directory: "/src/app/AlwaysOn.CatalogService"
+  schedule:
+    interval: "monthly" 
+  target-branch: "component-updates" 
+
+- package-ecosystem: "nuget"
+  directory: "/src/app/AlwaysOn.BackgroundProcessor"
+  schedule:
+    interval: "monthly" 
+  target-branch: "component-updates" 
+
+- package-ecosystem: "docker"
+  directory: "/src/app/AlwaysOn.BackgroundProcessor"
+  schedule:
+    interval: "monthly" 
+  target-branch: "component-updates" 
+
+- package-ecosystem: "docker"
+  directory: "/src/app/AlwaysOn.UI"
+  schedule:
+    interval: "monthly" 
+  target-branch: "component-updates" 
 
 - package-ecosystem: "npm"
-  directory: "/src/testing/userload-generator/AzureFunctions/RegionalLoadGenerator"
+  directory: "/src/app/AlwaysOn.UI"
   schedule:
-    interval: "daily"
-  target-branch: "component-updates"
+    interval: "monthly" 
+  target-branch: "component-updates" 
   allow:
   - dependency-type: direct
   - dependency-type: production # check only dependencies, which are going to the compiled app, not supporting tools like @vue-cli
 
-- package-ecosystem: "terraform"
-  directory: "/src/testing/loadtest-locust/infra"
+- package-ecosystem: "nuget"
+  directory: "/src/app/AlwaysOn.Shared"
   schedule:
-    interval: "daily"
-  target-branch: "component-updates"
+    interval: "monthly" 
+  target-branch: "component-updates" 
+
+- package-ecosystem: "nuget"
+  directory: "/src/app/AlwaysOn.HealthService"
+  schedule:
+    interval: "monthly" 
+  target-branch: "component-updates" 
+
+- package-ecosystem: "docker"
+  directory: "/src/app/AlwaysOn.HealthService"
+  schedule:
+    interval: "monthly" 
+  target-branch: "component-updates" 
+
+- package-ecosystem: "docker"
+  directory: "/src/infra/monitoring/grafana"
+  schedule:
+    interval: "monthly" 
+  target-branch: "component-updates" 
+
+- package-ecosystem: "npm"
+  directory: "/src/infra/monitoring/grafana/healthmodelpanel"
+  schedule:
+    interval: "monthly" 
+  target-branch: "component-updates" 
+  allow:
+  - dependency-type: direct
+  - dependency-type: production # check only dependencies, which are going to the compiled app, not supporting tools like @vue-cli
+
+- package-ecosystem: "nuget"
+  directory: "/src/infra/monitoring/AlwaysOn.SloProcessor"
+  schedule:
+    interval: "monthly" 
+  target-branch: "component-updates" 
+
+- package-ecosystem: "terraform"
+  directory: "/src/infra/workload/globalresources"
+  schedule:
+    interval: "monthly" 
+  target-branch: "component-updates" 
+
+- package-ecosystem: "terraform"
+  directory: "/src/infra/workload/releaseunit"
+  schedule:
+    interval: "monthly" 
+  target-branch: "component-updates" 
+
+- package-ecosystem: "terraform"
+  directory: "/src/infra/workload/releaseunit/modules/stamp"
+  schedule:
+    interval: "monthly" 
+  target-branch: "component-updates" 
 
 - package-ecosystem: "github-actions"
   directory: "/"
   schedule:
-    interval: "daily"
-  target-branch: "component-updates"
+    interval: "monthly" 
+  target-branch: "component-updates" 
 

@@ -2,18 +2,19 @@
 
 ## Welcome to Azure AlwaysOn Foundational Online
 
-AlwaysOn is an open source project that provides a **prescriptive architectural approach to building highly-reliable cloud-native applications on Microsoft Azure for mission-critical workloads**. This repository contains the *foundational online* AlwaysOn reference implementation a **Fully Functional Production-Ready AlwaysOn Reference Implementation**:
-An end-to-end reference implementation intended to provide a solution orientated basis to showcase mission-critical application development on Microsoft Azure, leveraging Azure-native platform capabilities to maximize reliability and operational effectiveness. More specifically, the reference implementation consists of:
+AlwaysOn is an open source project that provides a **prescriptive architectural approach to building highly-reliable cloud-native applications on Microsoft Azure for mission-critical workloads**. This repository contains a **Fully Functional Production-Ready AlwaysOn Reference Implementation**, intended to provide a solution oriented basis to showcase mission-critical application development on Microsoft Azure, leveraging Azure-native platform capabilities to maximize reliability and operational effectiveness. More specifically, the reference implementation consists of:
 
 - Design and implementation guidance to help readers understand and use the AlwaysOn design methodology in the context of a particular industry scenario.
 - Production-ready technical artifacts including Infrastructure-as-Code (IaC) resources and Continuous-Integration/Continuous-Deployment (CI/CD) pipelines (GitHub and Azure DevOps) to deploy an AlwaysOn application with mature end-to-end operational wrappers.
 
-This repository contains the reference implementation for an AlwaysOn enterprise connected scenario. The pipeline deploys the application Azure Subscription security and compliance guardrails and has no network connectivity requirements. It will be used if the AlwaysOn application is access over a public endpoint without additional dependencies to other company resources.
+This repository contains the reference implementation for an AlwaysOn "online" scenario, i.e. a workload which does not require direct connectivity to other company resources (such as via a hub-and-spoke model). The pipeline deploys the application Azure Subscription security and compliance guardrails and has no network connectivity requirements. It will be used if the AlwaysOn application is access over a public endpoint without additional dependencies to other company resources.
 
 ## Reference implementation - Table of Contents
 
 - [Reference Implementation Solution Guide](./docs/reference-implementation/README.md) - Everything required to understand and build a copy of the reference implementation
 - [Reference Implementation Build Artifacts](./src/infra/README.md) - Contains the Infrastructure-as-Code artifacts, CI/CD pipelines, and application code required to deploy the pre-configured reference solution
+
+![Architecture overview](/docs/media/Architecture-Foundational-Online.png)
 
 ## AlwaysOn overview and design guidelines
 

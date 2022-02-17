@@ -3,12 +3,19 @@ name: Update Dependabot config
 on:
   workflow_dispatch:
 
+env:
+  BRANCH_NAME: "dependabot/update-config-${{ github.run_id }}"
+
 jobs:
   UpdateDependabot:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
+
+      - name: Create a working branch
+        run: |
+          git checkout -b ${{ env.BRANCH_NAME }}
 
       - name: Update Dependabot
         shell: pwsh
@@ -31,8 +38,11 @@ jobs:
           # Only commit if there are changes to commit, otherwise commit will throw an error.
           if(git status -uno --short) {
             git commit -m "Auto update: $message"
-            git push origin
+            git push --set-upstream origin ${{ env.BRANCH_NAME }}
+            gh pr create --title "Dependabot config update" --body "The dependabot.yaml file was updated and needs to be merged to main."
           } 
           else {
             Write-Output "No changes to commit. Bye."
           }
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

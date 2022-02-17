@@ -10,24 +10,34 @@ param
 (
   # If not specified, this script will get it from authentication context. This is a GUID and you can get it from az account show -o tsv --query 'tenantId'
   [string] $AzureTenantId = $null,
+  
   # If not specified, this script will get it from authentication context. This is a GUID and you can get it from az account show -o tsv --query 'id'. The Azure service connection will connect to this Azure subscription.
   [string] $AzureSubscriptionId = $null,
+  
   # Azure DevOps organizational URL, like https://dev.azure.com/YOUR_AZURE_DEV_OPS_ORG and replace YOUR_AZURE_DEV_OPS_ORG with your real value.
   [string] $AzDevOpsOrgUrl,
+  
   # The name of the Azure DevOps project to create for AlwaysOn. If it does not exist, it will be created. If it already exists, the script will deploy into the existing project.
   [string] $AzDevOpsProjectName,
+  
   # Environment to provision. AlwaysOn currently supports "e2e", "int", "prod".
   [string] $AzDevOpsEnvironmentName,
+  
   # Service Principal name to create for use with Azure Service Connection. Must be unique in the Azure tenant. There are no naming rules for Service Principals, but a naming convention makes sense for organization/governance. Example name could be "alwayson-sp-MYORG-MYDEPT" or similar, where MYORG and MYDEPT could be replaced by specific infixes for your organization, department, etc. Keep it simple and clear.
   [string] $ServicePrincipalName,
+  
   # GitHub Personal Access Token for service connection and pipeline imports. Needs admin:repo_hook, repo.*, user.*, and must be SSO-enabled if required by your GitHub org. Manage PATs at https://github.com/settings/tokens
   [string] $GithubPAT,
+  
   # Your individual or organizational GitHub account name, i.e. https://github.com/GITHUB_ACCOUNT_NAME. Just pass the account name, i.e. the real value instead of GITHUB_ACCOUNT_NAME from your GitHub account.
   [string] $GithubAccountName,
+  
   # The AlwaysOn repo name in your GitHub account; usually your fork from Azure/AlwaysOn or your repo from the AlwaysOn template repo. This must already exist and contain the AlwaysOn Azure DevOps YAML pipeline files.
   [string] $GithubRepoName,
+  
   # The branch name in your GitHub repo from which the Azure DevOps pipelines should be imported. Typically "main" but specify for your needs.
   [string] $GithubBranchName,
+  
   # Whether pipelines should skip running immediately after import. Pass $true to skip (NOT run) pipelines immediately.
   [bool] $SkipFirstPipelineRun = $true
 )

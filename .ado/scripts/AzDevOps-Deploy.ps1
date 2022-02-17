@@ -23,8 +23,11 @@ param
   # Environment to provision. AlwaysOn currently supports "e2e", "int", "prod".
   [string] $AzDevOpsEnvironmentName,
   
-  # Service Principal name to create for use with Azure Service Connection. Must be unique in the Azure tenant. There are no naming rules for Service Principals, but a naming convention makes sense for organization/governance. Example name could be "alwayson-sp-MYORG-MYDEPT" or similar, where MYORG and MYDEPT could be replaced by specific infixes for your organization, department, etc. Keep it simple and clear.
-  [string] $ServicePrincipalName,
+  # Either ServicePrincipalAppId or ServicePrincipalName must be provided. If there was a service principal created separately, with the Owner role on the subscription, provide its ID in this parameter. A new one will not be created.
+  [string] $ServicePrincipalAppId = $null,
+
+  # If Service Principal ID is not provided, Service Principal name has to be present to create a new SP for use with Azure Service Connection. Must be unique in the Azure tenant. There are no naming rules for Service Principals, but a naming convention makes sense for organization/governance. Example name could be "alwayson-sp-MYORG-MYDEPT" or similar, where MYORG and MYDEPT could be replaced by specific infixes for your organization, department, etc. Keep it simple and clear.
+  [string] $ServicePrincipalName = $null,
   
   # GitHub Personal Access Token for service connection and pipeline imports. Needs admin:repo_hook, repo.*, user.*, and must be SSO-enabled if required by your GitHub org. Manage PATs at https://github.com/settings/tokens
   [string] $GithubPAT,
@@ -81,10 +84,21 @@ if (!$AzureTenantId -or !$AzureSubscriptionId) {
 # ##################################################
 # TASKS
 
-Write-Host "Create Service Principal"
-$servicePrincipal = New-ServicePrincipal `
-  -azureSubscriptionId $AzureSubscriptionId `
-  -servicePrincipalName $ServicePrincipalName
+if ($ServicePrincipalAppId) {
+  # TODO: Check if the SP exists and use it.
+  Write-Host "Using existing service principal"
+  $servicePrincipal = @{ appId = $ServicePrincipalAppId; password = $null }
+}
+else {
+  if (!$ServicePrincipalName) {
+    throw "Either ServicePrincipalId (for existing) or ServicePrincipalName (for new one) must be present."
+  }
+
+  Write-Host "Create Service Principal"
+  $servicePrincipal = New-ServicePrincipal `
+    -azureSubscriptionId $AzureSubscriptionId `
+    -servicePrincipalName $ServicePrincipalName
+}
 
 Write-Host "Create AzDO Project"
 New-AzDevOpsProject `

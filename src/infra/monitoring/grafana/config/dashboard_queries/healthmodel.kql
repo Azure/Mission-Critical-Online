@@ -1,6 +1,6 @@
 WebsiteHealthScore
 | union AddCommentUserFlowHealthScore
-| union GetPlayerStatsUserFlowHealthScore
+| union ListCatalogItemsUserFlowHealthScore
 | union ShowStaticContentUserFlowHealthScore
 | union PublicBlobStorageHealthScore
 | union KeyvaultHealthScore

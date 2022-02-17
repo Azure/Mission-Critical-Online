@@ -795,7 +795,7 @@
             "timeGrain": "auto"
           },
           "azureLogAnalytics": {
-            "query": "WebsiteHealthScore\n| union AddCommentUserFlowHealthScore\n| union GetPlayerStatsUserFlowHealthScore\n| union ShowStaticContentUserFlowHealthScore\n| union PublicBlobStorageHealthScore\n| union KeyvaultHealthScore\n| union CatalogServiceHealthScore\n| union BackgroundProcessorHealthScore\n| union ClusterHealthScore \n| summarize arg_max(TimeGenerated, *) by ComponentName,Dependencies\n| project-away TimeGenerated\n| mv-expand Dependencies = split(Dependencies, \",\") to typeof(string)\n| project id=strcat(ComponentName,Dependencies), source=ComponentName, target=Dependencies\n| where target != \"\"",
+            "query": "WebsiteHealthScore\n| union AddCommentUserFlowHealthScore\n| union ListCatalogItemsUserFlowHealthScore\n| union ShowStaticContentUserFlowHealthScore\n| union PublicBlobStorageHealthScore\n| union KeyvaultHealthScore\n| union CatalogServiceHealthScore\n| union BackgroundProcessorHealthScore\n| union ClusterHealthScore \n| summarize arg_max(TimeGenerated, *) by ComponentName,Dependencies\n| project-away TimeGenerated\n| mv-expand Dependencies = split(Dependencies, \",\") to typeof(string)\n| project id=strcat(ComponentName,Dependencies), source=ComponentName, target=Dependencies\n| where target != \"\"",
             "resource": "$StampADataSource",
             "resultFormat": "time_series",
             "workspace": ""

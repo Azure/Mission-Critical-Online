@@ -85,8 +85,7 @@ if (!$AzureTenantId -or !$AzureSubscriptionId) {
 # TASKS
 
 if ($ServicePrincipalAppId) {
-  # TODO: Check if the SP exists and use it.
-  Write-Host "Using existing service principal"
+  Write-Host "Using existing service principal $ServicePrincipalAppId"
   $servicePrincipal = @{ appId = $ServicePrincipalAppId; password = $null }
 }
 else {

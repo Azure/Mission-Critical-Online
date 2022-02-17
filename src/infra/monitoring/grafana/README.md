@@ -38,7 +38,7 @@ The AlwaysOn health model has been implemented in Azure Log Analytics using KQL 
 - The health state of each component
 - The hierarchical dependencies between components.
 
-This document describes the specifics of the custom Grafana visualization and the dependencies it has on the underlying solution. For a broader context, view the (TODO) reference implementation health model or the (TODO) top-level guidance on health modeling.
+This document describes the specifics of the custom Grafana visualization and the dependencies it has on the underlying solution. For a broader context, view the AlwaysOn guidance on Azure Architecture Center.
 
 ## Usage
 

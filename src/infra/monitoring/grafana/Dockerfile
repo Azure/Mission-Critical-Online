@@ -7,15 +7,18 @@ COPY . .
 
 # Build the healthmodel panel project
 WORKDIR /usr/src/app/healthmodelpanel
+RUN ["yarn", "install"]
 RUN ["yarn", "build"]
 
 # We also need to edit the dashboard file and insert the queries from separate files
 # We have a separate script to do this, called insertqueries.sh
 WORKDIR /usr/src/app/config
-RUN "./insertqueries.sh"
+RUN chmod +x insertqueries.sh && ./insertqueries.sh
 
-# Build phase is done, now build the container. Start with latest Grafana image
-FROM grafana/grafana:latest
+# Build phase is done, now build the container. Start with the office Grafana image
+# We're using 8.3.4 for now since in later versions our frontdoor origin is not accepted. 
+# This is a known issue and we'll upgrade to a later version once that's resolved. 
+FROM grafana/grafana:8.3.4
 
 # Load custom plugin that we built in the first stage
 # Since our plugin is unsigned, we have to specify it by name to allow it to run

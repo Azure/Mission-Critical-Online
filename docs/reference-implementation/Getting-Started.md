@@ -236,10 +236,9 @@ Modify the respective file for the environment which you want to deploy. At leas
 
 | Required to modify | Key | Description | Sample value |
 | --- | --- | --- | --- |
-| YES | prefix | Custom prefix used for Azure resources.  | myaoe2e |
-| YES | contactEmail | E-mail alias used for alerting. **Be careful which address you put in here as it will potentially receive a lot of notification emails** | alwaysonappnet@example.com |
+| **YES** | prefix | Custom prefix used for Azure resources.  | myaoe2e |
+| **YES** | contactEmail | E-mail alias used for alerting. **Be careful which address you put in here as it will potentially receive a lot of notification emails** | alwaysonappnet@example.com |
 | NO | terraformResourceGroup | Resource Group where the Terraform state Storage account will be deployed | terraformstate-rg |
-| NO | terraformStorageAccount | Azure Storage Account name used to store Terraform state (has to be globally unique) | myterraformstate |
 | NO | stampLocations | List of locations (Azure Regions) where this environment will be deployed into. You can keep the default to start with.  | ["northeurope", "eastus2"] |
 | NO | envDnsZoneRG | OPTIONAL: Name of the Azure Resource group which holds the Azure DNS Zone for your custom domain. Not required if you do not plan to use a custom DNS name | mydns-rg |
 | NO | envDomainName | OPTIONAL: Name of the Azure DNS Zone. Not required if you do not plan to use a custom DNS name | example.com |

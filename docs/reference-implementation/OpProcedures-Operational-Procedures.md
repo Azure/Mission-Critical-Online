@@ -8,7 +8,6 @@ While the reference implementation of AlwaysOn only serves as a demonstration an
 - [INT Deployment pipeline watch](#int-deployment-pipeline-watch)
 - [Key and Secret Rotation](#key-and-secret-rotation)
 
-
 ## General debugging / issue investigation
 
 The reference implementation contains various dashboards, monitoring points and logging/metrics sinks which are useful for monitoring operations as well as for troubleshooting.
@@ -71,3 +70,6 @@ In Azure DevOps a notification subscription can, for example, look like this (Pr
 ## Key and Secret Rotation
 
 The topic of Key / Secret rotation is covered in a [separate article](./OpProcedures-KeyRotation.md).
+
+---
+[AlwaysOn - Full List of Documentation](/docs/README.md)

@@ -112,7 +112,7 @@ namespace AlwaysOn.Shared.Services
             return true;
         }
 
-        public async Task DeleteDocumentAsync<T>(string objectId, string partitionKey)
+        public async Task DeleteItemAsync<T>(string objectId, string partitionKey)
         {
             var startTime = DateTime.UtcNow;
             ItemResponse<T> response = null;
@@ -275,7 +275,7 @@ namespace AlwaysOn.Shared.Services
                 }
                 else
                 {
-                    throw new AlwaysOnDependencyException(responseMessage.StatusCode, $"Unexpected status code in {nameof(GetCatalogItemByIdAsync)}. Code={responseMessage.StatusCode}");
+                    throw new AlwaysOnDependencyException(responseMessage.StatusCode, $"Unexpected status code in {nameof(GetCommentByIdAsync)}. Code={responseMessage.StatusCode}");
                 }
             }
             catch (CosmosException cex)
@@ -343,7 +343,7 @@ namespace AlwaysOn.Shared.Services
                 }
                 else
                 {
-                    throw new AlwaysOnDependencyException(responseMessage.StatusCode, $"Unexpected status code in {nameof(GetCatalogItemByIdAsync)}. Code={responseMessage.StatusCode}");
+                    throw new AlwaysOnDependencyException(responseMessage.StatusCode, $"Unexpected status code in {nameof(GetRatingByIdAsync)}. Code={responseMessage.StatusCode}");
                 }
             }
             catch (CosmosException cex)

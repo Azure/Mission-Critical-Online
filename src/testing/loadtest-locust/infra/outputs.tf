@@ -2,6 +2,10 @@ output "locust_webui_fqdn" {
   value = azurerm_container_group.master.*.fqdn
 }
 
+output "locust_webui_url" {
+  value = "http://${azurerm_container_group.master.*.fqdn}:8089"
+}
+
 output "locust_storage_url" {
   value = azurerm_storage_share.locust.url
 }

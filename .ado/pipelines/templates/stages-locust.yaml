@@ -38,26 +38,30 @@ stages:
 
     - template: steps-terraform-init.yaml
       parameters:
-        terraformStorageAccountName:       '$(terraformStorageAccount)'
-        terraformStorageResourceGroupName: '$(terraformResourceGroup)'
-        terraformStateFilename:       'terraform-locust-${{ parameters.customPrefix }}.state'
-        terraformWorkingDirectory:    '${{ parameters.terraformWorkingDirectory }}'
+        terraformStorageAccountName:        '$(terraformStorageAccount)'
+        terraformStorageResourceGroupName:  '$(terraformResourceGroup)'
+        terraformStateFilename:             'terraform-locust-${{ parameters.customPrefix }}.state'
+        terraformWorkingDirectory:          '${{ parameters.terraformWorkingDirectory }}'
 
-      # write locustTargetUrl parameter into a pipeline variable
+      # If supplied as a parameter, write locustTargetUrl parameter into a pipeline variable
     - ${{ if ne(parameters.locustTargetUrl, '') }}:
-      - bash: |
-          echo "##vso[task.setvariable variable=locustTargetUrl]${{ parameters.locustTargetUrl }}"
+      - task: Bash@3
+        name: 'bashsetTargetUrlVariable'
+        displayName: 'Set locustTargetUrl variable'
+        inputs:
+          targetType: 'inline'
+          script: |
+            echo "##vso[task.setvariable variable=locustTargetUrl]${{ parameters.locustTargetUrl }}"
 
-      # parse global terraform output to gain frontdoor fqdn (used for headless-locust-only)
+      # parse global terraform output to fetch frontdoor fqdn (used for headless-locust-only)
     - ${{ if eq(parameters.locustHeadless, 'true') }}:
       - template: steps-parse-terraform-output.yaml
         parameters:
           workingDirectory: '$(Pipeline.Workspace)/terraformOutputGlobalInfra'  # Global infra deploy output directory
 
       # overwrite locustTargetUrl pipeline variable with frontdoor fqdn (used for headless-locust-only)
-    - ${{ if eq(parameters.locustHeadless, 'true') }}:
       - task: Bash@3
-        name: 'bashsetvariable'
+        name: 'bashsetTargetUrlVariableHeadless'
         displayName: 'Set locustTargetUrl variable'
         inputs:
           targetType: 'inline'

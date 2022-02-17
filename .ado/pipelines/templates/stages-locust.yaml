@@ -83,6 +83,7 @@ stages:
     # Deploy the locust infrastructure. If running in headless mode, the test will automatically start once the infra is provisioned.
     - template: steps-terraform-apply.yaml
       parameters:
+        jobName:                    'LocustInfra'
         terraformWorkingDirectory:  '${{ parameters.terraformWorkingDirectory }}'
         customPrefix:               '${{ parameters.customPrefix }}'
         environment:                '$(environment)'

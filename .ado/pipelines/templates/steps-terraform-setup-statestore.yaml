@@ -69,6 +69,10 @@ steps:
         echo "*** Creating role assignment Storage Blob Data Owner for $servicePrincipalId on $storageAccountId"
         az role assignment create --assignee $servicePrincipalId --role $roleName --scope $storageAccountId
       }
+      else
+      {
+        echo "*** Role assignment $roleName already exists on Terraform state storage for $servicePrincipalId"
+      }
 
       if ($LASTEXITCODE -eq 1) {
         Write-Error "*** Error - could not create role assignment"

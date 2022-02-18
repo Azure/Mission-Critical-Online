@@ -66,12 +66,12 @@ steps:
 
       if(-not $existingRole)
       {
-        echo "*** Creating role assignment Storage Blob Data Owner for $servicePrincipalId on $storageAccountId"
+        echo "*** Creating role assignment $roleName for $servicePrincipalId on $storageAccountId"
         az role assignment create --assignee $servicePrincipalId --role $roleName --scope $storageAccountId
       }
       else
       {
-        echo "*** Role assignment $roleName already exists on Terraform state storage for $servicePrincipalId"
+        echo "*** Role assignment $roleName already exists on Terraform state storage ${{ parameters.storageAccountName }}"
       }
 
       if ($LASTEXITCODE -eq 1) {

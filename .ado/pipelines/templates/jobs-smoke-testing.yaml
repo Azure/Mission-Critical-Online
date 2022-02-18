@@ -81,7 +81,7 @@ jobs:
 
           # install Playwright dependencies
           echo "Installing Playwright dependencies..."
-          npm install playwright-chromium -y
+          #npm install playwright-chromium -y
           npm install @playwright/test -y
 
           $env:TEST_BASEURL = "https://$frontDoorFqdn"
@@ -91,13 +91,11 @@ jobs:
           $env:TEST_MIN_NUMBER_OF_ITEMS = "1"
           $env:TEST_MAX_NUMBER_OF_ITEMS = "1"
 
-          npx playwright test -c src/testing/ui-test-playwright
+          $playwrightTestPath = "src/testing/ui-test-playwright"
 
-          # echo "Taking a screenshot of the UI root - https://$frontDoorFqdn/"
-          # npx playwright screenshot --wait-for-timeout=1000 --full-page --browser=chromium "https://$frontDoorFqdn/" screenshots/root.png
+          echo "*** Running PlayWright tests from $playwrightTestPath against https://$frontDoorFqdn"
 
-          # echo "Taking screenshot of the catalog page - https://$frontDoorFqdn/#/catalog"
-          # npx playwright screenshot --wait-for-timeout=1000 --full-page --browser=chromium "https://$frontDoorFqdn/#/catalog" screenshots/catalog.png
+          npx playwright test -c $playwrightTestPath
 
     - publish:  'screenshots/'
       artifact: 'uiScreenshots' # artifact name

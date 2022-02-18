@@ -81,13 +81,23 @@ jobs:
 
           # install Playwright dependencies
           echo "Installing Playwright dependencies..."
-          npx playwright install-deps chromium
+          npm install playwright-chromium -y
+          npm install @playwright/test -y
 
-          echo "Taking a screenshot of the UI root - https://$frontDoorFqdn/"
-          npx playwright screenshot --wait-for-timeout=1000 --full-page --browser=chromium "https://$frontDoorFqdn/" screenshots/root.png
+          $env:TEST_BASEURL = "https://$frontDoorFqdn"
+          $env:SCREENSHOT_PATH = "$pwd/screenshots"
+          $env:TEST_MIN_TASK_WAIT_SECONDS = "1"
+          $env:TEST_MAX_TASK_WAIT_SECONDS = "1"
+          $env:TEST_MIN_NUMBER_OF_ITEMS = "1"
+          $env:TEST_MAX_NUMBER_OF_ITEMS = "1"
 
-          echo "Taking screenshot of the catalog page - https://$frontDoorFqdn/#/catalog"
-          npx playwright screenshot --wait-for-timeout=1000 --full-page --browser=chromium "https://$frontDoorFqdn/#/catalog" screenshots/catalog.png
+          npx playwright test -c src/testing/ui-test-playwright
+
+          # echo "Taking a screenshot of the UI root - https://$frontDoorFqdn/"
+          # npx playwright screenshot --wait-for-timeout=1000 --full-page --browser=chromium "https://$frontDoorFqdn/" screenshots/root.png
+
+          # echo "Taking screenshot of the catalog page - https://$frontDoorFqdn/#/catalog"
+          # npx playwright screenshot --wait-for-timeout=1000 --full-page --browser=chromium "https://$frontDoorFqdn/#/catalog" screenshots/catalog.png
 
     - publish:  'screenshots/'
       artifact: 'uiScreenshots' # artifact name

@@ -10,29 +10,39 @@
 
 const { test, expect } = require('@playwright/test');
 
+const baseUrl = process.env.TEST_BASEURL; // Needs to include protocol, e.g. https://
+
 // If this test file is being used for actual UI testing, set these values both to 1sec
 const minTaskWaitSeconds = process.env.TEST_MIN_TASK_WAIT_SECONDS || 3;
 const maxTaskWaitSeconds = process.env.TEST_MAX_TASK_WAIT_SECONDS || 6;
 
+// If this test file is being used for actual UI testing, set these variables both to the same value
+const minNumberOfItems = process.env.TEST_MIN_NUMBER_OF_ITEMS || 2;
+const maxNumberOfItems = process.env.TEST_MAX_NUMBER_OF_ITEMS || 5;
+
+const screenshotPath = process.env.SCREENSHOT_PATH || '';
+const captureScreenshots = screenshotPath != '' ? true : false;
 
 test('shoppinguserflow', async ({ page }) => {
 
     // Header to indicate that posted comments and rating are just for testing and can be deleted again by the app
     page.setExtraHTTPHeaders({'X-TEST-DATA': 'true'});
 
-    const baseUrl = process.env.TEST_BASEURL; // Needs to include protocol, e.g. https://
-
-    // If this test file is being used for actual UI testing, set these variables both to the same value
-    const minNumberOfItems = process.env.TEST_MIN_NUMBER_OF_ITEMS || 2;
-    const maxNumberOfItems = process.env.TEST_MAX_NUMBER_OF_ITEMS || 5;
-
     // Go to main page
     await page.goto(baseUrl);
+
+    if(captureScreenshots) {
+        await page.screenshot({ path:`${process.env.SCREENSHOT_PATH}/root.png` });
+    }
 
     // Go to the catalog page
     await page.goto(`${baseUrl}/#/catalog`);
     await expect(page).toHaveURL(`${baseUrl}/#/catalog`);
     await page.waitForTimeout(getRandomWaitTimeMs());
+
+    if(captureScreenshots) {
+        await page.screenshot({ path:`${process.env.SCREENSHOT_PATH}/catalog.png` });
+    }
 
     var numberOfItemsToVisit = getRandomInt(minNumberOfItems, maxNumberOfItems);
 
@@ -44,6 +54,10 @@ test('shoppinguserflow', async ({ page }) => {
 
         await page.click(':nth-match(.catalog-item, ' + pick + ')');
         await page.waitForTimeout(getRandomWaitTimeMs());
+
+        if(captureScreenshots) {
+            await page.screenshot({ path:`${process.env.SCREENSHOT_PATH}/catalogItem.png` });
+        }
 
         // Randomly do or do not send a rating (in 50% of cases)
         if (Math.random() < 0.5) {

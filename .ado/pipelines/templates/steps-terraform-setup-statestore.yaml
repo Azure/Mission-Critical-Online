@@ -66,7 +66,7 @@ steps:
 
       if(-not $existingRole)
       {
-        echo "*** Creating role assignment $roleName for $servicePrincipalId on $storageAccountId"
+        echo "*** Creating role assignment $roleName for deploying service principal on $storageAccountId"
         az role assignment create --assignee $servicePrincipalId --role $roleName --scope $storageAccountId
       }
       else

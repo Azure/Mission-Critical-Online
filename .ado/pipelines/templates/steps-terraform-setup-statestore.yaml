@@ -54,11 +54,21 @@ steps:
       $storageAccountId = $(az storage account show --name ${{ parameters.storageAccountName }} `
                                                     --resource-group ${{ parameters.resourceGroupName }} `
                                                     --query "id" -o tsv)
-      echo "*** Creating role assignment Storage Blob Data Owner for $servicePrincipalId on $storageAccountId"
+
+
       # Create role assignment for the deploying service principal on the storage account.
       # Terraform will then use RBAC to access the storage account instead of account keys
-      # The command is idempotent, so we can run it every time without other checks
-      az role assignment create --assignee $servicePrincipalId --role "Storage Blob Data Owner" --scope $storageAccountId
+
+      $roleName = "Storage Blob Data Owner"
+
+      # Check if the role assignment already exists
+      $existingRole = az role assignment list --assignee $servicePrincipalId --role $roleName --scope $storageAccountId | ConvertFrom-Json
+
+      if(-not $existingRole)
+      {
+        echo "*** Creating role assignment Storage Blob Data Owner for $servicePrincipalId on $storageAccountId"
+        az role assignment create --assignee $servicePrincipalId --role $roleName --scope $storageAccountId
+      }
 
       if ($LASTEXITCODE -eq 1) {
         Write-Error "*** Error - could not create role assignment"

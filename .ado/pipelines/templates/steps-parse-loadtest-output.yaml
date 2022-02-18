@@ -21,7 +21,7 @@ steps:
           $statsPath = "${{ parameters.statsPath }}/${{ parameters.customPrefix }}_stats.csv"
           echo "*** Loading load test stats from pipeline artifacts $statsPath"
 
-          $result = Compare-LocustStats -baselineFile $baselinePath -statsFile $statsPath -Verbose
+          $result = Compare-LocustStats -baselineFile $baselinePath -statsFile $statsPath
 
           if ($result -gt 0) {
             throw "*** Load test results failed baseline comparison."

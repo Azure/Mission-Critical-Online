@@ -12,7 +12,7 @@
         "name": "POST new comment",
         "operator": "ge",
         "values": {
-            "Request Count":"20000"
+            "Request Count":"4000"
         }
     },
     {
@@ -45,7 +45,7 @@
         "name": "Aggregated",
         "operator": "ge",
         "values": {
-            "Request Count":"45000"
+            "Request Count":"75000"
         }
     }
 ]

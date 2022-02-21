@@ -21,13 +21,15 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ .Chart.Name }}-allow-all-egress
+  name: {{ .Chart.Name }}-allow-egress-traffic
 spec:
   podSelector:
     matchLabels:
       app: {{ .Chart.Name }}
   egress:
-  - {}
+  - to:
+    - ipBlock:
+        cidr: {{ .Values.networkPolicy.egressRange | default "0.0.0.0/0" }} 
   policyTypes:
   - Egress
 ---

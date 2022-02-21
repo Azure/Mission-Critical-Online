@@ -115,8 +115,8 @@ jobs: # using jobs so they each run in parallel
             echo "*** Retrieved full container image name from artifact - $fullContainerImageName"
 
             # Private Endpoints IP Address Range - used to limit egress traffic in the K8s cluster
-            $privateEndpointsIPAddressRange = $stamp.privatendpoints_addressrange
-            echo "*** Egress traffic will be restricted to $privateEndpointsIPAddressRange (using Network Policy)"
+            # $privateEndpointsIPAddressRange = $stamp.privatendpoints_addressrange
+            # echo "*** Egress traffic will be restricted to $privateEndpointsIPAddressRange (using Network Policy)"
 
             # Apply workload CatalogService helm chart
             echo "*** Deploy workload CatalogService to $aksClusterName (in $aksClusterResourceGroup) via helm chart"
@@ -128,7 +128,6 @@ jobs: # using jobs so they each run in parallel
                          --set azure.baseurl="$frontDoorFqdn" `
                          --set containerimage="$fullContainerImageName" `
                          --set workload.domainname="$fqdn" `
-                         --set networkPolicy.egressRange="$privateEndpointsIPAddressRange" `
                          ${{ parameters.additionalHelmArguments }}
 
             # Wait for CatalogService-deploy k8s deployment to come up
@@ -196,8 +195,8 @@ jobs: # using jobs so they each run in parallel
             echo "*** Retrieved full container image name from artifact - $fullContainerImageName"
 
             # Private Endpoints IP Address Range - used to limit egress traffic in the K8s cluster
-            $privateEndpointsIPAddressRange = $stamp.privatendpoints_addressrange
-            echo "*** Egress traffic will be restricted to $privateEndpointsIPAddressRange (using Network Policy)"
+            # $privateEndpointsIPAddressRange = $stamp.privatendpoints_addressrange
+            # echo "*** Egress traffic will be restricted to $privateEndpointsIPAddressRange (using Network Policy)"
 
             # Apply workload BackgroundProcessor helm chart
             echo  "*** Deploy workload BackgroundProcessor to $aksClusterName (in $aksClusterResourceGroup) via helm chart"
@@ -205,7 +204,6 @@ jobs: # using jobs so they each run in parallel
                          --namespace $(workloadNamespace) `
                          --set containerimage="$fullContainerImageName" `
                          --set azure.region="$region" `
-                         --set networkPolicy.egressRange="$privateEndpointsIPAddressRange" `
                          ${{ parameters.additionalHelmArguments }}
 
             # Wait for BackgroundProcessor-deploy k8s deployment to come up

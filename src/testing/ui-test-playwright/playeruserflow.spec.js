@@ -31,7 +31,7 @@ test('shoppinguserflow', async ({ page }) => {
     // Go to main page
     await page.goto(baseUrl);
 
-    if(captureScreenshots) {
+    if (captureScreenshots) {
         await page.screenshot({ path:`${process.env.SCREENSHOT_PATH}/root.png` });
     }
 

@@ -1,4 +1,4 @@
-{{- if .Values.networkpolicy.enabled }}
+{{- if .Values.networkPolicy.enabled }}
 # Network policy to allow egress / outbound traffic from the workload.
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
@@ -9,7 +9,9 @@ spec:
     matchLabels:
       app: {{ .Chart.Name }}
   egress:
-  - {}
+  - to:
+    - ipBlock:
+        cidr: {{ .Values.networkPolicy.egressRange | default "0.0.0.0/0" }} 
   policyTypes:
   - Egress
 {{- end }}

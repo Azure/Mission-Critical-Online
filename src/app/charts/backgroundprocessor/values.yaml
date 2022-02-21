@@ -9,8 +9,9 @@ scale: # Horizontal Pod Autoscaler (HPA) configuration
 # Note! When disabling Network Policy for this helm chart,
 # make sure to disable Network Policy for the CatalogService as well
 # as it contains a default-deny policy.
-networkpolicy:
+networkPolicy:
   enabled: true # Enable Network Policy
+  egressRange: "0.0.0.0/0" # CIDR range for allowed egress traffic
 
 azure:
   region: "East US 2"

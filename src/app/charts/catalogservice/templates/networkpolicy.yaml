@@ -47,7 +47,10 @@ spec:
     matchLabels:
       app: {{ .Chart.Name }}
   ingress:
-  - from: []
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: kube-system
     ports:
     - port: {{ .Values.workload.port | default 8080 }}
 ---

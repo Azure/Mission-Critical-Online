@@ -189,12 +189,17 @@ jobs: # using jobs so they each run in parallel
             $fullContainerImageName = Get-Content -Path "$(Pipeline.Workspace)/backgroundprocessor-containerImageName/backgroundprocessor.txt"
             echo "*** Retrieved full container image name from artifact - $fullContainerImageName"
 
+            # Private Endpoints IP Address Range - used to limit egress traffic in the K8s cluster
+            $privateEndpointsIPAddressRange = $stamp.network_privatendpoint_addressrange
+            echo "*** Egress traffic will be restricted to $privateEndpointsIPAddressRange (using Network Policy)"
+
             # Apply workload BackgroundProcessor helm chart
             echo  "*** Deploy workload BackgroundProcessor to $aksClusterName (in $aksClusterResourceGroup) via helm chart"
             helm upgrade --install workload-backgroundprocessor src/app/charts/backgroundprocessor `
                          --namespace $(workloadNamespace) `
                          --set containerimage="$fullContainerImageName" `
                          --set azure.region="$region" `
+                         --set networkPolicy.egressRange="$privateEndpointsIPAddressRange" `
                          ${{ parameters.additionalHelmArguments }}
 
             # Wait for BackgroundProcessor-deploy k8s deployment to come up

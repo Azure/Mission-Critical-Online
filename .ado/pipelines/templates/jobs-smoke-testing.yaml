@@ -85,6 +85,7 @@ jobs:
 
           $env:TEST_BASEURL = "https://$frontDoorFqdn"
           $env:SCREENSHOT_PATH = "$pwd/screenshots"
+          $env:TEST_RUN_ALL_OPTIONAL_STEPS = "true"
 
           $playwrightTestPath = "src/testing/ui-test-playwright"
 

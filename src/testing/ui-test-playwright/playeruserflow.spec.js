@@ -20,6 +20,8 @@ const maxTaskWaitSeconds = process.env.TEST_MAX_TASK_WAIT_SECONDS || 1;
 const minNumberOfItems = process.env.TEST_MIN_NUMBER_OF_ITEMS || 1;
 const maxNumberOfItems = process.env.TEST_MAX_NUMBER_OF_ITEMS || 1;
 
+const runAllOptionalSteps = process.env.TEST_RUN_ALL_OPTIONAL_STEPS || false;
+
 const screenshotPath = process.env.SCREENSHOT_PATH || '';
 const captureScreenshots = screenshotPath != '' ? true : false;
 
@@ -47,6 +49,8 @@ test('shoppinguserflow', async ({ page }) => {
     // Count the number of items we found so we can randomly select one
     var catalogItems = await page.$$('div.catalog-item');
 
+    expect(catalogItems.length > 0).toBeTruthy();
+
     // console.log(`Found ${catalogItems.length} catalog items`);
 
     var numberOfItemsToVisit = getRandomInt(minNumberOfItems, maxNumberOfItems);
@@ -67,7 +71,7 @@ test('shoppinguserflow', async ({ page }) => {
         }
 
         // Randomly do or do not send a rating (in 50% of cases)
-        if (Math.random() < 0.5) {
+        if (runAllOptionalSteps || Math.random() < 0.5) {
             // Post a rating
             var rating = getRandomInt(1, 5);
             await page.click('id=rating-' + rating);
@@ -76,7 +80,7 @@ test('shoppinguserflow', async ({ page }) => {
         }
 
         // Randomly do or do not post a comment (in 30% of cases)
-        if (Math.random() < 0.3) {
+        if (runAllOptionalSteps || Math.random() < 0.3) {
             // Post a comment
             await page.fill('id=comment-authorName', 'Test User');
             await page.fill('id=comment-text', 'Just a random test comment');

@@ -107,6 +107,11 @@ foreach($target in $targets) {
   $responseListCatalog
 
   $allItems = $responseListCatalog.Content | ConvertFrom-JSON
+
+  if($allItems.Count -eq 0) {
+    throw "*** No items found in catalog"
+  }
+
   $randomItem = Get-Random $allItems
 
   $itemUrl = "https://$targetFqdn/api/1.0/catalogitem/$($randomItem.id)"

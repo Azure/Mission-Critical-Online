@@ -40,7 +40,7 @@ test('shoppinguserflow', async ({ page }) => {
     await expect(page).toHaveURL(`${baseUrl}/#/catalog`);
     await page.waitForTimeout(getRandomWaitTimeMs());
 
-    if(captureScreenshots) {
+    if (captureScreenshots) {
         await page.screenshot({ path:`${process.env.SCREENSHOT_PATH}/catalog.png` });
     }
 

@@ -1,0 +1,132 @@
+name: '[${{ parameters.environment }}] $(BuildDefinitionName).$(DayOfYear)$(Rev:.r)'
+
+trigger: none
+
+pr: none
+
+parameters:
+- name: environment
+  displayName: 'Environment (Subscriptions)'
+  type: string
+  default: 'int'
+  values:
+  - int
+  - prod
+
+pool:
+  vmImage: 'ubuntu-20.04'
+
+variables:
+- name:  'environment' # set the environment name as variable
+  value: '${{ parameters.environment }}'
+- name:  'workingDirectory'       # Terraform working directory
+  value: 'src/infra/monitoring/grafana'
+- name:  'azureServiceConnection' # environment specific service connection
+  value: 'alwayson-${{ parameters.environment }}-serviceconnection'
+
+- template: config/configuration.yaml # contains version numbers and global configuration settings
+- template: config/variables-values-${{ parameters.environment }}.yaml # contains environment-specific values (non-secret)
+
+stages:
+
+- stage: deployglobalinfra
+  displayName: 'Deploy Global Infra'
+  jobs:
+    - job: deployterraform
+      displayName: 'Deploy Resources'
+      steps:
+      - checkout: self # checkout github repository
+
+      - template: templates/steps-terraform-init.yaml # Initialize Terraform
+        parameters:
+          terraformStorageAccountName:        '$(terraformStorageAccount)'
+          terraformStorageResourceGroupName:  '$(terraformResourceGroup)'
+          terraformStateFilename:             'terraform-grafana-$(prefix).state'
+          terraformWorkingDirectory:          '$(workingDirectory)/terraform/globalresources'
+
+      - template: templates/steps-terraform-apply.yaml
+        parameters:
+          jobName:                    'GlobalInfra'
+          terraformWorkingDirectory:  '$(workingDirectory)/terraform/globalresources'
+          customPrefix:               '$(prefix)'
+          customAttributes:           '-var=queued_by="$(Build.QueuedBy)"
+                                      -var=branch="$(Build.SourceBranch)"
+                                      -var=contact_email="$(contactEmail)"
+                                      -var=environment="$(environment)"
+                                      -var=''stamps=$(stampLocations)'''
+
+- stage: buildcontainer
+  displayName: 'Build Docker Container'
+  dependsOn: deployglobalinfra
+  jobs:
+  - template: templates/jobs-container-build.yaml
+    parameters:
+      jobName:                        'alwayson_grafana' # unique pipeline job name
+      containerImageName:             'alwayson-grafana'   # container image name for Grafana
+      containerImageDockerFile:       './Dockerfile'  # dockerfile used to build Grafana
+      workingDirectory:               '$(workingDirectory)'
+
+
+- stage: deploystampinfra
+  displayName: 'Deploy Stamp Infra'
+  jobs:
+    - job: deployterraform
+      displayName: 'Deploy Resources'
+      steps:
+      - checkout: self # checkout github repository
+      - download: current # Download build artefacts
+
+      - template: templates/steps-terraform-init.yaml # Initialize Terraform
+        parameters:
+          terraformStorageAccountName:        '$(terraformStorageAccount)'
+          terraformStorageResourceGroupName:  '$(terraformResourceGroup)'
+          terraformStateFilename:             'terraform-grafana-stamp-$(prefix).state'
+          terraformWorkingDirectory:          '$(workingDirectory)/terraform/stamps'
+
+      # Get the deployment output from the global resources. We need this for the FDID.
+      - template: templates/steps-parse-terraform-output.yaml
+        parameters:
+          workingDirectory:           '$(pipeline.workspace)/terraformOutputGlobalInfra'
+
+      # Get the full image name/tags from the artefact created during build
+      - template: templates/steps-parse-containerimagename.yaml
+        parameters:
+          workingDirectory:           '$(pipeline.workspace)'
+          imageName:                  'alwayson_grafana'
+
+      - task: PowerShell@2
+        displayName: 'Prepare stamp input variables'
+        inputs:
+          targetType: inline
+          script: |
+
+            $locations = '$(stampLocations)' | ConvertFrom-Json
+
+            $stamps = @{
+              primary = @{
+                location           = $locations[0]
+                vnet_address_space = "10.1.0.0/16"
+              };
+              secondary = @{
+                location           = $locations[1]
+                vnet_address_space = "10.2.0.0/16"
+              };
+            }
+
+            $stamps = $stamps | ConvertTo-Json -Compress
+            echo "##vso[task.setvariable variable=grafanaStamps]$stamps"
+
+      # Deploy the stamp resources for both regions
+      - template: templates/steps-terraform-apply.yaml
+        parameters:
+          jobName:                    'StampInfra'
+          terraformWorkingDirectory:  '$(workingDirectory)/terraform/stamps'
+          customPrefix:               '$(prefix)'
+          customAttributes:           '-var=queued_by="$(Build.QueuedBy)"
+                                      -var=branch="$(Build.SourceBranch)"
+                                      -var=contact_email="$(contactEmail)"
+                                      -var=environment="$(environment)"
+                                      -var=wapp_container_image="$(ImageName-alwayson_grafana)"
+                                      -var=acr_resource_id="$(acr_resource_id)"
+                                      -var=''stamps=$(grafanaStamps)''
+                                      -var=frontdoor_header_id="$(frontdoor_header_id)"'

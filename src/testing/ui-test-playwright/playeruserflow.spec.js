@@ -28,13 +28,13 @@ const captureScreenshots = screenshotPath != '' ? true : false;
 test('shoppinguserflow', async ({ page }) => {
 
     // Header to indicate that posted comments and rating are just for testing and can be deleted again by the app
-    page.setExtraHTTPHeaders({'X-TEST-DATA': 'true'});
+    page.setExtraHTTPHeaders({ 'X-TEST-DATA': 'true' });
 
     // Go to main page
     await page.goto(baseUrl);
 
     if (captureScreenshots) {
-        await page.screenshot({ path:`${process.env.SCREENSHOT_PATH}/root.png` });
+        await page.screenshot({ path: `${process.env.SCREENSHOT_PATH}/root.png` });
     }
 
     // Go to the catalog page
@@ -43,7 +43,7 @@ test('shoppinguserflow', async ({ page }) => {
     await page.waitForTimeout(getRandomWaitTimeMs());
 
     if (captureScreenshots) {
-        await page.screenshot({ path:`${process.env.SCREENSHOT_PATH}/catalog.png` });
+        await page.screenshot({ path: `${process.env.SCREENSHOT_PATH}/catalog.png` });
     }
 
     // Count the number of items we found so we can randomly select one
@@ -67,7 +67,7 @@ test('shoppinguserflow', async ({ page }) => {
         await page.waitForTimeout(getRandomWaitTimeMs());
 
         if (captureScreenshots) {
-            await page.screenshot({ path:`${process.env.SCREENSHOT_PATH}/catalogItem.png` });
+            await page.screenshot({ path: `${process.env.SCREENSHOT_PATH}/catalogItem.png` });
         }
 
         // Randomly do or do not send a rating (in 50% of cases)

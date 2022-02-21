@@ -12,7 +12,7 @@ function packageEcosystem() {
         [string] $ecosystem,
         [string] $relPath,
         [string] $targetBranch = "main", # default = main
-        [string] $interval = "weekly" # default = weekly
+        [string] $interval = "monthly" # default = weekly
     )
 
     $block = @"
@@ -72,8 +72,8 @@ foreach ($file in $files) {
         $output += "`r`n"+$block+"`r`n"
 
     # NuGET / dotNet
-    } elseif ($file.Name -like '*.sln') {
-        Write-Host "Found *.sln in $($file.FullName)"
+    } elseif ($file.Name -like '*.csproj') {
+        Write-Host "Found *.csproj in $($file.FullName)"
         $ecosystem = "nuget"
         $block = packageEcosystem -ecosystem $ecosystem `
                                   -relpath $relPath `

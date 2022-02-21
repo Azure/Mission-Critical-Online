@@ -86,9 +86,9 @@ namespace AlwaysOn.Shared.Interfaces
         /// Deletes a given object from the database by ID
         /// </summary>
         /// <param name="objectId">Unique identifier of the object</param>
-        /// <param name="partitionKey">partition key for the given object</param>
+        /// <param name="partitionKey">partition key for the given object. Can be null for database engines which don't use partition keys.</param>
         /// <returns></returns>
-        Task DeleteDocumentAsync<T>(string objectId, string partitionKey);
+        Task DeleteItemAsync<T>(string objectId, string partitionKey = null);
 
         /// <summary>
         /// Health check for the database service

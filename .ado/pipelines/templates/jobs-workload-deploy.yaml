@@ -36,7 +36,7 @@ jobs: # using jobs so they each run in parallel
             echo "*** Load credentials for AKS Cluster $aksClusterName in $aksClusterResourceGroup"
             az aks get-credentials --name $aksClusterName --resource-group $aksClusterResourceGroup --overwrite-existing
 
-            $fullContainerImageName = Get-Content -Path "$(Pipeline.Workspace)/healthservice-contaimerImageName/healthservice.txt"
+            $fullContainerImageName = Get-Content -Path "$(Pipeline.Workspace)/healthservice-containerImageName/healthservice.txt"
             echo "*** Retrieved container image name from artifact - $fullContainerImageName"
 
             # Apply workload worker helm chart
@@ -111,7 +111,7 @@ jobs: # using jobs so they each run in parallel
             $fqdn = $stamp.aks_cluster_ingress_fqdn
             echo "*** Retrieved Ingress Controller FQDN $fqdn for AKS cluster $aksClusterName"
 
-            $fullContainerImageName = Get-Content -Path "$(Pipeline.Workspace)/catalogservice-contaimerImageName/catalogservice.txt"
+            $fullContainerImageName = Get-Content -Path "$(Pipeline.Workspace)/catalogservice-containerImageName/catalogservice.txt"
             echo "*** Retrieved full container image name from artifact - $fullContainerImageName"
 
             # Apply workload CatalogService helm chart
@@ -186,7 +186,7 @@ jobs: # using jobs so they each run in parallel
             echo "*** Load credentials for AKS Cluster $aksClusterName in $aksClusterResourceGroup"
             az aks get-credentials --name $aksClusterName --resource-group $aksClusterResourceGroup --overwrite-existing
 
-            $fullContainerImageName = Get-Content -Path "$(Pipeline.Workspace)/backgroundprocessor-contaimerImageName/backgroundprocessor.txt"
+            $fullContainerImageName = Get-Content -Path "$(Pipeline.Workspace)/backgroundprocessor-containerImageName/backgroundprocessor.txt"
             echo "*** Retrieved full container image name from artifact - $fullContainerImageName"
 
             # Apply workload BackgroundProcessor helm chart
@@ -243,9 +243,14 @@ jobs: # using jobs so they each run in parallel
             echo "*** Deleting the old config.js file"
             Remove-Item -Path $configFilePath
 
+            echo "*** Storing configuration to $configFilePath"
             # warning: make sure that these variable names are in sync with client code
             Add-Content -Path $configFilePath -Value "window.API_URL = `"/api`""
             Add-Content -Path $configFilePath -Value "window.APPINSIGHTS_INSTRUMENTATIONKEY = `"$appInsightsKey`""
+            
+            $versionLabel = "$(riVariant)-$("$(Build.SourceBranch)" -Replace 'refs/heads/', '')-$(Build.BuildId)"
+            echo "*** DEBUG: Setting VERSION_LABEL to $versionLabel"
+            Add-Content -Path $configFilePath -Value "window.VERSION_LABEL = `"$versionLabel`""
 
             # clear the storage container first, before uploading, to remove any stale files
             echo "*** Clearing storage container"

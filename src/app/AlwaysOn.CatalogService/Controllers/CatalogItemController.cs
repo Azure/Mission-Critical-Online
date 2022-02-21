@@ -131,8 +131,18 @@ namespace AlwaysOn.CatalogService.Controllers
 
             var itemId = itemDto.Id ?? Guid.NewGuid();
 
+            var newItem = new CatalogItem()
+            {
+                Id = itemId,
+                Name = itemDto.Name,
+                LastUpdated = DateTime.UtcNow,
+                Description = itemDto.Description,
+                ImageUrl = itemDto.ImageUrl,
+                Price = (decimal)itemDto.Price
+            };
+
             _logger.LogInformation("Received request to create new CatalogItemId={CatalogItemId}", itemId);
-            return await UpsertCatalogItemAsync(itemId, itemDto);
+            return await UpsertCatalogItemAsync(itemId, newItem);
         }
 
         /// <summary>
@@ -154,38 +164,29 @@ namespace AlwaysOn.CatalogService.Controllers
                 return StatusCode((int)HttpStatusCode.NotFound);
             }
 
-            itemDto.Name = itemDto.Name ?? existingItem.Name;
-            itemDto.Description = itemDto.Description ?? existingItem.Description;
-            itemDto.Price = itemDto.Price ?? existingItem.Price;
-            itemDto.ImageUrl = itemDto.ImageUrl ?? existingItem.ImageUrl;
+            existingItem.Name = itemDto.Name ?? existingItem.Name;
+            existingItem.Description = itemDto.Description ?? existingItem.Description;
+            existingItem.Price = itemDto.Price ?? existingItem.Price;
+            existingItem.ImageUrl = itemDto.ImageUrl ?? existingItem.ImageUrl;
 
-            return await UpsertCatalogItemAsync(itemId, itemDto);
+            return await UpsertCatalogItemAsync(itemId, existingItem);
         }
 
         /// <summary>
         /// Upserts a catatalogItem in the database
         /// </summary>
         /// <param name="itemId"></param>
-        /// <param name="itemDto"></param>
+        /// <param name="item"></param>
         /// <returns></returns>
-        private async Task<ActionResult<CatalogItem>> UpsertCatalogItemAsync(Guid itemId, CatalogItemDto itemDto)
+        private async Task<ActionResult<CatalogItem>> UpsertCatalogItemAsync(Guid itemId, CatalogItem item)
         {
-            var item = new CatalogItem()
-            {
-                Id = itemId,
-                Name = itemDto.Name,
-                LastUpdated = DateTime.UtcNow,
-                Description = itemDto.Description,
-                Price = (decimal)itemDto.Price
-            };
-
             try
             {
                 // Im imageUrl is set, download the image from that location and upload to blob storage
-                if (!string.IsNullOrEmpty(itemDto.ImageUrl))
+                if (!string.IsNullOrEmpty(item.ImageUrl))
                 {
-                    var imageResponse = await new HttpClient().GetAsync(itemDto.ImageUrl);
-                    var fileExtension = Path.GetExtension(itemDto.ImageUrl) ?? "";
+                    var imageResponse = await new HttpClient().GetAsync(item.ImageUrl);
+                    var fileExtension = Path.GetExtension(item.ImageUrl) ?? "";
 
                     // Little special handling since our demo images come from pxhere.com and contain a "!d" as part of the extension
                     fileExtension = fileExtension?.Replace("!d", "");
@@ -199,14 +200,9 @@ namespace AlwaysOn.CatalogService.Controllers
                                                     SysConfiguration.GlobalStorageAccountImageContainerName,
                                                     blobName);
 
-                    var metadata = new Dictionary<string, string>
-                    {
-                        { "fileExtension", fileExtension }
-                    };
-
                     var options = new BlobUploadOptions()
                     {
-                        Metadata = metadata
+                        Metadata = new Dictionary<string, string> { { "fileExtension", fileExtension } }
                     };
 
                     // Upload will overwrite (i.e. create a new verison) of any existing blob

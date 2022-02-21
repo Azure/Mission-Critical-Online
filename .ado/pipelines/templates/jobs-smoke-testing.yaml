@@ -85,10 +85,6 @@ jobs:
 
           $env:TEST_BASEURL = "https://$frontDoorFqdn"
           $env:SCREENSHOT_PATH = "$pwd/screenshots"
-          $env:TEST_MIN_TASK_WAIT_SECONDS = "1"
-          $env:TEST_MAX_TASK_WAIT_SECONDS = "1"
-          $env:TEST_MIN_NUMBER_OF_ITEMS = "1"
-          $env:TEST_MAX_NUMBER_OF_ITEMS = "1"
 
           $playwrightTestPath = "src/testing/ui-test-playwright"
 

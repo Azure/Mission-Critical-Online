@@ -50,7 +50,7 @@ spec:
   - from:
     - namespaceSelector:
         matchLabels:
-          name: kube-system
+          kubernetes.io/metadata.name: kube-system
     ports:
     - port: {{ .Values.workload.port | default 8080 }}
 ---

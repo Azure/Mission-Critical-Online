@@ -12,13 +12,13 @@ const { test, expect } = require('@playwright/test');
 
 const baseUrl = process.env.TEST_BASEURL; // Needs to include protocol, e.g. https://
 
-// If this test file is being used for actual UI testing, set these values both to 1sec
-const minTaskWaitSeconds = process.env.TEST_MIN_TASK_WAIT_SECONDS || 3;
-const maxTaskWaitSeconds = process.env.TEST_MAX_TASK_WAIT_SECONDS || 6;
+// If this test file is being used to simulate more realistic user behaviour, change these values
+const minTaskWaitSeconds = process.env.TEST_MIN_TASK_WAIT_SECONDS || 1;
+const maxTaskWaitSeconds = process.env.TEST_MAX_TASK_WAIT_SECONDS || 1;
 
-// If this test file is being used for actual UI testing, set these variables both to the same value
-const minNumberOfItems = process.env.TEST_MIN_NUMBER_OF_ITEMS || 2;
-const maxNumberOfItems = process.env.TEST_MAX_NUMBER_OF_ITEMS || 5;
+// If this test file is being used to simulate more realistic user behaviour, change these values
+const minNumberOfItems = process.env.TEST_MIN_NUMBER_OF_ITEMS || 1;
+const maxNumberOfItems = process.env.TEST_MAX_NUMBER_OF_ITEMS || 1;
 
 const screenshotPath = process.env.SCREENSHOT_PATH || '';
 const captureScreenshots = screenshotPath != '' ? true : false;
@@ -44,13 +44,20 @@ test('shoppinguserflow', async ({ page }) => {
         await page.screenshot({ path:`${process.env.SCREENSHOT_PATH}/catalog.png` });
     }
 
+    // Count the number of items we found so we can randomly select one
+    var catalogItems = await page.$$('div.catalog-item');
+
+    // console.log(`Found ${catalogItems.length} catalog items`);
+
     var numberOfItemsToVisit = getRandomInt(minNumberOfItems, maxNumberOfItems);
 
     // Look at some items
     for (var i = 0; i < numberOfItemsToVisit; i++) {
 
         // Pick a random item to visit
-        var pick = getRandomInt(1, 4);
+        var pick = getRandomInt(1, catalogItems.length);
+
+        // console.log(`Will visit item number ${pick}`);
 
         await page.click(':nth-match(.catalog-item, ' + pick + ')');
         await page.waitForTimeout(getRandomWaitTimeMs());

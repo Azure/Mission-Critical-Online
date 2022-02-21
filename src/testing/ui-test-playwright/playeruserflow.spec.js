@@ -55,7 +55,7 @@ test('shoppinguserflow', async ({ page }) => {
         await page.click(':nth-match(.catalog-item, ' + pick + ')');
         await page.waitForTimeout(getRandomWaitTimeMs());
 
-        if(captureScreenshots) {
+        if (captureScreenshots) {
             await page.screenshot({ path:`${process.env.SCREENSHOT_PATH}/catalogItem.png` });
         }
 

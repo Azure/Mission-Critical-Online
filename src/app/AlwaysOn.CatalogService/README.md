@@ -10,11 +10,12 @@ The CatalogService application is packaged and deployed as a Helm chart. The cha
 | --- | --- |
 | scale.minReplicas | Minimum number of replicas to deploy |
 | scale.maxReplicas | Maximum number of replicas to deploy |
-| networkpolicy.enabled | Whether to enable network policies |
+| networkPolicy.enabled | Whether to enable network policies |
+| networkPolicy.egressRange | Allowed egress range - defaults to `0.0.0.0/0` |
 
 ## Networking and Security
 
-When CatalogService is deployed with `.Values.networkpolicy.enabled` set to `true` (default), it uses a custom network policy that allows ingress traffic (which is needed to expose the workload via the Ingress controller) and egress traffic. It also enables ingress traffic for cert-manager (which is needed to provision certificates) and denies everything else (default deny).
+When CatalogService is deployed with `.Values.networkPolicy.enabled` set to `true` (default), it uses a custom network policy that allows ingress traffic (which is needed to expose the workload via the Ingress controller) and egress traffic. The egress traffic can be limited via `.Values.networkPolicy.egressRange` to for example the IP address range that contains the per-stamp Private Endpoints. It also enables ingress traffic for cert-manager (which is needed to provision certificates) and denies everything else (default deny).
 
 > **NOTE:** The CatalogService contains a default-deny policy. When disabling NetworkPolicy per-helm chart, you've to disabled it for all charts deployed to a specific namespace.
 

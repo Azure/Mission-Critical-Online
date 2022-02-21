@@ -32,7 +32,7 @@ output "aks_cluster_name" {
 }
 
 # Private Endpoint Subnet Address Range
-output "network_privatendpoint_addressrange" {
+output "privatendpoints_addressrange" {
   value = azurerm_subnet.private_endpoints.address_prefix
 }
 

@@ -13,7 +13,7 @@ replicas: 3
 # Note! When disabling Network Policy for this helm chart,
 # make sure to disable Network Policy for the CatalogService as well
 # as it contains a default-deny policy.
-networkpolicy:
+networkPolicy:
   enabled: true # Enable Network Policy
 
 azure:

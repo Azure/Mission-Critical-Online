@@ -1,4 +1,4 @@
-{{- if .Values.networkpolicy.enabled }}
+{{- if .Values.networkPolicy.enabled }}
 # Network Policy to allow ingress traffic from * to the workload.
 kind: NetworkPolicy
 apiVersion: networking.k8s.io/v1

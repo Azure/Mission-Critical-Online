@@ -239,7 +239,7 @@ Modify the respective file for the environment which you want to deploy. At leas
 
 | Required to modify | Key | Description | Sample value |
 | --- | --- | --- | --- |
-| **YES** | prefix | Custom prefix used for Azure resources. **Must not be longer than 6 characters!** | myaoe2e |
+| **YES** | prefix | Custom prefix used for Azure resources. **Must not be longer than 6 characters!** | mye2e |
 | **YES** | contactEmail | E-mail alias used for alerting. **Be careful which address you put in here as it will potentially receive a lot of notification emails** | alwaysonappnet@example.com |
 | NO | terraformResourceGroup | Resource Group where the Terraform state Storage account will be deployed | terraformstate-rg |
 | NO | stampLocations | List of locations (Azure Regions) where this environment will be deployed into. You can keep the default to start with.  | ["northeurope", "eastus2"] |

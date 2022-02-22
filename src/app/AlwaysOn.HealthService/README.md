@@ -2,8 +2,6 @@
 
 The HealthService is an app component that is running along other components like CatalogService and BackgroundProcessor on the compute cluster. It provides a REST API that is being called by Azure Front Door to determine the health of a stamp (region). Unlike basic liveness probes, which are present on every API, health service is a more complex component which reflects the state of dependencies, in addition to its own.
 
-![HealthService conceptual diagram](/docs/media/health-service-high-level.png)
-
 ```mermaid
 stateDiagram
     direction LR
@@ -13,9 +11,11 @@ stateDiagram
     }
     state AKS {
         direction RL
+        Kubelet
         HealthService
-        Application --> Application: LivenessProbe
-        BackendProcess --> BackendProcess: LivenessProbe
+        Kubelet --> Application: LivenessProbe
+        Kubelet --> BackendProcess: LivenessProbe
+        Kubelet --> HealthService: LivenessProbe
     }
     HealthService --> CosmosDB: Able to query?
     HealthService --> Storage: File exists?

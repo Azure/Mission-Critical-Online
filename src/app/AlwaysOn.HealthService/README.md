@@ -13,8 +13,6 @@ stateDiagram
         direction RL
         Kubelet
         HealthService
-        Kubelet --> Application: LivenessProbe
-        Kubelet --> BackendProcess: LivenessProbe
         Kubelet --> HealthService: LivenessProbe
     }
     HealthService --> CosmosDB: Able to query?

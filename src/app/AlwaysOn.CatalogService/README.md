@@ -2,6 +2,33 @@
 
 As described in the [conceptual description](/docs/reference-implementation/AppDesign-Application-Design.md), the CatalogService provides APIs that the UI, and all other users of the service, interact with.
 
+```mermaid
+stateDiagram
+    direction LR
+    [*] --> FrontDoor: HTTPS
+    FrontDoor --> IngressController: HTTPS
+
+    state GlobalServices {
+        FrontDoor
+        FrontDoor --> Storage: Read Product Images
+        CosmosDB
+        Storage
+    }
+    state RegionalStamp {
+        AzureKubernetesService
+        EventHub
+    }
+    state AzureKubernetesService {
+        direction RL
+        IngressController
+        IngressController --> CatalogService: HTTP
+        CatalogService --> CoreDNS: DNS lookups
+    }
+    CatalogService --> CosmosDB: Query
+    CatalogService --> EventHub: Write
+    CatalogService --> Storage: Store Product Images
+```
+
 ## Configuration
 
 Configuration settings are maintained in the `AlwaysOn.Shared/SysConfig.cs` file and either defined with default values there or loaded through the .NET IConfiguration provider. When running inside AKS, settings get injected via environment variables as well as through key-value files (by the [CSI secret driver for Key Vault](/src/config/charts/csi-secrets-driver)). While ENV variables are loaded automatically, to read settings from the files, we need to add this line in the `CreateHostBuilder()` method:

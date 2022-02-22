@@ -1,6 +1,9 @@
 # Central configuration and versioning settings
 # used for all pipelines
 variables:
+- name: 'riVariant' # Reference implementation variant - each repository should have its own identification. This value is surfaced to the UI.
+  value: 'foundational-online'
+
 - name: 'terraformVersion'    # Terraform Version
   value: '1.1.4'
 - name: 'kubernetesVersion'   # kubernetes version used for aks clusters
@@ -12,7 +15,7 @@ variables:
 - name: 'certManagerVersion'  # cert-manager helm chart version
   value: 'v1.6.2'
 - name: 'dotnetSdkVersion'    # dotnet sdk version
-  value: '6.0.101'
+  value: '6.0.200'
 - name: 'chaosMeshVersion'    #  chaos-mesh chart version
   value: '2.1.3'
 
@@ -44,3 +47,5 @@ variables:
   value: '20'
 - name: 'smokeTestRetryWaitSeconds' # How long to wait between each retry of the smoke tests
   value: '60'
+- name: 'skipComponentGovernanceDetection' # This is a Microsoft-specific setting. Having this in place ensures we don't create work items with CELA every time we use an open-source component
+  value: 'true'

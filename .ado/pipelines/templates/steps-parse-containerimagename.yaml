@@ -1,0 +1,19 @@
+parameters:
+  workingDirectory: ''
+  imageName: ''
+
+steps:
+- task: PowerShell@2
+  displayName: 'Parse Container Image Name'
+  inputs:
+    targetType: inline
+    script: |
+     # This is the full path to the artefact published by the container build stage:
+     $path = "{0}/{1}-containerImageName/{1}.txt" -f "${{ parameters.workingDirectory }}", "${{ parameters.imageName }}"
+
+     # The image name with tag is in the file:
+     $imageNameWithTag = Get-Content $path
+
+     # Return the image name with tag we found into a pipeline variable:
+     echo "*** Reading image name from file $($path): $($imageNameWithTag)"
+     echo "##vso[task.setvariable variable=ImageName-${{ parameters.imageName }}]$imageNameWithTag"

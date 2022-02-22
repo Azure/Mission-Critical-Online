@@ -87,7 +87,7 @@ namespace AlwaysOn.Tests
             mockDatabase.Setup(db => db.GetCatalogItemByIdAsync(itemId))
                         .ReturnsAsync((CatalogItem)null);
 
-            mockDatabase.Setup(db => db.DeleteDocumentAsync<CatalogItem>(itemId.ToString(), itemId.ToString()));
+            mockDatabase.Setup(db => db.DeleteItemAsync<CatalogItem>(itemId.ToString(), itemId.ToString()));
 
             var controller = new CatalogItemController(mockLogger, mockDatabase.Object, null, null);
 

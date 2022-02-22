@@ -1,5 +1,4 @@
 AzureDiagnostics
-| where Resource == "AOINT-GLOBAL-FD"
 | where OperationName == "Microsoft.Network/FrontDoor/AccessLog/Write"
 | where $__timeFilter(TimeGenerated)
 | extend backendHostname_s=replace_regex(backendHostname_s, @"^(.+).z[0-9]{1,2}\.web\.core\.windows\.net:443$", @"\1")

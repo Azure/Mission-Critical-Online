@@ -243,9 +243,14 @@ jobs: # using jobs so they each run in parallel
             echo "*** Deleting the old config.js file"
             Remove-Item -Path $configFilePath
 
+            echo "*** Storing configuration to $configFilePath"
             # warning: make sure that these variable names are in sync with client code
             Add-Content -Path $configFilePath -Value "window.API_URL = `"/api`""
             Add-Content -Path $configFilePath -Value "window.APPINSIGHTS_INSTRUMENTATIONKEY = `"$appInsightsKey`""
+            
+            $versionLabel = "$(riVariant)-$("$(Build.SourceBranch)" -Replace 'refs/heads/', '')-$(Build.BuildId)"
+            echo "*** DEBUG: Setting VERSION_LABEL to $versionLabel"
+            Add-Content -Path $configFilePath -Value "window.VERSION_LABEL = `"$versionLabel`""
 
             # clear the storage container first, before uploading, to remove any stale files
             echo "*** Clearing storage container"

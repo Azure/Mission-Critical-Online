@@ -68,13 +68,13 @@ namespace AlwaysOn.BackgroundProcessor.Services
                     switch (deletionRequest.ObjectType)
                     {
                         case (nameof(CatalogItem)):
-                            await _databaseService.DeleteDocumentAsync<CatalogItem>(deletionRequest.ObjectId, deletionRequest.PartitionId);
+                            await _databaseService.DeleteItemAsync<CatalogItem>(deletionRequest.ObjectId, deletionRequest.PartitionId);
                             break;
                         case (nameof(ItemComment)):
-                            await _databaseService.DeleteDocumentAsync<ItemComment>(deletionRequest.ObjectId, deletionRequest.PartitionId);
+                            await _databaseService.DeleteItemAsync<ItemComment>(deletionRequest.ObjectId, deletionRequest.PartitionId);
                             break;
                         case (nameof(ItemRating)):
-                            await _databaseService.DeleteDocumentAsync<ItemRating>(deletionRequest.ObjectId, deletionRequest.PartitionId);
+                            await _databaseService.DeleteItemAsync<ItemRating>(deletionRequest.ObjectId, deletionRequest.PartitionId);
                             break;
                         default:
                             _logger.LogWarning("Unknown type {type} to delete", deletionRequest.ObjectType);

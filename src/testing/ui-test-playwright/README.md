@@ -12,14 +12,12 @@ Since UI is not the main focus of AlwaysOn, basic smoke tests using only PowerSh
 # install Playwright dependencies - required for Ubuntu
 npx playwright install-deps chromium
 
-# take screenshot of the index page
+echo "Taking a screenshot of the UI root - https://$frontDoorFqdn/"
 npx playwright screenshot --wait-for-timeout=1000 --full-page --browser=chromium "https://$frontDoorFqdn/" screenshots/root.png
 
-# take screenshot of the play page
-npx playwright screenshot --wait-for-timeout=1000 --full-page --browser=chromium "https://$frontDoorFqdn/#/play" screenshots/play.png
+echo "Taking screenshot of the catalog page - https://$frontDoorFqdn/#/catalog"
+npx playwright screenshot --wait-for-timeout=1000 --full-page --browser=chromium "https://$frontDoorFqdn/#/catalog" screenshots/catalog.png
 
-# take screenshot of the list of games - waiting a bit longer, because it takes some time to load
-npx playwright screenshot --wait-for-timeout=3000 --full-page --browser=chromium "https://$frontDoorFqdn/#/list-games" screenshots/list-games.png
 ```
 
 Keep in mind that this test **doesn't fail** when the application wasn't deployed properly and the Front Door endpoint shows the default or "Not Found" error page. It would fail only in case the requested URL is not available. Captured screenshots can still be used to inspect what went wrong.

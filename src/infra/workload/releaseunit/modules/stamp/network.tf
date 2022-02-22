@@ -1,4 +1,4 @@
-# Dynamically calculate subnet addresses from the overall address space. Assumes (at least) a /20 address space
+# Dynamically calculate subnet addresses from the overall address space. Assumes (at least) a /23 address space
 # Uses the Hashicopr module "CIDR subnets" https://registry.terraform.io/modules/hashicorp/subnets/cidr/latest
 locals {
   netmask = tonumber(split("/", var.vnet_address_space)[1]) # Take the last part from the address space 10.0.0.0/16 => 16

@@ -47,7 +47,7 @@ variable "alerts_enabled" {
 ########### Release Unit specific variables ###########
 
 variable "vnet_address_space" {
-  description = "Address space used for the VNets. Must be large enough to provide at least of size /20 per stamp!"
+  description = "Address space used for the VNets. Must be large enough to provide at least of size /23 per stamp!"
   type        = string
 }
 

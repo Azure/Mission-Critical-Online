@@ -11,11 +11,11 @@ module "subnet_addrs" {
   networks = [
     {
       name     = "kubernetes"
-      new_bits = 22 - local.netmask # For AKS we want a /22 sized subnet. So we calculate based on the provided input address space # Size: /22
+      new_bits = 24 - local.netmask # For AKS we want a /24 sized subnet. So we calculate based on the provided input address space
     },
     {
       name     = "private-endpoints"
-      new_bits = 27 - local.netmask # For the private endpoints we want a /27 sized subnet. So we calculate based on the provided input address space # Size: /27
+      new_bits = 27 - local.netmask # For the private endpoints we want a /27 sized subnet. So we calculate based on the provided input address space
     }
   ]
 }

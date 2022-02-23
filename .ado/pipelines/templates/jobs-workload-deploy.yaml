@@ -237,7 +237,7 @@ jobs: # using jobs so they each run in parallel
             echo "*** Uploading UI app to storage account $($stamp.public_storage_account_name) in stamp $($stamp.location)"
 
             $keyVaultName = $stamp.key_vault_name
-            $appInsightsKey=$(az keyvault secret show --name APPINSIGHTS-INSTRUMENTATIONKEY --vault-name $keyVaultName --query "value" -o tsv)
+            $appInsightsKey = $(az keyvault secret show --name APPINSIGHTS-INSTRUMENTATIONKEY --vault-name $keyVaultName --query "value" -o tsv)
 
             # remove config.js file, which needs to be regenerated for each environment
             echo "*** Deleting the old config.js file"
@@ -247,7 +247,7 @@ jobs: # using jobs so they each run in parallel
             # warning: make sure that these variable names are in sync with client code
             Add-Content -Path $configFilePath -Value "window.API_URL = `"/api`""
             Add-Content -Path $configFilePath -Value "window.APPINSIGHTS_INSTRUMENTATIONKEY = `"$appInsightsKey`""
-            
+
             $versionLabel = "$(riVariant)-$("$(Build.SourceBranch)" -Replace 'refs/heads/', '')-$(Build.BuildId)"
             echo "*** DEBUG: Setting VERSION_LABEL to $versionLabel"
             Add-Content -Path $configFilePath -Value "window.VERSION_LABEL = `"$versionLabel`""
@@ -256,7 +256,17 @@ jobs: # using jobs so they each run in parallel
             echo "*** Clearing storage container"
             az storage blob delete-batch --account-name $stamp.public_storage_account_name --source '$web' --auth-mode key
 
+            if($LastExitCode -ne 0)
+            {
+                throw "*** Error on clearing storage account $($stamp.public_storage_account_name)"
+            }
+
             # upload compiled code to Storage $web container
             echo "*** Uploading UI application to Blob Storage"
             az storage blob upload-batch --account-name $stamp.public_storage_account_name --destination '$web' --source $(Pipeline.Workspace)/uiApp/ --auth-mode key
+
+            if($LastExitCode -ne 0)
+            {
+                throw "*** Error on upload to storage account $($stamp.public_storage_account_name)"
+            }
           }

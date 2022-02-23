@@ -79,5 +79,5 @@ resource "azurerm_network_security_group" "default" {
   # not specifying any security_rules {} will create Azure's default set of NSG rules
   # it allows intra-vnet communication and outbound public internet access
 
-  tags = locals.default_tags
+  tags = local.default_tags
 }

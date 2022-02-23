@@ -106,6 +106,18 @@ updates:
   - dependency-type: direct
   - dependency-type: production # check only dependencies, which are going to the compiled app, not supporting tools like @vue-cli
 
+- package-ecosystem: "terraform"
+  directory: "/src/infra/monitoring/grafana/terraform/globalresources"
+  schedule:
+    interval: "monthly" 
+  target-branch: "component-updates" 
+
+- package-ecosystem: "terraform"
+  directory: "/src/infra/monitoring/grafana/terraform/stamps"
+  schedule:
+    interval: "monthly" 
+  target-branch: "component-updates" 
+
 - package-ecosystem: "nuget"
   directory: "/src/infra/monitoring/AlwaysOn.SloProcessor"
   schedule:

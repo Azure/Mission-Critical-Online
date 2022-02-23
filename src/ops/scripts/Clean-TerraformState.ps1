@@ -3,7 +3,7 @@
 # Cleans up the terraform state storage account from any stale data
 # These usually occur when a deployment is manually deleted and not through the proper CI/CD pipeline which would delete the state file in the end
 #
-# Requires Azure CLI being installed
+# Requires Azure CLI being installed and authenticated
 #
 function Remove-StaleTerraformStateFiles {
     [CmdletBinding()] # indicate that this is advanced function (with additional params automatically added)

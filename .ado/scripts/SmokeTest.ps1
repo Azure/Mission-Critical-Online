@@ -20,8 +20,6 @@ if (!("stamp", "global" -eq $mode)) {
 # load json data from downloaded terraform artifacts
 $globalInfraDeployOutput = Get-ChildItem $env:PIPELINE_WORKSPACE/terraformOutputGlobalInfra/*.json | Get-Content | ConvertFrom-JSON
 
-$releaseUnitInfraDeployOutput = Get-ChildItem $env:PIPELINE_WORKSPACE/terraformOutputReleaseUnitInfra/*.json | Get-Content | ConvertFrom-JSON
-
 # Azure Front Door Endpoint URI
 $frontdoorFqdn = $globalInfraDeployOutput.frontdoor_fqdn.value
 
@@ -43,6 +41,10 @@ $post_comment_body = @{
 $targets = @()
 
 if ($mode -eq "stamp") {
+
+  # load json data from downloaded terraform artifacts
+  $releaseUnitInfraDeployOutput = Get-ChildItem $env:PIPELINE_WORKSPACE/terraformOutputReleaseUnitInfra/*.json | Get-Content | ConvertFrom-JSON
+
   # setting header with X-Azure-FDID for HTTP-based smoke tests (required to access the individual stamps directly, bypassing Front Door)
   $header = @{
     "X-Azure-FDID"="$frontdoorHeaderId"
@@ -105,6 +107,11 @@ foreach($target in $targets) {
   $responseListCatalog
 
   $allItems = $responseListCatalog.Content | ConvertFrom-JSON
+
+  if ($allItems.Count -eq 0) {
+    throw "*** No items found in catalog"
+  }
+
   $randomItem = Get-Random $allItems
 
   $itemUrl = "https://$targetFqdn/api/1.0/catalogitem/$($randomItem.id)"

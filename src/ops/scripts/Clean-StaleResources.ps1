@@ -54,7 +54,7 @@ function Remove-DiagnosticSettings {
     foreach($setting in $diagnosticSettings)
     {
       Write-Host "Deleting diagnostic setting: $($setting.name)"
-      az monitor diagnostic-settings delete --resource $resource.Id --name $setting.name --yes
+      az monitor diagnostic-settings delete --resource $resource.Id --name $setting.name
     }
   }
 }

@@ -25,6 +25,10 @@ module.exports = async function (context) {
                 {
                     env: {
                         'TEST_BASEURL': process.env.TEST_BASEURL,
+                        'TEST_MIN_TASK_WAIT_SECONDS': 3,
+                        'TEST_MAX_TASK_WAIT_SECONDS': 6,
+                        'TEST_MIN_NUMBER_OF_ITEMS': 2,
+                        'TEST_MAX_NUMBER_OF_ITEMS': 5,
                         ...process.env // Load all env vars from the Function runtime, too
                     }
                 },

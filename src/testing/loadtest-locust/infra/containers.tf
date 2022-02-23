@@ -35,7 +35,7 @@ resource "azurerm_container_group" "master" {
     }
 
     ports {
-      port     = "8089"
+      port     = "8089" # port for the Web UI
       protocol = "TCP"
     }
 

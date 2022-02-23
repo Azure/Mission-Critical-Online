@@ -1,14 +1,13 @@
 parameters:
 - name: customPrefix
   type: string
-  default: "" 
 - name: statsPath # this directory path contains the locust *_stats.csv
-  type: string    
+  type: string
 
 steps:
 - task: PowerShell@2
   displayName: "Analyze Results from the load and chaos tests"
-  continueOnError: true 
+  continueOnError: true    # We just want this to show as a warning in ADO, not a pipeline failure
   inputs:
     targetType: inline
     script: |
@@ -22,8 +21,8 @@ steps:
           $statsPath = "${{ parameters.statsPath }}/${{ parameters.customPrefix }}_stats.csv"
           echo "*** Loading load test stats from pipeline artifacts $statsPath"
 
-          $result = Compare-LocustStats -baselineFile $baselinePath -statsFile $statsPath -Verbose
-          
+          $result = Compare-LocustStats -baselineFile $baselinePath -statsFile $statsPath
+
           if ($result -gt 0) {
             throw "*** Load test results failed baseline comparison."
           }

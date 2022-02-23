@@ -22,7 +22,10 @@ param
 [string] $AzDevOpsOrgUrl = "https://dev.azure.com/YOUR_AZDO_ORG_NAME"
 [string] $AzDevOpsProjectName = "YOUR_AZDO_PROJECT_NAME"
 
-[string] $ServicePrincipalName = "YOUR_AZURE_SERVICE_PRINCIPAL_NAME"
+# one of the following has to be set, the other has to be $null
+[string] $ServicePrincipalAppId = "EXISTING_SERVICE_PRINCIPAL_ID_OR_NULL"
+[string] $ServicePrincipalName = "NEW_AZURE_SERVICE_PRINCIPAL_NAME_OR_NULL"
+
 [string] $GithubAccountName = "YOUR_GITHUB_ACCT_NAME"
 [string] $GithubRepoName = "YOUR_GITHUB_REPO_NAME"
 [string] $GithubBranchName = "YOUR_GITHUB_BRANCH_NAME"
@@ -39,6 +42,7 @@ if ($deploy) {
     -AzDevOpsProjectName $AzDevOpsProjectName `
     -AzDevOpsEnvironmentName $AzDevOpsEnvironmentName `
     -ServicePrincipalName $ServicePrincipalName `
+    -ServicePrincipalAppId $ServicePrincipalAppId `
     -GithubPAT $GithubPAT `
     -GithubAccountName $GithubAccountName `
     -GithubRepoName $GithubRepoName `

@@ -22,6 +22,7 @@ resource "azurerm_function_app" "master" {
   storage_account_access_key = azurerm_storage_account.master.primary_access_key
   os_type                    = "linux"
   version                    = "~4"
+  https_only                 = true
 
   tags = local.default_tags
 

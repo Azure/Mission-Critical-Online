@@ -6,7 +6,7 @@ See [Getting Started](#getting-started) on how to set this up for your own appli
 
 It contains of the following components:
 
-- A Playwright [test definition file](./AzureFunctions/RegionalLoadGenerator/playeruserflow.spec.js)
+- A Playwright [test definition file](./AzureFunctions/RegionalLoadGenerator/cataloguserflow.spec.js)
 - [Global Orchestrator Azure Function](./AzureFunctions/GlobalOrchestrator) that controls regionally distributed test runner Azure Functions
 - [User flow test runner Azure Function](./AzureFunctions/RegionalLoadGenerator) which are getting deployed to N number of regions
 - Terraform [infrastructure-as-code definition](./infra) to deploy the Azure Functions
@@ -75,7 +75,7 @@ It is implemented as a Durable Function which gets controlled by the Global Orch
 
 To deploy the user load generator for your own application, you need to:
 
-- Write a playwright test definition file (`playeruserflow.spec.js`) that targets your web UI application.
+- Write a playwright test definition file (`cataloguserflow.spec.js`) that targets your web UI application.
   - Use the example provided here as a starting point. Note how environment variables are being used to pass parameters like the application URL and the user credentials. You can replicate this for other settings you might need.
 - Update the `daily_load_profile.json` file with your desired load profile. To validate your profile, is recommended to start with only one geographical region enabled and then gradually add more regions as needed.
 - Update the Terraform variable file `variables.tf` with the correct values for `targeturl`, `regional_functions_workers` and any other variables you might need to reflect test parameters and your geo(s).

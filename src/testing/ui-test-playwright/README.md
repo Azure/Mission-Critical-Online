@@ -6,7 +6,7 @@ Playwright UI tests can be written as JavaScript code and then executed directly
 
 # User flow test definition
 
-A Playwright UI test definition representing a typical user flow is written in a separate file [playeruserflow.spec.js](./playeruserflow.spec.js). And executed using Playwright Test Runner. This is being used by the smoke test in the deployment pipeline as well as by the optional Load Generator.
+A Playwright UI test definition representing a typical user flow is written in a separate file [cataloguserflow.spec.js](./cataloguserflow.spec.js). And executed using Playwright Test Runner. This is being used by the smoke test in the deployment pipeline as well as by the optional Load Generator.
 
 # In-pipeline smoke tests
 

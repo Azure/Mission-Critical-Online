@@ -49,7 +49,7 @@ function Remove-DiagnosticSettings {
     Write-Host "*** Looking for diagnostic settings in resource $($resource.Name)"
 
     # List all diagnostic settings for a given resource
-    $diagnosticSettings = az monitor diagnostic-settings list --resource $resource.Id | ConvertFrom-Json
+    $diagnosticSettings = $(az monitor diagnostic-settings list --resource $resource.Id | ConvertFrom-Json).value
 
     foreach($setting in $diagnosticSettings)
     {

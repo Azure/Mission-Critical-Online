@@ -24,6 +24,10 @@ steps:
         $locations = '$(stampLocations)' | ConvertFrom-Json -NoEnumerate # get the stamp locations and use the first one to create the resource group there. The region does not really matter.
         az group create --name ${{ parameters.resourceGroupName }} --location $locations[0]
 
+        az lock create --name LockStateStore `
+                       --lock-type CanNotDelete `
+                       --resource-group ${{ parameters.resourceGroupName }}
+
         if ($LASTEXITCODE -eq 1) {
           Write-Error "*** Error - could not create resource group"
         }
@@ -42,6 +46,13 @@ steps:
                                   --https-only true `
                                   --sku Standard_GZRS `
                                   --min-tls-version TLS1_2
+
+        az lock create --name LockStateStore `
+                --lock-type CanNotDelete `
+                --resource-group ${{ parameters.resourceGroupName }} `
+                --resource-name  ${{ parameters.storageAccountName }} `
+                --resource-type Microsoft.Storage/storageAccounts
+
         if ($LASTEXITCODE -eq 1) {
           Write-Error "*** Error - could not create storage account"
         }

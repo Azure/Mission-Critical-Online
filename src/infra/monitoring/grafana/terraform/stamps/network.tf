@@ -72,7 +72,7 @@ resource "azurerm_subnet_network_security_group_association" "snet_datastores_ns
 # Allows outbound and intra-vnet/cross-subnet communication
 resource "azurerm_network_security_group" "default" {
   for_each            = var.stamps
-  name                = "${local.prefix}-${substr(each.value["location"], 0, 5)}-nsg"
+  name                = "${local.prefix}-test-${substr(each.value["location"], 0, 5)}-nsg"
   location            = azurerm_resource_group.rg[each.key].location
   resource_group_name = azurerm_resource_group.rg[each.key].name
 

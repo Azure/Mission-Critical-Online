@@ -35,6 +35,7 @@
     * [Operational Procedures](./reference-implementation/OpProcedures-Operational-Procedures.md)
     * [Key and Secret Rotation](./reference-implementation/OpProcedures-KeyRotation.md)
 * [ESLZ Alignment](./reference-implementation/ESLZ-Alignment.md)
+* [Troubleshooting](./reference-implementation/Troubleshooting.md)
 
 ## Source Code README Files
 

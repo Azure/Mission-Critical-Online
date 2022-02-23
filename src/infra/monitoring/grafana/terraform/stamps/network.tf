@@ -46,8 +46,9 @@ resource "azurerm_subnet" "snet_app_outbound" {
 
 # NSG - Assign default nsg to snet_app_outbound subnet
 resource "azurerm_subnet_network_security_group_association" "snet_app_outbound_nsg" {
-  subnet_id                 = azurerm_subnet.snet_app_outbound.id
-  network_security_group_id = azurerm_network_security_group.default.id
+  foreach                   = var.stamps
+  subnet_id                 = azurerm_subnet.snet_app_outbound[each.key].id
+  network_security_group_id = azurerm_network_security_group.default[each.key].id
 }
 
 # Dedicated subnet for all backend datastores including PGDB.
@@ -62,16 +63,18 @@ resource "azurerm_subnet" "snet_datastores" {
 
 # NSG - Assign default nsg to snet_datastores subnet
 resource "azurerm_subnet_network_security_group_association" "snet_datastores_nsg" {
-  subnet_id                 = azurerm_subnet.snet_datastores.id
-  network_security_group_id = azurerm_network_security_group.default.id
+  foreach                   = var.stamps
+  subnet_id                 = azurerm_subnet.snet_datastores[each.key].id
+  network_security_group_id = azurerm_network_security_group.default[each.key].id
 }
 
 # Default Network Security Group (nsg) definition
 # Allows outbound and intra-vnet/cross-subnet communication
 resource "azurerm_network_security_group" "default" {
-  name                = "${local.prefix}-${local.location_short}-nsg"
-  location            = azurerm_resource_group.stamp.location
-  resource_group_name = azurerm_resource_group.stamp.name
+  foreach             = var.stamps
+  name                = "${local.prefix}-${substr(each.value["location"], 0, 5)}-nsg"
+  location            = azurerm_resource_group.rg[each.key].location
+  resource_group_name = azurerm_resource_group.rg[each.key].name
 
   # not specifying any security_rules {} will create Azure's default set of NSG rules
   # it allows intra-vnet communication and outbound public internet access

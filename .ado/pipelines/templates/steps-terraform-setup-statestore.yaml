@@ -33,11 +33,6 @@ steps:
         echo "*** Ok"
       }
 
-      echo "*** Set a resource lock on resource group ${{ parameters.resourceGroupName }}"
-      az lock create --name LockStateStore `
-                      --lock-type CanNotDelete `
-                      --resource-group ${{ parameters.resourceGroupName }}
-
       echo "*** Check if Storage Account ${{ parameters.storageAccountName }} exists"
       $check = az storage account show --name ${{ parameters.storageAccountName }} `
                                        --resource-group ${{ parameters.resourceGroupName }} | ConvertFrom-Json

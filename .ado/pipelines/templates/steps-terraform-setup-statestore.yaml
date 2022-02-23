@@ -32,7 +32,6 @@ steps:
       {
         echo "*** Ok"
       }
-
       echo "*** Check if Storage Account ${{ parameters.storageAccountName }} exists"
       $check = az storage account show --name ${{ parameters.storageAccountName }} `
                                        --resource-group ${{ parameters.resourceGroupName }} | ConvertFrom-Json
@@ -43,7 +42,6 @@ steps:
                                   --https-only true `
                                   --sku Standard_GZRS `
                                   --min-tls-version TLS1_2
-
         if ($LASTEXITCODE -eq 1) {
           Write-Error "*** Error - could not create storage account"
         }

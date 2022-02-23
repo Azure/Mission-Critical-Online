@@ -46,7 +46,7 @@ resource "azurerm_subnet" "snet_app_outbound" {
 
 # NSG - Assign default nsg to snet_app_outbound subnet
 resource "azurerm_subnet_network_security_group_association" "snet_app_outbound_nsg" {
-  foreach                   = var.stamps
+  for_each                   = var.stamps
   subnet_id                 = azurerm_subnet.snet_app_outbound[each.key].id
   network_security_group_id = azurerm_network_security_group.default[each.key].id
 }
@@ -63,7 +63,7 @@ resource "azurerm_subnet" "snet_datastores" {
 
 # NSG - Assign default nsg to snet_datastores subnet
 resource "azurerm_subnet_network_security_group_association" "snet_datastores_nsg" {
-  foreach                   = var.stamps
+  for_each                   = var.stamps
   subnet_id                 = azurerm_subnet.snet_datastores[each.key].id
   network_security_group_id = azurerm_network_security_group.default[each.key].id
 }
@@ -71,7 +71,7 @@ resource "azurerm_subnet_network_security_group_association" "snet_datastores_ns
 # Default Network Security Group (nsg) definition
 # Allows outbound and intra-vnet/cross-subnet communication
 resource "azurerm_network_security_group" "default" {
-  foreach             = var.stamps
+  for_each             = var.stamps
   name                = "${local.prefix}-${substr(each.value["location"], 0, 5)}-nsg"
   location            = azurerm_resource_group.rg[each.key].location
   resource_group_name = azurerm_resource_group.rg[each.key].name

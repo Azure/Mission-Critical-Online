@@ -10,6 +10,6 @@
     "csv-parser": "^3.0.0",
     "durable-functions": "^1.5.4",
     "playwright-core": "^1.19.1",
-    "playwright-chromium": "^1.19.0"
+    "playwright-chromium": "^1.19.1"
   }
 }

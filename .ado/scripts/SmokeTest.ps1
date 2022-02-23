@@ -108,7 +108,7 @@ foreach($target in $targets) {
 
   $allItems = $responseListCatalog.Content | ConvertFrom-JSON
 
-  if($allItems.Count -eq 0) {
+  if ($allItems.Count -eq 0) {
     throw "*** No items found in catalog"
   }
 

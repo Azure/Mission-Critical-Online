@@ -10,29 +10,48 @@
 
 const { test, expect } = require('@playwright/test');
 
-// If this test file is being used for actual UI testing, set these values both to 1sec
-const minTaskWaitSeconds = process.env.TEST_MIN_TASK_WAIT_SECONDS || 3;
-const maxTaskWaitSeconds = process.env.TEST_MAX_TASK_WAIT_SECONDS || 6;
+const baseUrl = process.env.TEST_BASEURL; // Needs to include protocol, e.g. https://
 
+// If this test file is being used to simulate more realistic user behaviour, change these values
+const minTaskWaitSeconds = process.env.TEST_MIN_TASK_WAIT_SECONDS || 1;
+const maxTaskWaitSeconds = process.env.TEST_MAX_TASK_WAIT_SECONDS || 1;
+
+// If this test file is being used to simulate more realistic user behaviour, change these values
+const minNumberOfItems = process.env.TEST_MIN_NUMBER_OF_ITEMS || 1;
+const maxNumberOfItems = process.env.TEST_MAX_NUMBER_OF_ITEMS || 1;
+
+const runAllOptionalSteps = process.env.TEST_RUN_ALL_OPTIONAL_STEPS || false;
+
+const screenshotPath = process.env.SCREENSHOT_PATH || '';
+const captureScreenshots = screenshotPath != '' ? true : false;
 
 test('shoppinguserflow', async ({ page }) => {
 
     // Header to indicate that posted comments and rating are just for testing and can be deleted again by the app
-    page.setExtraHTTPHeaders({'X-TEST-DATA': 'true'});
-
-    const baseUrl = process.env.TEST_BASEURL; // Needs to include protocol, e.g. https://
-
-    // If this test file is being used for actual UI testing, set these variables both to the same value
-    const minNumberOfItems = process.env.TEST_MIN_NUMBER_OF_ITEMS || 2;
-    const maxNumberOfItems = process.env.TEST_MAX_NUMBER_OF_ITEMS || 5;
+    page.setExtraHTTPHeaders({ 'X-TEST-DATA': 'true' });
 
     // Go to main page
     await page.goto(baseUrl);
+
+    if (captureScreenshots) {
+        await page.screenshot({ path: `${process.env.SCREENSHOT_PATH}/root.png` });
+    }
 
     // Go to the catalog page
     await page.goto(`${baseUrl}/#/catalog`);
     await expect(page).toHaveURL(`${baseUrl}/#/catalog`);
     await page.waitForTimeout(getRandomWaitTimeMs());
+
+    if (captureScreenshots) {
+        await page.screenshot({ path: `${process.env.SCREENSHOT_PATH}/catalog.png` });
+    }
+
+    // Count the number of items we found so we can randomly select one
+    var catalogItems = await page.$$('div.catalog-item');
+
+    expect(catalogItems.length > 0).toBe(true);
+
+    // console.log(`Found ${catalogItems.length} catalog items`);
 
     var numberOfItemsToVisit = getRandomInt(minNumberOfItems, maxNumberOfItems);
 
@@ -40,13 +59,19 @@ test('shoppinguserflow', async ({ page }) => {
     for (var i = 0; i < numberOfItemsToVisit; i++) {
 
         // Pick a random item to visit
-        var pick = getRandomInt(1, 4);
+        var pick = getRandomInt(1, catalogItems.length);
+
+        // console.log(`Will visit item number ${pick}`);
 
         await page.click(':nth-match(.catalog-item, ' + pick + ')');
         await page.waitForTimeout(getRandomWaitTimeMs());
 
+        if (captureScreenshots) {
+            await page.screenshot({ path: `${process.env.SCREENSHOT_PATH}/catalogItem.png` });
+        }
+
         // Randomly do or do not send a rating (in 50% of cases)
-        if (Math.random() < 0.5) {
+        if (runAllOptionalSteps || Math.random() < 0.5) {
             // Post a rating
             var rating = getRandomInt(1, 5);
             await page.click('id=rating-' + rating);
@@ -55,7 +80,7 @@ test('shoppinguserflow', async ({ page }) => {
         }
 
         // Randomly do or do not post a comment (in 30% of cases)
-        if (Math.random() < 0.3) {
+        if (runAllOptionalSteps || Math.random() < 0.3) {
             // Post a comment
             await page.fill('id=comment-authorName', 'Test User');
             await page.fill('id=comment-text', 'Just a random test comment');

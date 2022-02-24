@@ -50,6 +50,14 @@ steps:
       {
         echo "*** Ok"
       }
+
+      echo "*** Set a resource lock on storage account ${{ parameters.storageAccountName }}"
+      az lock create --name LockStateStore `
+              --lock-type CanNotDelete `
+              --resource-group ${{ parameters.resourceGroupName }} `
+              --resource-name  ${{ parameters.storageAccountName }} `
+              --resource-type Microsoft.Storage/storageAccounts
+
       $servicePrincipalId = $(az account show --query "user.name" -o tsv)
       $storageAccountId = $(az storage account show --name ${{ parameters.storageAccountName }} `
                                                     --resource-group ${{ parameters.resourceGroupName }} `

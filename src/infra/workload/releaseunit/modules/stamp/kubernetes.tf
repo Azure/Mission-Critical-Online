@@ -64,7 +64,6 @@ resource "azurerm_kubernetes_cluster" "stamp" {
 
   # Enable and configure the Azure KeyVault Secrets Provider addon for AKS
   key_vault_secrets_provider {
-    enabled                  = true
     secret_rotation_enabled  = true
     secret_rotation_interval = "5m"
   }

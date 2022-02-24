@@ -6,7 +6,7 @@ resource "azurerm_kubernetes_cluster" "stamp" {
   dns_prefix          = "${local.prefix}${var.location}aks"
   kubernetes_version  = var.kubernetes_version
   node_resource_group = "MC_${local.prefix}-stamp-${var.location}-aks-rg" # we manually specify the naming of the managed resource group to have it controlled and consistent
-  sku_tier            = "Paid"                                          # Opt-in for AKS Uptime SLA
+  sku_tier            = "Paid"                                            # Opt-in for AKS Uptime SLA
 
   automatic_channel_upgrade = "node-image"
 

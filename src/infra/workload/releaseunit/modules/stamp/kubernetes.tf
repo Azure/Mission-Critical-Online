@@ -49,25 +49,24 @@ resource "azurerm_kubernetes_cluster" "stamp" {
     type = "SystemAssigned"
   }
 
-  addon_profile {
-    oms_agent {
-      enabled                    = true
-      log_analytics_workspace_id = data.azurerm_log_analytics_workspace.stamp.id
-    }
+  # Enable the Azure Policy Addon for AKS
+  azure_policy_enabled = true
 
-    azure_policy {
-      enabled = true
-    }
+  # Disable the builtin Kubernetes dashboard
+  kube_dashboard {
+    enabled = false
+  }
 
-    kube_dashboard {
-      enabled = false
-    }
+  # Enable and configure the Azure Monitor (container insights) addon for AKS
+  oms_agent {
+    enabled                    = true
+    log_analytics_workspace_id = data.azurerm_log_analytics_workspace.stamp.id
+  }
 
-    azure_keyvault_secrets_provider {
-      enabled                  = true
-      secret_rotation_enabled  = true
-      secret_rotation_interval = "5m"
-    }
+  azure_keyvault_secrets_provider {
+    enabled                  = true
+    secret_rotation_enabled  = true
+    secret_rotation_interval = "5m"
   }
 
   depends_on = [

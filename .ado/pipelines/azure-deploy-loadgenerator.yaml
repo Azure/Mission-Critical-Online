@@ -84,8 +84,8 @@ stages:
           targetType: inline
           script: |
 
-            echo "*** Copying Playwright test definition file src/testing/ui-test-playwright/playeruserflow.spec.js to $(workingDirectory)/AzureFunctions/RegionalLoadGenerator"
-            Copy-Item "src/testing/ui-test-playwright/playeruserflow.spec.js" -Destination "$(workingDirectory)/AzureFunctions/RegionalLoadGenerator"
+            echo "*** Copying Playwright test definition file src/testing/ui-test-playwright/cataloguserflow.spec.js to $(workingDirectory)/AzureFunctions/RegionalLoadGenerator"
+            Copy-Item "src/testing/ui-test-playwright/cataloguserflow.spec.js" -Destination "$(workingDirectory)/AzureFunctions/RegionalLoadGenerator"
 
       - task: PowerShell@2
         displayName: 'npm install'

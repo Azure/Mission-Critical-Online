@@ -52,11 +52,6 @@ resource "azurerm_kubernetes_cluster" "stamp" {
   # Enable the Azure Policy Addon for AKS
   azure_policy_enabled = true
 
-  # Disable the builtin Kubernetes dashboard
-  kube_dashboard {
-    enabled = false
-  }
-
   # Enable and configure the Azure Monitor (container insights) addon for AKS
   oms_agent {
     log_analytics_workspace_id = data.azurerm_log_analytics_workspace.stamp.id

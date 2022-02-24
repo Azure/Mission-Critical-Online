@@ -63,6 +63,7 @@ resource "azurerm_kubernetes_cluster" "stamp" {
     log_analytics_workspace_id = data.azurerm_log_analytics_workspace.stamp.id
   }
 
+  # Enable and configure the Azure KeyVault Secrets Provider addon for AKS
   azure_keyvault_secrets_provider {
     enabled                  = true
     secret_rotation_enabled  = true

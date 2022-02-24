@@ -59,12 +59,11 @@ resource "azurerm_kubernetes_cluster" "stamp" {
 
   # Enable and configure the Azure Monitor (container insights) addon for AKS
   oms_agent {
-    enabled                    = true
     log_analytics_workspace_id = data.azurerm_log_analytics_workspace.stamp.id
   }
 
   # Enable and configure the Azure KeyVault Secrets Provider addon for AKS
-  azure_keyvault_secrets_provider {
+  key_vault_secrets_provider {
     enabled                  = true
     secret_rotation_enabled  = true
     secret_rotation_interval = "5m"

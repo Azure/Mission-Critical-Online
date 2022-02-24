@@ -2,11 +2,11 @@
 
 It's inevitable in a system with the complexity of AlwaysOn that issues and errors occur. This living document maintains a list of solutions for common errors, which are not directly caused by the AlwaysOn code (i.e. are outside of control of the development team and cannot be fixed as bugs in the codebase).
 
-* [Deployment issues](#deployment-issues)
-  * [Infrastructure Deployment stages](#infrastructure-deployment-stages)
-  * [Deploy Workload stage](#deploy-workload-stage)
-  * [Testing stages](#testing-stages)
-  * [Destroy Infrastructure stage](#destroy-infrastructure-stage)
+- [Deployment issues](#deployment-issues)
+  - [Infrastructure Deployment stages](#infrastructure-deployment-stages)
+  - [Deploy Workload stage](#deploy-workload-stage)
+  - [Testing stages](#testing-stages)
+  - [Destroy Infrastructure stage](#destroy-infrastructure-stage)
 
 ## Deployment issues
 
@@ -102,7 +102,7 @@ To prevent the error from happening to begin with, you can manually de-select th
 
 **Description:** The deletion of the event hub consumer group as part of the terraform infrastructure destroy process can fail from time to time due to a conflicting operation that happens at the same time.
 
-***Solution:** The solution is to retry the destroy process.
+**Solution:** Re-run the failing step.
 
 ---
 [AlwaysOn - Full List of Documentation](/docs/README.md)

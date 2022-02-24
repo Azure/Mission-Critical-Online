@@ -35,6 +35,8 @@ The process to deploy AlwaysOn is comprised of the following steps:
 1) [Execute the first deployment](#7-execute-the-first-deployment)
 1) [Check deployed resources](#8-check-deployed-resources)
 
+> If you run into any issues during the deployment, consult the [Troubleshooting guide](./Troubleshooting.md).
+
 ### 1) Create a new Azure DevOps organization and project
 
 To deploy AlwaysOn, you need to create a new Azure DevOps organization, or re-use an existing one. In this organization you will then create a new project used to host all pipelines for AlwaysOn.
@@ -289,6 +291,8 @@ Click on **View** and then on **Permit** for each required permission.
 ![Pipeline permission](/docs/media/AlwaysOnGettingStarted2PipelinePermissionGrant.png)
 
 After this, the pipeline execution will kick off.
+
+> If you run into any issues during the deployment, consult the [Troubleshooting guide](./Troubleshooting.md).
 
 The full run, which deploys all resources from scratch, might take around 30-40 minutes. Once all jobs are finished, **take a note of the resource prefix** which is now shown in the header of your pipeline screen:
 

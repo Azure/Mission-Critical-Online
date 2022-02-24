@@ -12,7 +12,7 @@ A resource with the ID "/subscriptions/[...]/diagnosticSettings/frontdoorladiagn
 ```
 
 
-**Description:** Occurs on global Terraform apply, specifically azurerm_monitor_diagnostic_setting.frontdoor, but it can happen on stamps too (various resources).
+**Description:** Occurs on global Terraform apply, specifically `azurerm_monitor_diagnostic_setting.frontdoor`, but it can happen on stamps too (various resources).
 
 This usually happens, when a resource was manually deleted (e.g. through the Azure Portal) instead of running the Destroy step in the pipeline. Some resource types, mostly Diagnostic Settings and Save Queries in Log Analytics Workspaces, are not deleted, when deleting the parent resource. This is a known limitation in ARM.
 

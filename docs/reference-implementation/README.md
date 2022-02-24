@@ -63,7 +63,8 @@ As with the AlwaysOn Design Guidelines, the Reference Implementation section is 
 
 - [Getting started](Getting-Started.md) outlines the process and required steps to deploy AlwaysOn in your environment, including preparing Azure DevOps pipelines. It should be read in tandem with the Reference Implementation guidance.
 - [SLO and Availability](AppDesign-SLO-Availability.md) outlines the SLO for AlwaysOn (99.95%) and how this figure was calculated.
-- [ESLZ Alignment](ESLZ-Alignment.md) outlines how AlwaysOn aligns with and compliments the Enterprise Scale Landing Zones
+- [ESLZ Alignment](ESLZ-Alignment.md) outlines how AlwaysOn aligns with and compliments the Enterprise Scale Landing Zones.
+- [Troubleshooting](Troubleshooting.md) collects solutions to known issues during development and deployment.
 
 ---
 

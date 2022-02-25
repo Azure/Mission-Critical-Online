@@ -310,7 +310,7 @@ stages:
     parameters:
       terraformWorkingDirectory: 'src/testing/loadtest-locust/infra'
       customPrefix: '$(prefix)$(customSuffix)'
-      numberOfWorkerNodes: $(loadTestNumberOfWorkerNodes) # number of locust worker nodes
+      numberOfWorkerNodes: $(loadTestNumberOfWorkerNodes)
       testDurationSeconds: $(loadTestDurationInSeconds) # locust test duration
       locustUser: $(loadTestNumberOfUsers) # locust number of simulated users
       locustSpawnRate: $(loadTestUserSpawnRate) # locust spawn rate users / per second

@@ -44,7 +44,7 @@ variables:
 
 # Embedded load testing (locust) configuration
 # Make sure that these parameters are aligned with the loadtest-baseline.yaml
-- name: 'loadTestNumberOfWorkerNodes' # number of locust worker nodes
+- name: 'loadTestNumberOfWorkerNodes' # number of worker nodes
   value: 10
 - name: 'loadTestDurationInSeconds' # locust test duration
   value: 300

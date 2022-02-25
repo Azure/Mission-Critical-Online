@@ -45,6 +45,10 @@ jobs:
         # Login to ACR so we can later push to it
         az acr login -n $acrName
 
+        if ($LastExitCode -ne 0) {
+          throw "*** Error - could not log in to ACR $acrName"
+        }
+
         echo "*** Starting to build image $imageNameTagSpecific locally"
         docker build -t $imageNameTagSpecific `
                      -t $imageNameTagLatest `

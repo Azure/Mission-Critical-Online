@@ -179,3 +179,8 @@ steps:
 
       echo "*** Purging Front Door cache with path /*"
       az network front-door purge-endpoint -g $rgName -n $fdName --content-paths "/*"
+
+      if($LastExitCode -ne 0)
+      {
+          throw "*** Error on purging cache in Front Door $fdName"
+      }

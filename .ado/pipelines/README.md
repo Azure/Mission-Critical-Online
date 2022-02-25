@@ -70,7 +70,7 @@ Environment config files are stored in `.ado/pipelines/config` and are named `va
 
 | Key | Description | Sample value |
 | --- | --- | --- |
-| prefix | Custom prefix used for Azure resources.  | int: myaoint, prod: myaoprod, e2e: myaoe2e |
+| prefix | Custom prefix used for Azure resources. **Must not be longer than 6 characters!** | int: myint, prod: myprod, e2e: mye2e |
 | stampLocations | List of locations (Azure Regions) where this environment will be deployed into  | ["northeurope", "eastus2"] |
 | terraformResourceGroup | Resource Group where the Terraform state Storage account will be deployed | terraformstate-rg |
 | envDnsZoneRG | OPTIONAL: Name of the Azure Resource group which holds the Azure DNS Zone for your custom domain. Not required if you do not plan to use a custom DNS name | mydns-rg |

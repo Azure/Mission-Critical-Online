@@ -48,7 +48,7 @@ variables:
   value: 10
 - name: 'loadTestDurationInSeconds' # locust test duration
   value: 300
-- name: 'loadTestNumberOfUsers' # locust number of simulated users
+- name: 'loadTestNumberOfUsers' # number of simulated users in the load test
   value: 500
 - name: 'loadTestUserSpawnRate' # locust spawn rate users / per second
   value: 10

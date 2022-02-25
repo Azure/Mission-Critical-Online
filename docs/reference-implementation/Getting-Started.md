@@ -14,13 +14,14 @@ This guide describes the end-to-end process for setting up all pre-requisites an
 
 ## Pre-requisites
 
-The following tools and applications must be installed on the client machine used to deploy AlwaysOn reference implementation:
+The following must be installed on the client machine used to deploy AlwaysOn reference implementation:
 
-- Install [Azure CLI](https://docs.microsoft.com/cli/azure/service-page/azure%20cli?view=azure-cli-latest)
+- [Azure CLI](https://docs.microsoft.com/cli/azure/service-page/azure%20cli?view=azure-cli-latest)
 
-- Install [Azure DevOps CLI](https://docs.microsoft.com/azure/devops/cli/?view=azure-devops)
+This guide offers two paths: UI or script. If you prefer scripting, make sure you have these additional tools installed:
 
-- Install [PowerShell](https://docs.microsoft.com/powershell/scripting/install/installing-powershell?view=powershell-7.1) (on Windows, Linux or macOS).
+- [Azure DevOps CLI](https://docs.microsoft.com/azure/devops/cli/?view=azure-devops)
+- [PowerShell](https://docs.microsoft.com/powershell/scripting/install/installing-powershell?view=powershell-7.1) (on Windows, Linux or macOS).
 
 ## Overview
 
@@ -195,13 +196,13 @@ More information about the required permissions needed to deploy via Terraform c
 
 Our AlwaysOn reference implementation knows three different environments: prod, int and e2e. These three environments can be selected for each individual pipeline run and can refer to the same or different (recommended) Azure subscriptions for proper separation. These environments are represented by service connections in Azure DevOps:
 
-- alwayson-e2e-serviceconnection
-- alwayson-prod-serviceconnection
-- alwayson-int-serviceconnection
+> **Important!** Since these connection names are used in pipelines, use them exactly as specified above. If you change the name of the service connection, you have to also change it in pipeline YAML.
+
+- `alwayson-e2e-serviceconnection`
+- `alwayson-prod-serviceconnection`
+- `alwayson-int-serviceconnection`
 
 > If you only created one Service Principal above, you only need to create one Service Connection for now.
-
-> **Important!** Since these connection names are used in pipelines, use them exactly as specified above. If you change the name of the service connection, you have to also change it in pipeline YAML.
 
 These service connections can be created in the Azure DevOps Portal or via the `az devops` CLI. Create them using either one of these two methods. Make sure that you specify the right credentials for the **service principal created earlier**.
 

@@ -312,7 +312,7 @@ stages:
       customPrefix: '$(prefix)$(customSuffix)'
       numberOfWorkerNodes: $(loadTestNumberOfWorkerNodes)
       testDurationSeconds: $(loadTestDurationInSeconds)
-      locustUser: $(loadTestNumberOfUsers) # number of simulated users
+      locustUser: $(loadTestNumberOfUsers)
       locustSpawnRate: $(loadTestUserSpawnRate) # spawn rate users / per second
       locustHeadless: true # run locust load test in headless mode
 

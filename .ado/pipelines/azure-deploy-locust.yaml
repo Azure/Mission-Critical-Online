@@ -21,7 +21,7 @@ parameters:
   type: number
   default: 0
 
-- name: locustTargetUrl
+- name: loadTestTargetUrl
   displayName: 'Loadtest Target URL (can be overriden later)'
   type: string
   default: "https://www.int.shop.always-on.app"
@@ -43,6 +43,6 @@ stages:
   parameters:
     terraformWorkingDirectory: '$(workingDirectory)'
     customPrefix: '$(prefix)'
-    locustTargetUrl: ${{ parameters.locustTargetUrl }}
+    loadTestTargetUrl: ${{ parameters.loadTestTargetUrl }}
     loadTestNumberOfWorkerNodes: ${{ parameters.loadTestNumberOfWorkerNodes }}
     locustHeadless: false # set to false to run in webui mode

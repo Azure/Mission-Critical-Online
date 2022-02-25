@@ -48,7 +48,7 @@ spec:
         matchLabels:
           kubernetes.io/metadata.name: kube-system
     ports:
-    - protocol: UDP
+    - protocol: UDP # UDP/53 allows DNS 
       port: 53
     - protocol: TCP
       port: 53

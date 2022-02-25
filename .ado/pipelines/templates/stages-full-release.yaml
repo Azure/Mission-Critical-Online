@@ -311,7 +311,7 @@ stages:
       terraformWorkingDirectory: 'src/testing/loadtest-locust/infra'
       customPrefix: '$(prefix)$(customSuffix)'
       numberOfWorkerNodes: $(loadTestNumberOfWorkerNodes)
-      testDurationSeconds: $(loadTestDurationInSeconds) # load test duration
+      testDurationSeconds: $(loadTestDurationInSeconds)
       locustUser: $(loadTestNumberOfUsers) # number of simulated users
       locustSpawnRate: $(loadTestUserSpawnRate) # spawn rate users / per second
       locustHeadless: true # run locust load test in headless mode

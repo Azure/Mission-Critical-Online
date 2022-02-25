@@ -6,8 +6,11 @@ variables:
 - name:  'prefix'
   value: 'afe2e'          # <===== CHANGE THIS! Must not be longer than 6 characters! Needs to be a unique prefix
 
+# The first value in 'stampLocations' is the primary region used for global services.
+# IMPORTANT! Changing the primary region (first value) is a BREAKING change and will destroy CosmosDB and Front Door.
 - name: 'stampLocations'
   value: '["northeurope"]'    # Check which regions are valid. There is a list in /src/infra/README.md
+ 
 ##### NOTE #####
 # If you want to run embedded Chaos Studio testing, only the following regions are supported as of 11-Oct-2021:
 # eastus, centralus, uksouth, westeurope, japaneast

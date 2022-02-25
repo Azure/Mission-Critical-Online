@@ -35,10 +35,10 @@ In many customer systems there is an assumption that application updates are mor
 
 ## Branching strategy
 
-A foundation of the AlwayOn update strategy is around how branches are used in the Git repository. AlwaysOn uses 3 types of branch:
+A foundation of the AlwayOn update strategy is around how branches are used in the Git repository. AlwaysOn uses 3 types of branches:
 
 - **`feature/*` and `fix/*` branches**
-  - These are the entry points for any change. They are created by the developers and should be named something like `feature/game-update` or `fix/worker-timeout-bug`. Once the changes are ready to be merged, a pull request (PR) against the `main` branch needs to be created. Every PR needs to be approved by at least one reviewer. With very few exceptions, every change that is proposed in a PR must run through the E2E (end-to-end) validation pipeline. The E2E pipeline can – and should – also be used by developers to test and debug their changes on a complete environment. For this, the E2E pipeline can be executed without the destroy step at the end. The environment can then live for a longer period of time with new updates to the branch quickly getting released to it.
+  - These are the entry points for any change. They are created by developers and should be named something like `feature/catalog-update` or `fix/worker-timeout-bug`. Once changes are ready to be merged, a pull request (PR) against the `main` branch needs to be created. Every PR needs to be approved by at least one reviewer. With very few exceptions, every change that is proposed in a PR must run through the E2E (end-to-end) validation pipeline. The E2E pipeline can – and should – also be used by developers to test and debug their changes on a complete environment. For this, the E2E pipeline can be executed without the destroy step at the end. The environment can then live for a longer period of time with new updates to the branch quickly getting released to it.
 
 - **`main` branch**
   - This is considered a continuously forward moving and stable branch and is mostly used for integration testing. Changes are only to come into `main` through PRs – a branch policy prohibits any other direct writes to it. From the `main` branch nightly releases against the permanent `integration (int)` environment are executed automatically. `main` is considered stable. It should be safe to assume that at any given time a release could be created from it.

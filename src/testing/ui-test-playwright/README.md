@@ -4,29 +4,28 @@
 
 Playwright UI tests can be written as JavaScript code and then executed directly with `node index.js`, with [Playwright Test Runner](https://playwright.dev/docs/test-intro/) or using a 3rd party test runner (i.e. [Mocha](https://playwright.dev/docs/test-runners#mocha)).
 
-# In-pipeline smoke tests
-
-Since UI is not the main focus of AlwaysOn, basic smoke tests using only PowerShell and use the Playwright CLI are implemented to capture screenshots of three pages in the application (home page, play page and list games page):
-
-```powershell
-# install Playwright dependencies - required for Ubuntu
-npx playwright install-deps chromium
-
-# take screenshot of the index page
-npx playwright screenshot --wait-for-timeout=1000 --full-page --browser=chromium "https://$frontDoorFqdn/" screenshots/root.png
-
-# take screenshot of the play page
-npx playwright screenshot --wait-for-timeout=1000 --full-page --browser=chromium "https://$frontDoorFqdn/#/play" screenshots/play.png
-
-# take screenshot of the list of games - waiting a bit longer, because it takes some time to load
-npx playwright screenshot --wait-for-timeout=3000 --full-page --browser=chromium "https://$frontDoorFqdn/#/list-games" screenshots/list-games.png
-```
-
-Keep in mind that this test **doesn't fail** when the application wasn't deployed properly and the Front Door endpoint shows the default or "Not Found" error page. It would fail only in case the requested URL is not available. Captured screenshots can still be used to inspect what went wrong.
-
 # User flow test definition
 
-For more complex tests, a Playwright UI test definition representing a typical user flow is written in a separate file [playeruserflow.spec.js](./playeruserflow.spec.js). And executed using Playwright Test Runner. Currently this is only being used by the Load Generator, but in future it might be used in the CI/CD pipeline as well to replace the basic smoke tests.
+A Playwright UI test definition representing a typical user flow is written in a separate file [cataloguserflow.spec.js](./cataloguserflow.spec.js). And executed using Playwright Test Runner. This is being used by the smoke test in the deployment pipeline as well as by the optional Load Generator.
+
+# In-pipeline smoke tests
+
+The Playwright test definition is executed against the Front Door endpoint of the stamp as part of the smoke testing stage during the deployment pipeline. It will catch errors in the UI as well as capture screenshots for manual inspection and stores them as pipeline artifacts.
+
+```powershell
+echo "Installing Playwright dependencies..."
+npm install playwright-chromium @playwright/test -y
+
+$env:TEST_BASEURL = "https://$frontDoorFqdn"
+$env:SCREENSHOT_PATH = "$pwd/screenshots"
+
+$playwrightTestPath = "src/testing/ui-test-playwright"
+
+echo "*** Running PlayWright tests from $playwrightTestPath against https://$frontDoorFqdn"
+
+npx playwright test -c $playwrightTestPath
+
+```
 
 ---
 

@@ -10,10 +10,9 @@
   "author": "CAE AppDev",
   "license": "ISC",
   "dependencies": {
-    "@azure/msal-browser": "^2.22.0",
     "@microsoft/applicationinsights-web": "^2.7.3",
     "tiny-emitter": "^2.1.0",
-    "vue": "^3.2.30",
+    "vue": "^3.2.31",
     "vue-router": "^4.0.12"
   },
   "devDependencies": {

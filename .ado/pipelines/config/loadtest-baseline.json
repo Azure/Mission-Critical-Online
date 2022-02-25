@@ -1,6 +1,6 @@
 [
     {
-        "name": "POST new game result",
+        "name": "POST new comment",
         "operator": "le",
         "values": {
             "Failure Count":"3",
@@ -9,58 +9,27 @@
         }
     },
     {
-        "name": "POST new game result",
+        "name": "POST new comment",
         "operator": "ge",
         "values": {
-            "Request Count":"20000"
+            "Request Count":"4000"
         }
     },
     {
-        "name": "POST Get access token",
+        "name": "GET List of CatalogItems",
         "operator": "le",
         "values": {
             "Failure Count":"3",
-            "Average Response Time": "10000",
-            "Median Response Time": "4500"
+            "Average Response Time": "190",
+            "Median Response Time": "160"
         }
     },
     {
-        "name": "POST Get access token",
-        "operator": "ge",
-        "values": {
-            "Request Count":"650"
-        }
-    },
-    {
-        "name": "GET LIST my GameResults",
+        "name": "GET Catalog Item",
         "operator": "le",
         "values": {
             "Failure Count":"3",
-            "Average Response Time": "160",
-            "Median Response Time": "140"
-        }
-    },
-    {
-        "name": "GET my Player Stats",
-        "operator": "le",
-        "values": {
-            "Failure Count":"3",
-            "Average Response Time": "140"        
-        }
-    },
-    {
-        "name": "POST AI game",
-        "operator": "le",
-        "values": {
-            "Failure Count":"3",
-            "Average Response Time": "340"        
-        }
-    },
-    {
-        "name": "POST AI game",
-        "operator": "ge",
-        "values": {
-            "Request Count":"20000"
+            "Average Response Time": "140"
         }
     },
     {
@@ -76,7 +45,7 @@
         "name": "Aggregated",
         "operator": "ge",
         "values": {
-            "Request Count":"45000"
+            "Request Count":"75000"
         }
     }
 ]

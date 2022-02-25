@@ -62,11 +62,12 @@ jobs:
           -smokeTestRetryWaitSeconds $(smokeTestRetryWaitSeconds)
 
     - task: NodeTool@0
+      displayName: 'Use Node v12 for PlayWright'
       inputs:
         versionSpec: '12.x' # Playwright requires Node.js 12 or higher
 
     - task: PowerShell@2
-      displayName: 'Capture UI screenshots from global endpoint'
+      displayName: 'Run PlayWright UI test and capture screenshots from global endpoint'
       inputs:
         targetType: inline
         script: |
@@ -91,7 +92,7 @@ jobs:
 
           echo "*** Running PlayWright tests from $playwrightTestPath against https://$frontDoorFqdn"
 
-          npx playwright test -c $playwrightTestPath
+          npx playwright test -c $playwrightTestPath --timeout 60000
 
     - publish:  'screenshots/'
       artifact: 'uiScreenshots' # artifact name

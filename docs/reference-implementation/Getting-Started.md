@@ -161,7 +161,7 @@ az pipelines create --name "Azure.AlwaysOn E2E Release" --description "Azure.Alw
 
 All pipelines require an Azure DevOps service connection to access the target Azure Subscription where the resources are deployed. These service connections use Service Principals to access Azure which can be configured automatically, when proper access is given, or manually in Azure DevOps by providing a pre-created Azure Service Principal with the required permissions.
 
-> **Important:** You need to create an AAD Service Principal with **Subscription-level Owner permissions**. We need owner permission on the whole subscription as the pipeline will need to create various role assignments.
+> **Important!** The AAD Service Principal needs **subscription-level owner permissions** as the pipeline will create various role assignments.
 
 You need to repeat these steps for each of the environments that you want to create. But you can also only start with one for now. If so, we recommend to start with `e2e`.
 

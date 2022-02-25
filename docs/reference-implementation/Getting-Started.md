@@ -20,7 +20,7 @@ The following tools and applications must be installed on the client machine use
 
 - Install [Azure DevOps CLI](https://docs.microsoft.com/azure/devops/cli/?view=azure-devops)
 
-- Install [PowerShell](https://docs.microsoft.com/powershell/scripting/install/installing-powershell-on-windows?view=powershell-7.1).
+- Install [PowerShell](https://docs.microsoft.com/powershell/scripting/install/installing-powershell?view=powershell-7.1) (on Windows, Linux or macOS).
 
 ## Overview
 

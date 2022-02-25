@@ -8,7 +8,6 @@ parameters:
    type: string
    default: ''
  - name: numberOfWorkerNodes
-   type: number
    default: 0
  - name: testDurationSeconds
    type: number

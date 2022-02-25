@@ -14,13 +14,14 @@ This guide describes the end-to-end process for setting up all pre-requisites an
 
 ## Pre-requisites
 
-The following tools and applications must be installed on the client machine used to deploy AlwaysOn reference implementation:
+The following must be installed on the client machine used to deploy AlwaysOn reference implementation:
 
-- Install [Azure CLI](https://docs.microsoft.com/cli/azure/service-page/azure%20cli?view=azure-cli-latest)
+- [Azure CLI](https://docs.microsoft.com/cli/azure/service-page/azure%20cli?view=azure-cli-latest)
 
-- Install [Azure DevOps CLI](https://docs.microsoft.com/azure/devops/cli/?view=azure-devops)
+This guide offers two paths: Using Azure DevOps Portal or script-based via Azure DevOps CLI. If you prefer scripting, make sure you have these additional tools installed:
 
-- Install [PowerShell](https://docs.microsoft.com/powershell/scripting/install/installing-powershell-on-windows?view=powershell-7.1).
+- [Azure DevOps CLI](https://docs.microsoft.com/azure/devops/cli/?view=azure-devops)
+- [PowerShell](https://docs.microsoft.com/powershell/scripting/install/installing-powershell?view=powershell-7.1) (on Windows, Linux or macOS).
 
 ## Overview
 
@@ -161,7 +162,7 @@ az pipelines create --name "Azure.AlwaysOn E2E Release" --description "Azure.Alw
 
 All pipelines require an Azure DevOps service connection to access the target Azure Subscription where the resources are deployed. These service connections use Service Principals to access Azure which can be configured automatically, when proper access is given, or manually in Azure DevOps by providing a pre-created Azure Service Principal with the required permissions.
 
-We need to create an AAD Service Principal with **Subscription-level Owner permissions**. We need owner permission as the pipeline will need to create various role assignments.
+> **Important!** The AAD Service Principal needs **subscription-level owner permissions** as the pipeline will create various role assignments.
 
 You need to repeat these steps for each of the environments that you want to create. But you can also only start with one for now. If so, we recommend to start with `e2e`.
 
@@ -172,7 +173,7 @@ az account show --query id -o tsv
 # Output:
 xxx-xxxxxxx-xxxxxxx-xxxx
 
-# Verify that this is indeed the subscrption you want to target. Otherwise you can switch the scope using:
+# Verify that this is indeed the subscription you want to target. Otherwise you can switch the scope using:
 # az account set --subscription <name>
 
 # Make sure to change the name to a unique one within your tenant
@@ -195,13 +196,15 @@ More information about the required permissions needed to deploy via Terraform c
 
 Our AlwaysOn reference implementation knows three different environments: prod, int and e2e. These three environments can be selected for each individual pipeline run and can refer to the same or different (recommended) Azure subscriptions for proper separation. These environments are represented by service connections in Azure DevOps:
 
-- alwayson-e2e-serviceconnection
-- alwayson-prod-serviceconnection
-- alwayson-int-serviceconnection
+> **Important!** Since these connection names are used in pipelines, use them exactly as specified above. If you change the name of the service connection, you have to also change it in pipeline YAML.
+
+- `alwayson-e2e-serviceconnection`
+- `alwayson-prod-serviceconnection`
+- `alwayson-int-serviceconnection`
 
 > If you only created one Service Principal above, you only need to create one Service Connection for now.
 
-These service connections can be created in the Azure DevOps Portal or via the `az devops` CLI. Create them using either one of these two methods.
+These service connections can be created in the Azure DevOps Portal or via the `az devops` CLI. Create them using either one of these two methods. Make sure that you specify the right credentials for the **service principal created earlier**.
 
 #### Use Azure DevOps Portal
 
@@ -309,7 +312,6 @@ You can now go to the Azure Portal and check the provisioned resources. In the R
 
 **Stamp Resources**
 ![Azure Stamp Resources](/docs/media/e2e_azure_resources_stamp.png)
-
 
 #### Browse to the demo app website
 

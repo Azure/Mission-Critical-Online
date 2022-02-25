@@ -19,8 +19,6 @@ parameters:
 
 stages:
 
-- template: ../config/configuration.yaml
-
 - stage: deployglobalinfrastructure
   displayName: 'Deploy Global Infrastructure' # Deploy Global Azure Infrastructure
   jobs:

@@ -46,7 +46,7 @@ variables:
 # Make sure that these parameters are aligned with the loadtest-baseline.yaml
 - name: 'loadTestNumberOfWorkerNodes' # number of worker nodes
   value: 10
-- name: 'loadTestDurationInSeconds' # locust test duration
+- name: 'loadTestDurationInSeconds' # load test duration
   value: 300
 - name: 'loadTestNumberOfUsers' # number of simulated users in the load test
   value: 500

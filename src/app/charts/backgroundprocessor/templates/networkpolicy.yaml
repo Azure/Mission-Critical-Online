@@ -30,9 +30,9 @@ spec:
         matchLabels:
           kubernetes.io/metadata.name: kube-system
     ports:
-    - protocol: UDP # UDP/53 allows DNS
+    - protocol: UDP # UDP/53 allows DNS traffic
       port: 53
-    - protocol: TCP
+    - protocol: TCP # TCP/53 allows DNS traffic
       port: 53
   policyTypes:
   - Egress

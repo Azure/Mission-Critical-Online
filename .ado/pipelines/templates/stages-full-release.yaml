@@ -310,10 +310,10 @@ stages:
     parameters:
       terraformWorkingDirectory: 'src/testing/loadtest-locust/infra'
       customPrefix: '$(prefix)$(customSuffix)'
-      numberOfWorkerNodes: 10 # number of locust worker nodes
-      testDurationSeconds: 300 # locust test duration
-      locustUser: 500 # locust number of simulated users
-      locustSpawnRate: 10 # locust spawn rate users / per second
+      loadTestNumberOfWorkerNodes: $(loadTestNumberOfWorkerNodes)
+      loadTestDurationInSeconds: $(loadTestDurationInSeconds)
+      loadTestNumberOfUsers: $(loadTestNumberOfUsers)
+      loadTestUserSpawnRate: $(loadTestUserSpawnRate)
       locustHeadless: true # run locust in headless mode
 
 # Chaos testing for e2e (optional) with Azure Chaos Studio

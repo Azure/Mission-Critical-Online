@@ -7,13 +7,13 @@ parameters:
  - name: locustTargetUrl
    type: string
    default: ''
- - name: numberOfWorkerNodes
+ - name: loadTestNumberOfWorkerNodes
    default: 0
- - name: testDurationSeconds
+ - name: loadTestDurationInSeconds
    default: 0
- - name: locustSpawnRate
+ - name: loadTestUserSpawnRate
    default: 0
- - name: locustUser
+ - name: loadTestNumberOfUsers
    default: 0
  - name: locustHeadless
    type: boolean
@@ -85,22 +85,22 @@ stages:
         environment:                '$(environment)'
         customAttributes:           '-var targeturl=$(locustTargetUrl)
                                     -var queued_by="$(Build.QueuedBy)"
-                                    -var locust_workers=${{ parameters.numberOfWorkerNodes }}
-                                    -var locust_runtime="${{ parameters.testDurationSeconds }}s"
-                                    -var locust_spawn_rate=${{ parameters.locustSpawnRate }}
+                                    -var locust_workers=${{ parameters.loadTestNumberOfWorkerNodes }}
+                                    -var locust_runtime="${{ parameters.loadTestDurationInSeconds }}s"
+                                    -var locust_spawn_rate=${{ parameters.loadTestUserSpawnRate }}
                                     -var locust_headless="${{ lower(parameters.locustHeadless) }}"
-                                    -var locust_number_of_users=${{ parameters.locustUser }}'
+                                    -var locust_number_of_users=${{ parameters.loadTestNumberOfUsers }}'
 
     # All of the next tasks are only applicable in headless mode
     - ${{ if eq(parameters.locustHeadless, 'true') }}:
       # Sleep for the duration of the load test
       - task: Bash@3
-        displayName: 'Sleep for ${{ parameters.testDurationSeconds }} seconds'
+        displayName: 'Sleep for ${{ parameters.loadTestDurationInSeconds }} seconds'
         inputs:
           targetType: 'inline'
           script: |
-            echo "Sleeping for ${{ parameters.testDurationSeconds }} seconds while the test is running..."
-            sleep ${{ parameters.testDurationSeconds }}
+            echo "Sleeping for ${{ parameters.loadTestDurationInSeconds }} seconds while the test is running..."
+            sleep ${{ parameters.loadTestDurationInSeconds }}
 
     # Download locust stats and logs from storage account to build agent so we can then store it as a pipeline artifact
       - task: Bash@3

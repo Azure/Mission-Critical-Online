@@ -16,7 +16,7 @@ parameters:
   - int
   - prod
 
-- name: numberOfWorkerNodes
+- name: loadTestNumberOfWorkerNodes
   displayName: 'Number of Worker Nodes. Set to 0 to also destroy the master node.'
   type: number
   default: 0
@@ -44,5 +44,5 @@ stages:
     terraformWorkingDirectory: '$(workingDirectory)'
     customPrefix: '$(prefix)'
     locustTargetUrl: ${{ parameters.locustTargetUrl }}
-    numberOfWorkerNodes: ${{ parameters.numberOfWorkerNodes }}
+    loadTestNumberOfWorkerNodes: ${{ parameters.loadTestNumberOfWorkerNodes }}
     locustHeadless: false # set to false to run in webui mode

@@ -313,7 +313,7 @@ stages:
       numberOfWorkerNodes: $(loadTestNumberOfWorkerNodes)
       testDurationSeconds: $(loadTestDurationInSeconds)
       locustUser: $(loadTestNumberOfUsers)
-      locustSpawnRate: $(loadTestUserSpawnRate) # spawn rate users / per second
+      locustSpawnRate: $(loadTestUserSpawnRate)
       locustHeadless: true # run locust load test in headless mode
 
 # Chaos testing for e2e (optional) with Azure Chaos Studio

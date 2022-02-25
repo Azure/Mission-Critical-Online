@@ -201,6 +201,8 @@ Our AlwaysOn reference implementation knows three different environments: prod, 
 
 > If you only created one Service Principal above, you only need to create one Service Connection for now.
 
+> **Important**: Since these connection names are used in pipelines, use them exactly as specified above. If you change the name of the service connection, you have to also change it in pipeline YAML.
+
 These service connections can be created in the Azure DevOps Portal or via the `az devops` CLI. Create them using either one of these two methods.
 
 #### Use Azure DevOps Portal

@@ -6,7 +6,7 @@ resource "azurerm_kubernetes_cluster" "stamp" {
   dns_prefix          = "${local.prefix}${var.location}aks"
   kubernetes_version  = var.kubernetes_version
   node_resource_group = "MC_${local.prefix}-stamp-${var.location}-aks-rg" # we manually specify the naming of the managed resource group to have it controlled and consistent
-  sku_tier            = "Paid"                                          # Opt-in for AKS Uptime SLA
+  sku_tier            = "Paid"                                            # Opt-in for AKS Uptime SLA
 
   automatic_channel_upgrade = "node-image"
 
@@ -49,25 +49,18 @@ resource "azurerm_kubernetes_cluster" "stamp" {
     type = "SystemAssigned"
   }
 
-  addon_profile {
-    oms_agent {
-      enabled                    = true
-      log_analytics_workspace_id = data.azurerm_log_analytics_workspace.stamp.id
-    }
+  # Enable the Azure Policy Addon for AKS
+  azure_policy_enabled = true
 
-    azure_policy {
-      enabled = true
-    }
+  # Enable and configure the Azure Monitor (container insights) addon for AKS
+  oms_agent {
+    log_analytics_workspace_id = data.azurerm_log_analytics_workspace.stamp.id
+  }
 
-    kube_dashboard {
-      enabled = false
-    }
-
-    azure_keyvault_secrets_provider {
-      enabled                  = true
-      secret_rotation_enabled  = true
-      secret_rotation_interval = "5m"
-    }
+  # Enable and configure the Azure KeyVault Secrets Provider addon for AKS
+  key_vault_secrets_provider {
+    secret_rotation_enabled  = true
+    secret_rotation_interval = "5m"
   }
 
   depends_on = [

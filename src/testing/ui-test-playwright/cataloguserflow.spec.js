@@ -49,9 +49,9 @@ test('shoppinguserflow', async ({ page }) => {
     // Count the number of items we found so we can randomly select one
     var catalogItems = await page.$$('div.catalog-item');
 
-    expect(catalogItems.length > 0).toBe(true);
+    console.log(`Found ${catalogItems.length} catalog items`);
 
-    // console.log(`Found ${catalogItems.length} catalog items`);
+    expect(catalogItems.length > 0).toBe(true);
 
     var numberOfItemsToVisit = getRandomInt(minNumberOfItems, maxNumberOfItems);
 

@@ -13,8 +13,8 @@ const { test, expect } = require('@playwright/test');
 const baseUrl = process.env.TEST_BASEURL; // Needs to include protocol, e.g. https://
 
 // If this test file is being used to simulate more realistic user behaviour, change these values
-const minTaskWaitSeconds = process.env.TEST_MIN_TASK_WAIT_SECONDS || 1;
-const maxTaskWaitSeconds = process.env.TEST_MAX_TASK_WAIT_SECONDS || 1;
+const minTaskWaitSeconds = process.env.TEST_MIN_TASK_WAIT_SECONDS || 3;
+const maxTaskWaitSeconds = process.env.TEST_MAX_TASK_WAIT_SECONDS || 3;
 
 // If this test file is being used to simulate more realistic user behaviour, change these values
 const minNumberOfItems = process.env.TEST_MIN_NUMBER_OF_ITEMS || 1;
@@ -26,6 +26,8 @@ const screenshotPath = process.env.SCREENSHOT_PATH || '';
 const captureScreenshots = screenshotPath != '' ? true : false;
 
 test('shoppinguserflow', async ({ page }) => {
+
+    console.log(`*** Running test with baseUrl: ${baseUrl} minTaskWaitSeconds: ${minTaskWaitSeconds} maxTaskWaitSeconds: ${maxTaskWaitSeconds} minNumberOfItems: ${minNumberOfItems} maxNumberOfItems: ${maxNumberOfItems} runAllOptionalSteps: ${runAllOptionalSteps} captureScreenshots: ${captureScreenshots}`);
 
     // Header to indicate that posted comments and rating are just for testing and can be deleted again by the app
     page.setExtraHTTPHeaders({ 'X-TEST-DATA': 'true' });
@@ -49,9 +51,10 @@ test('shoppinguserflow', async ({ page }) => {
     // Count the number of items we found so we can randomly select one
     var catalogItems = await page.$$('div.catalog-item');
 
-    expect(catalogItems.length > 0).toBe(true);
+    console.log(`*** Found ${catalogItems.length} catalog items`);
 
-    // console.log(`Found ${catalogItems.length} catalog items`);
+    // If there are no catalog items, we can't continue and need to fail the test
+    expect(catalogItems.length > 0).toBe(true);
 
     var numberOfItemsToVisit = getRandomInt(minNumberOfItems, maxNumberOfItems);
 
@@ -61,7 +64,7 @@ test('shoppinguserflow', async ({ page }) => {
         // Pick a random item to visit
         var pick = getRandomInt(1, catalogItems.length);
 
-        // console.log(`Will visit item number ${pick}`);
+        // console.log(`*** Will visit item number ${pick}`);
 
         await page.click(':nth-match(.catalog-item, ' + pick + ')');
         await page.waitForTimeout(getRandomWaitTimeMs());
@@ -102,6 +105,8 @@ test('shoppinguserflow', async ({ page }) => {
     await expect(page).toHaveURL(`${baseUrl}/#/`);
     // Wait once more before we finish the test and close the browser
     await page.waitForTimeout(getRandomWaitTimeMs());
+
+    console.log(`*** Finished test`);
 });
 
 function getRandomWaitTimeMs() {

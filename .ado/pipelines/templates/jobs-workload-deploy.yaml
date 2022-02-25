@@ -53,7 +53,7 @@ jobs: # using jobs so they each run in parallel
             do {
               kubectl rollout status deployment/healthservice-deploy -n $(workloadNamespace)
 
-              if ($LASTEXITCODE -ne 0) {
+              if ($LastExitCode -ne 0) {
                 $retrycount++;
                 echo "Deployment not ready. Retrying... $retrycount/$maxretrycount";
                 start-sleep $(60*$retrycount) # sleep for <retry> * 60 seconds
@@ -139,7 +139,7 @@ jobs: # using jobs so they each run in parallel
                 echo "certificate for catalogservice-ingress-secret pending.. "
               }
 
-              if ($LASTEXITCODE -ne 0) {
+              if ($LastExitCode -ne 0) {
                 $retrycount++;
                 echo "Deployment not ready. Retrying... $retrycount/$maxretrycount";
                 start-sleep $(60*$retrycount) # sleep for <retry> * 60 seconds
@@ -202,7 +202,7 @@ jobs: # using jobs so they each run in parallel
             $maxretrycount = 5
             do {
               kubectl rollout status deployment/backgroundprocessor-deploy -n $(workloadNamespace)
-              if ($LASTEXITCODE -ne 0) {
+              if ($LastExitCode -ne 0) {
                 $retrycount++;
                 echo "Deployment not ready. Retrying... $retrycount/$maxretrycount";
                 start-sleep $(60*$retrycount) # sleep for <retry> * 60 seconds

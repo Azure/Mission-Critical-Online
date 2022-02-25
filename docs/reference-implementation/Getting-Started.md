@@ -172,7 +172,7 @@ az account show --query id -o tsv
 # Output:
 xxx-xxxxxxx-xxxxxxx-xxxx
 
-# Verify that this is indeed the subscrption you want to target. Otherwise you can switch the scope using:
+# Verify that this is indeed the subscription you want to target. Otherwise you can switch the scope using:
 # az account set --subscription <name>
 
 # Make sure to change the name to a unique one within your tenant

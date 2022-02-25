@@ -18,7 +18,7 @@ The following must be installed on the client machine used to deploy AlwaysOn re
 
 - [Azure CLI](https://docs.microsoft.com/cli/azure/service-page/azure%20cli?view=azure-cli-latest)
 
-This guide offers two paths: UI or script. If you prefer scripting, make sure you have these additional tools installed:
+This guide offers two paths: Using Azure DevOps Portal or script-based via Azure DevOps CLI. If you prefer scripting, make sure you have these additional tools installed:
 
 - [Azure DevOps CLI](https://docs.microsoft.com/azure/devops/cli/?view=azure-devops)
 - [PowerShell](https://docs.microsoft.com/powershell/scripting/install/installing-powershell?view=powershell-7.1) (on Windows, Linux or macOS).

@@ -45,13 +45,13 @@ variables:
 # Embedded load testing (locust) configuration
 # Make sure that these parameters are aligned with the loadtest-baseline.yaml
 - name: 'loadTestNumberOfWorkerNodes' # number of locust worker nodes
-  value: '10'
+  value: 10
 - name: 'loadTestDurationInSeconds' # locust test duration
-  value: '300'
+  value: 300
 - name: 'loadTestNumberOfUsers' # locust number of simulated users
-  value: '500'
+  value: 500
 - name: 'loadTestUserSpawnRate' # locust spawn rate users / per second
-  value: '10'
+  value: 10
 
 # Others
 - name: 'smokeTestRetryCount' # How many times a request in the smoke tests is retried before declared as failed (retries HTTP response codes from 400-599 as well as issues like certificate errors)

@@ -10,13 +10,10 @@ parameters:
  - name: numberOfWorkerNodes
    default: 0
  - name: testDurationSeconds
-   type: number
    default: 0
  - name: locustSpawnRate
-   type: number
    default: 0
  - name: locustUser
-   type: number
    default: 0
  - name: locustHeadless
    type: boolean

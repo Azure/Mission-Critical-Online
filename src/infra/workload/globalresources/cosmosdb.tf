@@ -116,9 +116,10 @@ data "azurerm_monitor_diagnostic_categories" "cosmosdb" {
 }
 
 resource "azurerm_monitor_diagnostic_setting" "cosmosdb" {
-  name                       = "cosmosdbladiagnostics"
-  target_resource_id         = azurerm_cosmosdb_account.main.id
-  log_analytics_workspace_id = azurerm_log_analytics_workspace.global.id
+  name                           = "cosmosdbladiagnostics"
+  target_resource_id             = azurerm_cosmosdb_account.main.id
+  log_analytics_workspace_id     = azurerm_log_analytics_workspace.global.id
+  log_analytics_destination_type = "AzureDiagnostics"
 
   dynamic "log" {
     iterator = entry

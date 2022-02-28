@@ -44,9 +44,9 @@ retrieving Diagnostics Categories for Resource "/subscriptions/[...]/frontDoors/
 Sorry, we are currently experiencing high demand in this region, and cannot fulfill your request at this time. The access to the region is currently restricted, to request region access for your subscription, please follow this link https://aka.ms/cosmosdbquota for more details on how to create a region access request.
 ```
 
-**Description:** When deploying CosmosDB with zone redundancy it can happen that a region and subscription combination can cause the deployment failure with the error message above. Re-running the pipeline or switching to another region most probably won't help.
+**Description:** When deploying Cosmos DB with zone redundancy it can happen that a region and subscription combination can cause the deployment failure with the error message above. Re-running the pipeline or switching to another region most probably won't help.
 
-**Solution:** As a tactical solution, disable zone redundancy in the geolocation configuration. (`/src/infra/cosmosdb.tf` -> `dynamic "geo_location"` -> `"zone_redundant = false"`). This will likely allow the deployment to succeed.
+**Solution:** As a tactical solution, disable zone redundancy in the geolocation configuration. (`/src/infra/cosmosdb.tf` -> `dynamic "geo_location"` -> `"zone_redundant = false"`). Then *manually delete the failed Cosmos DB resource in the portal*. This will likely allow the deployment to succeed.
 
 As disabling zone redundancy is not a recommended solution for a production deployment, you should open an Azure Support Ticket to request quota for zone-redundant deployments for Cosmos DB in your required regions.
 

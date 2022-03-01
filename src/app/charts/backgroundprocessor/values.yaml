@@ -2,9 +2,16 @@ container:
   containerimage: "OVERWRITE.acr.io/alwayson/backgroundprocessor:1234" # Container Image Name
   pullPolicy: "IfNotPresent" # Container Image Pull Policy. Using IfNotPresent to enable pod starts even if ACR cannot be reached and image was pulled on the node previously
 
-scale:
-  minReplicas: 2 # Min Replicas
-  maxReplicas: 8 # Max Replicas
+scale: # Horizontal Pod Autoscaler (HPA) configuration
+  minReplicas: 2 # Min. number of replicas used for HPA
+  maxReplicas: 8 # Max. number of replicas used for HPA
+
+# Note! When disabling Network Policy for this helm chart,
+# make sure to disable Network Policy for the CatalogService as well
+# as it contains a default-deny policy.
+networkPolicy:
+  enabled: true # Enable Network Policy
+  egressRange: "0.0.0.0/0" # CIDR range for allowed egress traffic
 
 azure:
   region: "East US 2"

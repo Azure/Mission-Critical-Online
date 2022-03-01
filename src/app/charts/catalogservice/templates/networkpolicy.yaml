@@ -1,0 +1,94 @@
+{{- if .Values.networkPolicy.enabled }}
+# Default Network Policy applied to the workload. 
+# Denies ingress and egress that is not explicitly allowed.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Chart.Name }}-deny-all
+  labels:
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+---
+# Network Policy to allow ingress traffic from * on Port 80 to the cert-manager HTTP issuer.
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: {{ .Chart.Name }}-allow-cert-manager-resolver-ingress
+  labels:
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+spec:
+  podSelector:
+    matchLabels:
+      acme.cert-manager.io/http01-solver: "true"
+  ingress:
+  - from: []
+    ports:
+    - port: 8089 # default port for cm-acme-http-solve
+---
+# Network Policy to allow ingress traffic from * to the workload.
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: {{ .Chart.Name }}-allow-ingress
+  labels:
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: kube-system
+    ports:
+    - port: {{ .Values.workload.port | default 8080 }}
+---
+# Network policy to allow egress / outbound traffic from the workload.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Chart.Name }}-allow-egress-traffic
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  egress:
+  - to:
+    - ipBlock:
+        cidr: {{ .Values.networkPolicy.egressRange | default "0.0.0.0/0" }} 
+  policyTypes:
+  - Egress
+---
+# Network policy to allow dns egress
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Chart.Name }}-allow-egress-dns
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  egress:
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: kube-system
+    ports:
+    - protocol: UDP # UDP/53 allows DNS traffic
+      port: 53
+    - protocol: TCP # TCP/53 allows DNS traffic
+      port: 53
+  policyTypes:
+  - Egress
+{{- end }}

@@ -35,10 +35,10 @@ In many customer systems there is an assumption that application updates are mor
 
 ## Branching strategy
 
-A foundation of the AlwayOn update strategy is around how branches are used in the Git repository. AlwaysOn uses 3 types of branch:
+A foundation of the AlwayOn update strategy is around how branches are used in the Git repository. AlwaysOn uses 3 types of branches:
 
 - **`feature/*` and `fix/*` branches**
-  - These are the entry points for any change. They are created by the developers and should be named something like `feature/game-update` or `fix/worker-timeout-bug`. Once the changes are ready to be merged, a pull request (PR) against the `main` branch needs to be created. Every PR needs to be approved by at least one reviewer. With very few exceptions, every change that is proposed in a PR must run through the E2E (end-to-end) validation pipeline. The E2E pipeline can – and should – also be used by developers to test and debug their changes on a complete environment. For this, the E2E pipeline can be executed without the destroy step at the end. The environment can then live for a longer period of time with new updates to the branch quickly getting released to it.
+  - These are the entry points for any change. They are created by developers and should be named something like `feature/catalog-update` or `fix/worker-timeout-bug`. Once changes are ready to be merged, a pull request (PR) against the `main` branch needs to be created. Every PR needs to be approved by at least one reviewer. With very few exceptions, every change that is proposed in a PR must run through the E2E (end-to-end) validation pipeline. The E2E pipeline can – and should – also be used by developers to test and debug their changes on a complete environment. For this, the E2E pipeline can be executed without the destroy step at the end. The environment can then live for a longer period of time with new updates to the branch quickly getting released to it.
 
 - **`main` branch**
   - This is considered a continuously forward moving and stable branch and is mostly used for integration testing. Changes are only to come into `main` through PRs – a branch policy prohibits any other direct writes to it. From the `main` branch nightly releases against the permanent `integration (int)` environment are executed automatically. `main` is considered stable. It should be safe to assume that at any given time a release could be created from it.
@@ -114,7 +114,7 @@ Like the backends, there are two types of routing rules:
 1. One routing rule for the UI which is linked to the UI-storage backend pool.
 1. For the APIs there will be at any time one or more rules i.e. one for each API version which is currently supported by the backend(s). For example: `/api/1.0/*` and `/api/2.0/*`.
 
-If a release introduces a new version on the backend APIs (e.g. from `game/1.0` to `game/2.0`), these changes will also reflect in the UI that is deployed as part of the release. A specific release of the UI will always call a specific version of the API URL. Hence, by being served a particular UI version a user will automatically use the respective backend API. For this, more specific routing rules are added, for instance `/api/1.0/*` and `/api/2.0/*`. These are linked to the corresponding backend pools. If no new API version was introduced, all API-related routing rules link to the one and only backend pool. In this case it does not matter if a user gets served with the UI from a different release than the API.
+If a release introduces a new version on the backend APIs (e.g. from `catalog/1.0` to `catalog/2.0`), these changes will also reflect in the UI that is deployed as part of the release. A specific release of the UI will always call a specific version of the API URL. Hence, by being served a particular UI version a user will automatically use the respective backend API. For this, more specific routing rules are added, for instance `/api/1.0/*` and `/api/2.0/*`. These are linked to the corresponding backend pools. If no new API version was introduced, all API-related routing rules link to the one and only backend pool. In this case it does not matter if a user gets served with the UI from a different release than the API.
 
 ## Deployment process
 

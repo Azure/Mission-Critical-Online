@@ -44,3 +44,12 @@ resource "azurerm_resource_group_policy_assignment" "no_privileged_containers" {
   policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/95edb821-ddaf-4404-9732-666045e056b4"
   display_name         = "Kubernetes cluster should not allow privileged containers"
 }
+
+# Role-Based Access Control (RBAC) should be used on Kubernetes Services (BuiltIn)
+# https://github.com/Azure/azure-policy/blob/master/built-in-policies/policyDefinitions/Security%20Center/ASC_EnableRBAC_KubernetesService_Audit.json
+resource "azurerm_resource_group_policy_assignment" "aks_rbac_enabled" {
+  name                 = "aks-rbac-enabled"
+  resource_group_id    = azurerm_resource_group.stamp.id
+  policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/ac4a19c2-fa67-49b4-8ae5-0b2e78c49457"
+  display_name         = "Role-Based Access Control (RBAC) should be used on Kubernetes Services"
+}

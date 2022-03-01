@@ -22,10 +22,11 @@ steps:
       if (!$checkRg) {
         Write-Warning "*** WARN! Resource Group ${{ parameters.resourceGroupName }} does not exist. Creating..."
         $locations = '$(stampLocations)' | ConvertFrom-Json -NoEnumerate # get the stamp locations and use the first one to create the resource group there. The region does not really matter.
+
         az group create --name ${{ parameters.resourceGroupName }} --location $locations[0]
 
-        if ($LASTEXITCODE -eq 1) {
-          Write-Error "*** Error - could not create resource group"
+        if ($LastExitCode -ne 0) {
+          throw "*** Error - could not create resource group"
         }
       }
       else
@@ -42,8 +43,8 @@ steps:
                                   --https-only true `
                                   --sku Standard_GZRS `
                                   --min-tls-version TLS1_2
-        if ($LASTEXITCODE -eq 1) {
-          Write-Error "*** Error - could not create storage account"
+        if ($LastExitCode -ne 0) {
+          throw "*** Error - could not create storage account"
         }
       }
       else
@@ -57,6 +58,10 @@ steps:
               --resource-group ${{ parameters.resourceGroupName }} `
               --resource-name  ${{ parameters.storageAccountName }} `
               --resource-type Microsoft.Storage/storageAccounts
+
+      if ($LastExitCode -ne 0) {
+        throw "*** Error - could not create resource lock on storage account"
+      }
 
       $servicePrincipalId = $(az account show --query "user.name" -o tsv)
       $storageAccountId = $(az storage account show --name ${{ parameters.storageAccountName }} `
@@ -82,8 +87,8 @@ steps:
         echo "*** Role assignment $roleName already exists on Terraform state storage ${{ parameters.storageAccountName }}"
       }
 
-      if ($LASTEXITCODE -eq 1) {
-        Write-Error "*** Error - could not create role assignment"
+      if ($LastExitCode -ne 0) {
+        throw "*** Error - could not create role assignment"
       }
 
       $terraformContainerName = "tfstate" # do not change unless you have a strong reason to. If so, also change in 'terraform init' step template
@@ -97,8 +102,8 @@ steps:
                                     --public-access off `
                                     --auth-mode login
 
-        if ($LASTEXITCODE -eq 1) {
-          Write-Error "*** Error - could not create storage container"
+        if ($LastExitCode -ne 0) {
+          throw "*** Error - could not create storage container"
         }
       }
       else
@@ -117,8 +122,8 @@ steps:
                                                 --enable-container-delete-retention true `
                                                 --container-delete-retention-days 7
 
-      if ($LASTEXITCODE -eq 1) {
-        Write-Error "*** Error - could not update storage account properties"
+      if ($LastExitCode -ne 0) {
+        throw "*** Error - could not update storage account properties"
       }
 
       # In private mode, create Private Endpoints for the private Build Agents
@@ -147,8 +152,8 @@ steps:
           --group-id blob `
           --connection-name myConnection
 
-          if ($LASTEXITCODE -eq 1) {
-            Write-Error "*** Error - could not create storage private endpoint"
+          if ($LastExitCode -ne 0) {
+            throw "*** Error - could not create storage private endpoint"
           }
 
           # Create a DNS entry in the private blob.core.windows.net DNS zone of the build agent
@@ -158,10 +163,16 @@ steps:
           --name "tfprivatednsstorageblob" `
           --private-dns-zone "privatelink.blob.core.windows.net" `
           --zone-name blob
+
           # Disable public access (access now only via Private Endpoint)
           az storage account update --name ${{ parameters.storageAccountName }} `
                                     --resource-group ${{ parameters.resourceGroupName }} `
                                     --public-network-access Disabled
+
+          if ($LastExitCode -ne 0) {
+            throw "*** Error - could not disable public network access"
+          }
+
           echo "*** Sleeping for 120 seconds to let the private endpoint become effective"
           start-sleep -s 120
         }

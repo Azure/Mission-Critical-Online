@@ -1,0 +1,39 @@
+{{- if .Values.networkPolicy.enabled }}
+# Network policy to allow egress / outbound traffic from the workload.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Chart.Name }}-allow-egress-traffic
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  egress:
+  - to:
+    - ipBlock:
+        cidr: {{ .Values.networkPolicy.egressRange | default "0.0.0.0/0" }} 
+  policyTypes:
+  - Egress
+---
+# Network policy to allow dns egress
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Chart.Name }}-allow-egress-dns
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  egress:
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: kube-system
+    ports:
+    - protocol: UDP # UDP/53 allows DNS traffic
+      port: 53
+    - protocol: TCP # TCP/53 allows DNS traffic
+      port: 53
+  policyTypes:
+  - Egress
+{{- end }}

@@ -2,6 +2,25 @@
 
 As described in the [conceptual description](/docs/reference-implementation/AppDesign-Application-Design.md), the CatalogService provides APIs that the UI, and all other users of the service, interact with.
 
+## Deployment
+
+The CatalogService application is packaged and deployed as a Helm chart. The chart is stored in the `src/app/charts` directory. It offers a set of parameters that can be used to customize the deployment (see `values.yaml` for all).
+
+| Parameter | Description |
+| --- | --- |
+| scale.minReplicas | Minimum number of replicas to deploy |
+| scale.maxReplicas | Maximum number of replicas to deploy |
+| networkPolicy.enabled | Whether to enable network policies |
+| networkPolicy.egressRange | Allowed egress range - defaults to `0.0.0.0/0` |
+
+## Networking and Security
+
+When CatalogService is deployed with `.Values.networkPolicy.enabled` set to `true` (default), it uses a custom network policy that allows ingress traffic (which is needed to expose the workload via the Ingress controller) and egress traffic. The egress traffic can be limited via `.Values.networkPolicy.egressRange` to for example the IP address range that contains the per-stamp Private Endpoints. It also enables ingress traffic for cert-manager (which is needed to provision certificates) and denies everything else (default deny).
+
+> **NOTE:** The CatalogService contains a default-deny policy. When disabling NetworkPolicy per-helm chart, you've to disabled it for all charts deployed to a specific namespace.
+
+The CatalogService container is running its workload with the non-privileged user `workload`, created as part of the image build process (see its `Dockerfile` for more). It is also configured with `readOnlyFilesystem` set to `true` to set its root filesystem `/` to read-only. This is a recommended practice for containers running workloads that are not expected to modify the filesystem. Directories requiring read-write access like `/tmp` and `/var/log` are mounted as volumes.
+
 ## Configuration
 
 Configuration settings are maintained in the `AlwaysOn.Shared/SysConfig.cs` file and either defined with default values there or loaded through the .NET IConfiguration provider. When running inside AKS, settings get injected via environment variables as well as through key-value files (by the [CSI secret driver for Key Vault](/src/config/charts/csi-secrets-driver)). While ENV variables are loaded automatically, to read settings from the files, we need to add this line in the `CreateHostBuilder()` method:
@@ -88,10 +107,27 @@ public async Task<ActionResult<CatalogItem>> GetCatalogItemByIdAsyncV2(Guid item
 }
 ```
 
-* Providing version string in the URL is mandatory (e.g. `https://localhost:5000/1.0/catalogitem/` or `https://ao6bd5-global-fd.azurefd.net/api/1.0/catalogitem`).
-* If version is `1.0`, the first implementation will get called (`GetCatalogItemByIdAsync`).
-* If version is `2.0`, the second implementation will get called (`GetCatalogItemByIdAsyncV2`).
-* If version `3.0` is specified on the controller, but no actions map to it, first implementation will be called.
+- Providing version string in the URL is mandatory (e.g. `https://localhost:5000/1.0/catalogitem/` or `https://ao6bd5-global-fd.azurefd.net/api/1.0/catalogitem`).
+- If version is `1.0`, the first implementation will get called (`GetCatalogItemByIdAsync`).
+- If version is `2.0`, the second implementation will get called (`GetCatalogItemByIdAsyncV2`).
+- If version `3.0` is specified on the controller, but no actions map to it, first implementation will be called.
+
+### Container Image
+
+The container image for `CatalogService` is built using a `Dockerfile` in `/src/app/AlwaysOn.CatalogService`. It's using a multi-stage process to build a lightweight container image without the overhead needed for the dotnet build process.
+
+```docker
+# Create build environment
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env
+...
+
+# Create application container
+FROM mcr.microsoft.com/dotnet/aspnet:6.0
+...
+
+# Copy build artifacts from previous stage build-env
+COPY --from=build-env /app/AlwaysOn.CatalogService/out .
+```
 
 ---
 

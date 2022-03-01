@@ -9,14 +9,18 @@ workload:
     port: 80 # Service Port (not used for Ingress)
     type: "ClusterIP" # Service Type (default ClusterIP)
 
-scale:
-  minReplicas: 3 # Min Replicas
-  maxReplicas: 20 # Max Replicas
+scale: # Horizontal Pod Autoscaler (HPA) configuration
+  minReplicas: 3 # Min. number of replicas used for HPA
+  maxReplicas: 20 # Max. number of replicas used for HPA
 
 ingress:
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
     kubernetes.io/ingress.class: nginx
+
+networkPolicy:
+  enabled: true # Enable Network Policy (contains a default-deny policy)
+  egressRange: "0.0.0.0/0" # CIDR range for allowed egress traffic
 
 azure:
   frontdoorid: "" # Azure Front Door Header ID (blank = disabled)

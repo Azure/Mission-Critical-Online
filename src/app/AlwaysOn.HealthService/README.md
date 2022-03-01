@@ -49,7 +49,7 @@ Make sure the file is present after deploying the application - otherwise the he
 
 Event Hub health reporting is handled by the `EventHubProducerService`. This service reports healthy if it's able to send a new message to Event Hub. For filtering, this message has an identifying property added to it:
 
-```
+```bash
 HEALTHCHECK=TRUE
 ```
 
@@ -58,6 +58,7 @@ This message is ignored on the receiving end (`AlwaysOn.BackgroundProcessor.Even
 ### Cosmos DB check
 
 Cosmos DB health reporting is handled by the `CosmosDbService`, which reports healthy if it is:
+
 - Able to connect to Cosmos DB database and perform a simple query.
 - Able to write a test document to the database (the test document has a very short Time-to-Live set, so Cosmos DB automatically removes it).
 
@@ -83,7 +84,6 @@ var testRating = new ItemRating()
 
 await AddNewRatingAsync(testRating);
 ```
-
 
 ---
 

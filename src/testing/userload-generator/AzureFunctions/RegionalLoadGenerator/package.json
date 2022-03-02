@@ -6,10 +6,10 @@
     "start": "func start"
   },
   "dependencies": {
-    "@playwright/test": "^1.19.1",
+    "@playwright/test": "^1.19.2",
     "csv-parser": "^3.0.0",
     "durable-functions": "^1.5.4",
-    "playwright-core": "^1.19.1",
-    "playwright-chromium": "^1.19.1"
+    "playwright-core": "^1.19.2",
+    "playwright-chromium": "^1.19.2"
   }
 }

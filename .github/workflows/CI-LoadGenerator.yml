@@ -1,4 +1,4 @@
-name: LoadGenerator - CI
+name: Component CI - LoadGenerator
 
 on:
   pull_request:
@@ -8,6 +8,7 @@ on:
 
 env:
   DOTNET_VERSION: "6.0"
+  NODEJS_VERSION: "16"
 
 defaults:
   run:
@@ -15,7 +16,7 @@ defaults:
 
 jobs:
   build-and-test-global:
-    name: Build and test global
+    name: Build global orchestrator
     runs-on: ubuntu-latest
 
     steps:
@@ -26,25 +27,26 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: "Build the code"
+      - name: "Build GlobalOrchestrator"
         run: |
           cd GlobalOrchestrator
           dotnet build
 
 
   build-and-test-regional:
-    name: Build and test regional
+    name: Build regional load generator
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
 
-      - name: "Setup .NET Core ${{ env.DOTNET_VERSION }}"
-        uses: actions/setup-dotnet@v1
+      - name: "Setup Node.js ${{ env.NODEJS_VERSION }}"
+        uses: actions/setup-node@v2
         with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
+          node-version: ${{ env.NODEJS_VERSION }}
 
-      - name: "Build the code"
+      - name: "Build RegionalLoadGenerator"
         run: |
           cd RegionalLoadGenerator
-          dotnet build
+          npm install
+          npm run start

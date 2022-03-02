@@ -11,4 +11,4 @@ Environments which are not provisioned with custom domains can be accessed throu
 > Note: On the cluster ingress controllers, custom domains are not used in either case; instead an Azure-provided DNS name such as _[prefix]-cluster.[region].cloudapp.azure.com_ is used with Let's Encrypt enabled to issue free SSL certificates for those endpoints.
 
 ---
-[AlwaysOn - Full List of Documentation](/docs/README.md)
+[Azure Mission-Critical - Full List of Documentation](/docs/README.md)

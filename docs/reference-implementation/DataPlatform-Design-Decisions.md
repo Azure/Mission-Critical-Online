@@ -125,5 +125,4 @@ See [BackgroundProcessor](/src/app/AlwaysOn.BackgroundProcessor/README.md) for m
 > **Note** - A messaging queue is not intended to be used as a persistent data store for an long periods of time. Event Hubs supports [Capture feature](https://docs.microsoft.com/azure/event-hubs/event-hubs-capture-enable-through-portal) which enables an Event Hub to automatically write a copy of messages to a linked Azure Storage account. This keeps utilization of an Event Hubs queue in-check but it also serves as a mechanism to backup messages.
 
 ---
-[AlwaysOn - Full List of Documentation](/docs/README.md)
-
+[Azure Mission-Critical - Full List of Documentation](/docs/README.md)

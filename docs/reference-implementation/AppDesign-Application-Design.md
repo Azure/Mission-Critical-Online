@@ -73,4 +73,4 @@ AlwaysOn aligns to the [12-Factor Application](https://12factor.net/) Methodolog
 | [Admin processes](https://12factor.net/admin-processes) | Administrative tasks such as environment (re)configuration would be performed in the same deployment pipelines used to initially configure and deploy the environments. Deployments are idempotent and incremental due to the underlying Azure Resource Manager platform. |
 
 ---
-[AlwaysOn - Full List of Documentation](/docs/README.md)
+[Azure Mission-Critical - Full List of Documentation](/docs/README.md)

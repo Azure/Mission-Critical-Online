@@ -4,7 +4,7 @@ As explained in the [DevOps design decisions](/docs/reference-implementation/Dep
 
 ## Pipelines
 
-The AlwaysOn project consists of multiple pipelines automating various aspects and tasks needed to deploy and operate AlwaysOn. The pipelines to release INT, PROD and E2E are basically identical (with a few different parameters). They are the implementation of the [Zero-downtime deployment strategy](/docs/reference-implementation/DeployAndTest-DevOps-Zero-Downtime-Update-Strategy.md):
+The Azure Mission-Critical project consists of multiple pipelines automating various aspects and tasks needed to deploy and operate AlwaysOn. The pipelines to release INT, PROD and E2E are basically identical (with a few different parameters). They are the implementation of the [Zero-downtime deployment strategy](/docs/reference-implementation/DeployAndTest-DevOps-Zero-Downtime-Update-Strategy.md):
 
 - **Azure.AlwaysOn INT Release** (`azure-release-int.yaml`) deploys and updates the entire solution for the INT environment.
 

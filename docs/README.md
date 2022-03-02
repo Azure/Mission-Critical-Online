@@ -1,14 +1,14 @@
-# AlwaysOn - Full List of Documentation
+# Azure Mission-Critical - Full List of Documentation
 
-## AlwaysOn Landing Page
+## Azure Mission-Critical Landing Page
 
 - [Landing Page](../README.md)
 
-## Introduction to AlwaysOn
+## Introduction to Azure Mission-Critical
 
-- [Introduction](https://github.com/Azure/AlwaysOn/blob/main/docs/introduction/README.md) (➡️ `Azure/AlwaysOn`)
+- [Introduction](https://github.com/Azure/Mission-Critical/blob/main/docs/introduction/README.md) (➡️ `Azure/Mission-Critical`)
 
-## AlwaysOn Reference Implementation Guide
+## Azure Mission-Critical Reference Implementation Guide
 
 - [Overview](./reference-implementation/README.md)
 - [Getting Started](./reference-implementation/Getting-Started.md)

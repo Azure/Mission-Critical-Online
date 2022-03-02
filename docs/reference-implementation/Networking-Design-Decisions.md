@@ -41,7 +41,7 @@ The default version of the Reference Implementation of AlwaysOn does not use [fu
 
 These decisions are explained further below:
 
-> It is acknowledged that these decisions might not suit every use case, for instance in some regulated industries. Therefore, there is an alternative version of the Reference Implementation  which deploys in a [Private Mode](https://github.com/Azure/AlwaysOn-foundational-private). However, this comes potentially at the expense of higher cost and reliability risk. Thus, the requirements and impact should be fully understood before making the switch.
+> It is acknowledged that these decisions might not suit every use case, for instance in some regulated industries. Therefore, there is an alternative version of the Reference Implementation  which deploys in a [Private Mode](https://github.com/Azure/Mission-Critical-foundational-private). However, this comes potentially at the expense of higher cost and reliability risk. Thus, the requirements and impact should be fully understood before making the switch.
 
 ### Public compute cluster endpoint
 
@@ -55,7 +55,7 @@ These decisions are explained further below:
 
 - The Reference Implementation uses Private Endpoints to access all PaaS instead of relying on Service Endpoints only. This has two reasons:
   - Due to some limitations in the way the infrastructure gets deployed through Terraform, Service Endpoints could not be used for all services, so Private Endpoints would have been required at least partially in any case.
-  - The [Private Mode of AlwaysOn](https://github.com/Azure/AlwaysOn-foundational-private) requires the use of Private Endpoints for all used services. So using them also for the default, public mode, brings consistency and simplification in the deployment.
+  - The [Private Mode of AlwaysOn](https://github.com/Azure/Mission-Critical-foundational-private) requires the use of Private Endpoints for all used services. So using them also for the default, public mode, brings consistency and simplification in the deployment.
 - One of the [main benefits](https://docs.microsoft.com/azure/private-link/private-link-overview#key-benefits) of using Private Endpoints is the protection against data leakage. However, this was not determined to be a priority requirement for public internet-facing applications like AlwaysOn. Similarly, we do not foresee the requirement to connect to AlwaysOn resources from on-prem networks (or otherwise connected via VPN etc).
 
 ### Requirements to utilize a fully private cluster
@@ -64,7 +64,7 @@ As described above, to remove the public endpoint on the compute clusters, anoth
 
 A more significant change if using private endpoints is the switch from hosted Build Agents (managed by Microsoft) to [self-hosted agents](https://docs.microsoft.com/azure/devops/pipelines/agents/agents?view=azure-devops&tabs=browser#install) which will need to be VNet-integrated in order to reach private services like Key Vault or AKS. Managing these agents and keeping them updated adds additional overhead and is not recommended as long as there is no actual requirement to switch to a fully private deployment.
 
-To deploy Reference Implementation in a private configuration, follow the guides of [this GitHub repository](https://github.com/Azure/AlwaysOn-foundational-private).
+To deploy Reference Implementation in a private configuration, follow the guides of [this GitHub repository](https://github.com/Azure/Mission-Critical-foundational-private).
 
 ---
-[AlwaysOn - Full List of Documentation](/docs/README.md)
+[Azure Mission-Critical - Full List of Documentation](/docs/README.md)

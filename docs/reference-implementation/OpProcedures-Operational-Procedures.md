@@ -72,4 +72,4 @@ In Azure DevOps a notification subscription can, for example, look like this (Pr
 The topic of Key / Secret rotation is covered in a [separate article](./OpProcedures-KeyRotation.md).
 
 ---
-[AlwaysOn - Full List of Documentation](/docs/README.md)
+[Azure Mission-Critical - Full List of Documentation](/docs/README.md)

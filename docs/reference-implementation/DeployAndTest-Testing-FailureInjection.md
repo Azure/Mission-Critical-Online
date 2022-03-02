@@ -63,4 +63,5 @@ From there on there were still several components in place which could have been
 Overall, this particular failure injection showed that even for a skilled operations team it can be quite challenging to detect (and then attempt to fix) the root cause of an issue in a distributed system.
 
 ---
-[AlwaysOn - Full List of Documentation](/docs/README.md)
+
+[Azure Mission-Critical - Full List of Documentation](/docs/README.md)

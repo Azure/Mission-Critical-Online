@@ -29,4 +29,4 @@ AlwaysOn tested and documented the approach for how to rotate the keys for Cosmo
 1) Finally, the Terraform template should be changed back to use the primary key again for future deployments; if not, we can continue to use the secondary key and switch back to the primary key when we need to renew the secondary key in the future.
 
 ---
-[AlwaysOn - Full List of Documentation](/docs/README.md)
+[Azure Mission-Critical - Full List of Documentation](/docs/README.md)

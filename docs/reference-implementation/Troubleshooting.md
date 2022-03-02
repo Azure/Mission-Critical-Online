@@ -105,4 +105,4 @@ To prevent the error from happening to begin with, you can manually de-select th
 **Solution:** Re-run the failing step.
 
 ---
-[AlwaysOn - Full List of Documentation](/docs/README.md)
+[Azure Mission-Critical - Full List of Documentation](/docs/README.md)

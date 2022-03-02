@@ -11,7 +11,7 @@
   
     <hr/>
 
-    <footer>This is a reference implementation of <a href="https://github.com/Azure/AlwaysOn">Azure AlwaysOn</a>. Built in 2021-2022. Version: {{ versionLabel }}</footer>
+    <footer>This is a reference implementation of <a href="https://github.com/Azure/Mission-Critical">Azure AlwaysOn</a>. Built in 2021-2022. Version: {{ versionLabel }}</footer>
   </div>
 </template>
 

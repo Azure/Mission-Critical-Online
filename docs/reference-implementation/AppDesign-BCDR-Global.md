@@ -33,4 +33,4 @@ Each stamp in the reference implementation contains its own Log Analytics Worksp
 For cost-saving reasons there are daily data caps configured on stamp and global resources. This can be problematic during load tests as any telemetry beyond these limits is lost.
 
 ---
-[AlwaysOn - Full List of Documentation](/docs/README.md)
+[Azure Mission-Critical - Full List of Documentation](/docs/README.md)

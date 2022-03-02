@@ -28,7 +28,7 @@ This guide offers two paths: Using Azure DevOps Portal or script-based via Azure
 The process to deploy AlwaysOn is comprised of the following steps:
 
 1) Create an [Azure DevOps organization and project](#create-a-new-azure-devops-project)
-1) Generate your own repository based on the [AlwaysOn GitHub template](https://github.com/Azure/AlwaysOn-Foundational-Online/generate) repository
+1) Generate your own repository based on the [AlwaysOn GitHub template](https://github.com/Azure/Mission-Critical-Foundational-Online/generate) repository
 1) Import [deployment pipelines](#3-import-deployment-pipelines)
 1) Create [Service Principals](#4-create-azure-service-principal) for each individual Azure subscription
 1) Create [Service Connections](#5-create-azure-service-connections) in Azure DevOps
@@ -336,4 +336,5 @@ With the completion of at least one deployment pipeline it is now a good time to
 - Detailed information about the infrastructure layer - [Terraform documentation](/src/infra/workload/README.md#get-started).
 
 ---
-[AlwaysOn - Full List of Documentation](/docs/README.md)
+
+[Azure Mission-Critical - Full List of Documentation](/docs/README.md)

@@ -160,4 +160,4 @@ This update strategy comes with a couple of inherent disadvantages and risks whi
 This update strategy can support multiple versions of an API and worker components running at the same time. Since the Cosmos DB is shared between the two or more versions, there is the possibility that data elements changed by one version may not always match the version of the API or worker consuming it. To allow for this, the API layers and workers must implement forward compatibility design characteristics. To accomplish this, earlier versions of the API or worker components can process data that was inserted by later API or worker component versions, ignoring any parts it does not understand.
 
 ---
-[AlwaysOn - Full List of Documentation](/docs/README.md)
+[Azure Mission-Critical - Full List of Documentation](/docs/README.md)

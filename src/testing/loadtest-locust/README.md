@@ -2,7 +2,7 @@
 
 [locust.io](https://locust.io) is an easy to use, scriptable and scalable open source load and performance testing tool.
 
-The AlwaysOn reference implementation leverages Locust in two different ways:
+The Azure Mission-Critical reference implementation leverages Locust in two different ways:
 
 * **Embedded** is used to automatically run load tests as part of the end-to-end (e2e) validation pipeline using a fixed set of parameters. This is intended to compare each e2e run (currently manually) and the changes that were made against a given performance baseline.
 

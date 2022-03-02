@@ -90,4 +90,4 @@ Global replication protects Cosmos DB instances from regional outage. The Cosmos
 | **Expired credentials (globally shared resource)**  | If, for example, Cosmos DB API key was changed without properly updating it in all stamp Key Vaults so that the pods can use them, the respective application components will start to fail. **This would likely bring all stamps down at about the same time and cause an workload-wide outage.** See the article on [Key Rotation](./OpProcedures-KeyRotation.md) for an example walkthrough how to execute this process properly without downtime. For a possible way around the need for keys and secrets in the first place using AAD auth, see the previous item. | Full     |
 
 ---
-[AlwaysOn - Full List of Documentation](/docs/README.md)
+[Azure Mission-Critical - Full List of Documentation](/docs/README.md)

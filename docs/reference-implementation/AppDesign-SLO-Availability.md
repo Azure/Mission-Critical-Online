@@ -82,4 +82,4 @@ Availability can also be observed via Front Door backend monitoring which is bas
 ![Front Door backend health](/docs/media/SLA-backend-health-fd.png)
 
 ---
-[AlwaysOn - Full List of Documentation](/docs/README.md)
+[Azure Mission-Critical - Full List of Documentation](/docs/README.md)

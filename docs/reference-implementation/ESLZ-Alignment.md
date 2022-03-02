@@ -14,13 +14,12 @@ The three most common deployment scenarios are:
 
 This diagram visualizes the relationship and dependency an AlwaysOn application can take on Enterprise-Scale landing zone.
 
-![AlwaysOn - ESLZ dependency](/docs/media/AlwaysOn-ESLZ.gif "ESLZ dependency")
+![Azure Mission-Critical - ESLZ dependency](/docs/media/AlwaysOn-ESLZ.gif "ESLZ dependency")
 
-> Note: The AlwaysOn reference implementation is aligned with the Enterprise-Scale architecture and was successfully deployed and validated in an "online" landing zone (subscription).
+> Note: The Azure Mission-Critical reference implementation is aligned with the Enterprise-Scale architecture and was successfully deployed and validated in an "online" landing zone (subscription).
 
 See [Enterprise-Scale](https://github.com/Azure/Enterprise-Scale/) and [Enterprise-Scale design principles](https://github.com/Azure/Enterprise-Scale/wiki/How-Enterprise-Scale-Works#enterprise-scale-design-principles) for more information.
 
-
-
 ---
-[AlwaysOn - Full List of Documentation](/docs/README.md)
+
+[Azure Mission-Critical - Full List of Documentation](/docs/README.md)

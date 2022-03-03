@@ -4,7 +4,7 @@
 
 The Azure Mission-Critical architecture is based on the [deployment stamp pattern](https://docs.microsoft.com/azure/architecture/patterns/deployment-stamp). Each deployment stamp is stateless, independent and is considered to be one scale unit. If a stamp is considered to be unhealthy, it can be entirely replaced by a newly deployed healthy stamp.
 
-Azure Mission-Critical stamps share several global resources which are durable through stamp deployments. This document summarizes Business Continuity capabilities and configurations as well as Disaster Recovery processes for each global resource type shared by AlwaysOn stamps.
+Azure Mission-Critical stamps share several global resources which are durable through stamp deployments. This document summarizes Business Continuity capabilities and configurations as well as Disaster Recovery processes for each global resource type shared by these deployment stamps.
 
 ## Azure Container Registry (ACR)
 

@@ -67,7 +67,7 @@ Settings to configure:
 
 ### CORS
 
-Since this is a single-page application, running in the browser, it requires CORS (Cross-Origin Resource Sharing) to be enabled on the API, for cases when it's not running on the same root URL. The AlwaysOn application is set up in a way that it doesn't need CORS (UI running on `/` with API running on `/api`), but on localhost, this might not be the case (UI running on `localhost:8080` and API on `localhost:5000` which are considered different origins).
+Since this is a single-page application, running in the browser, it requires CORS (Cross-Origin Resource Sharing) to be enabled on the API, for cases when it's not running on the same root URL. The Azure Mission-Critical application is set up in a way that it doesn't need CORS (UI running on `/` with API running on `/api`), but on localhost, this might not be the case (UI running on `localhost:8080` and API on `localhost:5000` which are considered different origins).
 
 *Startup.cs*
 

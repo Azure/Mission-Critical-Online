@@ -1,6 +1,6 @@
 # Data Platform Design Decisions
 
-The AlwaysOn application data access pattern has the following characteristics:
+The Azure Mission-Critical application data access pattern has the following characteristics:
 
 - Read pattern - Point reads e.g. queries which fetch a single record. These queries have a "WHERE" clause defined so that a single row is selected for reads.
 - Write pattern - Small writes e.g. queries which usually insert a single or a very small number of records in a transaction.

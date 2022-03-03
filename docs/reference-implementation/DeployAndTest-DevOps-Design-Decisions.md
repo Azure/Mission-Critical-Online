@@ -10,7 +10,7 @@
 
 GitHub Actions was considered instead of ADO and for build-related tasks (CI) it would have worked equally well - with the added benefit that source code and pipeline would have lived in the same place. However, Azure Pipelines were chosen because of richer Continuous Deployment (CD) capabilities. It is expected that GitHub Actions will reach parity with ADO in the future, but for now, ADO is the best choice.
 
-**Build Agents**. The foundational reference implementation of AlwaysOn uses Microsoft Hosted build agents as this removes any management burden on the developers to maintain and update the build agent whilst also making start up times for build jobs quicker. The exception is when using [connected mode](https://github.com/Azure/Mission-Critical-Connected) of the Reference Implementation, which does require the use of self-hosted Build Agents.
+**Build Agents**. The online reference implementation of AlwaysOn uses Microsoft Hosted build agents as this removes any management burden on the developers to maintain and update the build agent whilst also making start up times for build jobs quicker. The exception is when using the [connected](https://github.com/Azure/Mission-Critical-Connected) version of the Azure Mission-Critical reference implementation, which does require the use of self-hosted Build Agents.
 
 See [DevOps Pipelines](/.ado/pipelines/README.md) for more details about the concrete pipeline implementation.
 

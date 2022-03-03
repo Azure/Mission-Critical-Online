@@ -10,7 +10,7 @@
 
 ---
 
-AlwaysOn is using [Azure Log Analytics](https://docs.microsoft.com/azure/azure-monitor/logs/log-analytics-overview) as a central store for logs and metrics for all application and infrastructure components and [Azure Application Insights](https://docs.microsoft.com/azure/azure-monitor/app/app-insights-overview) for all application monitoring data. Each stamp has its own, dedicated Log Analytics Workspace and App Insights instance. Next to those is one Log Analytics Workspace for the globally shared resources such as Front Door and Cosmos DB.
+Azure Mission-Critical is using [Azure Log Analytics](https://docs.microsoft.com/azure/azure-monitor/logs/log-analytics-overview) as a central store for logs and metrics for all application and infrastructure components and [Azure Application Insights](https://docs.microsoft.com/azure/azure-monitor/app/app-insights-overview) for all application monitoring data. Each stamp has its own, dedicated Log Analytics Workspace and App Insights instance. Next to those is one Log Analytics Workspace for the globally shared resources such as Front Door and Cosmos DB.
 
 ![Monitoring overview](/docs/media/MonitoringOverview.png)
 
@@ -20,7 +20,7 @@ As all stamps are short-lived and continuously replaced with each new release (s
 
 ### Diagnostic settings
 
-All Azure services used for AlwaysOn are configured to send all their Diagnostic data including logs and metrics to the deployment specific (global or stamp) Log Analytics Workspace. This happens automatically as part of the [Terraform](/src/infra/README.md#infrastructure) deployment. New options will be identified automatically and added as part of `terraform apply`.
+All Azure services used for Azure Mission-Critical are configured to send all their Diagnostic data including logs and metrics to the deployment specific (global or stamp) Log Analytics Workspace. This happens automatically as part of the [Terraform](/src/infra/README.md#infrastructure) deployment. New options will be identified automatically and added as part of `terraform apply`.
 
 ![Diagnostic Settings](/docs/media/Monitoring1DiagnosticSettings.png)
 
@@ -52,7 +52,7 @@ To monitor the availability of the individual stamps and the overall solution fr
 
 ## Queries
 
-AlwaysOn uses different Kusto Query Language (KQL) queries to implement complex, custom queries as functions to retrieve data from Log Analytics. These queries are stored as individual files in the `/src/infra/monitoring/queries` directory (separated into global and stamp) and are imported and applied automatically via Terraform as part of each infrastructure pipeline run.
+Azure Mission-Critical uses different Kusto Query Language (KQL) queries to implement complex, custom queries as functions to retrieve data from Log Analytics. These queries are stored as individual files in the `/src/infra/monitoring/queries` directory (separated into global and stamp) and are imported and applied automatically via Terraform as part of each infrastructure pipeline run.
 
 This approach separates the query logic from the visualization layer. It allows us to call these functions individually and use them either directly to retrieve data from Log Analytics or to visualize the results in Azure Dashboards, Azure Monitor Workbooks or 3rd-Party dashboarding solutions like Grafana.
 
@@ -66,7 +66,7 @@ This result provides a granular overview about the cluster's health status based
 
 ## Visualization
 
-The Visualization of the Kusto [Queries](#Queries) described above was implemented using Grafana. Grafana is used to show the results of Log Analytics queries and does not contain any logic itself. The Grafana stack is not part of the solution's deployment lifecycle, but released separately. For a detailed description of the Grafana deployment for AlwaysOn, please refer to the [Grafana README](/src/infra/monitoring/grafana/README.md).
+The Visualization of the Kusto [Queries](#Queries) described above was implemented using Grafana. Grafana is used to show the results of Log Analytics queries and does not contain any logic itself. The Grafana stack is not part of the solution's deployment lifecycle, but released separately. For a detailed description of the Grafana deployment for Azure Mission-Critical, please refer to the [Grafana README](/src/infra/monitoring/grafana/README.md).
 
 ## Alerting
 

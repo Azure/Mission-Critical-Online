@@ -4,13 +4,13 @@
 
 The structure of the Azure Mission-Critical repository is broken down into three overarching directories:
 
-* `/docs/` contains the majority of Mission-Critical documentation, covering the architectural framework and design approach as well as detailed documentation to accompany the reference implementation.
+* `/docs/` contains the majority of Azure Mission-Critical documentation, covering the architectural framework and design approach as well as detailed documentation to accompany the reference implementation.
 * `/src/` contains all source code and technical artifacts for the reference implementation along with low level implementation documentation.
 * `/.ado/pipelines` contains the Azure DevOps pipelines to build and deploy the core reference implementation.
 
 ## Content Changes and Pull Requests
 
-To add or edit content within the Mission-Critical repository, please take a fork of the repository to iterate on changes before subsequently opening a Pull Request (PR) to get your forked branch merged into the main branch for the Mission-Critical repository. Your PR will be reviewed by the core engineering team for the Azure Mission-Critical project, and once approved, your content accessible to everybody.
+To add or edit content within the Azure Mission-Critical repository, please take a fork of the repository to iterate on changes before subsequently opening a Pull Request (PR) to get your forked branch merged into the main branch for the Mission-Critical repository. Your PR will be reviewed by the core engineering team for the Azure Mission-Critical project, and once approved, your content accessible to everybody.
 
 > **Important!** Please make sure that your PR is focused on a specific area of Mission-Critical to facilitate a targeted review, as this will speed up the process to get your changes merged into our repository.
 

@@ -1,6 +1,6 @@
 # Operational Procedures
 
-While the reference implementation of AlwaysOn only serves as a demonstration and thus is not really run in production, there are a couple of operational procedures that are lined out in this article, which are still relevant.
+While the reference implementation of Azure Mission-Critical only serves as a demonstration and thus is not really run in production, there are a couple of operational procedures that are lined out in this article, which are still relevant.
 
 - [General debugging / issue investigation](#general-debugging--issue-investigation)
 - [Transient Pipeline Failures](#transient-pipeline-failures)

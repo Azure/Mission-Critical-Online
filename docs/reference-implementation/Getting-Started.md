@@ -1,6 +1,6 @@
 # Getting started
 
-This step-by-step guide describes the process to deploy Azure Mission-Critical in your own environment from the beginning. At the end of this guide you will have an Azure DevOps organization and project set up to deploy a copy of AlwaysOn into an Azure Subscription.
+This step-by-step guide describes the process to deploy Azure Mission-Critical in your own environment from the beginning. At the end of this guide you will have an Azure DevOps organization and project set up to deploy a copy of the Azure Mission-Critical reference implementation into an Azure Subscription.
 
 ## How to deploy?
 
@@ -40,7 +40,7 @@ The process to deploy Azure Mission-Critical is comprised of the following steps
 
 ### 1) Create a new Azure DevOps organization and project
 
-To deploy AlwaysOn, you need to create a new Azure DevOps organization, or re-use an existing one. In this organization you will then create a new project used to host all pipelines for AlwaysOn.
+To deploy the Azure Mission-Critical reference implementation, you need to create a new Azure DevOps organization, or re-use an existing one. In this organization you will then create a new project used to host all pipelines for Azure Mission-Critical.
 
 - [Create an organization or project collection](https://docs.microsoft.com/azure/devops/organizations/accounts/create-organization?view=azure-devops)
 
@@ -72,11 +72,11 @@ For all the subsequent tasks done via `az devops` or `az pipelines` the context 
 az devops configure --defaults organization=https://dev.azure.com/<your-org> project=<your-project>
 ```
 
-### 2) Generate your own repository based on the AlwaysOn GitHub template
+### 2) Generate your own repository based on the Azure Mission-Critical GitHub template
 
-Azure DevOps Repos would allow us to import the AlwaysOn GitHub repository into Azure DevOps as well. For this guide we have decided to generate our own repository based on the template on GitHub and use it from there.
+Azure DevOps Repos would allow us to import the Azure Mission-Critical reference implementation GitHub repository into Azure DevOps as well. For this guide we have decided to generate our own repository based on the template on GitHub and use it from there.
 
-Go to the root of the AlwaysOn repository on GitHub and click on "Use this template" in the top right corner:
+Go to the root of the Azure Mission-Critical reference implementation repository on GitHub and click on "Use this template" in the top right corner:
 
 ![Use GitHub Repo template](/docs/media/AlwaysOnGettingStarted2Fork.png)
 

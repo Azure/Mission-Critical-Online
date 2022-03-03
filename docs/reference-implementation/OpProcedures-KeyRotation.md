@@ -2,7 +2,7 @@
 
 Rotating (renewing) keys/secrets should be a standard procedure in any workload. Secrets might need to be changed on short notice after being exposed or regularly as a good security practice.
 
-As expired or invalid secrets can cause outages to the application (see [Failure Analysis](./Health-Failure-Analysis.md#stamp-application)), it is important to have a clearly defined and proven process in place. For AlwaysOn, rotating secrets of stamp resources, such as Event Hub access keys, are not a significant concern as the stamps are expected to be live a few weeks at most. Also, even if secrets in one stamp expire, this would not bring down the whole application.
+As expired or invalid secrets can cause outages to the application (see [Failure Analysis](./Health-Failure-Analysis.md#stamp-application)), it is important to have a clearly defined and proven process in place. For Azure Mission-Critical, rotating secrets of stamp resources, such as Event Hub access keys, are not a significant concern as the stamps are expected to be live a few weeks at most. Also, even if secrets in one stamp expire, this would not bring down the whole application.
 
 Management of secrets to access long-living global resources, however, are critical, notably the Cosmos DB API keys. If these expire it is likely that all stamps will be affected simultaneously and cause a complete outage of the application.
 

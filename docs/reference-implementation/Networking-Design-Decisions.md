@@ -4,7 +4,7 @@
 
 - Each stamp uses its own Virtual Network (VNet) and as there is no cross-stamp traffic, no VNet peerings or VPN connections to other stamps are required.
 - The per-stamp VNet is split into two subnets for Kubernetes (containing all nodes and pods) and private endpoints.
-- Private endpoints (Private Link) are only partially used as ingress traffic comes from the public internet and egress traffic control (to mitigate the risk of data exfiltration) is not within scope of AlwaysOn.
+- Private endpoints (Private Link) are only partially used as ingress traffic comes from the public internet and egress traffic control (to mitigate the risk of data exfiltration) is not within scope of Azure Mission-Critical.
 
 ## Global load balancer
 

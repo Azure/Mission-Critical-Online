@@ -10,7 +10,7 @@ All tests were performed in an E2E validation environment so that fully represen
 
 DNS failure injection is a good test case since it can simulate multiple issues. Firstly it simulates the case when the DNS resolution fails, for instance because Azure DNS experiences an issue ,but it can also help to simulate general connection issues between a client and a service, for example when the BackgroundProcessor cannot connect to the Event Hub.
 
-In single-host scenarios you can simply modify the local `hosts` file to overwrite DNS resolution. In a larger system with multiple dynamic servers like AKS, this is not feasible. However, we can use [Azure Private DNS Zones](https://docs.microsoft.com/azure/dns/private-dns-privatednszone) as an alternative (See the Event Hubs example below for a configuration walk-through). 
+In single-host scenarios you can simply modify the local `hosts` file to overwrite DNS resolution. In a larger system with multiple dynamic servers like AKS, this is not feasible. However, we can use [Azure Private DNS Zones](https://docs.microsoft.com/azure/dns/private-dns-privatednszone) as an alternative (See the Event Hubs example below for a configuration walk-through).
 
 ### Event Hub
 

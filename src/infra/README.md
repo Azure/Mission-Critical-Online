@@ -36,7 +36,7 @@ Infrastructure layer contains all infrastructure components and underlying found
 
 ## Architecture
 
-![Architecture overview](/docs/media/Architecture-Foundational-Online.png)
+![Architecture overview](/docs/media/mission-critical-architecture-online.png)
 
 ### Stamp independence
 

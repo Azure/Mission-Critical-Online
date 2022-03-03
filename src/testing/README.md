@@ -42,7 +42,7 @@ To inject failures for resiliency validation, Azure Mission-Critical uses Azure 
 
 ## User Load Generator
 
-To simulate real user traffic patterns, Azure Mission-Critical implements a [user load generator](./userload-generator/README.md) to generate synthetic traffic. It uses a Playwright test definition and can be also used completely independently of Azure Mission-Critical.
+To simulate real user traffic patterns, Azure Mission-Critical implements a [user load generator](./userload-generator/README.md) to generate synthetic traffic. It uses a Playwright test definition and can be also used completely independently of Azure Mission-Critical reference implementations.
 
 ---
 

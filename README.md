@@ -1,4 +1,5 @@
-[![Azure Mission-Critical Application](./icon.png "Azure Mission-Critical Online")](./README.md)
+![Azure Mission-Critical Application](./icon-light.png#gh-light-mode-only)
+![Azure Mission-Critical Application](./icon-dark.png#gh-dark-mode-only)
 
 ## Welcome to Azure Mission-Critical Online Reference Implementation
 

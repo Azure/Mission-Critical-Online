@@ -1,20 +1,20 @@
 # Getting started
 
-This step-by-step guide describes the process to deploy AlwaysOn in your own environment from the beginning. At the end of this guide you will have an Azure DevOps organization and project set up to deploy a copy of AlwaysOn into an Azure Subscription.
+This step-by-step guide describes the process to deploy Azure Mission-Critical in your own environment from the beginning. At the end of this guide you will have an Azure DevOps organization and project set up to deploy a copy of AlwaysOn into an Azure Subscription.
 
 ## How to deploy?
 
-The AlwaysOn project is using a GitHub repository for version control of code artifacts and manifest files. The project leverages Azure DevOps Pipelines for build and deployment (CI/CD) pipelines.
+The Azure Mission-Critical project is using a GitHub repository for version control of code artifacts and manifest files. The project leverages Azure DevOps Pipelines for build and deployment (CI/CD) pipelines.
 
 > Instead of GitHub also other Git-based repositories can be used, such as *Azure DevOps Repos*.
 
 All relevant code artifacts and manifest files are stored in this GitHub repository and can easily be forked into your own account or organization.
 
-This guide describes the end-to-end process for setting up all pre-requisites and dependencies before deploying AlwaysOn into an Azure subscription of your choice.
+This guide describes the end-to-end process for setting up all pre-requisites and dependencies before deploying Azure Mission-Critical into an Azure subscription of your choice.
 
 ## Pre-requisites
 
-The following must be installed on the client machine used to deploy AlwaysOn reference implementation:
+The following must be installed on the client machine used to deploy Azure Mission-Critical reference implementation:
 
 - [Azure CLI](https://docs.microsoft.com/cli/azure/service-page/azure%20cli?view=azure-cli-latest)
 
@@ -25,10 +25,10 @@ This guide offers two paths: Using Azure DevOps Portal or script-based via Azure
 
 ## Overview
 
-The process to deploy AlwaysOn is comprised of the following steps:
+The process to deploy Azure Mission-Critical is comprised of the following steps:
 
 1) Create an [Azure DevOps organization and project](#create-a-new-azure-devops-project)
-1) Generate your own repository based on the [AlwaysOn GitHub template](https://github.com/Azure/Mission-Critical-Foundational-Online/generate) repository
+1) Generate your own repository based on the [Azure Mission-Critical GitHub template](https://github.com/Azure/Mission-Critical-Online/generate) repository
 1) Import [deployment pipelines](#3-import-deployment-pipelines)
 1) Create [Service Principals](#4-create-azure-service-principal) for each individual Azure subscription
 1) Create [Service Connections](#5-create-azure-service-connections) in Azure DevOps

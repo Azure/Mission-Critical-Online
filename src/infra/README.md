@@ -14,13 +14,13 @@
 
 ---
 
-The AlwaysOn reference implementation follows a layered and modular approach. This approach achieves the following goals:
+The Azure Mission-Critical reference implementation follows a layered and modular approach. This approach achieves the following goals:
 
 - Cleaner and manageable deployment design
 - Ability to switch service(s) with other services providing similar capabilities depending on requirements
 - Separation between layers which enables implementation of RBAC easier in case multiple teams are responsible for different aspects of AlwaysOn application deployment and operations
 
-The AlwaysOn reference implementation is composed of three distinct layers:
+The Azure Mission-Critical reference implementations are composed of three distinct layers:
 
 - Infrastructure
 - Configuration

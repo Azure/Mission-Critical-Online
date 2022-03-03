@@ -28,11 +28,11 @@ This means that the infrastructure running the container, e.g. Azure App Service
 
 Currently, authentication has been set to a username/password. Obviously this is not the best way in production scenarios, but OAuth authentication requires external dependencies that make this reference implementation harder to deploy and may be subject to security constraints in your local environment.
 
-Before deploying this to your production environment, it is *highly recommended* to enable OAuth. This is done by editing the grafana.ini file and uncommenting/filling the values under the authentication section. Naturally, don't add secrets there. You can add ${MY_SECRET_VALUE} as a value and include that at runtime through environment variables.
+Before deploying this to your production environment, it is *highly recommended* to enable OAuth. This is done by editing the `grafana.ini` file and uncommenting/filling the values under the authentication section. Naturally, don't add secrets there. You can add ${MY_SECRET_VALUE} as a value and include that at runtime through environment variables.
 
 ## Note about line endings
 
-When editing on Windows, ensure that for the dashboard queries as well as the .ts and .tsx files, line endings are set to **LF** to ensure a smooth docker build process.
+When editing on Windows, ensure that for the dashboard queries as well as the `.ts` and `.tsx` files, line endings are set to **LF** to ensure a smooth docker build process.
 
 ## Grafana Health Model Panel
 

@@ -9,7 +9,7 @@
 
 ---
 
-AlwaysOn is using [Azure Log Analytics](https://docs.microsoft.com/azure/azure-monitor/logs/log-analytics-overview) as a central store for logs and metrics for all application and infrastructure components and [Azure Application Insights](https://docs.microsoft.com/azure/azure-monitor/app/app-insights-overview) for all application monitoring data. Each stamp has its own, dedicated Log Analytics Workspace and App Insights instance. Next to those is one Log Analytics Workspace for the globally shared resources such as Front Door and Cosmos DB.
+Azure Mission-Critical is using [Azure Log Analytics](https://docs.microsoft.com/azure/azure-monitor/logs/log-analytics-overview) as a central store for logs and metrics for all application and infrastructure components and [Azure Application Insights](https://docs.microsoft.com/azure/azure-monitor/app/app-insights-overview) for all application monitoring data. Each stamp has its own, dedicated Log Analytics Workspace and App Insights instance. Next to those is one Log Analytics Workspace for the globally shared resources such as Front Door and Cosmos DB.
 
 ![Monitoring overview](/docs/media/MonitoringOverview.png)
 

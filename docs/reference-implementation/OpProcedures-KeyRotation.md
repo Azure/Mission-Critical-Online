@@ -6,7 +6,7 @@ As expired or invalid secrets can cause outages to the application (see [Failure
 
 Management of secrets to access long-living global resources, however, are critical, notably the Cosmos DB API keys. If these expire it is likely that all stamps will be affected simultaneously and cause a complete outage of the application.
 
-AlwaysOn tested and documented the approach for how to rotate the keys for Cosmos DB without causing downtime and this is detailed below:
+Azure Mission-Critical tested and documented the approach for how to rotate the keys for Cosmos DB without causing downtime and this is detailed below:
 
 ## Cosmos DB Key Rotation Walkthrough
 

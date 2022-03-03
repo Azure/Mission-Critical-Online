@@ -1,10 +1,10 @@
 # Zero-downtime Update Strategy
 
-*"How to deploy updates to AlwaysOn without causing any downtime?"*
+*"How to deploy updates to Azure Mission-Critical without causing any downtime?"*
 
 ## High-level overview
 
-In short, the update process for AlwaysOn is that any update, no matter whether infrastructure or application-related, is deployed on fully independent stamps called **release units**. Only the globally shared infrastructure components such as Front Door, Cosmos DB and Container Registry are shared across release units.
+In short, the update process for Azure Mission-Critical is that any update, no matter whether infrastructure or application-related, is deployed on fully independent stamps called **release units**. Only the globally shared infrastructure components such as Front Door, Cosmos DB and Container Registry are shared across release units.
 
 This means that for any update, existing stamps are not touched but instead completely new stamps (as many as currently existing) are deployed and that the new application version will only be deployed to these new stamps. Then, these new stamps are added to the global load balancer (Azure Front Door) and traffic is gradually moved over to the new stamps (i.e. blue/green approach). Once all traffic is served from the new release unit with no issues, the previous release units are deleted.
 
@@ -20,12 +20,12 @@ The following diagram is a snapshot of the Azure DevOps deployment pipeline for 
 
 ## Infrastructure vs. Application-level updates
 
-There are two main parts involved in the AlwaysOn reference implementation:
+There are two main parts involved in the Azure Mission-Critical reference implementation:
 
 1. Underlying infrastructure. This is mostly deployed using Terraform and its associated configuration.
 1. Application. This on top, which is based on Docker containers and, for the UI, npm-built artifacts (HTML and JavaScript).
 
-In many customer systems there is an assumption that application updates are more frequent than infrastructure updates, and, as such, there are different update procedures for each. Within a public cloud infrastructure, these changes can happen at a much faster pace and it is this and the rate of change on the Azure platform that led AlwaysOn to utilize only one deployment process whether application or infrastructure. This allows:
+In many customer systems there is an assumption that application updates are more frequent than infrastructure updates, and, as such, there are different update procedures for each. Within a public cloud infrastructure, these changes can happen at a much faster pace and it is this and the rate of change on the Azure platform that led Azure Mission-Critical to utilize only one deployment process whether application or infrastructure. This allows:
 
 - **One consistent process.** This mean less chances for mistakes if changes in both infrastructure and application get mixed together within a release (whether intentional or not).
 - **Enables proper blue/green deployment** for every update utilizing a gradual migration of traffic to the new release.
@@ -35,7 +35,7 @@ In many customer systems there is an assumption that application updates are mor
 
 ## Branching strategy
 
-A foundation of the AlwayOn update strategy is around how branches are used in the Git repository. AlwaysOn uses 3 types of branches:
+A foundation of the Azure Mission-Critical update strategy is around how branches are used in the Git repository. Azure Mission-Critical uses 3 types of branches:
 
 - **`feature/*` and `fix/*` branches**
   - These are the entry points for any change. They are created by developers and should be named something like `feature/catalog-update` or `fix/worker-timeout-bug`. Once changes are ready to be merged, a pull request (PR) against the `main` branch needs to be created. Every PR needs to be approved by at least one reviewer. With very few exceptions, every change that is proposed in a PR must run through the E2E (end-to-end) validation pipeline. The E2E pipeline can – and should – also be used by developers to test and debug their changes on a complete environment. For this, the E2E pipeline can be executed without the destroy step at the end. The environment can then live for a longer period of time with new updates to the branch quickly getting released to it.
@@ -56,7 +56,7 @@ For this to work without major issues, it is important that the hotfix consists 
 
 # Environments
 
-As already described in the previous section, AlwaysOn uses two types of environment: short-lived and permanent.
+As already described in the previous section, Azure Mission-Critical uses two types of environment: short-lived and permanent.
 
 ## Short-lived
 
@@ -64,7 +64,7 @@ These environments are deployed using the E2E validation pipeline. They are eith
 
 ## Permanent
 
-These are `integration` (`int`) and `production` (`prod`) environments and live continuously i.e. not destroyed. They also use fixed domain names like *int.always-on.app*. In a real-world scenario, customers would probably also add a `staging` (or "pre-prod") environment. This would be used to deploy and validate `release/*` branches with the same update process as in `prod` (i.e. blue/green deployment). AlwaysOn does not have a staging environment simply for cost reasons.
+These are `integration` (`int`) and `production` (`prod`) environments and live continuously i.e. not destroyed. They also use fixed domain names like *int.always-on.app*. In a real-world scenario, customers would probably also add a `staging` (or "pre-prod") environment. This would be used to deploy and validate `release/*` branches with the same update process as in `prod` (i.e. blue/green deployment). Azure Mission-Critical does not have a staging environment simply for cost reasons.
 
 ### Integration (int)
 
@@ -76,7 +76,7 @@ These are `integration` (`int`) and `production` (`prod`) environments and live 
 
 ## Shared and dedicated resources
 
-It is important to understand the different types of resources that exist in the AlwaysOn deployment for the permanent environments (`int` and `prod`). These are either globally shared resources or dedicated to a particular release and exist only until the next release unit has taken over.
+It is important to understand the different types of resources that exist in the Azure Mission-Critical deployment for the permanent environments (`int` and `prod`). These are either globally shared resources or dedicated to a particular release and exist only until the next release unit has taken over.
 
 ### Globally shared resources
 

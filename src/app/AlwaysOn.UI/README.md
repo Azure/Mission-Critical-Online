@@ -1,8 +1,8 @@
 # UI Application
 
-We decided to build a simple user interface application for AlwaysOn, which surfaces the API functionality to end users and also demonstrates how a different type of workload can be deployed to the cluster.
+We decided to build a simple user interface application for Azure Mission-Critical, which surfaces the API functionality to end users and also demonstrates how a different type of workload can be deployed to the cluster.
 
-It's a single-page application (SPA), built with the Vue.js framework, which runs entirely in the web browser and calls the AlwaysOn APIs directly.
+It's a single-page application (SPA), built with the Vue.js framework, which runs entirely in the web browser and calls the Azure Mission-Critical APIs directly.
 
 ## How to run
 

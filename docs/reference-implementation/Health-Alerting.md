@@ -65,4 +65,4 @@ Alerts based on the data stored in a Log Analytics workspace can be created usin
 To demonstrate their setup and usage, a query-based alert on Application Insights is configured as part of the infrastructure deployment within each stamp ([/src/infra/workload/releaseunit/modules/stamp/alerts.tf](/src/infra/workload/releaseunit/modules/stamp/alerts.tf)). It looks at the number of responses sent by the CatalogService which start with a 5xx status code. If those exceed the set threshold within a 5 minute window, it will fire an alert.
 
 ---
-[AlwaysOn - Full List of Documentation](/docs/README.md)
+[Azure Mission-Critical - Full List of Documentation](/docs/README.md)

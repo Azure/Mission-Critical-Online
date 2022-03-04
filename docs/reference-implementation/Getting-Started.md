@@ -1,20 +1,20 @@
 # Getting started
 
-This step-by-step guide describes the process to deploy AlwaysOn in your own environment from the beginning. At the end of this guide you will have an Azure DevOps organization and project set up to deploy a copy of AlwaysOn into an Azure Subscription.
+This step-by-step guide describes the process to deploy Azure Mission-Critical in your own environment from the beginning. At the end of this guide you will have an Azure DevOps organization and project set up to deploy a copy of the Azure Mission-Critical reference implementation into an Azure Subscription.
 
 ## How to deploy?
 
-The AlwaysOn project is using a GitHub repository for version control of code artifacts and manifest files. The project leverages Azure DevOps Pipelines for build and deployment (CI/CD) pipelines.
+The Azure Mission-Critical project is using a GitHub repository for version control of code artifacts and manifest files. The project leverages Azure DevOps Pipelines for build and deployment (CI/CD) pipelines.
 
 > Instead of GitHub also other Git-based repositories can be used, such as *Azure DevOps Repos*.
 
 All relevant code artifacts and manifest files are stored in this GitHub repository and can easily be forked into your own account or organization.
 
-This guide describes the end-to-end process for setting up all pre-requisites and dependencies before deploying AlwaysOn into an Azure subscription of your choice.
+This guide describes the end-to-end process for setting up all pre-requisites and dependencies before deploying Azure Mission-Critical into an Azure subscription of your choice.
 
 ## Pre-requisites
 
-The following must be installed on the client machine used to deploy AlwaysOn reference implementation:
+The following must be installed on the client machine used to deploy Azure Mission-Critical reference implementation:
 
 - [Azure CLI](https://docs.microsoft.com/cli/azure/service-page/azure%20cli?view=azure-cli-latest)
 
@@ -25,10 +25,10 @@ This guide offers two paths: Using Azure DevOps Portal or script-based via Azure
 
 ## Overview
 
-The process to deploy AlwaysOn is comprised of the following steps:
+The process to deploy Azure Mission-Critical is comprised of the following steps:
 
 1) Create an [Azure DevOps organization and project](#create-a-new-azure-devops-project)
-1) Generate your own repository based on the [AlwaysOn GitHub template](https://github.com/Azure/AlwaysOn-Foundational-Online/generate) repository
+1) Generate your own repository based on the [Azure Mission-Critical GitHub template](https://github.com/Azure/Mission-Critical-Online/generate) repository
 1) Import [deployment pipelines](#3-import-deployment-pipelines)
 1) Create [Service Principals](#4-create-azure-service-principal) for each individual Azure subscription
 1) Create [Service Connections](#5-create-azure-service-connections) in Azure DevOps
@@ -40,7 +40,7 @@ The process to deploy AlwaysOn is comprised of the following steps:
 
 ### 1) Create a new Azure DevOps organization and project
 
-To deploy AlwaysOn, you need to create a new Azure DevOps organization, or re-use an existing one. In this organization you will then create a new project used to host all pipelines for AlwaysOn.
+To deploy the Azure Mission-Critical reference implementation, you need to create a new Azure DevOps organization, or re-use an existing one. In this organization you will then create a new project used to host all pipelines for Azure Mission-Critical.
 
 - [Create an organization or project collection](https://docs.microsoft.com/azure/devops/organizations/accounts/create-organization?view=azure-devops)
 
@@ -72,11 +72,11 @@ For all the subsequent tasks done via `az devops` or `az pipelines` the context 
 az devops configure --defaults organization=https://dev.azure.com/<your-org> project=<your-project>
 ```
 
-### 2) Generate your own repository based on the AlwaysOn GitHub template
+### 2) Generate your own repository based on the Azure Mission-Critical GitHub template
 
-Azure DevOps Repos would allow us to import the AlwaysOn GitHub repository into Azure DevOps as well. For this guide we have decided to generate our own repository based on the template on GitHub and use it from there.
+Azure DevOps Repos would allow us to import the Azure Mission-Critical reference implementation GitHub repository into Azure DevOps as well. For this guide we have decided to generate our own repository based on the template on GitHub and use it from there.
 
-Go to the root of the AlwaysOn repository on GitHub and click on "Use this template" in the top right corner:
+Go to the root of the Azure Mission-Critical reference implementation repository on GitHub and click on "Use this template" in the top right corner:
 
 ![Use GitHub Repo template](/docs/media/AlwaysOnGettingStarted2Fork.png)
 
@@ -194,7 +194,7 @@ More information about the required permissions needed to deploy via Terraform c
 
 ### 5) Create Azure Service Connections
 
-Our AlwaysOn reference implementation knows three different environments: prod, int and e2e. These three environments can be selected for each individual pipeline run and can refer to the same or different (recommended) Azure subscriptions for proper separation. These environments are represented by service connections in Azure DevOps:
+Our Azure Mission-Critical reference implementation knows three different environments: prod, int and e2e. These three environments can be selected for each individual pipeline run and can refer to the same or different (recommended) Azure subscriptions for proper separation. These environments are represented by service connections in Azure DevOps:
 
 > **Important!** Since these connection names are used in pipelines, use them exactly as specified above. If you change the name of the service connection, you have to also change it in pipeline YAML.
 
@@ -336,4 +336,5 @@ With the completion of at least one deployment pipeline it is now a good time to
 - Detailed information about the infrastructure layer - [Terraform documentation](/src/infra/workload/README.md#get-started).
 
 ---
-[AlwaysOn - Full List of Documentation](/docs/README.md)
+
+[Azure Mission-Critical - Full List of Documentation](/docs/README.md)

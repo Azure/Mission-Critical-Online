@@ -1,6 +1,6 @@
 # Custom Domain support
 
-AlwaysOn fully supports the use of custom domain names e.g. `contoso.com`. In the [Terraform reference implementation](/src/infra/workload/README.md), custom domains can be optionally used for both `int` and `prod` environments. For E2E environments, custom domains can also be added, however, it was decided not to use custom domain names in the reference implementation owing to the short-lived nature of E2E coupled with the increased deployment time when using custom domains with the encompassing SSL certificate in Front Door.
+The Azure Mission-Critical online reference implementation fully supports the use of custom domain names e.g. `contoso.com`. In the [Terraform reference implementation](/src/infra/workload/README.md), custom domains can be optionally used for both `int` and `prod` environments. For E2E environments, custom domains can also be added, however, it was decided not to use custom domain names in the reference implementation owing to the short-lived nature of E2E coupled with the increased deployment time when using custom domains with the encompassing SSL certificate in Front Door.
 
 To enable full automation of the deployment, the custom domain is expected to be managed through an Azure DNS Zone. The infrastructure deployment pipeline dynamically creates CNAME records in the Azure DNS zone and maps these automatically to the Azure Front Door instance. Azure DNS zone also enables the Front Door-managed SSL certificates so that there is no need for manual certificate renewals on Front Door.
 
@@ -11,4 +11,4 @@ Environments which are not provisioned with custom domains can be accessed throu
 > Note: On the cluster ingress controllers, custom domains are not used in either case; instead an Azure-provided DNS name such as _[prefix]-cluster.[region].cloudapp.azure.com_ is used with Let's Encrypt enabled to issue free SSL certificates for those endpoints.
 
 ---
-[AlwaysOn - Full List of Documentation](/docs/README.md)
+[Azure Mission-Critical - Full List of Documentation](/docs/README.md)

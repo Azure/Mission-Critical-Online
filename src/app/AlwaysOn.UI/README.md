@@ -1,8 +1,8 @@
 # UI Application
 
-We decided to build a simple user interface application for AlwaysOn, which surfaces the API functionality to end users and also demonstrates how a different type of workload can be deployed to the cluster.
+We decided to build a simple user interface application for Azure Mission-Critical, which surfaces the API functionality to end users and also demonstrates how a different type of workload can be deployed to the cluster.
 
-It's a single-page application (SPA), built with the Vue.js framework, which runs entirely in the web browser and calls the AlwaysOn APIs directly.
+It's a single-page application (SPA), built with the Vue.js framework, which runs entirely in the web browser and calls the Azure Mission-Critical APIs directly.
 
 ## How to run
 
@@ -17,7 +17,7 @@ npm install
 npm run serve
 ```
 
-This will install all dependencies and start a development HTTP server. You can then go to http://localhost:8080/ to see the app in action.
+This will install all dependencies and start a development HTTP server. You can then go to `http://localhost:8080/` to see the app in action.
 
 ### Production build
 
@@ -60,14 +60,14 @@ Alternatively, you could make the config object part of the compiled app code an
 
 Settings to configure:
 
-* `window.API_URL` = URL of the API root which will be used, **without the trailing "/"**. For localhost this will be something like: *http://localhost:5000/api*, for cloud environment it will be: */api* (because the UI runs on the same domain as the API). This can also be the absolute URL of a published API, only make sure that no firewall and CORS restriction are in place.
+* `window.API_URL` = URL of the API root which will be used, **without the trailing "/"**. For localhost this will be something like: `http://localhost:5000/api`, for cloud environment it will be: */api* (because the UI runs on the same domain as the API). This can also be the absolute URL of a published API, only make sure that no firewall and CORS restriction are in place.
 * `window.APPINSIGHTS_INSTRUMENTATIONKEY` = Instrumentation key for the Application Insights instance to be used.
 
 ## Implementation notes
 
 ### CORS
 
-Since this is a single-page application, running in the browser, it requires CORS (Cross-Origin Resource Sharing) to be enabled on the API, for cases when it's not running on the same root URL. The AlwaysOn application is set up in a way that it doesn't need CORS (UI running on `/` with API running on `/api`), but on localhost, this might not be the case (UI running on `localhost:8080` and API on `localhost:5000` which are considered different origins).
+Since this is a single-page application, running in the browser, it requires CORS (Cross-Origin Resource Sharing) to be enabled on the API, for cases when it's not running on the same root URL. The Azure Mission-Critical application is set up in a way that it doesn't need CORS (UI running on `/` with API running on `/api`), but on localhost, this might not be the case (UI running on `localhost:8080` and API on `localhost:5000` which are considered different origins).
 
 *Startup.cs*
 

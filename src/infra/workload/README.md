@@ -9,12 +9,12 @@ The number and the selected regions for these "stamp" deployments can easily be 
 
 ## Public and Private versions
 
-The reference implementation can be used to deploy to different flavors of the AlwaysOn infrastructure:
+The reference implementation can be used to deploy to different flavors of the Azure Mission-Critical infrastructure:
 
 - A "public" version which does not fully lock down all services, but in turn it can be deployed using Azure DevOps-hosted Build Agents. Plus, developers and administrators can more easily connect to the resources and debug them.
 - A fully "private" version which locks all traffic to the services down to Private Endpoints. This provides even tighter security but requires the use of self-hosted, VNet-integrated Build Agents. Also, for any debugging etc. users most connect through Azure Bastion and Jump Servers.
 
-Head over to [this GitHub repository](https://github.com/Azure/AlwaysOn-foundational-private) for detailed instructions how to set up the private version.
+Head over to [this GitHub repository](https://github.com/Azure/Mission-Critical-Connected) for detailed instructions how to set up the private version.
 
 ## Get started
 

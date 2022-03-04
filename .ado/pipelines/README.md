@@ -1,10 +1,10 @@
 # Azure DevOps Workflows
 
-As explained in the [DevOps design decisions](/docs/reference-implementation/DeployAndTest-DevOps-Design-Decisions.md) section, the AlwaysOn reference implementation is using Azure Pipelines to implement CI/CD pipelines. Azure Pipelines is part of the Azure DevOps (ADO) service and used to automate all build and release tasks.
+As explained in the [DevOps design decisions](/docs/reference-implementation/DeployAndTest-DevOps-Design-Decisions.md) section, the Azure Mission-Critical online reference implementation is using Azure Pipelines to implement CI/CD pipelines. Azure Pipelines is part of the Azure DevOps (ADO) service and used to automate all build and release tasks.
 
 ## Pipelines
 
-The AlwaysOn project consists of multiple pipelines automating various aspects and tasks needed to deploy and operate AlwaysOn. The pipelines to release INT, PROD and E2E are basically identical (with a few different parameters). They are the implementation of the [Zero-downtime deployment strategy](/docs/reference-implementation/DeployAndTest-DevOps-Zero-Downtime-Update-Strategy.md):
+The Azure Mission-Critical project consists of multiple pipelines automating various aspects and tasks needed to deploy and operate Azure Mission-Critical. The pipelines to release INT, PROD and E2E are basically identical (with a few different parameters). They are the implementation of the [Zero-downtime deployment strategy](/docs/reference-implementation/DeployAndTest-DevOps-Zero-Downtime-Update-Strategy.md):
 
 - **Azure.AlwaysOn INT Release** (`azure-release-int.yaml`) deploys and updates the entire solution for the INT environment.
 
@@ -18,7 +18,7 @@ Additionally there are some auxiliary pipelines:
 
 - **Azure.AlwaysOn Deploy Azure Load Generator.** (`azure-deploy-loadgenerator.yaml`) deploys a standalone Azure Functions-based load generator for simulating user activity. See the article on the [load generator](/src/testing/userload-generator/README.md) for more information.
 
-All pipelines are defined in YAML and are stored in the AlwaysOn GitHub repository in the `.ado/pipelines` directory:
+All pipelines are defined in YAML and are stored in the Azure Mission-Critical online reference implementation GitHub repository in the `.ado/pipelines` directory:
 
  ![img](/docs/media/devops1.png)
 

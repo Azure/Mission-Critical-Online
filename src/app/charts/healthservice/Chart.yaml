@@ -4,7 +4,7 @@ name: healthservice
 description: "healthservice api"
 version: 0.0.5
 sources:
-- https://github.com/azure/alwayson
+- https://github.com/Azure/Mission-Critical
 kubeVersion: ">=1.20.0"
 maintainers:
 - name: alwayson

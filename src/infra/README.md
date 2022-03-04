@@ -14,19 +14,19 @@
 
 ---
 
-The AlwaysOn reference implementation follows a layered and modular approach. This approach achieves the following goals:
+The Azure Mission-Critical reference implementation follows a layered and modular approach. This approach achieves the following goals:
 
 - Cleaner and manageable deployment design
 - Ability to switch service(s) with other services providing similar capabilities depending on requirements
-- Separation between layers which enables implementation of RBAC easier in case multiple teams are responsible for different aspects of AlwaysOn application deployment and operations
+- Separation between layers which enables implementation of RBAC easier in case multiple teams are responsible for different aspects of Azure Mission-Critical application deployment and operations
 
-The AlwaysOn reference implementation is composed of three distinct layers:
+The Azure Mission-Critical reference implementations are composed of three distinct layers:
 
 - Infrastructure
 - Configuration
 - Application
 
-Infrastructure layer contains all infrastructure components and underlying foundational services required for AlwaysOn reference implementation. It is deployed using [Terraform](./workload/README.md).
+Infrastructure layer contains all infrastructure components and underlying foundational services required for Azure Mission-Critical reference implementation. It is deployed using [Terraform](./workload/README.md).
 
 > Note: Bicep (ARM DSL) was considered during the early stages as part of a proof-of-concept. Please refer to the following [(archived stub)](/docs/reference-implementation/ZZZ-Archived-Bicep.md) for more details.
 
@@ -36,7 +36,7 @@ Infrastructure layer contains all infrastructure components and underlying found
 
 ## Architecture
 
-![Architecture overview](/docs/media/Architecture-Foundational-Online.png)
+![Architecture overview](/docs/media/mission-critical-architecture-online.png)
 
 ### Stamp independence
 
@@ -58,7 +58,7 @@ As much as possible, no state should be stored on the compute clusters with all 
 
 In addition to [stamp independence](#stamp-independence) and [stateless compute clusters](#stateless-compute-clusters), each "stamp" is considered to be a Scale Unit (SU) following the [Deployment stamps pattern](https://docs.microsoft.com/azure/architecture/patterns/deployment-stamp). All components and services within a given stamp are configured and tested to serve requests in a given range. This includes auto-scaling capabilities for each service as well as proper minimum and maximum values and regular evaluation.
 
-An example SU design in AlwaysOn consists of scalability requirements i.e. minimum values / the expected capacity:
+An example Scale Unit design in Azure Mission-Critical consists of scalability requirements i.e. minimum values / the expected capacity:
 
 **Scalability requirements**
 | Metric | max |
@@ -87,9 +87,9 @@ Each SU is deployed into an Azure region and is therefore primarily handling tra
 
 ### Available Azure Regions
 
-The reference implementation of AlwaysOn deploys a set of Azure services. These services are not available across all Azure regions. In addition, only regions which offer **[Availability Zones](https://docs.microsoft.com/azure/availability-zones/az-region)** (AZs) are considered for a stamp. AZs are gradually being rolled-out and are not yet available across all regions. Due to these constraints, the reference implementation cannot be deployed to all Azure regions.
+The reference implementation of Azure Mission-Critical deploys a set of Azure services. These services are not available across all Azure regions. In addition, only regions which offer **[Availability Zones](https://docs.microsoft.com/azure/availability-zones/az-region)** (AZs) are considered for a stamp. AZs are gradually being rolled-out and are not yet available across all regions. Due to these constraints, the reference implementation cannot be deployed to all Azure regions.
 
-As of February 2022, following regions have been successfully tested with the reference implementation of AlwaysOn:
+As of February 2022, following regions have been successfully tested with the reference implementation of Azure Mission-Critical:
 
 **Europe/Africa**
 
@@ -180,7 +180,7 @@ The current networking setup consists of a single Azure Virtual Network per _sta
 
 Azure Kubernetes Service (AKS) is used as the compute platform as it is most versatile and as Kubernetes is the de-facto compute platform standard for modern applications, both inside and outside of Azure.
 
-AlwaysOn uses Linux-only clusters as there is no requirement for any Windows-based containers and Linux is the more mature platform in terms of Kubernetes.
+Azure Mission-Critical uses Linux-only clusters as there is no requirement for any Windows-based containers and Linux is the more mature platform in terms of Kubernetes.
 
 - `role_based_access_control` (RBAC) is **enabled**.
 - `sku_tier` set to **Paid** (Uptime SLA) to achieve the 99.95% SLA within a single region (with `availability_zones` enabled).
@@ -239,16 +239,16 @@ Azure Policy is used to monitor and enforce certain baselines. All policies are 
 
 #### Supporting services
 
-This repository also contains a couple of supporting services for the AlwaysOn project:
+This repository also contains a couple of supporting services for the Azure Mission-Critical project:
 
 - [Self-hosted Agents](./build-agents/README.md)
 - [Locust Load Testing](../testing/loadtest-locust/README.md)
 
-These supporting services are required / optional based on how you chose to use AlwaysOn.
+These supporting services are required / optional based on how you chose to use Azure Mission-Critical.
 
 ## Naming conventions
 
-All resources used for AlwaysOn follow a pre-defined and consistent naming structure to make it easier to identify them and to avoid confusion. Resource abbreviations are based on the [Cloud Adoption Framework](https://docs.microsoft.com/azure/cloud-adoption-framework/ready/azure-best-practices/resource-abbreviations#general). These abbreviations are typically attached as a suffix to each resource in Azure.
+All resources used for Azure Mission-Critical follow a pre-defined and consistent naming structure to make it easier to identify them and to avoid confusion. Resource abbreviations are based on the [Cloud Adoption Framework](https://docs.microsoft.com/azure/cloud-adoption-framework/ready/azure-best-practices/resource-abbreviations#general). These abbreviations are typically attached as a suffix to each resource in Azure.
 
 A **prefix** is used to uniquely identify "deployments" as some names in Azure must be worldwide unique. Examples of these include Storage Accounts, Container Registries and CosmosDB accounts.
 

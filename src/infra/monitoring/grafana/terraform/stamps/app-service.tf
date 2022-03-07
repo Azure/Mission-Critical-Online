@@ -36,7 +36,7 @@ resource "azurerm_app_service" "appservice" {
     "GF_DATABASE_PASSWORD" = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.postgres_password[each.key].id})"
     "GF_DATABASE_SSL_MODE" = "require"
     "GF_SERVER_DOMAIN"     = var.frontdoor_fqdn
-    "GF_SERVER_ROOT_URL"   = "http://${var.frontdoor_fqdn}:80"
+    "GF_SERVER_ROOT_URL"   = "https://${var.frontdoor_fqdn}:443"
 
     "GRAFANA_USERNAME"           = "alwayson"
     "GRAFANA_PASSWORD"           = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.grafana_password[each.key].id})"

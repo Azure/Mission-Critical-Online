@@ -65,6 +65,7 @@ stages:
       containerImageName:             'alwayson-grafana'   # container image name for Grafana
       containerImageDockerFile:       './Dockerfile'  # dockerfile used to build Grafana
       workingDirectory:               '$(workingDirectory)'
+      customParameters:               '--build-arg GF_SERVER_DOMAIN=$(frontdoor_fqdn)'
 
 
 - stage: deploystampinfra

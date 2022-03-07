@@ -23,6 +23,9 @@ FROM grafana/grafana:8.4.2
 # Load custom plugin that we built in the first stage
 # Since our plugin is unsigned, we have to specify it by name to allow it to run
 ENV GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS="alwayson-healthmodelpanel"
+ENV GF_SERVER_DOMAIN=grafana.ourdomain.com
+ENV GF_SERVER_ROOT_URL=http://grafana.ourdomain.com:80
+
 WORKDIR /var/lib/grafana/plugins/alwayson-healthmodelpanel/
 COPY --from=builder /usr/src/app/healthmodelpanel/dist* ./dist
 

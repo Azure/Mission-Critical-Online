@@ -3,7 +3,6 @@ parameters:
   containerImageDockerfile: '' # path to dockerfile e.g. src/app/dotnet-backendworker/Dockerfile
   workingDirectory:         'src/app'
   jobName:                  '' # name for each build job - needs to be unique within a given stage/pipeline
-  customParameters:         '' # custom parameters to be passed to the container
 
 jobs:
 - job: ${{ parameters.jobName }}
@@ -53,7 +52,7 @@ jobs:
         echo "*** Starting to build image $imageNameTagSpecific locally"
         docker build -t $imageNameTagSpecific `
                      -t $imageNameTagLatest `
-                    --file ${{ parameters.containerImageDockerfile }} . ${{ parameters.customParameters }}
+                    --file ${{ parameters.containerImageDockerfile }} .
 
         echo "*** Pushing image $imageNameTagSpecific to ACR $acrName"
         docker push $imageNameTagSpecific

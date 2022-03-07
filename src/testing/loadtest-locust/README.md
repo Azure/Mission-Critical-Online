@@ -2,7 +2,7 @@
 
 [locust.io](https://locust.io) is an easy to use, scriptable and scalable open source load and performance testing tool.
 
-The AlwaysOn reference implementation leverages Locust in two different ways:
+The Azure Mission-Critical reference implementation leverages Locust in two different ways:
 
 * **Embedded** is used to automatically run load tests as part of the end-to-end (e2e) validation pipeline using a fixed set of parameters. This is intended to compare each e2e run (currently manually) and the changes that were made against a given performance baseline.
 
@@ -10,7 +10,7 @@ The AlwaysOn reference implementation leverages Locust in two different ways:
 
 ## Infrastructure
 
-The standalone as well as the embedded Locust implementation used for AlwaysOn consists of one master node and one or more worker nodes distributed across multiple Azure regions. The worker nodes execute the load testing tasks and communicate with the master node on port `5557/TCP`. The master node is orchestrating the worker nodes, gathering the load test data and (in standalone-mode only) hosting a web interface on port `8089/TCP` to conduct and monitor load tests.
+The standalone as well as the embedded Locust implementation used for the Azure Mission-Critical reference implementation consists of one master node and one or more worker nodes distributed across multiple Azure regions. The worker nodes execute the load testing tasks and communicate with the master node on port `5557/TCP`. The master node is orchestrating the worker nodes, gathering the load test data and (in standalone-mode only) hosting a web interface on port `8089/TCP` to conduct and monitor load tests.
 
 All nodes are represented as individual container instances, hosted on Azure Container Instances (ACI) and are deployed via Terraform. The Terraform definition is stored in the `src/infra/loadtest-locust` directory.
 
@@ -49,7 +49,7 @@ And uploads the load test results at the end at the end of each successful run a
 
 ## Authentication
 
-Some of the REST methods on the AlwaysOn API are protected with API key-based authentication. In order to call the API and run tests, Locust needs to present the `X-API-Key: XXX` HTTP header. The corresponding value can be fetched from of of the Azure Key Vault of the deployment (it is the same key between all the stamps).
+Some of the REST methods on the Azure Mission-Critical sample workload API are protected with API key-based authentication. In order to call the API and run tests, Locust needs to present the `X-API-Key: XXX` HTTP header. The corresponding value can be fetched from of of the Azure Key Vault of the deployment (it is the same key between all the stamps).
 
 ## Load Testing
 

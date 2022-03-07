@@ -4,7 +4,7 @@ The "configuration layer" builds the bridge between the infrastructure deployed 
 
 ## Versioning
 
-All dependencies and components used for AlwaysOn are defined using a specific, static version to avoid issues due to changes with untested, newer versions of certain components.
+All dependencies and components used for the Azure Mission-Critical reference implementation are defined using a specific, static version to avoid issues due to changes with untested, newer versions of certain components.
 
 These versions are specified in `.ado/pipelines/config/configuration.yaml` and loaded into all Azure DevOps pipelines. Here's an example how this looks like:
 

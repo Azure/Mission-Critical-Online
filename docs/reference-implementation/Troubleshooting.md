@@ -1,6 +1,6 @@
 # Troubleshooting guide
 
-It's inevitable in a system with the complexity of AlwaysOn that issues and errors occur. This living document maintains a list of solutions for common errors, which are not directly caused by the AlwaysOn code (i.e. are outside of control of the development team and cannot be fixed as bugs in the codebase).
+It is inevitable in a system with the complexity of Azure Mission-Critical that issues and errors occur. This living document maintains a list of solutions for common errors, which are not directly caused by the Azure Mission-Critical code (i.e. are outside of control of the development team and cannot be fixed as bugs in the codebase).
 
 - [Deployment issues](#deployment-issues)
   - [Infrastructure Deployment stages](#infrastructure-deployment-stages)
@@ -105,4 +105,4 @@ To prevent the error from happening to begin with, you can manually de-select th
 **Solution:** Re-run the failing step.
 
 ---
-[AlwaysOn - Full List of Documentation](/docs/README.md)
+[Azure Mission-Critical - Full List of Documentation](/docs/README.md)

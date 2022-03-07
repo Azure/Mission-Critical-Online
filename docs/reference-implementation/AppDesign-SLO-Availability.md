@@ -1,14 +1,14 @@
 # SLO and Availability
 
-AlwaysOn has set a targeted availability of **99.95%**. This document covers the reasoning and how this number was defined.
+Azure Mission-Critical has set a targeted availability of **99.95%**. This document covers the reasoning and how this number was defined.
 
-> While it is understood that the implementation is literally called "AlwaysOn" and therfore implies availability of 100%, in cloud reality this number is extremely difficult to achieve. Instead it is accepted that each component can/ will become unavailable at some point and have designed the architecture to be as tolerant and adaptive to this as possible.
+> While it is understood that the implementation is literally called "AlwaysOn" and therefore implies availability of 100%, in cloud reality this number is extremely difficult to achieve. Instead it is accepted that each component can/ will become unavailable at some point and have designed the architecture to be as tolerant and adaptive to this as possible.
 
 ## Service Level Agreement (SLA) and Service Level Objective (SLO)
 
-An **SLA** describes a contractual commitment for application availability and as the purpose of AlwaysOn is not to define contractual agreements, we prefer an availability target in the form of **SLO**. This is a percentage figure which represents the amount of time in a month when the application is *available*.
+An **SLA** describes a contractual commitment for application availability and as the purpose of Azure Mission-Critical is not to define contractual agreements, we prefer an availability target in the form of **SLO**. This is a percentage figure which represents the amount of time in a month when the application is *available*.
 
-**Availability** for AlwaysOn means that end users are able to perform game operations using the website. These operations include:
+**Availability** for Azure Mission-Critical means that end users are able to perform game operations using the website. These operations include:
 
 1. Enter the home page.
 1. Sign in with provided credentials.
@@ -22,7 +22,7 @@ An SLO of 99.95% equates to an accepted downtime of **5 minutes per week** or **
 
 To define a realistic SLO it is important to understand the SLAs of the individual Azure components. Cloud services rely on each other and can potentially fail at the same time, therefore, their availability numbers need to be combined into a Composite SLA.
 
-> While AlwaysOn does not have contract with its users (hence providing an SLO not SLA) it does have one with Azure and so we can consider the official SLAs of the platform.
+> While Azure Mission-Critical does not have contract with its users (hence providing an SLO not SLA) it does have one with Azure and so we can consider the official SLAs of the platform.
 
 Composite SLA is calculated as individual SLAs multiplied with each other.
 
@@ -58,7 +58,7 @@ Composite SLA of Stamp tier: **99.77%**.
 
 ## Final SLO
 
-The fact that AlwaysOn uses multiple stamps improves the Stamp tier availability and resiliency, but at the same time the hard dependency on the Global tier limits the overall achievable availability. This also means that adding more stamps will not improve the overall infrastructure SLA, however, this can improve performance and resiliency in case a stamp fails.
+The fact that Azure Mission-Critical uses multiple stamps improves the Stamp tier availability and resiliency, but at the same time the hard dependency on the Global tier limits the overall achievable availability. This also means that adding more stamps will not improve the overall infrastructure SLA, however, this can improve performance and resiliency in case a stamp fails.
 
 The maximum availability (based on the underlying Azure infrastructure) is 99.979% when running with at least **three** stamps. To allow for deployments and application-level outages, this number was reduced slightly to **99.95%**.
 
@@ -69,7 +69,7 @@ https://docs.microsoft.com/azure/architecture/framework/resiliency/business-metr
 
 ## Observability
 
-AlwaysOn uses Application Insights availability probes to probe health endpoints for each stamp every 5 minutes. If the probe responds with success, then the website storage account is reachable. These are the same probing calls which Azure Front Door uses to determine backend health.
+Azure Mission-Critical uses Application Insights availability probes to probe health endpoints for each stamp every 5 minutes. If the probe responds with success, then the website storage account is reachable. These are the same probing calls which Azure Front Door uses to determine backend health.
 
 ![Availability in Application Insights](/docs/media/SLA-appi-availability.png)
 
@@ -82,4 +82,4 @@ Availability can also be observed via Front Door backend monitoring which is bas
 ![Front Door backend health](/docs/media/SLA-backend-health-fd.png)
 
 ---
-[AlwaysOn - Full List of Documentation](/docs/README.md)
+[Azure Mission-Critical - Full List of Documentation](/docs/README.md)

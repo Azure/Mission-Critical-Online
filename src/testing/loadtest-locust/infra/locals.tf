@@ -1,7 +1,7 @@
 locals {
   default_tags = {
-    Owner       = "AlwaysOn V-Team"
-    Project     = "Always-on Solution Engineering"
+    Owner       = "Azure Mission-Critical V-Team"
+    Project     = "Azure Mission-Critical Solution Engineering"
     Toolkit     = "Terraform"
     Environment = var.environment
     Prefix      = var.prefix

@@ -3,7 +3,8 @@
 /README.md @calcof
 
 # Owners of reference implementation docs
-/docs/reference-implementation/ @calcof @sebader @msimecek @heoelri @hjscherer @nielsams
+/docs/ @calcof @sebader @msimecek @heoelri @hjscherer @nielsams
 
-# Owners of reference implementation technical artefacts
+# Owners of reference implementation technical artifacts
 /src/ @calcof @sebader @msimecek @heoelri @hjscherer @nielsams
+/.ado/ @calcof @sebader @msimecek @heoelri @hjscherer @nielsams

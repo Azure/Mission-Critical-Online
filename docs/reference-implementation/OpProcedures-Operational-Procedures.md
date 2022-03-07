@@ -1,6 +1,6 @@
 # Operational Procedures
 
-While the reference implementation of AlwaysOn only serves as a demonstration and thus is not really run in production, there are a couple of operational procedures that are lined out in this article, which are still relevant.
+While the reference implementation of Azure Mission-Critical only serves as a demonstration and thus is not really run in production, there are a couple of operational procedures that are lined out in this article, which are still relevant.
 
 - [General debugging / issue investigation](#general-debugging--issue-investigation)
 - [Transient Pipeline Failures](#transient-pipeline-failures)
@@ -72,4 +72,4 @@ In Azure DevOps a notification subscription can, for example, look like this (Pr
 The topic of Key / Secret rotation is covered in a [separate article](./OpProcedures-KeyRotation.md).
 
 ---
-[AlwaysOn - Full List of Documentation](/docs/README.md)
+[Azure Mission-Critical - Full List of Documentation](/docs/README.md)

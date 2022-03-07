@@ -1,8 +1,8 @@
 # Failure Injection Testing
 
-Based on the [Failure Analysis](./Health-Failure-Analysis.md), the AlwaysOn team performed some manual failure injection testing (also known as "Chaos Testing" or "Chaos Monkey testing"). This article shares some learnings around what was tested and how this informed the development of the solution.
+Based on the [Failure Analysis](./Health-Failure-Analysis.md), the Azure Mission-Critical team performed some manual failure injection testing (also known as "Chaos Testing" or "Chaos Monkey testing"). This article shares some learnings around what was tested and how this informed the development of the solution.
 
-When the AlwaysOn project started, no automated Failure Injection Testing was implemented and a series of manual testing was performed which provided a lot of valuable insights.
+When the Azure Mission-Critical project started, no automated Failure Injection Testing was implemented and a series of manual testing was performed which provided a lot of valuable insights.
 
 All tests were performed in an E2E validation environment so that fully representative tests could be conducted without any risk of interference from other environments. Most of the failures can be observed directly in the Application Insights [Live metrics](https://docs.microsoft.com/azure/azure-monitor/app/live-stream) view - and a few minutes later in the Failures view and corresponding log tables. Other failures need deeper debugging such as the use of `kubectl` to observe the behavior inside of AKS.
 
@@ -10,7 +10,7 @@ All tests were performed in an E2E validation environment so that fully represen
 
 DNS failure injection is a good test case since it can simulate multiple issues. Firstly it simulates the case when the DNS resolution fails, for instance because Azure DNS experiences an issue ,but it can also help to simulate general connection issues between a client and a service, for example when the BackgroundProcessor cannot connect to the Event Hub.
 
-In single-host scenarios you can simply modify the local `hosts` file to overwrite DNS resolution. In a larger system with multiple dynamic servers like AKS, this is not feasible. However, we can use [Azure Private DNS Zones](https://docs.microsoft.com/azure/dns/private-dns-privatednszone) as an alternative (See the Event Hubs example below for a configuration walk-through). 
+In single-host scenarios you can simply modify the local `hosts` file to overwrite DNS resolution. In a larger system with multiple dynamic servers like AKS, this is not feasible. However, we can use [Azure Private DNS Zones](https://docs.microsoft.com/azure/dns/private-dns-privatednszone) as an alternative (See the Event Hubs example below for a configuration walk-through).
 
 ### Event Hub
 
@@ -28,7 +28,7 @@ As this retry and failover logic in the SDK takes about 2 minutes, the Health Se
 
 ## Firewall blocking
 
-Most Azure services support firewall access restrictions based on VNets and/or IP addresses. In AlwaysOn these are already used to restrict access, for instance, to Cosmos DB or Event Hub. Blocking access by removing existing Allow rules or adding new Block rules is a straightforward test. This can serve to simulate firewall misconfigurations but also actual service outages. Note that similar to above, existing established connections might continue to work for a period before they start to fail.
+Most Azure services support firewall access restrictions based on VNets and/or IP addresses. In Azure Mission-Critical these are already used to restrict access, for instance, to Cosmos DB or Event Hub. Blocking access by removing existing Allow rules or adding new Block rules is a straightforward test. This can serve to simulate firewall misconfigurations but also actual service outages. Note that similar to above, existing established connections might continue to work for a period before they start to fail.
 
 ### Key Vault
 
@@ -63,4 +63,5 @@ From there on there were still several components in place which could have been
 Overall, this particular failure injection showed that even for a skilled operations team it can be quite challenging to detect (and then attempt to fix) the root cause of an issue in a distributed system.
 
 ---
-[AlwaysOn - Full List of Documentation](/docs/README.md)
+
+[Azure Mission-Critical - Full List of Documentation](/docs/README.md)

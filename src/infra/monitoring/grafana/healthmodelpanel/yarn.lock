@@ -1122,13 +1122,38 @@
   resolved "https://registry.yarnpkg.com/@grafana/aws-sdk/-/aws-sdk-0.0.31.tgz#ddc7f5e3f2f35e4ad5c43fdf3e8efe64c5a5303a"
   integrity sha512-AUgw19cAnwkg2QTwghlMk7cmLkjph4oQtH5S57hjX6XywlbUF3SXCoMwTXlqfM6oeBPVelCJ4zM9imtmBQFAVQ==
 
-"@grafana/data@8.4.2", "@grafana/data@^8.3.6":
+"@grafana/data@8.4.2":
   version "8.4.2"
   resolved "https://registry.yarnpkg.com/@grafana/data/-/data-8.4.2.tgz#5fd7232f7fe0ab61166b4d1bf1605e0dd5a97165"
   integrity sha512-5Kq/eo6cqCqWuy6BIp26WskUEd5MsDxs+ZOAJsMAS0tHYuxPK6L9LR/yTdEsgaWdXIW+ubZ8wnHpRohNK5I/9Q==
   dependencies:
     "@braintree/sanitize-url" "5.0.2"
     "@grafana/schema" "8.4.2"
+    "@types/d3-interpolate" "^1.4.0"
+    d3-interpolate "1.4.0"
+    date-fns "2.28.0"
+    eventemitter3 "4.0.7"
+    lodash "4.17.21"
+    marked "4.0.10"
+    moment "2.29.1"
+    moment-timezone "0.5.34"
+    ol "6.12.0"
+    papaparse "5.3.1"
+    react "17.0.2"
+    react-dom "17.0.2"
+    regenerator-runtime "0.13.9"
+    rxjs "7.5.1"
+    tslib "2.3.1"
+    uplot "1.6.19"
+    xss "1.0.10"
+
+"@grafana/data@^8.4.3":
+  version "8.4.3"
+  resolved "https://registry.yarnpkg.com/@grafana/data/-/data-8.4.3.tgz#897aa572fb628c8763e1acee59ca52fd3955b04e"
+  integrity sha512-1rUKpYzP8Z4gvYBQg89F4kJx77aBmsmo49VK1BVCCl7F78xWY5umQJkaSdYInAMUs3RjhXl1ib20US+eA8ldnw==
+  dependencies:
+    "@braintree/sanitize-url" "5.0.2"
+    "@grafana/schema" "8.4.3"
     "@types/d3-interpolate" "^1.4.0"
     d3-interpolate "1.4.0"
     date-fns "2.28.0"
@@ -1176,6 +1201,13 @@
   version "8.4.2"
   resolved "https://registry.yarnpkg.com/@grafana/schema/-/schema-8.4.2.tgz#46b11022a773dd51877e31ec7711b0bb00c72c56"
   integrity sha512-Mmp6/NEXcM0EkI/vdC56ne1Q7tiacsEQs/7W5OOq+iUar78BGmxtHwTZNouiez5nByUNt2Z09njFIsxChv7egQ==
+  dependencies:
+    tslib "2.3.1"
+
+"@grafana/schema@8.4.3":
+  version "8.4.3"
+  resolved "https://registry.yarnpkg.com/@grafana/schema/-/schema-8.4.3.tgz#fe6a7ad32e01db51561e67f9a8b36d9a2bf98829"
+  integrity sha512-YwZiWPkOdVeRg70v0kQAN0FJTiKs+arckt9CtNd4bHjtHQYnnEBYqVqXvIUODYAkaNicPZkOy96YQYVTkHotDg==
   dependencies:
     tslib "2.3.1"
 

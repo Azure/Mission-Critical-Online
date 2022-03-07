@@ -49,4 +49,3 @@ jobs:
         run: |
           cd RegionalLoadGenerator
           npm install
-          npm run start

@@ -14,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Serilog;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -90,6 +91,8 @@ namespace AlwaysOn.CatalogService
                 // Production CatalogService API will run on the same domain as the UI, but for local development, CORS needs to be enabled.
                 app.UseCors(builder => builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
             }
+
+            app.UseSerilogRequestLogging();
 
             var sysConfig = app.ApplicationServices.GetService<SysConfiguration>();
 

@@ -8,7 +8,7 @@ deleteDatasources:
 datasources:
   - name: Azure Monitor
     type: grafana-azure-monitor-datasource
-    access: proxy
+    access: direct # proxy
     version: 1
     editable: false
     ordId: 1

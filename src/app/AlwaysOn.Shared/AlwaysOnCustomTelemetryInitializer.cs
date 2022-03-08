@@ -14,15 +14,15 @@ namespace AlwaysOn.Shared
     public class AlwaysOnCustomTelemetryInitializer : ITelemetryInitializer
     {
         private readonly string _roleName;
-        private readonly IHttpContextAccessor _httpContextAccessor = null;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         /// <summary>
         /// Construct an initializer with a role name.
         /// </summary>
         /// <param name="roleName">Cloud role name to assign to telemetry's context.</param>
-        /// <param name="httpContextAccessor">httpContextAccessor for HTTP request logging augmentation</param>
+        /// <param name="httpContextAccessor">Optional httpContextAccessor for HTTP request logging augmentation</param>
         /// <exception cref="ArgumentNullException"></exception>
-        public AlwaysOnCustomTelemetryInitializer(string roleName, IHttpContextAccessor httpContextAccessor)
+        public AlwaysOnCustomTelemetryInitializer(string roleName, IHttpContextAccessor httpContextAccessor = null)
         {
             if (string.IsNullOrWhiteSpace(roleName))
             {
@@ -31,18 +31,6 @@ namespace AlwaysOn.Shared
 
             _roleName = roleName;
             _httpContextAccessor = httpContextAccessor;
-        }
-
-        /// <summary>Construct an initializer with a role name.</summary>
-        /// <param name="roleName">Cloud role name to assign to telemetry's context.</param>
-        public AlwaysOnCustomTelemetryInitializer(string roleName)
-        {
-            if (string.IsNullOrWhiteSpace(roleName))
-            {
-                throw new ArgumentNullException(nameof(roleName));
-            }
-
-            _roleName = roleName;
         }
 
         void ITelemetryInitializer.Initialize(ITelemetry telemetry)

@@ -92,8 +92,6 @@ namespace AlwaysOn.CatalogService
                 app.UseCors(builder => builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
             }
 
-            app.UseSerilogRequestLogging();
-
             var sysConfig = app.ApplicationServices.GetService<SysConfiguration>();
 
             if (sysConfig.EnableSwagger)

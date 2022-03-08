@@ -60,7 +60,7 @@ namespace AlwaysOn.BackgroundProcessor
                 services.AddSingleton<ITelemetryInitializer>(sp =>
                 {
                     var sysConfig = sp.GetService<SysConfiguration>();
-                    return new RoleNameInitializer($"{nameof(BackgroundProcessor)}-{sysConfig.AzureRegionShort}");
+                    return new AlwaysOnCustomTelemetryInitializer($"{nameof(BackgroundProcessor)}-{sysConfig.AzureRegionShort}");
                 });
                 services.AddSingleton(typeof(ITelemetryChannel), new ServerTelemetryChannel() { StorageFolder = "/tmp/appinsightschannel" });
                 

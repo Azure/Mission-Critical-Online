@@ -16,8 +16,8 @@ datasources:
     jsonData:
       azureAuthType: msi
       subscriptionId: ${AZURE_DEFAULT_SUBSCRIPTION}
-      httpHeaderName1: 'Access-Control-Allow-Headers'
-      httpHeaderName2: 'Access-Control-Allow-Origin'
-    secureJsonData:
-      httpHeaderValue1: 'origin, authorization, accept'
-      httpHeaderValue2: 'https://afintgrafana-global-fd.azurefd.net/''
+#      httpHeaderName1: 'Access-Control-Allow-Headers'
+#      httpHeaderName2: 'Access-Control-Allow-Origin'
+#    secureJsonData:
+#      httpHeaderValue1: 'origin, authorization, accept'
+#      httpHeaderValue2: 'https://afintgrafana-global-fd.azurefd.net/''

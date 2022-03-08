@@ -74,8 +74,6 @@ namespace AlwaysOn.HealthService
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseSerilogRequestLogging();
-
             var sysConfig = app.ApplicationServices.GetService<SysConfiguration>();
 
             if (sysConfig.EnableSwagger)

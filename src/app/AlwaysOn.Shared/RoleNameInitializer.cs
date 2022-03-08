@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using Microsoft.AspNetCore.Http;
 using Microsoft.ApplicationInsights.Channel;
+using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Extensibility;
 
 namespace AlwaysOn.Shared
@@ -14,10 +14,11 @@ namespace AlwaysOn.Shared
     public class RoleNameInitializer : ITelemetryInitializer
     {
         private readonly string _roleName;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         /// <summary>Construct an initializer with a role name.</summary>
         /// <param name="roleName">Cloud role name to assign to telemetry's context.</param>
-        public RoleNameInitializer(string roleName)
+        public RoleNameInitializer(string roleName, IHttpContextAccessor httpContextAccessor)
         {
             if (string.IsNullOrWhiteSpace(roleName))
             {
@@ -25,11 +26,18 @@ namespace AlwaysOn.Shared
             }
 
             _roleName = roleName;
+            _httpContextAccessor = httpContextAccessor;
+
         }
 
         void ITelemetryInitializer.Initialize(ITelemetry telemetry)
         {
             telemetry.Context.Cloud.RoleName = _roleName;
+
+            if (telemetry is RequestTelemetry requestTelemetry)
+            {
+                requestTelemetry.Context.User.Id = _httpContextAccessor.HttpContext.Request.Headers["User-Agent"];
+            }
         }
     }
 }

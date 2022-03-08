@@ -69,7 +69,7 @@ namespace AlwaysOn.CatalogService
             services.AddSingleton<ITelemetryInitializer>(sp =>
             {
                 var sysConfig = sp.GetService<SysConfiguration>();
-                return new RoleNameInitializer($"{nameof(CatalogService)}-{sysConfig.AzureRegionShort}");
+                return new RoleNameInitializer($"{nameof(CatalogService)}-{sysConfig.AzureRegionShort}", sp.GetService<IHttpContextAccessor>());
             });
 
             services.AddApiVersioning(o =>

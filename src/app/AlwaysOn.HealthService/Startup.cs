@@ -62,7 +62,7 @@ namespace AlwaysOn.HealthService
             services.AddSingleton<ITelemetryInitializer>(sp =>
             {
                 var sysConfig = sp.GetService<SysConfiguration>();
-                return new RoleNameInitializer($"{nameof(HealthService)}-{sysConfig.AzureRegionShort}");
+                return new RoleNameInitializer($"{nameof(HealthService)}-{sysConfig.AzureRegionShort}", sp.GetService<IHttpContextAccessor>());
             });
         }
 

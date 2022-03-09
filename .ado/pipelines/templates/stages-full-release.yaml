@@ -372,26 +372,35 @@ stages:
 
                     if($LastExitCode -ne 0)
                     {
-                        throw "*** Error on fetching existing backends from Front Door $fdName for pool 'BackendApis'"
+                        throw "*** Error on fetching existing backends from Front Door $fdName for pool 'BackendApis'. Make sure the backend pool exists!"
                     }
 
-                    $extractedPrefix = ""
+                    $prefix = ""
                     # Only valid if we found any disabled backend (=an old release unit)
                     if($disabledBackendAddress)
                     {
                       echo "*** Found disabled backend $disabledBackendAddress"
-                      # Extract prefix from address. Expected format like "aoint5445-cluster.northeurope.cloudapp.azure.com" (prefix-cluster....)
-                      $disabledBackendAddress -match "^(?<prefix>.+)-cluster"
-                      $extractedPrefix = $Matches.prefix
-                      echo "*** Extracted prefix $extractedPrefix"
-                      echo "##vso[task.setvariable variable=oldReleasePrefix]$extractedPrefix" # set pipeline variable
+
+                      # Lookup the Public IP resource for this FQDN and fetch the Prefix tag from it
+                      $prefix = az network public-ip list --query "[?dnsSettings.fqdn == '$disabledBackendAddress'].{prefix:tags.Prefix}" -o tsv
+
+                      if(-not $prefix)
+                      {
+                        throw "*** No Public IP found (or not Prefix tag) for FQDN $disabledBackendAddress"
+                      }
+
+                      echo "*** Found prefix tag $prefix"
                     }
 
-                    if((-not $disabledBackendAddress) -or ($extractedPrefix -eq ""))
+                    if((-not $disabledBackendAddress) -or ($prefix -eq ""))
                     {
-                      # This should not happen - if it does, we need to stop the pipeline and investigate. Otherwise the terraform destry task will fail because of the empty prefix variable
-                      throw "*** No disabled backends found or extractedPrefix empty. Nothing to destroy."
+                      # This can happen on the very first run of the INT or PROD pipeline. We'll set the prefix to some dummy. Terraform destroy will be happy but has nothing to really destroy
+                      Write-Warning "*** No disabled backends found or prefix empty. Nothing to destroy."
+
+                      $prefix = "DUMMYPRE"
                     }
+
+                    echo "##vso[task.setvariable variable=oldReleasePrefix]$prefix" # set pipeline variable
 
             - ${{ if eq(parameters.environment, 'e2e') }}: # Special case for E2E only
               - task: PowerShell@2

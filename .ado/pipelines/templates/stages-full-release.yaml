@@ -397,7 +397,7 @@ stages:
                       # This can happen on the very first run of the INT or PROD pipeline. We'll set the prefix to some dummy. Terraform destroy will be happy but has nothing to really destroy
                       Write-Warning "*** No disabled backends found or prefix empty. Nothing to destroy."
 
-                      $prefix = "DUMMYPREFIX"
+                      $prefix = "DUMMYPRE"
                     }
 
                     echo "##vso[task.setvariable variable=oldReleasePrefix]$prefix" # set pipeline variable

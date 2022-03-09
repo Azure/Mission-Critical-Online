@@ -17,7 +17,7 @@ This guide describes the end-to-end process for setting up all pre-requisites an
 The Azure Mission-Critical reference implementation gets deployed into an Azure Subscription. For this you need to have either:
 
 - **Owner permissions** yourself and to be able to create a Service Principal which you are able to grant Owner as well, or
-- A pre-provided Service Principal with Owner permissions on a subscription
+- A pre-provisioned Service Principal with Owner permissions on a subscription
 
 The following must be installed on the client machine used to deploy Azure Mission-Critical reference implementation:
 

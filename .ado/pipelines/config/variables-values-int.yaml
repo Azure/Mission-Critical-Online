@@ -4,12 +4,12 @@ variables:
 
 # Resource prefix for this environment
 - name:  'prefix'
-  value: 'axint'          # <===== CHANGE THIS! Must not be longer than 6 characters! Needs to be a unique prefix
+  value: 'afint'          # <===== CHANGE THIS! Must not be longer than 6 characters! Needs to be a unique prefix
 
 # The first value in 'stampLocations' is the primary region used for global services.
 # IMPORTANT! Changing the primary region (first value) is a BREAKING change and will destroy CosmosDB and Front Door.
 - name: 'stampLocations'
-  value: '["northeurope"]' # Check which regions are valid. There is a list in /src/infra/README.md
+  value: '["northeurope", "brazilsouth"]' # Check which regions are valid. There is a list in /src/infra/README.md
 
 # Terraform state variables
 - name:  'terraformResourceGroup'
@@ -19,9 +19,9 @@ variables:
 
 # Custom DNS name settings
 - name: 'envDnsZoneRG'
-  value: ''                # <===== CHANGE THIS OR LEAVE THE VALUE BLANK
+  value: 'ao-dns-rg'                # <===== CHANGE THIS OR LEAVE THE VALUE BLANK
 - name: 'envDomainName'
-  value: ''   # <===== CHANGE THIS OR LEAVE THE VALUE BLANK
+  value: 'int.shop.always-on.app'   # <===== CHANGE THIS OR LEAVE THE VALUE BLANK
 
 # Other settings
 - name:  'contactEmail'

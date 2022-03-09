@@ -48,6 +48,8 @@ steps:
       set -eux  # fail on error
 
       # terraform init sometimes fails intermittently, so we do a simple retry here. Based on https://serverfault.com/a/80897/247455
+      # One of the reasons it can fail is if the state store was created just before and the role assignment then can take some time to fully propagate.
+
       until terraform init \
         -backend-config=resource_group_name=${{ parameters.terraformStorageResourceGroupName }} \
         -backend-config=storage_account_name=${{ parameters.terraformStorageAccountName }} \
@@ -59,8 +61,8 @@ steps:
         -backend-config=client_secret="$(ARM_CLIENT_SECRET)" \
         -backend-config=use_azuread_auth="true"; do
 
-        # Set terraform debug for next run if it failed once
-        export TF_LOG=DEBUG
+        ###### Enable the following line if required for more debugging! Set terraform debug for next run if it failed once
+        # export TF_LOG=DEBUG
 
         echo "*** Error on terraform init. Will retry in 10 sec"
         sleep 10

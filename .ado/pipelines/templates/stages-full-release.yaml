@@ -132,47 +132,6 @@ stages:
                                           $(tfParameterFrontDoorStaticStorage)
                                           $(terraformAdditionalParametersCustomDomains)'
 
-          # Install Function Core Tools for publishing the SLO Query Function
-          - task: Bash@3
-            displayName: 'Install Function Core Tools'
-            inputs:
-              targetType: 'inline'
-              script: |
-
-                echo "*** Installing Function-core-tools@4"
-                curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
-                sudo mv microsoft.gpg /etc/apt/trusted.gpg.d/microsoft.gpg
-                sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-$(lsb_release -cs)-prod $(lsb_release -cs) main" > /etc/apt/sources.list.d/dotnetdev.list'
-                sudo apt-get update
-                sudo apt-get install azure-functions-core-tools-4
-                echo "*** Installed Azure Function Core Tools version: $(func -v)"
-
-          - task: UseDotNet@2
-            displayName: 'Use .NET Core SDK $(dotnetSdkVersion)'
-            inputs:
-              packageType: sdk
-              version: $(dotnetSdkVersion)
-              installationPath: $(Agent.ToolsDirectory)/dotnet
-
-          # Deploying the SLO Query Function using the Function Core tools
-          - task: AzureCLI@2
-            displayName: 'Deploy SLO Function'
-            inputs:
-              azureSubscription: $(azureServiceConnection)
-              scriptType: pscore
-              scriptLocation: inlineScript
-              inlineScript: |
-
-                # load json data from downloaded terraform artifact
-                $infraDeployOutput = Get-ChildItem $(workingDirectory)/globalresources/tfoutput.json | Get-Content | ConvertFrom-JSON
-
-                $rgName = $infraDeployOutput.monitoring_resource_group_name.value
-                $sloFunctionName = $infraDeployOutput.slo_function_name.value
-
-                echo "*** Deploying to SLO Function App $sloFunctionName in resource group $rgName"
-                cd "src/infra/monitoring/AlwaysOn.SloProcessor"
-                func azure functionapp publish $sloFunctionName --csharp
-
 - stage: deployreleaseinfrastructure
   displayName: 'Deploy Release Unit Infrastructure' # Deploy Release Unit Azure Infrastructure
   dependsOn: deployglobalinfrastructure

@@ -18,7 +18,7 @@ RUN chmod +x insertqueries.sh && ./insertqueries.sh
 # Build phase is done, now build the container. Start with the office Grafana image
 # We're using 8.3.4 for now since in later versions our frontdoor origin is not accepted. 
 # This is a known issue and we'll upgrade to a later version once that's resolved. 
-FROM grafana/grafana:8.3.4
+FROM grafana/grafana:8.4.3
 
 # Load custom plugin that we built in the first stage
 # Since our plugin is unsigned, we have to specify it by name to allow it to run

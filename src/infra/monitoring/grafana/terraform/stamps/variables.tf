@@ -52,6 +52,11 @@ variable "wapp_container_image" {
   default     = "grafana/grafana:latest"
 }
 
+variable "frontdoor_fqdn" {
+  description = "FQDN of the frontdoor used for Grafana."
+  type        = string
+}
+
 variable "frontdoor_header_id" {
   description = "This is required to configure Frontdoor header ID and restrict access to app via AFD only."
   type        = string

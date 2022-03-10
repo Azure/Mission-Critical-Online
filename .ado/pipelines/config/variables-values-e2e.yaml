@@ -9,7 +9,7 @@ variables:
 # The first value in 'stampLocations' is the primary region used for global services.
 # IMPORTANT! Changing the primary region (first value) is a BREAKING change and will destroy CosmosDB and Front Door.
 - name: 'stampLocations'
-  value: '["swedencentral"]'    # Check which regions are valid. There is a list in /src/infra/README.md
+  value: '["northeurope"]'    # Check which regions are valid. There is a list in /src/infra/README.md
 
 ##### NOTE #####
 # If you want to run embedded Chaos Studio testing, only the following regions are supported as of 11-Oct-2021:

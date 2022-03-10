@@ -63,7 +63,7 @@ namespace AlwaysOn.BackgroundProcessor.Services
             {
                 try
                 {
-                    _logger.LogInformation("Deleting {type} from database. objectId={objectId}", deletionRequest.ObjectType, deletionRequest.ObjectId);
+                    _logger.LogDebug("Deleting {type} from database. objectId={objectId}", deletionRequest.ObjectType, deletionRequest.ObjectId);
 
                     switch (deletionRequest.ObjectType)
                     {
@@ -105,7 +105,7 @@ namespace AlwaysOn.BackgroundProcessor.Services
             {
                 try
                 {
-                    _logger.LogInformation("Adding new CatalogItem to database. CatalogItemId={CatalogItemId}", item.Id);
+                    _logger.LogDebug("Adding new CatalogItem to database. CatalogItemId={CatalogItemId}", item.Id);
                     await _databaseService.AddNewCatalogItemAsync(item);
                     _logger.LogInformation("New CatalogItem written to database. CatalogItemId={CatalogItemId}", item.Id);
                 }
@@ -131,7 +131,7 @@ namespace AlwaysOn.BackgroundProcessor.Services
             {
                 try
                 {
-                    _logger.LogInformation("Adding new ItemComment to database. CommentId={CommentId}", comment.Id);
+                    _logger.LogDebug("Adding new ItemComment to database. CommentId={CommentId}", comment.Id);
                     await _databaseService.AddNewCommentAsync(comment);
                     _logger.LogInformation("New ItemComment written to database. CommentId={CommentId}", comment.Id);
                 }
@@ -157,7 +157,7 @@ namespace AlwaysOn.BackgroundProcessor.Services
             {
                 try
                 {
-                    _logger.LogInformation("Adding new ItemRating to database. RatingId={RatingId}", rating.Id);
+                    _logger.LogDebug("Adding new ItemRating to database. RatingId={RatingId}", rating.Id);
                     await _databaseService.AddNewRatingAsync(rating);
                     _logger.LogInformation("New ItemRating written to database. RatingId={RatingId}", rating.Id);
                 }

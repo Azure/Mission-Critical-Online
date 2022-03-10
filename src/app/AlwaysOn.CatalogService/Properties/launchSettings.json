@@ -3,7 +3,8 @@
     "AlwaysOn.CatalogService": {
       "commandName": "Project",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "APPINSIGHTS_INSTRUMENTATIONKEY": "b3d8d302-6278-4405-b259-41eec7be698b"
       }
     }
   }

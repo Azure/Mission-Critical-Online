@@ -49,7 +49,7 @@ namespace AlwaysOn.CatalogService.Controllers
         [ProducesResponseType(typeof(IEnumerable<CatalogItem>), (int)HttpStatusCode.OK)]
         public async Task<ActionResult<IEnumerable<CatalogItem>>> ListCatalogItemsAsync(int limit = 100)
         {
-            _logger.LogInformation("Received request to get N={limit} CatalogItems", limit);
+            _logger.LogDebug("Received request to get N={limit} CatalogItems", limit);
             try
             {
                 var res = await _databaseService.ListCatalogItemsAsync(limit);
@@ -87,7 +87,7 @@ namespace AlwaysOn.CatalogService.Controllers
         [ProducesResponseType(typeof(CatalogItem), (int)HttpStatusCode.OK)]
         public async Task<ActionResult<CatalogItem>> GetCatalogItemByIdAsync(Guid itemId)
         {
-            _logger.LogInformation("Received request to get CatalogItem {CatalogItem}", itemId);
+            _logger.LogDebug("Received request to get CatalogItem {CatalogItem}", itemId);
 
             try
             {
@@ -141,7 +141,7 @@ namespace AlwaysOn.CatalogService.Controllers
                 Price = (decimal)itemDto.Price
             };
 
-            _logger.LogInformation("Received request to create new CatalogItemId={CatalogItemId}", itemId);
+            _logger.LogDebug("Received request to create new CatalogItemId={CatalogItemId}", itemId);
             return await UpsertCatalogItemAsync(itemId, newItem);
         }
 
@@ -156,7 +156,7 @@ namespace AlwaysOn.CatalogService.Controllers
         [ApiKey]
         public async Task<ActionResult<CatalogItem>> UpdateCatalogItemAsync(Guid itemId, CatalogItemDto itemDto)
         {
-            _logger.LogInformation("Received request to update CatalogItemId={CatalogItemId}", itemId);
+            _logger.LogDebug("Received request to update CatalogItemId={CatalogItemId}", itemId);
 
             var existingItem = await _databaseService.GetCatalogItemByIdAsync(itemId);
             if (existingItem == null)
@@ -242,7 +242,7 @@ namespace AlwaysOn.CatalogService.Controllers
         [ApiKey]
         public async Task<ActionResult> DeleteCatalogItemAsync(Guid itemId)
         {
-            _logger.LogInformation("Received request to delete CatalogItem={CatalogItem}", itemId);
+            _logger.LogDebug("Received request to delete CatalogItem={CatalogItem}", itemId);
             return await CatalogServiceHelpers.DeleteObjectInternal<CatalogItem>(_logger, _messageProducerService, itemId, itemId);
         }
     }

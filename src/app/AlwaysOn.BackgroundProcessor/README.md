@@ -53,7 +53,7 @@ while (!stoppingToken.IsCancellationRequested)
                         }
                         else
                         {
-                            _logger.LogInformation("Scheduled checkpointing for partition {partition}. Offset={offset}", partition, lastProcessEventArgs.Data.Offset);
+                            _logger.LogDebug("Scheduled checkpointing for partition {partition}. Offset={offset}", partition, lastProcessEventArgs.Data.Offset);
                             await lastProcessEventArgs.UpdateCheckpointAsync();
                         }
                     }

@@ -105,7 +105,7 @@ namespace AlwaysOn.BackgroundProcessor.Services
                                 }
                                 else
                                 {
-                                    _logger.LogInformation("Scheduled checkpointing for partition {partition}. Offset={offset}", partition, lastProcessEventArgs.Data.Offset);
+                                    _logger.LogDebug("Scheduled checkpointing for partition {partition}. Offset={offset}", partition, lastProcessEventArgs.Data.Offset);
                                     await lastProcessEventArgs.UpdateCheckpointAsync();
                                 }
                             }
@@ -117,7 +117,7 @@ namespace AlwaysOn.BackgroundProcessor.Services
                     }
                 }
             }
-            _logger.LogInformation("ExecuteAsync ending");
+            _logger.LogInformation("EventHubProcessor ending");
         }
 
         /// <summary>
@@ -155,7 +155,7 @@ namespace AlwaysOn.BackgroundProcessor.Services
 
                 var messageBody = Encoding.UTF8.GetString(eventData.Body.Span);
 
-                _logger.LogInformation("Starting to process action {action}, partitionId={partitionId}", action, eventArgs.Partition.PartitionId);
+                _logger.LogDebug("Starting to process action {action}, partitionId={partitionId}", action, eventArgs.Partition.PartitionId);
                 // Hand over to the action processor service. This will handle database writes etc
                 await _actionProcessorService.Process(action, messageBody);
 
@@ -251,8 +251,7 @@ namespace AlwaysOn.BackgroundProcessor.Services
             try
             {
                 ownedPartitions.TryAdd(eventArgs.PartitionId, DateTime.UtcNow);
-                _logger.LogInformation("Initialized partition: {partitionId}", eventArgs.PartitionId);
-                _logger.LogInformation("Now owning {numberOfOwnedPartitions} partition(s)", ownedPartitions.Count);
+                _logger.LogInformation("Initialized partition: {partitionId} Now owning {numberOfOwnedPartitions} partition(s)", eventArgs.PartitionId, ownedPartitions.Count);
             }
             catch (Exception e)
             {
@@ -272,7 +271,7 @@ namespace AlwaysOn.BackgroundProcessor.Services
                 {
                     if (lastProcessEventArgs.HasEvent)
                     {
-                        _logger.LogInformation("Checkpointing for partition {partitionId} on partition closing", eventArgs.PartitionId);
+                        _logger.LogDebug("Checkpointing for partition {partitionId} on partition closing", eventArgs.PartitionId);
                         await lastProcessEventArgs.UpdateCheckpointAsync();
                     }
                 }

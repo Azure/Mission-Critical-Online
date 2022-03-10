@@ -10,7 +10,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Serilog;
-using Serilog.Events;
 using System;
 
 namespace AlwaysOn.BackgroundProcessor
@@ -47,13 +46,12 @@ namespace AlwaysOn.BackgroundProcessor
             {
                 var appinsightsKey = hostContext.Configuration[SysConfiguration.ApplicationInsightsKeyName];
                 Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Debug()
-                .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-                .Enrich.FromLogContext()
-                .WriteTo.Console(
-                        outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} {Level:u3}] {Message:lj} {Properties:j}{NewLine}{Exception}")
-                .WriteTo.ApplicationInsights(appinsightsKey, TelemetryConverter.Traces, LogEventLevel.Information)
-                .CreateLogger();
+                                    .ReadFrom.Configuration(hostContext.Configuration)
+                                    .Enrich.FromLogContext()
+                                    .WriteTo.Console(
+                                            outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} {Level:u3}] {Message:lj} {Properties:j}{NewLine}{Exception}")
+                                    .WriteTo.ApplicationInsights(appinsightsKey, TelemetryConverter.Traces)
+                                    .CreateLogger();
 
                 services.AddSingleton<SysConfiguration>();
 

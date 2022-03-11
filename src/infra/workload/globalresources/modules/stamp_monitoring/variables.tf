@@ -18,11 +18,6 @@ variable "azure_monitor_action_group_resource_id" {
   type        = string
 }
 
-variable "azure_monitor_function_principal_id" {
-  description = "principal ID of a Azure Monitor SLO query function"
-  type        = string
-}
-
 variable "alerts_enabled" {
   description = "Enable alerts?"
   type        = bool

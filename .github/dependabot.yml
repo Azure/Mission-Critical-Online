@@ -118,12 +118,6 @@ updates:
     interval: "monthly" 
   target-branch: "component-updates" 
 
-- package-ecosystem: "nuget"
-  directory: "/src/infra/monitoring/AlwaysOn.SloProcessor"
-  schedule:
-    interval: "monthly" 
-  target-branch: "component-updates" 
-
 - package-ecosystem: "terraform"
   directory: "/src/infra/workload/globalresources"
   schedule:

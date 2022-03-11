@@ -89,7 +89,7 @@ Each SU is deployed into an Azure region and is therefore primarily handling tra
 
 The reference implementation of Azure Mission-Critical deploys a set of Azure services. These services are not available across all Azure regions. In addition, only regions which offer **[Availability Zones](https://docs.microsoft.com/azure/availability-zones/az-region)** (AZs) are considered for a stamp. AZs are gradually being rolled-out and are not yet available across all regions. Due to these constraints, the reference implementation cannot be deployed to all Azure regions.
 
-As of February 2022, following regions have been successfully tested with the reference implementation of Azure Mission-Critical:
+As of March 2022, following regions have been successfully tested with the reference implementation of Azure Mission-Critical:
 
 **Europe/Africa**
 
@@ -99,6 +99,7 @@ As of February 2022, following regions have been successfully tested with the re
 - francecentral
 - uksouth
 - norwayeast
+- swedencentral
 - southafricanorth
 
 **Americas**

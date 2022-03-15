@@ -15,11 +15,11 @@ function Remove-SavedLogAnalyticsQueries {
     az account show
 
     # List all Log Analytics Workspaces by a given Prefix tag
-    $laWorkspaces = az monitor log-analytics workspace list --query "[?tags.Prefix == '$ResourcePrefix']" | ConvertFrom-Json
+    $laWorkspaces = az monitor log-analytics workspace list --query "[?tags.Prefix == '$ResourcePrefix']" | ConvertFrom-Json -AsHashtable
 
     foreach($workspace in $laWorkspaces)
     {
-      Write-Host "*** Looking for saved searches in workspace $($workspace.Name) in category 'HealthModel'"
+      Write-Host "*** Looking for saved searches in workspace $($workspace.name) in category 'HealthModel'"
 
       # List all saved searches in the workspace of category "HealthModel" (those are our saved queries)
       $savedSearches = az monitor log-analytics workspace saved-search list --resource-group $workspace.resourceGroup --workspace-name $workspace.name --query "value[?category=='HealthModel']" | ConvertFrom-Json

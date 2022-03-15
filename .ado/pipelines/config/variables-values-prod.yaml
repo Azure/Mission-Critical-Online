@@ -9,8 +9,8 @@ variables:
 
 # The first value in 'stampLocations' is the primary region used for global services.
 # IMPORTANT! Changing the primary region (first value) is a BREAKING change and will destroy CosmosDB and Front Door.
-- name: 'stampLocations' 
-  value: '["northeurope", "brazilsouth"]' # Check which regions are valid. There is a list in /src/infra/README.md
+- name: 'stampLocations'
+  value: '["swedencentral", "brazilsouth"]' # Check which regions are valid. There is a list in /src/infra/README.md
 
 # Terraform state variables
 - name:  'terraformResourceGroup'

@@ -32,7 +32,7 @@ namespace AlwaysOn.Shared.Services
         /// <returns></returns>
         public async Task<bool> IsHealthy(CancellationToken cancellationToken = default(CancellationToken))
         {
-            _logger.LogInformation("Event Hub health probe requested");
+            _logger.LogDebug("Event Hub health probe requested");
             if (_eventHubProducerClient.IsClosed)
             {
                 _logger.LogError($"Unexpected 'Closed' status of Event Hub in {nameof(IsHealthy)}");

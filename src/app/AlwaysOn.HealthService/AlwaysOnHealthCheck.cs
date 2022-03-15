@@ -103,7 +103,7 @@ namespace AlwaysOn.HealthService
             try
             {
                 var blobContainerClient = new BlobContainerClient(_sysConfig.HealthServiceStorageConnectionString, _sysConfig.HealthServiceBlobContainerName);
-                _log.LogInformation("Initiated health state blob container client at {HealthBlobContainerUrl}", blobContainerClient.Uri.ToString());
+                _log.LogDebug("Initiated health state blob container client at {HealthBlobContainerUrl}", blobContainerClient.Uri.ToString());
 
                 var stateBlobClient = blobContainerClient.GetBlobClient(_sysConfig.HealthServiceBlobName);
                 return await stateBlobClient.ExistsAsync(cancellationToken);
@@ -116,7 +116,7 @@ namespace AlwaysOn.HealthService
                 StreamReader reader = new StreamReader(download.Value.Content);
                 string text = reader.ReadToEnd();
 
-                _log.LogInformation("State blob '{stateBlobName}' present. Content: {state}", _stateBlobName, text);
+                _log.LogDebug("State blob '{stateBlobName}' present. Content: {state}", _stateBlobName, text);
                 return text == "HEALTHY";
                 */
             }

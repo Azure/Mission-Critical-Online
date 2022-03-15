@@ -90,7 +90,7 @@ We are using attributes to declare that this controller supports two versions: 1
 [ProducesResponseType(typeof(CatalogItem), (int)HttpStatusCode.OK)]
 public async Task<ActionResult<CatalogItem>> GetCatalogItemByIdAsync(Guid itemId)
 {
-    _logger.LogInformation("Received request to get item {itemId}", itemId);
+    _logger.LogDebug("Received request to get item {itemId}", itemId);
     HttpContext.Response.Headers.Add("X-Used-Api-Version", "1.0");
 
     return await GetCatalogItemByIdAsync(itemId);
@@ -100,7 +100,7 @@ public async Task<ActionResult<CatalogItem>> GetCatalogItemByIdAsync(Guid itemId
 [ProducesResponseType(typeof(CatalogItem), (int)HttpStatusCode.OK)]
 public async Task<ActionResult<CatalogItem>> GetCatalogItemByIdAsyncV2(Guid itemId)
 {
-    _logger.LogInformation("Received v2 request to get get item {itemId}", itemId);
+    _logger.LogDebug("Received v2 request to get get item {itemId}", itemId);
      HttpContext.Response.Headers.Add("X-Used-Api-Version", "2.0");
 
     return await GetCatalogItemByIdAsync(itemId);

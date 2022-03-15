@@ -38,10 +38,10 @@ namespace AlwaysOn.CatalogService
             services.AddSingleton<SysConfiguration>();
 
             services.AddSingleton(typeof(ITelemetryChannel),
-                                new ServerTelemetryChannel() { StorageFolder = "/tmp/appinsightschannel" });
+                                new ServerTelemetryChannel() { StorageFolder = "/tmp/appinsightschannel"});
             services.AddApplicationInsightsTelemetry(Configuration[SysConfiguration.ApplicationInsightsKeyName]);
 
-            services.AddHealthChecks();// Adds a simple liveness probe HTTP endpoint
+            services.AddHealthChecks();// Adds a simple liveness probe HTTP endpoint, path mapping happens further below
 
             services.AddSingleton<IDatabaseService, CosmosDbService>();
 

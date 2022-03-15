@@ -41,20 +41,17 @@ namespace AlwaysOn.CatalogService
 
                 var builtConfig = config.Build();
                 Log.Logger = new LoggerConfiguration()
-                                    .MinimumLevel.Debug()
-                                    .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+                                    .ReadFrom.Configuration(builtConfig)
                                     .Enrich.FromLogContext()
-                                    .Filter.ByExcluding(c => c.Properties.Any(p => p.Value.ToString().ToLower().Contains("health/liveness"))) // Exclude pod health probe from logging
                                     .WriteTo.Console(
                                             outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} {Level:u3}] {Message:lj} {Properties:j}{NewLine}{Exception}")
-                                    .WriteTo.ApplicationInsights(builtConfig[SysConfiguration.ApplicationInsightsKeyName], TelemetryConverter.Traces, LogEventLevel.Information)
+                                    .WriteTo.ApplicationInsights(builtConfig[SysConfiguration.ApplicationInsightsKeyName], TelemetryConverter.Traces)
                                     .CreateLogger();
             })
+            .UseSerilog()
             .ConfigureWebHostDefaults(webBuilder =>
             {
-                webBuilder
-                .UseStartup<Startup>()
-                .UseSerilog();
+                webBuilder.UseStartup<Startup>();
             });
     }
 }

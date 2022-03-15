@@ -1,13 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using AlwaysOn.Shared;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Serilog;
-using Serilog.Events;
+using System;
 
 namespace AlwaysOn.HealthService
 {
@@ -41,21 +37,18 @@ namespace AlwaysOn.HealthService
 
                 var builtConfig = config.Build();
                 Log.Logger = new LoggerConfiguration()
-                                    .MinimumLevel.Debug()
-                                    .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+                                    .ReadFrom.Configuration(builtConfig)
                                     .Enrich.FromLogContext()
-                                    .Filter.ByExcluding(c => c.Properties.Any(p => p.Value.ToString().ToLower().Contains("health/liveness"))) // Exclude pod health probe from logging
-                                    .Filter.ByExcluding(c => c.Properties.Any(p => p.Value.ToString().ToLower().Contains("health/stamp"))) // Exclude stamp health probe from logging
                                     .WriteTo.Console(
                                             outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} {Level:u3}] {Message:lj} {Properties:j}{NewLine}{Exception}")
-                                    .WriteTo.ApplicationInsights(builtConfig[SysConfiguration.ApplicationInsightsKeyName], TelemetryConverter.Traces, LogEventLevel.Information)
+                                    .WriteTo.ApplicationInsights(builtConfig[SysConfiguration.ApplicationInsightsKeyName], TelemetryConverter.Traces)
                                     .CreateLogger();
             })
+            .UseSerilog()
             .ConfigureWebHostDefaults(webBuilder =>
             {
                 webBuilder
-                .UseStartup<Startup>()
-                .UseSerilog();
+                .UseStartup<Startup>();
             });
     }
 }

@@ -78,7 +78,7 @@ namespace AlwaysOn.Shared.Services
         {
             try
             {
-                _logger.LogInformation("Testing Read query to Cosmos DB");
+                _logger.LogDebug("Testing Read query to Cosmos DB");
                 var iterator = _catalogItemsContainer.GetItemQueryIterator<object>("SELECT GetCurrentDateTime ()");
                 var readResult = await iterator.ReadNextAsync(cancellationToken);
             }
@@ -90,7 +90,7 @@ namespace AlwaysOn.Shared.Services
 
             try
             {
-                _logger.LogInformation("Testing document Write to Cosmos DB");
+                _logger.LogDebug("Testing document Write to Cosmos DB");
                 // Create a test document to write to cosmos
                 var testRating = new ItemRating()
                 {

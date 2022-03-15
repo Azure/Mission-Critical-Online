@@ -43,7 +43,7 @@ namespace AlwaysOn.CatalogService.Controllers
         [ProducesResponseType(typeof(ItemRating), (int)HttpStatusCode.OK)]
         public async Task<ActionResult<ItemRating>> GetRatingByIdAsync([FromRoute] Guid itemId, Guid ratingId)
         {
-            _logger.LogInformation("Received request to get reating {ratingId}", ratingId);
+            _logger.LogDebug("Received request to get reating {ratingId}", ratingId);
 
             try
             {
@@ -73,7 +73,7 @@ namespace AlwaysOn.CatalogService.Controllers
         {
             try
             {
-                _logger.LogInformation("Received request to get average rating for itemId={catalogItemId}", itemId.ToString());
+                _logger.LogDebug("Received request to get average rating for itemId={catalogItemId}", itemId.ToString());
                 var res = await _databaseService.GetAverageRatingForCatalogItemAsync(itemId);
                 return res != null ? Ok(res) : NotFound();
             }
@@ -114,7 +114,7 @@ namespace AlwaysOn.CatalogService.Controllers
                 Rating = ratingDto.Rating,
                 CatalogItemId = itemId
             };
-            _logger.LogInformation("Received request to create new rating with ratingId={ratingId} for CatalogItemId={CatalogItemId}", rating.Id, rating.CatalogItemId);
+            _logger.LogDebug("Received request to create new rating with ratingId={ratingId} for CatalogItemId={CatalogItemId}", rating.Id, rating.CatalogItemId);
 
             // If this comment was sent as test data, set the TTL to a short value
             if (Request.Headers.TryGetValue("X-TEST-DATA", out var testDataHeader) && testDataHeader.FirstOrDefault()?.ToLower() == "true")
@@ -126,7 +126,7 @@ namespace AlwaysOn.CatalogService.Controllers
             {
                 var messageBody = Helpers.JsonSerialize(rating);
                 await _messageProducerService.SendSingleMessageAsync(messageBody, Constants.AddRatingActionName);
-                _logger.LogInformation("New rating was sent to the message bus ratingId={ratingId}", rating.Id);
+                _logger.LogDebug("New rating was sent to the message bus ratingId={ratingId}", rating.Id);
             }
             catch (AlwaysOnDependencyException e)
             {
@@ -155,7 +155,7 @@ namespace AlwaysOn.CatalogService.Controllers
         [ApiKey]
         public async Task<ActionResult> DeleteItemRatingAsync([FromRoute] Guid itemId, Guid ratingId)
         {
-            _logger.LogInformation("Received request to delete ItemRating={ratingId}", ratingId);
+            _logger.LogDebug("Received request to delete ItemRating={ratingId}", ratingId);
             return await CatalogServiceHelpers.DeleteObjectInternal<ItemRating>(_logger, _messageProducerService, ratingId, itemId);
         }
     }

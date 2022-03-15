@@ -77,7 +77,7 @@ namespace AlwaysOn.CatalogService
             {
                 o.ReportApiVersions = true; // enable the "api-supported-versions" header with each response
                 o.AssumeDefaultVersionWhenUnspecified = true;
-                o.DefaultApiVersion = new ApiVersion(1, 0);
+                o.DefaultApiVersion = new ApiVersion(CatalogServiceHelpers.DefaultApiVersionMajor, CatalogServiceHelpers.DefaultApiVersionMinor);
             });
         }
 

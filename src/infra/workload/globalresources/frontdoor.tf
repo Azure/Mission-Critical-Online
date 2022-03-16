@@ -132,21 +132,23 @@ resource "azurerm_frontdoor" "main" {
     name = "GlobalStorage"
 
     backend {
-      host_header = azurerm_storage_account.global.primary_blob_host
-      address     = azurerm_storage_account.global.primary_blob_host
+      host_header = azurerm_storage_account.global.primary_web_host
+      address     = azurerm_storage_account.global.primary_web_host
       http_port   = 80
       https_port  = 443
       enabled     = true
       weight      = 1
+      priority    = 1
     }
 
     backend {
-      host_header = azurerm_storage_account.global.secondary_blob_host
-      address     = azurerm_storage_account.global.secondary_blob_host
+      host_header = azurerm_storage_account.global.secondary_web_host
+      address     = azurerm_storage_account.global.secondary_web_host
       http_port   = 80
       https_port  = 443
       enabled     = true
       weight      = 1
+      priority    = 2 # Use secondary location only in case the primary is not accessible in order to avoid issues due to replication latency of the GRS
     }
 
     load_balancing_name = "LoadBalancingSettings"

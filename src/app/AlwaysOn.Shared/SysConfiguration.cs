@@ -16,7 +16,7 @@ namespace AlwaysOn.Shared
 
         public const string BackendStoragePoisonMessagesTableName = "backgroundProcessorPoisonMessages";
 
-        public const string GlobalStorageAccountImageContainerName = "images";
+        public const string GlobalStorageAccountImageContainerName = "$web";
 
         #endregion
 

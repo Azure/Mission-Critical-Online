@@ -1,4 +1,5 @@
 using AlwaysOn.CatalogService.Auth;
+using AlwaysOn.CatalogService.SwaggerHelpers;
 using AlwaysOn.Shared;
 using AlwaysOn.Shared.Interfaces;
 using AlwaysOn.Shared.Services;
@@ -61,6 +62,7 @@ namespace AlwaysOn.CatalogService
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
                 c.OperationFilter<ApiKeyFilter>(); // Custom parameter in Swagger for API Key-protected operations
+                c.OperationFilter<VersionParameterFilter>(); // Custom add default value for version parameter in Swagger
             });
 
             services.AddCors();
@@ -75,7 +77,7 @@ namespace AlwaysOn.CatalogService
             {
                 o.ReportApiVersions = true; // enable the "api-supported-versions" header with each response
                 o.AssumeDefaultVersionWhenUnspecified = true;
-                o.DefaultApiVersion = new ApiVersion(1, 0);
+                o.DefaultApiVersion = new ApiVersion(CatalogServiceHelpers.DefaultApiVersionMajor, CatalogServiceHelpers.DefaultApiVersionMinor);
             });
         }
 

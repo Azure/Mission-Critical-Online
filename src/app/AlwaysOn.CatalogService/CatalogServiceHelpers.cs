@@ -61,5 +61,19 @@ namespace AlwaysOn.CatalogService
                 };
             }
         }
+
+        /// <summary>
+        /// Return the relative URL for image retrieval via Front Door
+        /// </summary>
+        /// <param name="absoluteStorageUrl"></param>
+        /// <returns></returns>
+        public static string GetRelativeImageUrl(string absoluteStorageUrl)
+        {
+            if (Uri.TryCreate(absoluteStorageUrl, UriKind.Absolute, out Uri imageUrl))
+            {
+                return imageUrl.AbsolutePath.Replace("$web/", ""); // Remove $web/ part from the URL since we will serve it from the static-website endpoint which does not need this part
+            }
+            return null;
+        }
     }
 }

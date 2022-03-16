@@ -58,10 +58,7 @@ namespace AlwaysOn.CatalogService.Controllers
                 // They will be served from a relative path, thus by Front Door
                 foreach(var item in res)
                 {
-                    if(Uri.TryCreate(item.ImageUrl, UriKind.Absolute, out Uri imageUrl))
-                    {
-                        item.ImageUrl = imageUrl.LocalPath;
-                    }
+                    item.ImageUrl = CatalogServiceHelpers.GetRelativeImageUrl(item.ImageUrl);
                 }
                 return Ok(res);
             }
@@ -94,10 +91,7 @@ namespace AlwaysOn.CatalogService.Controllers
                 var res = await _databaseService.GetCatalogItemByIdAsync(itemId);
                 // Remove absolute location off the imageUrl (i.e. the URI of the blob storage where it is stored)
                 // Images will be served from a relative path, thus by Front Door
-                if (Uri.TryCreate(res.ImageUrl, UriKind.Absolute, out Uri imageUrl))
-                {
-                    res.ImageUrl = imageUrl.LocalPath;
-                }
+                res.ImageUrl = CatalogServiceHelpers.GetRelativeImageUrl(res.ImageUrl);
                 return res != null ? Ok(res) : NotFound();
             }
             catch (AlwaysOnDependencyException e)
@@ -194,7 +188,7 @@ namespace AlwaysOn.CatalogService.Controllers
                     // Download the image from source URL
                     var imageData = await imageResponse.Content.ReadAsStreamAsync();
 
-                    var blobName = item.Id.ToString();// + fileExtension;
+                    var blobName = $"{SysConfiguration.GlobalImagesPathSegment}/{item.Id}";// + fileExtension;
 
                     var blobClient = new BlobClient(_sysConfig.GlobalStorageAccountConnectionString,
                                                     SysConfiguration.GlobalStorageAccountImageContainerName,

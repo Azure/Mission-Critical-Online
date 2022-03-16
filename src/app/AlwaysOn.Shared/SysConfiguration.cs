@@ -16,7 +16,11 @@ namespace AlwaysOn.Shared
 
         public const string BackendStoragePoisonMessagesTableName = "backgroundProcessorPoisonMessages";
 
-        public const string GlobalStorageAccountImageContainerName = "images";
+        public const string GlobalStorageAccountImageContainerName = "$web";
+        /// <summary>
+        /// Since the images are stored on a static-website-enabled storage account, we are serving them through a virtual path in Front Door
+        /// </summary>
+        public const string GlobalImagesPathSegment = "images";
 
         #endregion
 

@@ -7,27 +7,22 @@ resource "azurerm_storage_account" "global" {
   account_tier             = "Standard"
   account_replication_type = "RAGZRS"
   min_tls_version          = "TLS1_2"
-  allow_blob_public_access = true
 
   blob_properties {
     versioning_enabled = true
   }
 
-  tags = local.default_tags
-}
+  # Enable static website hosting. We will use that to host catalog item images
+  static_website {}
 
-# Storage container to store catalog item images
-resource "azurerm_storage_container" "images" {
-  name                  = "images"
-  storage_account_name  = azurerm_storage_account.global.name
-  container_access_type = "blob"
+  tags = local.default_tags
 }
 
 # Empty Storage Blob for Azure Front Door health checks
 resource "azurerm_storage_blob" "healthcheck" {
   name                   = "health.check"
   storage_account_name   = azurerm_storage_account.global.name
-  storage_container_name = azurerm_storage_container.images.name
+  storage_container_name = "$web"
   type                   = "Block"
   source_content         = "" # empty file
 }

@@ -43,7 +43,7 @@ resource "azurerm_frontdoor" "main" {
       forwarding_protocol = "HttpsOnly"
       backend_pool_name   = "GlobalStorage"
 
-      # Since the UI app is a SPA (single page application), usually the entire app can be served from cache without the need to request it from the backend every time
+      # Cache the images
       cache_enabled = true
     }
   }

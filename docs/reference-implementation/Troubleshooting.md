@@ -50,6 +50,29 @@ Sorry, we are currently experiencing high demand in this region, and cannot fulf
 
 As disabling zone redundancy is not a recommended solution for a production deployment, you should open an Azure Support Ticket to request quota for zone-redundant deployments for Cosmos DB in your required regions.
 
+---
+**Error:**
+
+```console
+Error: deleting Front Door (Subscription: "xxxxx-8cbd-46f2-a146-yyyyyyyyyy"
+│ Resource Group Name: "xxxxx-global-rg"
+│ Front Door Name: "xxxxx-global-fd"): performing Delete: frontdoors.FrontDoorsClient#Delete: Failure sending request: StatusCode=0 -- Original Error: autorest/azure: Service returned an error. Status=<nil> Code="Conflict" Message="Cannot delete frontend endpoint \"xxxxx.e2e.example.com\" because it is still directly or indirectly (using \"afdverify\" prefix) CNAMEd to front door \"xxxxx-global-fd.azurefd.net\". Please remove the DNS CNAME records and try again."
+
+```
+
+**Description:** *This only happens when you are using custom domain names*. In order to protect customers from DNS-rebinding attacks, by default an Azure Front Door resource cannot be deleted while still a CNAME is pointing to it. However, because of the dependency tree of Terraform, there is no direct way to circumvent this.
+
+**Solution:** You can disable the protection by running the following command towards your Azure subscription:
+
+```powershell
+az feature register --namespace Microsoft.Network --name BypassCnameCheckForCustomDomainDeletion
+
+# Then you can check the state of it by running:
+az feature list -o table --query "[?contains(name, 'Microsoft.Network/BypassCnameCheckForCustomDomainDeletion')].{Name:name,State:properties.state}
+```
+
+Once the feature has been registered (this can take a couple of minutes), deletion should work fine.
+
 ### Deploy Workload stage
 
 **Error:**

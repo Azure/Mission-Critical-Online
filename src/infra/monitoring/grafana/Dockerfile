@@ -11,7 +11,7 @@ RUN npm install
 
 FROM grafana/grafana:8.3.4
 
-ENV GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS="alwayson-healthmodelpanel"
+ENV GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS="healthmodelpanel"
 
 WORKDIR /var/lib/grafana/plugins/alwayson-healthmodelpanel/
 COPY --from=builder /app/healthmodelpanel/* .

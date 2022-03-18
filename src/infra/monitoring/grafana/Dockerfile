@@ -3,13 +3,11 @@ FROM node:16 as builder
 WORKDIR /app
 COPY . .
 
-RUN chmod +x /app/config/insertqueries.sh && /app/config/insertqueries.sh
+WORKDIR /app/config
+RUN chmod +x insertqueries.sh && ./insertqueries.sh
 
 WORKDIR /app/healthmodelpanel
 RUN npm install
-RUN mv $(ls -ld ./node_modules/* | grep grafana-healthmodelpanel | awk '{print $9}')/* .
-#RUN cd $(ls -ld ./node_modules/* | grep grafana-healthmodelpanel | awk '{print $9}') && pwd
-#RUN mv ./node_modules/@nielsams/grafana-healthmodelpanel/* .
 
 FROM grafana/grafana:8.3.4
 

@@ -3,7 +3,7 @@ FROM node:16 as builder
 WORKDIR /app
 COPY . .
 
-RUN /app/config/insertqueries.sh
+RUN chmod +x /app/config/insertqueries.sh && /app/config/insertqueries.sh
 
 WORKDIR /app/healthmodelpanel
 RUN npm install

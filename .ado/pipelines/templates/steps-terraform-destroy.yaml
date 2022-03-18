@@ -26,6 +26,9 @@ steps:
       # To have access to the input ARM_CLIENT_SECRET which was marked as secret, we need to explicitly reference it in the script
       export ARM_CLIENT_SECRET="$(ARM_CLIENT_SECRET)"
 
+      # Creates the tfvar files, if it does not exist. Otherwise terraform will fail
+      touch "variables-$(environment).tfvars"
+
       terraform destroy -auto-approve -input=false -parallelism=20 -var-file="variables-$(environment).tfvars" ${{ parameters.customAttributes }}
 
 # Delete Terraform state file. We need to run this in any case, even if variables.oldReleaseCustomSuffix=='' since Terrraform init also will always run and thereby create an empty state file

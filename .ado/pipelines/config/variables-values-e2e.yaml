@@ -11,6 +11,9 @@ variables:
 - name: 'stampLocations'
   value: '["swedencentral"]'    # Check which regions are valid. There is a list in /src/infra/README.md
 
+- name: 'stampLocationsGrafana'
+  value: '["canadacentral", "brazilsouth"]' # Check which regions are valid. There is a list in /src/infra/README.md
+
 ##### NOTE #####
 # If you want to run embedded Chaos Studio testing, only the following regions are supported as of 11-Oct-2021:
 # eastus, centralus, uksouth, westeurope, japaneast

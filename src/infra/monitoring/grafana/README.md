@@ -77,6 +77,6 @@ This query is subsequently visualized in the following way:
 
 ## Build & Deploy
 
-```docker build -t alwayson-grafana .```
+```docker build -t missioncritical-grafana .```
 
 This docker container contains a full Grafana install as well as the health model panel and can be run directly on any container hosting environment. The required environment variable for running unsigned panels has already been set in the Dockerfile.

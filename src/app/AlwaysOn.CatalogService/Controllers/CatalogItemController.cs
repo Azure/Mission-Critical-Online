@@ -49,7 +49,7 @@ namespace AlwaysOn.CatalogService.Controllers
         [ProducesResponseType(typeof(IEnumerable<CatalogItem>), (int)HttpStatusCode.OK)]
         public async Task<ActionResult<IEnumerable<CatalogItem>>> ListCatalogItemsAsync(int limit = 100)
         {
-            _logger.LogInformation("Received request to get N={limit} CatalogItems", limit);
+            _logger.LogDebug("Received request to get N={limit} CatalogItems", limit);
             try
             {
                 var res = await _databaseService.ListCatalogItemsAsync(limit);
@@ -58,10 +58,7 @@ namespace AlwaysOn.CatalogService.Controllers
                 // They will be served from a relative path, thus by Front Door
                 foreach(var item in res)
                 {
-                    if(Uri.TryCreate(item.ImageUrl, UriKind.Absolute, out Uri imageUrl))
-                    {
-                        item.ImageUrl = imageUrl.LocalPath;
-                    }
+                    item.ImageUrl = CatalogServiceHelpers.GetRelativeImageUrl(item.ImageUrl);
                 }
                 return Ok(res);
             }
@@ -87,17 +84,14 @@ namespace AlwaysOn.CatalogService.Controllers
         [ProducesResponseType(typeof(CatalogItem), (int)HttpStatusCode.OK)]
         public async Task<ActionResult<CatalogItem>> GetCatalogItemByIdAsync(Guid itemId)
         {
-            _logger.LogInformation("Received request to get CatalogItem {CatalogItem}", itemId);
+            _logger.LogDebug("Received request to get CatalogItem {CatalogItem}", itemId);
 
             try
             {
                 var res = await _databaseService.GetCatalogItemByIdAsync(itemId);
                 // Remove absolute location off the imageUrl (i.e. the URI of the blob storage where it is stored)
                 // Images will be served from a relative path, thus by Front Door
-                if (Uri.TryCreate(res.ImageUrl, UriKind.Absolute, out Uri imageUrl))
-                {
-                    res.ImageUrl = imageUrl.LocalPath;
-                }
+                res.ImageUrl = CatalogServiceHelpers.GetRelativeImageUrl(res.ImageUrl);
                 return res != null ? Ok(res) : NotFound();
             }
             catch (AlwaysOnDependencyException e)
@@ -141,7 +135,7 @@ namespace AlwaysOn.CatalogService.Controllers
                 Price = (decimal)itemDto.Price
             };
 
-            _logger.LogInformation("Received request to create new CatalogItemId={CatalogItemId}", itemId);
+            _logger.LogDebug("Received request to create new CatalogItemId={CatalogItemId}", itemId);
             return await UpsertCatalogItemAsync(itemId, newItem);
         }
 
@@ -156,7 +150,7 @@ namespace AlwaysOn.CatalogService.Controllers
         [ApiKey]
         public async Task<ActionResult<CatalogItem>> UpdateCatalogItemAsync(Guid itemId, CatalogItemDto itemDto)
         {
-            _logger.LogInformation("Received request to update CatalogItemId={CatalogItemId}", itemId);
+            _logger.LogDebug("Received request to update CatalogItemId={CatalogItemId}", itemId);
 
             var existingItem = await _databaseService.GetCatalogItemByIdAsync(itemId);
             if (existingItem == null)
@@ -194,7 +188,7 @@ namespace AlwaysOn.CatalogService.Controllers
                     // Download the image from source URL
                     var imageData = await imageResponse.Content.ReadAsStreamAsync();
 
-                    var blobName = item.Id.ToString();// + fileExtension;
+                    var blobName = $"{SysConfiguration.GlobalImagesPathSegment}/{item.Id}";// + fileExtension;
 
                     var blobClient = new BlobClient(_sysConfig.GlobalStorageAccountConnectionString,
                                                     SysConfiguration.GlobalStorageAccountImageContainerName,
@@ -242,7 +236,7 @@ namespace AlwaysOn.CatalogService.Controllers
         [ApiKey]
         public async Task<ActionResult> DeleteCatalogItemAsync(Guid itemId)
         {
-            _logger.LogInformation("Received request to delete CatalogItem={CatalogItem}", itemId);
+            _logger.LogDebug("Received request to delete CatalogItem={CatalogItem}", itemId);
             return await CatalogServiceHelpers.DeleteObjectInternal<CatalogItem>(_logger, _messageProducerService, itemId, itemId);
         }
     }

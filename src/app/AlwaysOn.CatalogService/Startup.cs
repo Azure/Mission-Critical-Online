@@ -1,4 +1,5 @@
 using AlwaysOn.CatalogService.Auth;
+using AlwaysOn.CatalogService.SwaggerHelpers;
 using AlwaysOn.Shared;
 using AlwaysOn.Shared.Interfaces;
 using AlwaysOn.Shared.Services;
@@ -37,10 +38,10 @@ namespace AlwaysOn.CatalogService
             services.AddSingleton<SysConfiguration>();
 
             services.AddSingleton(typeof(ITelemetryChannel),
-                                new ServerTelemetryChannel() { StorageFolder = "/tmp/appinsightschannel" });
+                                new ServerTelemetryChannel() { StorageFolder = "/tmp/appinsightschannel"});
             services.AddApplicationInsightsTelemetry(Configuration[SysConfiguration.ApplicationInsightsKeyName]);
 
-            services.AddHealthChecks();// Adds a simple liveness probe HTTP endpoint
+            services.AddHealthChecks();// Adds a simple liveness probe HTTP endpoint, path mapping happens further below
 
             services.AddSingleton<IDatabaseService, CosmosDbService>();
 
@@ -61,6 +62,7 @@ namespace AlwaysOn.CatalogService
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
                 c.OperationFilter<ApiKeyFilter>(); // Custom parameter in Swagger for API Key-protected operations
+                c.OperationFilter<VersionParameterFilter>(); // Custom add default value for version parameter in Swagger
             });
 
             services.AddCors();
@@ -68,14 +70,14 @@ namespace AlwaysOn.CatalogService
             services.AddSingleton<ITelemetryInitializer>(sp =>
             {
                 var sysConfig = sp.GetService<SysConfiguration>();
-                return new RoleNameInitializer($"{nameof(CatalogService)}-{sysConfig.AzureRegionShort}");
+                return new AlwaysOnCustomTelemetryInitializer($"{nameof(CatalogService)}-{sysConfig.AzureRegionShort}", sp.GetService<IHttpContextAccessor>());
             });
 
             services.AddApiVersioning(o =>
             {
                 o.ReportApiVersions = true; // enable the "api-supported-versions" header with each response
                 o.AssumeDefaultVersionWhenUnspecified = true;
-                o.DefaultApiVersion = new ApiVersion(1, 0);
+                o.DefaultApiVersion = new ApiVersion(CatalogServiceHelpers.DefaultApiVersionMajor, CatalogServiceHelpers.DefaultApiVersionMinor);
             });
         }
 

@@ -1,10 +1,10 @@
 # Failure analysis
 
-*"What does it take for AlwaysOn to go down?"*
+*"What does it take for Azure Mission-Critical to go down?"*
 
-This article walks through a number of possible failure scenarios of the various components of the AlwaysOn reference implementation. It does not claim to be complete since there can always be failure cases which we have not thought of yet. So for any workload, this list should be a living document that gets updated over time.
+This article walks through a number of possible failure scenarios of the various components of the Azure Mission-Critical reference implementation. It does not claim to be complete since there can always be failure cases which we have not thought of yet. So for any workload, this list should be a living document that gets updated over time.
 
-Composing the failure analysis is mostly a theoretical planning exercise. It can - and should - be complemented by actual failure injection testing. Through testing, at least some of the failure cases and their impact can be simulated and thus validate the theoretical analysis. See [the related article](./DeployAndTest-Testing-FailureInjection.md) for failure injection testing that was done as part of AlwaysOn.
+Composing the failure analysis is mostly a theoretical planning exercise. It can - and should - be complemented by actual failure injection testing. Through testing, at least some of the failure cases and their impact can be simulated and thus validate the theoretical analysis. See [the related article](./DeployAndTest-Testing-FailureInjection.md) for failure injection testing that was done as part of Azure Mission-Critical.
 
 ## Outage risks of individual components
 
@@ -37,7 +37,7 @@ Global replication protects Cosmos DB instances from regional outage. The Cosmos
 | **Risk**                   | **Impact/Mitigation/Comment**                | **Outage**                 |
 | -------------------------------------------- | ------------------------------------------------------------ | ------------------------------------------- |
 | **Database/collection is renamed**     | Can happen due to mismatch in configuration when deploying – Terraform would overwrite the whole database, which could result in data loss (this can be prevented by using [database/collection  level locks](https://feedback.azure.com/forums/263030-azure-cosmos-db/suggestions/35535298-enable-locks-at-database-and-collection-level-as-w)). <br />**Application will not be able to access any data**. App configuration needs to be updated and pods restarted. | Yes                     |
-| **Regional outage**             | AlwaysOn has multi-region writes enabled, so in case of failure on read or write, the **client retries the current operation** and all the future operations are permanently [routed to the next region](https://docs.microsoft.com/azure/cosmos-db/troubleshoot-sdk-availability#regional-outage) in order of preference. In case the preference list only had one entry (or was empty) but the account has other regions available, it will route to the next region in the account list. | No                     |
+| **Regional outage**             | Azure Mission-Critical has multi-region writes enabled, so in case of failure on read or write, the **client retries the current operation** and all the future operations are permanently [routed to the next region](https://docs.microsoft.com/azure/cosmos-db/troubleshoot-sdk-availability#regional-outage) in order of preference. In case the preference list only had one entry (or was empty) but the account has other regions available, it will route to the next region in the account list. | No                     |
 | **Extensive throttling due to lack of RUs** | Depending on how we decide on how many RUs (max setting for the auto scaler), we want to deploy and what load balancing we employ on Front Door level, it could be that certain stamp(s) run hot on Cosmos utilization while others could still serve more requests. <br />Could be mitigated by better load distribution to more stamps – or of course more RUs. | No |
 
 ### Container Registry
@@ -90,4 +90,4 @@ Global replication protects Cosmos DB instances from regional outage. The Cosmos
 | **Expired credentials (globally shared resource)**  | If, for example, Cosmos DB API key was changed without properly updating it in all stamp Key Vaults so that the pods can use them, the respective application components will start to fail. **This would likely bring all stamps down at about the same time and cause an workload-wide outage.** See the article on [Key Rotation](./OpProcedures-KeyRotation.md) for an example walkthrough how to execute this process properly without downtime. For a possible way around the need for keys and secrets in the first place using AAD auth, see the previous item. | Full     |
 
 ---
-[AlwaysOn - Full List of Documentation](/docs/README.md)
+[Azure Mission-Critical - Full List of Documentation](/docs/README.md)

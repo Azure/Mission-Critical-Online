@@ -1,22 +1,21 @@
 ﻿using AlwaysOn.Shared;
 using AlwaysOn.Shared.Exceptions;
 using AlwaysOn.Shared.Interfaces;
-using AlwaysOn.Shared.Models;
 using AlwaysOn.Shared.Models.DataTransfer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Net;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace AlwaysOn.CatalogService
 {
     public static class CatalogServiceHelpers
     {
+        public static int DefaultApiVersionMajor = 1;
+        public static int DefaultApiVersionMinor = 0;
+
         /// <summary>
         /// Creates a message on the message bus to request the deletion of any object by its ID
         /// Whether the object acutally exists and can be deleted is decided by the BackgroundProcessor during processing
@@ -61,6 +60,20 @@ namespace AlwaysOn.CatalogService
                     StatusCode = (int)HttpStatusCode.InternalServerError
                 };
             }
+        }
+
+        /// <summary>
+        /// Return the relative URL for image retrieval via Front Door
+        /// </summary>
+        /// <param name="absoluteStorageUrl"></param>
+        /// <returns></returns>
+        public static string GetRelativeImageUrl(string absoluteStorageUrl)
+        {
+            if (Uri.TryCreate(absoluteStorageUrl, UriKind.Absolute, out Uri imageUrl))
+            {
+                return imageUrl.AbsolutePath.Replace("$web/", ""); // Remove $web/ part from the URL since we will serve it from the static-website endpoint which does not need this part
+            }
+            return null;
         }
     }
 }

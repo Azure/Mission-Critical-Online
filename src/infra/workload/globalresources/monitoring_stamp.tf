@@ -14,6 +14,5 @@ module "stamp_monitoring" {
   resource_group_name                    = azurerm_resource_group.monitoring.name
   azure_monitor_action_group_resource_id = azurerm_monitor_action_group.main.id
   alerts_enabled                         = var.alerts_enabled
-  azure_monitor_function_principal_id    = azurerm_user_assigned_identity.slo_function.principal_id
   default_tags                           = local.default_tags
 }

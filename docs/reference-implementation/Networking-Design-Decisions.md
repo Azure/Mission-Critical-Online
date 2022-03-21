@@ -4,13 +4,13 @@
 
 - Each stamp uses its own Virtual Network (VNet) and as there is no cross-stamp traffic, no VNet peerings or VPN connections to other stamps are required.
 - The per-stamp VNet is split into two subnets for Kubernetes (containing all nodes and pods) and private endpoints.
-- Private endpoints (Private Link) are only partially used as ingress traffic comes from the public internet and egress traffic control (to mitigate the risk of data exfiltration) is not within scope of AlwaysOn.
+- Private endpoints (Private Link) are only partially used as ingress traffic comes from the public internet and egress traffic control (to mitigate the risk of data exfiltration) is not within scope of Azure Mission-Critical.
 
 ## Global load balancer
 
-**Azure Front Door** (AFD) is used as the global entry point for all incoming client traffic. As AlwaysOn only uses HTTP(S) traffic and uses Web Application Firewall (WAF) capabilities, AFD is the best choice to act as global load balancer. Azure Traffic Manager could be a cost-effective alternative, but it does not have features such as WAF and because it is DNS-based, Azure Traffic Manager usually has longer failover times compared to the TCP Anycast-based Azure Front Door.
+**Azure Front Door** (AFD) is used as the global entry point for all incoming client traffic. As Azure Mission-Critical only uses HTTP(S) traffic and uses Web Application Firewall (WAF) capabilities, AFD is the best choice to act as global load balancer. Azure Traffic Manager could be a cost-effective alternative, but it does not have features such as WAF and because it is DNS-based, Azure Traffic Manager usually has longer failover times compared to the TCP Anycast-based Azure Front Door.
 
-See [Custom Domain Support](./Networking-Custom-Domains.md) for more details about the implementation and usage of custom domain names in AlwaysOn.
+See [Custom Domain Support](./Networking-Custom-Domains.md) for more details about the implementation and usage of custom domain names in Azure Mission-Critical.
 
 ## Stamp ingress point
 
@@ -20,7 +20,7 @@ See [Custom Domain Support](./Networking-Custom-Domains.md) for more details abo
   - Web Application Firewall (WAF) is provided as part of Azure Front Door.
   - TLS termination happens on the ingress controller and thus inside the cluster.
   - Using cert-manager, the procurement and renewal of SSL certificates is free of charge (with Let's Encrypt) and does not require additional processes or components.
-  - AlwaysOn does not have a requirement for the AKS cluster to only run on a private VNet and therefore, having a public Load Balancer in front is acceptable.
+  - Azure Mission-Critical does not have a requirement for the AKS cluster to only run on a private VNet and therefore, having a public Load Balancer in front is acceptable.
   - (Auto-)Scaling of the ingress controller pods inside AKS is usually faster than scaling out Application Gateway to more instances.
   - Configuration settings including path-based routing and HTTP header checks could potentially be easier to set up using Application Gateway. However, Nginx provides all the required features and is configured through Helm charts.
 
@@ -35,13 +35,13 @@ See [Custom Domain Support](./Networking-Custom-Domains.md) for more details abo
 
 ## Considerations on not using fully private clusters as the default deployment mode
 
-The main motivation of AlwaysOn is to build a highly reliable solution on Azure.
+The main motivation of Azure Mission-Critical is to build a highly reliable solution on Azure.
 
-The default version of the Reference Implementation of AlwaysOn does not use [fully private compute clusters](https://docs.microsoft.com/azure/aks/private-clusters) and does not fully lock down traffic for all Azure PaaS services.
+The default version of the Reference Implementation of Azure Mission-Critical does not use [fully private compute clusters](https://docs.microsoft.com/azure/aks/private-clusters) and does not fully lock down traffic for all Azure PaaS services.
 
 These decisions are explained further below:
 
-> It is acknowledged that these decisions might not suit every use case, for instance in some regulated industries. Therefore, there is an alternative version of the Reference Implementation  which deploys in a [Private Mode](https://github.com/Azure/AlwaysOn-foundational-private). However, this comes potentially at the expense of higher cost and reliability risk. Thus, the requirements and impact should be fully understood before making the switch.
+> It is acknowledged that these decisions might not suit every use case, for instance in some regulated industries. Therefore, there is an alternative version of the Reference Implementation  which deploys in a [Private Mode](https://github.com/Azure/Mission-Critical-Connected). However, this comes potentially at the expense of higher cost and reliability risk. Thus, the requirements and impact should be fully understood before making the switch.
 
 ### Public compute cluster endpoint
 
@@ -55,8 +55,8 @@ These decisions are explained further below:
 
 - The Reference Implementation uses Private Endpoints to access all PaaS instead of relying on Service Endpoints only. This has two reasons:
   - Due to some limitations in the way the infrastructure gets deployed through Terraform, Service Endpoints could not be used for all services, so Private Endpoints would have been required at least partially in any case.
-  - The [Private Mode of AlwaysOn](https://github.com/Azure/AlwaysOn-foundational-private) requires the use of Private Endpoints for all used services. So using them also for the default, public mode, brings consistency and simplification in the deployment.
-- One of the [main benefits](https://docs.microsoft.com/azure/private-link/private-link-overview#key-benefits) of using Private Endpoints is the protection against data leakage. However, this was not determined to be a priority requirement for public internet-facing applications like AlwaysOn. Similarly, we do not foresee the requirement to connect to AlwaysOn resources from on-prem networks (or otherwise connected via VPN etc).
+  - The [Private Mode of Azure Mission-Critical](https://github.com/Azure/Mission-Critical-Connected) requires the use of Private Endpoints for all used services. So using them also for the default, public mode, brings consistency and simplification in the deployment.
+- One of the [main benefits](https://docs.microsoft.com/azure/private-link/private-link-overview#key-benefits) of using Private Endpoints is the protection against data leakage. However, this was not determined to be a priority requirement for public internet-facing applications like Azure Mission-Critical. Similarly, we do not foresee the requirement to connect to Azure Mission-Critical resources from on-prem networks (or otherwise connected via VPN etc).
 
 ### Requirements to utilize a fully private cluster
 
@@ -64,7 +64,8 @@ As described above, to remove the public endpoint on the compute clusters, anoth
 
 A more significant change if using private endpoints is the switch from hosted Build Agents (managed by Microsoft) to [self-hosted agents](https://docs.microsoft.com/azure/devops/pipelines/agents/agents?view=azure-devops&tabs=browser#install) which will need to be VNet-integrated in order to reach private services like Key Vault or AKS. Managing these agents and keeping them updated adds additional overhead and is not recommended as long as there is no actual requirement to switch to a fully private deployment.
 
-To deploy Reference Implementation in a private configuration, follow the guides of [this GitHub repository](https://github.com/Azure/AlwaysOn-foundational-private).
+To deploy Reference Implementation in a private configuration, follow the guides of [this GitHub repository](https://github.com/Azure/Mission-Critical-Connected).
 
 ---
-[AlwaysOn - Full List of Documentation](/docs/README.md)
+
+[Azure Mission-Critical - Full List of Documentation](/docs/README.md)

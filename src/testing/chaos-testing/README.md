@@ -1,6 +1,6 @@
 # Chaos Experiments
 
-The reference implementation of AlwaysOn integrates Azure Chaos Studio (currently in preview) to inject faults by creating and executing Chaos experiments.
+The reference implementation for the Mission-Critical project integrates Azure Chaos Studio (currently in preview) to inject faults by creating and executing Chaos experiments.
 
 Chaos experiments can be executed as an optional part of the E2E deployment pipeline. In case they are executed, the optional load test is always executed in parallel as well. This is to create some load on the cluster to actually validate the impact of the injected faults.
 

@@ -43,7 +43,7 @@ namespace AlwaysOn.CatalogService.Controllers
         [ProducesResponseType(typeof(ItemComment), (int)HttpStatusCode.OK)]
         public async Task<ActionResult<ItemComment>> GetCommentByIdAsync([FromRoute] Guid itemId, Guid commentId)
         {
-            _logger.LogInformation("Received request to get Comment {commentId}", commentId);
+            _logger.LogDebug("Received request to get Comment {commentId}", commentId);
 
             try
             {
@@ -73,7 +73,7 @@ namespace AlwaysOn.CatalogService.Controllers
         {
             try
             {
-                _logger.LogInformation("Received request to get comments for itemId={catalogItemId}", itemId.ToString());
+                _logger.LogDebug("Received request to get comments for itemId={catalogItemId}", itemId.ToString());
                 var res = await _databaseService.GetCommentsForCatalogItemAsync(itemId, limit);
                 return res != null ? Ok(res) : NotFound();
             }
@@ -110,7 +110,7 @@ namespace AlwaysOn.CatalogService.Controllers
                 CreationDate = DateTime.UtcNow,
                 CatalogItemId = itemId
             };
-            _logger.LogInformation("Received request to create new comment with commentId={commentId} for CatalogItemId={CatalogItemId}", comment.Id, comment.CatalogItemId);
+            _logger.LogDebug("Received request to create new comment with commentId={commentId} for CatalogItemId={CatalogItemId}", comment.Id, comment.CatalogItemId);
 
             // If this comment was sent as test data, set the TTL to a short value
             if (Request.Headers.TryGetValue("X-TEST-DATA", out var testDataHeader) && testDataHeader.FirstOrDefault()?.ToLower() == "true")
@@ -122,7 +122,7 @@ namespace AlwaysOn.CatalogService.Controllers
             {
                 var messageBody = Helpers.JsonSerialize(comment);
                 await _messageProducerService.SendSingleMessageAsync(messageBody, Constants.AddCommentActionName);
-                _logger.LogInformation("AddNewCatalogItem request was sent to the message bus commentId={commentId}", comment.Id);
+                _logger.LogDebug("AddNewCatalogItem request was sent to the message bus commentId={commentId}", comment.Id);
             }
             catch (AlwaysOnDependencyException e)
             {
@@ -151,7 +151,7 @@ namespace AlwaysOn.CatalogService.Controllers
         [ApiKey]
         public async Task<ActionResult> DeleteItemCommentAsync([FromRoute] Guid itemId, Guid commentId)
         {
-            _logger.LogInformation("Received request to delete ItemComment={commentId}", commentId);
+            _logger.LogDebug("Received request to delete ItemComment={commentId}", commentId);
             return await CatalogServiceHelpers.DeleteObjectInternal<ItemComment>(_logger, _messageProducerService, commentId, itemId);
         }
     }

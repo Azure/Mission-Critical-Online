@@ -49,7 +49,3 @@ output "global_storage_account_name" {
 output "azure_monitor_action_group_resource_id" {
   value = azurerm_monitor_action_group.main.id
 }
-
-output "slo_function_name" {
-  value = azurerm_function_app.slo_query.name
-}

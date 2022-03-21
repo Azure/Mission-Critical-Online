@@ -17,9 +17,7 @@ resource "azurerm_kubernetes_cluster" "stamp" {
     }
   }
 
-  role_based_access_control {
-    enabled = true
-  }
+  role_based_access_control_enabled = true
 
   default_node_pool {
     name                 = "defaultpool"

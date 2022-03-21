@@ -1,0 +1,51 @@
+name: Component CI - LoadGenerator
+
+on:
+  pull_request:
+    paths:
+      - "src/testing/userload-generator/AzureFunctions/**"
+  workflow_dispatch:
+
+env:
+  DOTNET_VERSION: "6.0"
+  NODEJS_VERSION: "16"
+
+defaults:
+  run:
+    working-directory: "src/testing/userload-generator/AzureFunctions"
+
+jobs:
+  build-and-test-global:
+    name: Build global orchestrator
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: "Setup .NET Core ${{ env.DOTNET_VERSION }}"
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: "Build GlobalOrchestrator"
+        run: |
+          cd GlobalOrchestrator
+          dotnet build
+
+
+  build-and-test-regional:
+    name: Build regional load generator
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: "Setup Node.js ${{ env.NODEJS_VERSION }}"
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODEJS_VERSION }}
+
+      - name: "Build RegionalLoadGenerator"
+        run: |
+          cd RegionalLoadGenerator
+          npm install

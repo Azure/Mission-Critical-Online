@@ -1,0 +1,33 @@
+name: Component CI - Grafana
+
+on:
+  pull_request:
+    paths:
+      - "src/infra/monitoring/grafana/healthmodelpanel/**"
+  workflow_dispatch:
+
+env:
+  NODEJS_VERSION: "16"
+
+defaults:
+  run:
+    working-directory: "src/infra/monitoring/grafana/healthmodelpanel"
+
+jobs:
+
+  build-and-test:
+    name: Build health model panel
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: "Setup Node.js ${{ env.NODEJS_VERSION }}"
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODEJS_VERSION }}
+
+      - name: "Build health model panel"
+        run: |
+          npm install
+          npm run build

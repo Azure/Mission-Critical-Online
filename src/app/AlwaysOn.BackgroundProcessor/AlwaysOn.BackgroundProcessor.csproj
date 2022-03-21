@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Azure.Data.Tables" Version="12.4.0" />
+    <PackageReference Include="Azure.Data.Tables" Version="12.5.0" />
     <PackageReference Include="Azure.Messaging.EventHubs.Processor" Version="5.6.2" />
     <PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="2.20.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />

@@ -3,10 +3,10 @@ steps:
 - task: PowerShell@2
   name: 'setPipelineVariables'
   displayName: 'Set pipeline variables'
+  env:
+    AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
   inputs:
     targetType: inline
-    env:
-      AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
     script: |
       # The branch name is used as an Azure Resource Tag for all resources deployed, as well as to generate a unique identifier used for resource names to avoid naming conflicts
       echo "*** Build.SourceBranch: $(Build.SourceBranch)"

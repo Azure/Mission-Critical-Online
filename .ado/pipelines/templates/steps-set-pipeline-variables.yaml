@@ -3,6 +3,8 @@ steps:
 - task: PowerShell@2
   name: 'setPipelineVariables'
   displayName: 'Set pipeline variables'
+  env:
+    AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
   inputs:
     targetType: inline
     env:

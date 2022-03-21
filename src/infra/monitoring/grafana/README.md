@@ -7,7 +7,7 @@ When the Dockerfile is built, a container is created with the following:
 - Grafana
 - Solution Health Dashboards
 - Azure Monitor data source
-- AlwaysOn-Healthmodelpanel custom visualization
+- Health Model Panel plugin
 
 ## Environment Variables
 
@@ -30,24 +30,15 @@ Currently, authentication has been set to a username/password. Obviously this is
 
 Before deploying this to your production environment, it is *highly recommended* to enable OAuth. This is done by editing the `grafana.ini` file and uncommenting/filling the values under the authentication section. Naturally, don't add secrets there. You can add ${MY_SECRET_VALUE} as a value and include that at runtime through environment variables.
 
-## Note about line endings
-
-When editing on Windows, ensure that for the dashboard queries as well as the `.ts` and `.tsx` files, line endings are set to **LF** to ensure a smooth docker build process.
-
 ## Grafana Health Model Panel
 
-The Azure Mission-Critical health model has been implemented in Azure Log Analytics using KQL queries. This is a custom Grafana visualization panel, which can be used to visualize that health model. Its main purpose is to visualize, in an intuitive way:
-
-- The health state of each component
-- The hierarchical dependencies between components.
-
-This document describes the specifics of the custom Grafana visualization and the dependencies it has on the underlying solution. For a broader context, view the Azure Mission-Critical guidance on Azure Architecture Center.
+The Azure Mission-Critical health model has been implemented in Azure Log Analytics using KQL queries. This model is visualized using a custom component, which is managed outside of this project and thus treated as third-party. What we discuss here is the way to use it, not the way it was built. 
 
 ### Usage
 
 #### Input Data
 
-The panel depends on a Log Analytics query result that contains the relevant information. The following columns are required in the query result:
+The health model panel depends on a Log Analytics query result that contains the relevant information. The following columns are required in the query result:
 
 - **ComponentName** is the name of the component as it is displayed in the health model graph.
 - **Dependencies** holds a comma-separated list of components that the specific component depends on. The names should match the 'ComponentName' value of the respective component.
@@ -86,26 +77,6 @@ This query is subsequently visualized in the following way:
 
 ## Build & Deploy
 
-### Option 1: Docker Build for the entire Grafana container
+```docker build -t alwayson-grafana .```
 
-1. Docker build:
-   `docker build -t alwayson-grafana .`
-
-This docker container contains a full Grafana install as well as the health model panel and can be run directly on any container hosting environment. The required environment variable for running unsigned panels has already been set.
-
-### Option 2: Manually Build the health model panel
-
-1. Go to the _healthmodelpanel_ directory
-
-2. Install packages:
-   `yarn install`
-
-3. Build the project:
-   `yarn build`
-
-4. Copy `./dist/*` to `/var/lib/grafana/plugins/healthmodelpanel` of your Grafana installation.
-
-5. In order to run an unsigned Grafana panel, ensure that the following environment variable has been set:
-   `GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS="alwayson-healthmodelpanel"`
-
-![Solution Health Monitoring Screenshot](/docs/media/healthmodel-example-fullpage.png)
+This docker container contains a full Grafana install as well as the health model panel and can be run directly on any container hosting environment. The required environment variable for running unsigned panels has already been set in the Dockerfile.

@@ -1,0 +1,25 @@
+// Returns the health status of an event hub. 
+// Currently we only look at the processingbacklog, i.e. the number of messages that comes in minus messages that go out. 
+let Thresholds = datatable(MetricName: string, YellowThreshold: double, RedThreshold: double) [
+    // Difference between incoming and outgoing messages:
+    "ProcessingBacklog", 3, 10
+    ];
+//
+AzureMetrics
+| where ResourceProvider == "MICROSOFT.EVENTHUB"
+| where MetricName == "IncomingMessages" or MetricName == "OutgoingMessages"
+| order by TimeGenerated,Resource desc
+// Each row is either IncomingMessages or OutgoingMessages. Depending on that, the value we're looking for may be before or after the current row.
+| extend ProcessedCount = iff(MetricName=="IncomingMessages", 
+                                iff(next(MetricName)=="OutgoingMessages" 
+                                        and next(TimeGenerated) == TimeGenerated 
+                                        and next(ResourceId) == ResourceId, 
+                                    next(Total), prev(Total))
+                                , toreal(-1))
+| where MetricName == "IncomingMessages"
+| extend ProcessingBacklog = Total - ProcessedCount
+| project TimeGenerated,Resource,Incoming=Total,ProcessedCount,ProcessingBacklog
+| extend MetricName = "ProcessingBacklog"
+| lookup kind=inner Thresholds on MetricName
+| extend IsYellow = iff(ProcessingBacklog > YellowThreshold and ProcessingBacklog < RedThreshold, 1, 0)
+| extend IsRed = iff(ProcessingBacklog > RedThreshold, 1, 0)

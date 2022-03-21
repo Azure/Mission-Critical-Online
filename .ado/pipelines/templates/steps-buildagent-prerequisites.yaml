@@ -1,6 +1,7 @@
 steps:
 - task: AzureCLI@2
   displayName: 'Install build agent prerequisites'
+  retryCountOnTaskFailure: 2
   inputs:
     azureSubscription: $(azureServiceConnection)
     scriptType: pscore

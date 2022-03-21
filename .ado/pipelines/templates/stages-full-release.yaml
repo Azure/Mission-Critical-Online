@@ -294,6 +294,7 @@ stages:
     jobs:
     - deployment: 'destroyOldReleaseStampsJob' # Using a deployment job so that we can have manual approves, which are configured on the environment specificed below
       displayName: 'Destroy Old Release Unit Deployment'
+      timeoutInMinutes: 120 # extend the default timeout of 60min since destroy can take a while
       environment: '$(environment)'
       strategy:
         runOnce:
@@ -438,6 +439,7 @@ stages:
     - ${{ if eq(parameters.environment, 'e2e') }}: # Only happens in E2E
       - deployment: 'destroyE2EGlobalResourcesJob'  # Destroy globally shared resources for this E2E env
         displayName: 'Destroy E2E Global Resources'
+        timeoutInMinutes: 120 # extend the default timeout of 60min since destroy can take a while
         environment: '$(environment)'
         dependsOn: 'destroyOldReleaseStampsJob'
         strategy:

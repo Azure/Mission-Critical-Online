@@ -61,7 +61,7 @@ namespace AlwaysOn.BackgroundProcessor
                     var sysConfig = sp.GetService<SysConfiguration>();
                     return new AlwaysOnCustomTelemetryInitializer($"{nameof(BackgroundProcessor)}-{sysConfig.AzureRegionShort}");
                 });
-                services.AddSingleton(typeof(ITelemetryChannel), new ServerTelemetryChannel() { StorageFolder = "/tmp/appinsightschannel" });
+                services.AddSingleton(typeof(ITelemetryChannel), new ServerTelemetryChannel() { StorageFolder = "/tmp" });
                 
                 services.AddApplicationInsightsTelemetryWorkerService(new ApplicationInsightsServiceOptions()
                 {

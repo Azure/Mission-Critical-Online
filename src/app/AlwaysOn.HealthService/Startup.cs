@@ -35,7 +35,7 @@ namespace AlwaysOn.HealthService
             services.AddMemoryCache();
 
             services.AddSingleton(typeof(ITelemetryChannel),
-                                new ServerTelemetryChannel() { StorageFolder = "/tmp/appinsightschannel" });
+                                new ServerTelemetryChannel() { StorageFolder = "/tmp" });
             services.AddApplicationInsightsTelemetry(new ApplicationInsightsServiceOptions()
             {
                 ConnectionString = Configuration[SysConfiguration.ApplicationInsightsConnStringKeyName]

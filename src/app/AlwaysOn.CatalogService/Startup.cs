@@ -39,7 +39,7 @@ namespace AlwaysOn.CatalogService
             services.AddSingleton<SysConfiguration>();
 
             services.AddSingleton(typeof(ITelemetryChannel),
-                                new ServerTelemetryChannel() { StorageFolder = "/tmp/appinsightschannel"});
+                                new ServerTelemetryChannel() { StorageFolder = "/tmp"});
             services.AddApplicationInsightsTelemetry(new ApplicationInsightsServiceOptions()
             {
                 ConnectionString = Configuration[SysConfiguration.ApplicationInsightsConnStringKeyName]

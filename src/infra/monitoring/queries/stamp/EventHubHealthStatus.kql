@@ -10,12 +10,20 @@ AzureMetrics
 | where MetricName == "IncomingMessages" or MetricName == "OutgoingMessages"
 | order by TimeGenerated,Resource desc
 // Each row is either IncomingMessages or OutgoingMessages. Depending on that, the value we're looking for may be before or after the current row.
-| extend ProcessedCount = iff(MetricName=="IncomingMessages", 
-                                iff(next(MetricName)=="OutgoingMessages" 
+| extend ProcessedCount = iff(MetricName=="IncomingMessages", // If this is an 'IncomingMessages' row, then:
+                                // The next or previous row on the same time and resource should be the OutgoingMessages count
+                                iff(next(MetricName)=="OutgoingMessages" // if next row is 'Outgoing' for same time and resource...
                                         and next(TimeGenerated) == TimeGenerated 
                                         and next(ResourceId) == ResourceId, 
-                                    next(Total), prev(Total))
-                                , toreal(-1))
+                                    next(Total), // then we want that value
+                                    iff(prev(MetricName)=="OutgoingMessages"   // If we're here then it wasnt the next, so maybe the previous row:
+                                        and prev(TimeGenerated) == TimeGenerated
+                                        and prev(ResourceId) == ResourceId,
+                                        prev(Total), // It was the previous, so we take that one
+                                        toreal(0) // It wasn't the previous either! oh oh, there were no messages processed
+                                    )
+                                ),
+                                toreal(-1)) // Otherwise this is an 'OutgoingMessage' row and we don't care
 | where MetricName == "IncomingMessages"
 | extend ProcessingBacklog = Total - ProcessedCount
 | project TimeGenerated,Resource,Incoming=Total,ProcessedCount,ProcessingBacklog

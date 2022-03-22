@@ -46,16 +46,13 @@ namespace AlwaysOn.BackgroundProcessor
             })
             .ConfigureServices((hostContext, services) =>
             {
-                var aiConnectionString = hostContext.Configuration[SysConfiguration.ApplicationInsightsConnStringKeyName];
-                // Workaround to extract iKey from ConnectionString until Serilog fully supports the connection string method
-                var aiInstrumentationKey = new Regex("InstrumentationKey=(?<key>.*);").Match(aiConnectionString)?.Groups["key"]?.Value;
-
+                // TODO: Transition Serilog AppInsights sink to use the connection string instead of Instrumentation Key, once that is fully supported
                 Log.Logger = new LoggerConfiguration()
                                     .ReadFrom.Configuration(hostContext.Configuration)
                                     .Enrich.FromLogContext()
                                     .WriteTo.Console(
                                             outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} {Level:u3}] {Message:lj} {Properties:j}{NewLine}{Exception}")
-                                    .WriteTo.ApplicationInsights(aiInstrumentationKey, TelemetryConverter.Traces)
+                                    .WriteTo.ApplicationInsights(hostContext.Configuration[SysConfiguration.ApplicationInsightsKeyName], TelemetryConverter.Traces)
                                     .CreateLogger();
 
                 services.AddSingleton<SysConfiguration>();
@@ -69,8 +66,8 @@ namespace AlwaysOn.BackgroundProcessor
                 
                 services.AddApplicationInsightsTelemetryWorkerService(new ApplicationInsightsServiceOptions()
                 {
-                    ConnectionString = aiConnectionString
-                });
+                    ConnectionString = hostContext.Configuration[SysConfiguration.ApplicationInsightsConnStringKeyName]
+            });
 
                 services.AddSingleton<IDatabaseService, CosmosDbService>();
 

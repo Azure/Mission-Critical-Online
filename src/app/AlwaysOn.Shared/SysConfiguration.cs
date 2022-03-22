@@ -8,6 +8,7 @@ namespace AlwaysOn.Shared
 
         // These constant values are also defined in the infrastructure (Terraform) templates. Make sure to change both locations if needed
 
+        public const string ApplicationInsightsKeyName = "APPINSIGHTS_INSTRUMENTATIONKEY";
         public const string ApplicationInsightsConnStringKeyName = "APPLICATIONINSIGHTS_CONNECTION_STRING";
 
         public const string CosmosCatalogItemsContainerName = "catalogItems";

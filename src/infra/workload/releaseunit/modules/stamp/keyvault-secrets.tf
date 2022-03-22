@@ -10,6 +10,7 @@ locals {
     "StorageAccount-Healthservice-ContainerName" = azurerm_storage_container.deployment_healthservice.name
     "StorageAccount-Healthservice-BlobName"      = local.health_blob_name
     "Global-StorageAccount-ConnectionString"     = data.azurerm_storage_account.global.primary_connection_string
+    "APPINSIGHTS-INSTRUMENTATIONKEY"             = data.azurerm_application_insights.stamp.instrumentation_key
     "APPLICATIONINSIGHTS-CONNECTION-STRING"      = data.azurerm_application_insights.stamp.connection_string
     "CosmosDb-Endpoint"                          = data.azurerm_cosmosdb_account.global.endpoint
     "CosmosDb-ApiKey"                            = data.azurerm_cosmosdb_account.global.primary_key

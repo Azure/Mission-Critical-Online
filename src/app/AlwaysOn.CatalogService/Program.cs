@@ -43,17 +43,13 @@ namespace AlwaysOn.CatalogService
 
                 var builtConfig = config.Build();
 
-                var aiConnectionString = builtConfig[SysConfiguration.ApplicationInsightsConnStringKeyName];
-
-                // Workaround to extract iKey from ConnectionString until Serilog fully supports the connection string method
-                var aiInstrumentationKey = new Regex("InstrumentationKey=(?<key>.*);").Match(aiConnectionString)?.Groups["key"]?.Value;
-
+                // TODO: Transition Serilog AppInsights sink to use the connection string instead of Instrumentation Key, once that is fully supported
                 Log.Logger = new LoggerConfiguration()
                                     .ReadFrom.Configuration(builtConfig)
                                     .Enrich.FromLogContext()
                                     .WriteTo.Console(
                                             outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} {Level:u3}] {Message:lj} {Properties:j}{NewLine}{Exception}")
-                                    .WriteTo.ApplicationInsights(aiInstrumentationKey, TelemetryConverter.Traces)
+                                    .WriteTo.ApplicationInsights(builtConfig[SysConfiguration.ApplicationInsightsKeyName], TelemetryConverter.Traces)
                                     .CreateLogger();
             })
             .UseSerilog()

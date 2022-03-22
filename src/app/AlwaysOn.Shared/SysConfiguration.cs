@@ -45,8 +45,6 @@ namespace AlwaysOn.Shared
         /// </summary>
         public string ApiKey => Configuration["API_KEY"];
 
-        public string ApplicationInsightsInstrumentationKey => Configuration[ApplicationInsightsConnStringKeyName];
-
         /// <summary>
         /// Connection string for the globally shared storage account which is used for catalog image storage
         /// </summary>

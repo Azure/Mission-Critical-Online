@@ -12,7 +12,6 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using System;
-using System.Text.RegularExpressions;
 
 namespace AlwaysOn.BackgroundProcessor
 {
@@ -52,7 +51,7 @@ namespace AlwaysOn.BackgroundProcessor
                                     .Enrich.FromLogContext()
                                     .WriteTo.Console(
                                             outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} {Level:u3}] {Message:lj} {Properties:j}{NewLine}{Exception}")
-                                    .WriteTo.ApplicationInsights(hostContext.Configuration[SysConfiguration.ApplicationInsightsKeyName], TelemetryConverter.Traces)
+                                    .WriteTo.ApplicationInsights(hostContext.Configuration[SysConfiguration.ApplicationInsightsInstrumentationKeyName], TelemetryConverter.Traces)
                                     .CreateLogger();
 
                 services.AddSingleton<SysConfiguration>();

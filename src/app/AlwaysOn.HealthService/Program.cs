@@ -1,11 +1,9 @@
 using AlwaysOn.Shared;
-using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using System;
-using System.Text.RegularExpressions;
 
 namespace AlwaysOn.HealthService
 {
@@ -45,7 +43,7 @@ namespace AlwaysOn.HealthService
                                     .Enrich.FromLogContext()
                                     .WriteTo.Console(
                                             outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} {Level:u3}] {Message:lj} {Properties:j}{NewLine}{Exception}")
-                                    .WriteTo.ApplicationInsights(builtConfig[SysConfiguration.ApplicationInsightsKeyName], TelemetryConverter.Traces)
+                                    .WriteTo.ApplicationInsights(builtConfig[SysConfiguration.ApplicationInsightsInstrumentationKeyName], TelemetryConverter.Traces)
                                     .CreateLogger();
             })
             .UseSerilog()

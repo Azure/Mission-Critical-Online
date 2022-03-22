@@ -8,7 +8,7 @@ let Thresholds = datatable(MetricName: string, YellowThreshold: double, RedThres
 AzureMetrics
 | where ResourceProvider == "MICROSOFT.EVENTHUB"
 | where MetricName == "IncomingMessages" or MetricName == "OutgoingMessages"
-| summarize Total=sum(Total) by ResourceId,MetricName,bin(TimeGenerated, 5m)
+| summarize Total=sum(Total) by ResourceId,MetricName,bin(TimeGenerated, 2m)
 | order by TimeGenerated,ResourceId desc
 // Each row is either IncomingMessages or OutgoingMessages. Depending on that, the value we're looking for may be before or after the current row.
 | extend ProcessedCount = iff(MetricName=="IncomingMessages", // If this is an 'IncomingMessages' row, then:

@@ -8,7 +8,7 @@ namespace AlwaysOn.Shared
 
         // These constant values are also defined in the infrastructure (Terraform) templates. Make sure to change both locations if needed
 
-        public const string ApplicationInsightsKeyName = "APPINSIGHTS_INSTRUMENTATIONKEY";
+        public const string ApplicationInsightsConnStringKeyName = "APPLICATIONINSIGHTS_CONNECTION_STRING";
 
         public const string CosmosCatalogItemsContainerName = "catalogItems";
         public const string CosmosItemCommentsContainerName = "itemComments";
@@ -45,7 +45,7 @@ namespace AlwaysOn.Shared
         /// </summary>
         public string ApiKey => Configuration["API_KEY"];
 
-        public string ApplicationInsightsInstrumentationKey => Configuration[ApplicationInsightsKeyName];
+        public string ApplicationInsightsInstrumentationKey => Configuration[ApplicationInsightsConnStringKeyName];
 
         /// <summary>
         /// Connection string for the globally shared storage account which is used for catalog image storage

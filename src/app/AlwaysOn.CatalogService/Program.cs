@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AlwaysOn.Shared;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -40,12 +41,15 @@ namespace AlwaysOn.CatalogService
                 config.AddKeyPerFile(directoryPath: "/mnt/secrets-store/", optional: true, reloadOnChange: true);
 
                 var builtConfig = config.Build();
+
+                var aiConnString = builtConfig[SysConfiguration.ApplicationInsightsConnStringKeyName];
+
                 Log.Logger = new LoggerConfiguration()
                                     .ReadFrom.Configuration(builtConfig)
                                     .Enrich.FromLogContext()
                                     .WriteTo.Console(
                                             outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} {Level:u3}] {Message:lj} {Properties:j}{NewLine}{Exception}")
-                                    .WriteTo.ApplicationInsights(builtConfig[SysConfiguration.ApplicationInsightsKeyName], TelemetryConverter.Traces)
+                                    .WriteTo.ApplicationInsights(new TelemetryConfiguration { ConnectionString = aiConnString }, TelemetryConverter.Traces)
                                     .CreateLogger();
             })
             .UseSerilog()

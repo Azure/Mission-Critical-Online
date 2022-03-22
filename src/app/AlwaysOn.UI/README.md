@@ -61,7 +61,7 @@ Alternatively, you could make the config object part of the compiled app code an
 Settings to configure:
 
 * `window.API_URL` = URL of the API root which will be used, **without the trailing "/"**. For localhost this will be something like: `http://localhost:5000/api`, for cloud environment it will be: */api* (because the UI runs on the same domain as the API). This can also be the absolute URL of a published API, only make sure that no firewall and CORS restriction are in place.
-* `window.APPINSIGHTS_INSTRUMENTATIONKEY` = Instrumentation key for the Application Insights instance to be used.
+* `window.APPLICATIONINSIGHTS_CONNECTION_STRING` = Connection string for the Application Insights instance to be used.
 
 ## Implementation notes
 

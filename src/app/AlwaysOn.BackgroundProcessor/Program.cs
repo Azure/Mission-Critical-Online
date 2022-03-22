@@ -5,6 +5,7 @@ using AlwaysOn.Shared.Services;
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel;
+using Microsoft.ApplicationInsights.WorkerService;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -44,13 +45,13 @@ namespace AlwaysOn.BackgroundProcessor
             })
             .ConfigureServices((hostContext, services) =>
             {
-                var appinsightsKey = hostContext.Configuration[SysConfiguration.ApplicationInsightsKeyName];
+                var aiConnectionString = hostContext.Configuration[SysConfiguration.ApplicationInsightsConnStringKeyName];
                 Log.Logger = new LoggerConfiguration()
                                     .ReadFrom.Configuration(hostContext.Configuration)
                                     .Enrich.FromLogContext()
                                     .WriteTo.Console(
                                             outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} {Level:u3}] {Message:lj} {Properties:j}{NewLine}{Exception}")
-                                    .WriteTo.ApplicationInsights(appinsightsKey, TelemetryConverter.Traces)
+                                    .WriteTo.ApplicationInsights(new TelemetryConfiguration { ConnectionString = aiConnectionString }, TelemetryConverter.Traces)
                                     .CreateLogger();
 
                 services.AddSingleton<SysConfiguration>();
@@ -62,7 +63,10 @@ namespace AlwaysOn.BackgroundProcessor
                 });
                 services.AddSingleton(typeof(ITelemetryChannel), new ServerTelemetryChannel() { StorageFolder = "/tmp/appinsightschannel" });
                 
-                services.AddApplicationInsightsTelemetryWorkerService(appinsightsKey);
+                services.AddApplicationInsightsTelemetryWorkerService(new ApplicationInsightsServiceOptions()
+                {
+                    ConnectionString = aiConnectionString
+                });
 
                 services.AddSingleton<IDatabaseService, CosmosDbService>();
 

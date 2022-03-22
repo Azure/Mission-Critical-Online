@@ -8,7 +8,8 @@ let Thresholds = datatable(MetricName: string, YellowThreshold: double, RedThres
 AzureMetrics
 | where ResourceProvider == "MICROSOFT.EVENTHUB"
 | where MetricName == "IncomingMessages" or MetricName == "OutgoingMessages"
-| order by TimeGenerated,Resource desc
+| summarize Total=sum(Total) by ResourceId,MetricName,bin(TimeGenerated, 5m)
+| order by TimeGenerated,ResourceId desc
 // Each row is either IncomingMessages or OutgoingMessages. Depending on that, the value we're looking for may be before or after the current row.
 | extend ProcessedCount = iff(MetricName=="IncomingMessages", // If this is an 'IncomingMessages' row, then:
                                 // The next or previous row on the same time and resource should be the OutgoingMessages count
@@ -25,8 +26,8 @@ AzureMetrics
                                 ),
                                 toreal(-1)) // Otherwise this is an 'OutgoingMessage' row and we don't care
 | where MetricName == "IncomingMessages"
-| extend ProcessingBacklog = Total - ProcessedCount
-| project TimeGenerated,Resource,Incoming=Total,ProcessedCount,ProcessingBacklog
+| extend ProcessingBacklog = iff(Total - ProcessedCount < 0, toreal(0), Total - ProcessedCount)
+| project TimeGenerated,ResourceId,Incoming=Total,ProcessedCount,ProcessingBacklog
 | extend MetricName = "ProcessingBacklog"
 | lookup kind=inner Thresholds on MetricName
 | extend IsYellow = iff(ProcessingBacklog > YellowThreshold and ProcessingBacklog < RedThreshold, 1, 0)

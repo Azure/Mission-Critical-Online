@@ -12,6 +12,7 @@ RUN chmod +x insertqueries.sh && ./insertqueries.sh
 
 # The healthmodel panel is a third party component, published on NPM. 
 # It contains only the built solution, so there is nothing to build, only install. 
+# We set the workdir before installing to give us an easy way to copy everything out to the Grafana container. 
 WORKDIR /app/healthmodelpanel
 RUN npm install
 

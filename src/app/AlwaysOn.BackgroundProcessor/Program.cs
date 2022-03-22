@@ -12,6 +12,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using System;
+using System.Text.RegularExpressions;
 
 namespace AlwaysOn.BackgroundProcessor
 {
@@ -46,12 +47,15 @@ namespace AlwaysOn.BackgroundProcessor
             .ConfigureServices((hostContext, services) =>
             {
                 var aiConnectionString = hostContext.Configuration[SysConfiguration.ApplicationInsightsConnStringKeyName];
+                // Workaround to extract iKey from ConnectionString until Serilog fully supports the connection string method
+                var aiInstrumentationKey = new Regex("InstrumentationKey=(?<key>.*);").Match(aiConnectionString)?.Groups["key"]?.Value;
+
                 Log.Logger = new LoggerConfiguration()
                                     .ReadFrom.Configuration(hostContext.Configuration)
                                     .Enrich.FromLogContext()
                                     .WriteTo.Console(
                                             outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} {Level:u3}] {Message:lj} {Properties:j}{NewLine}{Exception}")
-                                    .WriteTo.ApplicationInsights(new TelemetryConfiguration { ConnectionString = aiConnectionString }, TelemetryConverter.Traces)
+                                    .WriteTo.ApplicationInsights(aiInstrumentationKey, TelemetryConverter.Traces)
                                     .CreateLogger();
 
                 services.AddSingleton<SysConfiguration>();

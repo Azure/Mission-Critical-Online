@@ -5,10 +5,12 @@ let Thresholds = datatable(MetricName: string, YellowThreshold: double, RedThres
     "ProcessingBacklog", 3, 10
     ];
 //
+let timespanStart= todatetime(format_datetime(now(-2d), 'yyyy-MM-dd HH:ss')); // We need to remove any sub-second part from the start, otherwise the series are not to the seconds
+let timespanEnd = now(-2m); // there is some ingestion lag, so we account for this by stripping the last 2m
+//
 AzureMetrics
 | where ResourceProvider == "MICROSOFT.EVENTHUB"
 | where MetricName == "IncomingMessages" or MetricName == "OutgoingMessages"
-| summarize Total=sum(Total) by ResourceId,MetricName,bin(TimeGenerated, 2m)
 | order by TimeGenerated,ResourceId desc
 // Each row is either IncomingMessages or OutgoingMessages. Depending on that, the value we're looking for may be before or after the current row.
 | extend ProcessedCount = iff(MetricName=="IncomingMessages", // If this is an 'IncomingMessages' row, then:
@@ -27,8 +29,9 @@ AzureMetrics
                                 toreal(-1)) // Otherwise this is an 'OutgoingMessage' row and we don't care
 | where MetricName == "IncomingMessages"
 | extend ProcessingBacklog = iff(Total - ProcessedCount < 0, toreal(0), Total - ProcessedCount)
-| project TimeGenerated,ResourceId,Incoming=Total,ProcessedCount,ProcessingBacklog
-| extend MetricName = "ProcessingBacklog"
+| make-series Value=sum(ProcessingBacklog) default=0 on TimeGenerated from timespanStart to timespanEnd step 1m
+| mv-expand TimeGenerated, Value
+| extend TimeGenerated = todatetime(TimeGenerated), Value=toreal(Value), MetricName='ProcessingBacklog'
 | lookup kind=inner Thresholds on MetricName
-| extend IsYellow = iff(ProcessingBacklog > YellowThreshold and ProcessingBacklog < RedThreshold, 1, 0)
-| extend IsRed = iff(ProcessingBacklog > RedThreshold, 1, 0)
+| extend IsYellow = iff(Value> YellowThreshold and Value < RedThreshold, 1, 0)
+| extend IsRed = iff(Value > RedThreshold, 1, 0)

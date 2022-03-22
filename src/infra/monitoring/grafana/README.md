@@ -32,7 +32,7 @@ Before deploying this to your production environment, it is *highly recommended*
 
 ## Grafana Health Model Panel
 
-The Azure Mission-Critical health model has been implemented in Azure Log Analytics using KQL queries. This model is visualized using a custom component, which is managed outside of this project and thus treated as third-party. What we discuss here is the way to use it, not the way it was built. 
+The Azure Mission-Critical health model has been implemented in Azure Log Analytics using KQL queries. This model is visualized using a [custom component](https://github.com/nielsams/grafanahealthmodelpanel), which is managed outside of this project and thus treated as third-party. What we discuss here is the way to use it, not the way it was built. 
 
 ### Usage
 

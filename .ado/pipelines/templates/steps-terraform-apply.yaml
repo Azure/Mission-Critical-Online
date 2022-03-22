@@ -27,6 +27,9 @@ steps:
       # To have access to the input ARM_CLIENT_SECRET which was marked as secret, we need to explicitly reference it in the script
       export ARM_CLIENT_SECRET="$(ARM_CLIENT_SECRET)"
 
+      # Creates the tfvar files, if it does not exist. Otherwise terraform will fail
+      touch "variables-$(environment).tfvars"
+
       terraform plan -input=false -out=tf_plan \
                      -var=environment="$(environment)" \
                      -var=prefix="${{ parameters.customPrefix }}" \

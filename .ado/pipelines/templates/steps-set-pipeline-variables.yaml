@@ -1,8 +1,10 @@
 steps:
 
 - task: PowerShell@2
-  name: 'getBranchName'
-  displayName: 'Gather branch name used to identify instance'
+  name: 'setPipelineVariables'
+  displayName: 'Set pipeline variables'
+  env:
+    AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
   inputs:
     targetType: inline
     script: |
@@ -19,7 +21,17 @@ steps:
       # we extend the branch name by the date to have a different hash input
       if('$(dateBasedSuffix)' -eq [bool]::TrueString)
       {
-        $hashInput += (Get-Date -AsUTC).ToString("yyyy-MM-dd")
+        # Install or upgrade the ADO extension
+        az extension add --upgrade -n azure-devops
+
+        # Login to Azure DevOps Extension is happening automatically using ENV AZURE_DEVOPS_EXT_PAT which is set above
+        # Set default Azure DevOps organization and project
+        az devops configure --defaults organization=$(System.TeamFoundationCollectionUri) project=$(System.TeamProject) --use-git-aliases true
+
+        # Fetch this pipeline runs original start time (when it was initially queued). This is important to be consistent in case we need to re-run a stage
+        $pipelineQueueTime = az pipelines runs show --id $(Build.BuildId) --query "queueTime" -o tsv
+
+        $hashInput += (Get-Date $pipelineQueueTime).ToString("yyyy-MM-dd")
         echo "*** Parameter dateBasedSuffix is True. Extending suffix hash input"
       }
 

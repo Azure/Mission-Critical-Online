@@ -3,6 +3,7 @@
 | union (CatalogServiceHealthStatus | extend ComponentName="CatalogService")
 | union (BackgroundProcessorHealthStatus | extend ComponentName="BackgroundProcessor")
 | union (ClusterHealthStatus | extend ComponentName="Cluster")
+| union (EventHubHealthStatus | extend ComponentName="EventHub")
 | where $__timeFilter(TimeGenerated)
 | where IsYellow > 0 or IsRed > 0
 | extend Status=iif(IsRed == 1 ,'red', 'yellow')

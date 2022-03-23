@@ -25,9 +25,9 @@ ENV GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS="healthmodelpanel"
 
 # Copy the files from the build container to the Grafana container.
 WORKDIR /var/lib/grafana/plugins/alwayson-healthmodelpanel/
-COPY --from=builder /app/healthmodelpanel/* .
-COPY --from=builder /app/config/grafana.ini /etc/grafana
-COPY --from=builder /app/config/provisioning /etc/grafana/provisioning
+COPY --from=builder /app/healthmodelpanel/* ./
+COPY --from=builder /app/config/grafana.ini /etc/grafana/
+COPY --from=builder /app/config/provisioning /etc/grafana/provisioning/
 
 # Web server runs on 3000, we'll tell AppService to redirect traffic there. 
 EXPOSE 3000/tcp

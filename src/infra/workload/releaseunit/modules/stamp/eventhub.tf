@@ -10,9 +10,9 @@ resource "azurerm_eventhub_namespace" "stamp" {
   # If auto-inflate is enabled, we need to set the max scale out TUs
   maximum_throughput_units = var.event_hub_enable_auto_inflate ? var.event_hub_auto_inflate_maximum_tu : null
 
-  network_rulesets {
-    default_action = "Deny" # Access is only allowed through the private endpoints
-  }
+  # network_rulesets {
+  #   default_action = "Deny" # Access is only allowed through the private endpoints
+  # }
 
   tags = var.default_tags
 }

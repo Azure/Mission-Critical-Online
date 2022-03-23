@@ -3,8 +3,7 @@
 ## Virtual network layout
 
 - Each stamp uses its own Virtual Network (VNet) and as there is no cross-stamp traffic, no VNet peerings or VPN connections to other stamps are required.
-- The per-stamp VNet is split into two subnets for Kubernetes (containing all nodes and pods) and private endpoints.
-- Private endpoints (Private Link) are only partially used as ingress traffic comes from the public internet and egress traffic control (to mitigate the risk of data exfiltration) is not within scope of Azure Mission-Critical.
+- The per-stamp VNet is currently only having one subnet for Kubernetes (containing all nodes and pods).
 
 ## Global load balancer
 
@@ -53,10 +52,7 @@ These decisions are explained further below:
 
 ### Use of Private Endpoints for PaaS
 
-- The Reference Implementation uses Private Endpoints to access all PaaS instead of relying on Service Endpoints only. This has two reasons:
-  - Due to some limitations in the way the infrastructure gets deployed through Terraform, Service Endpoints could not be used for all services, so Private Endpoints would have been required at least partially in any case.
-  - The [Private Mode of Azure Mission-Critical](https://github.com/Azure/Mission-Critical-Connected) requires the use of Private Endpoints for all used services. So using them also for the default, public mode, brings consistency and simplification in the deployment.
-- One of the [main benefits](https://docs.microsoft.com/azure/private-link/private-link-overview#key-benefits) of using Private Endpoints is the protection against data leakage. However, this was not determined to be a priority requirement for public internet-facing applications like Azure Mission-Critical. Similarly, we do not foresee the requirement to connect to Azure Mission-Critical resources from on-prem networks (or otherwise connected via VPN etc).
+- The Online Reference Implementation does not use Private Endpoints to limit access to the used PaaS services. This is to simplify the onboarding and facilitate an easier learning curve for users. For production workloads, the use of Private Endpoints is highly recommended, like it is shown also in the [Mission-Critical Connected Reference Implementation](https://github.com/Azure/Mission-Critical-Connected).
 
 ### Requirements to utilize a fully private cluster
 

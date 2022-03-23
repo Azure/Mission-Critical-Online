@@ -12,10 +12,6 @@ module "subnet_addrs" {
     {
       name     = "kubernetes"
       new_bits = 22 - local.netmask # For AKS we want a /22 sized subnet. So we calculate based on the provided input address space # Size: /22
-    },
-    {
-      name     = "private-endpoints"
-      new_bits = 27 - local.netmask # For the private endpoints we want a /27 sized subnet. So we calculate based on the provided input address space # Size: /27
     }
   ]
 }
@@ -75,22 +71,6 @@ resource "azurerm_subnet" "kubernetes" {
 # NSG - Assign default nsg to kubernetes-snet subnet
 resource "azurerm_subnet_network_security_group_association" "kubernetes_default_nsg" {
   subnet_id                 = azurerm_subnet.kubernetes.id
-  network_security_group_id = azurerm_network_security_group.default.id
-}
-
-# Subnet for private endpoints
-resource "azurerm_subnet" "private_endpoints" {
-  name                 = "private-endpoints-snet"
-  resource_group_name  = azurerm_resource_group.stamp.name
-  virtual_network_name = azurerm_virtual_network.stamp.name
-  address_prefixes     = [module.subnet_addrs.network_cidr_blocks["private-endpoints"]]
-
-  enforce_private_link_endpoint_network_policies = true
-}
-
-# NSG - Assign default nsg to private-endpoints-snet subnet
-resource "azurerm_subnet_network_security_group_association" "private_endpoints_default_nsg" {
-  subnet_id                 = azurerm_subnet.private_endpoints.id
   network_security_group_id = azurerm_network_security_group.default.id
 }
 

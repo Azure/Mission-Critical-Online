@@ -53,7 +53,7 @@ stages:
                                       -var=branch="$(Build.SourceBranch)"
                                       -var=contact_email="$(contactEmail)"
                                       -var=environment="$(environment)"
-                                      -var=''stamps=$(stampLocations)'''
+                                      -var=''stamps=$(stampLocationsGrafana)'''
 
 - stage: buildcontainer
   displayName: 'Build Docker Container'
@@ -100,7 +100,7 @@ stages:
           targetType: inline
           script: |
 
-            $locations = '$(stampLocations)' | ConvertFrom-Json
+            $locations = '$(stampLocationsGrafana)' | ConvertFrom-Json
 
             $stamps = @{
               primary = @{

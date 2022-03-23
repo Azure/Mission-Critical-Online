@@ -19,7 +19,7 @@ resource "azurerm_cosmosdb_account" "main" {
     content {
       location          = geo_location.value
       failover_priority = geo_location.key
-      zone_redundant    = true
+      zone_redundant    = false
     }
   }
 

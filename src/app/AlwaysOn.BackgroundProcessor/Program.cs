@@ -65,8 +65,9 @@ namespace AlwaysOn.BackgroundProcessor
                 
                 services.AddApplicationInsightsTelemetryWorkerService(new ApplicationInsightsServiceOptions()
                 {
-                    ConnectionString = hostContext.Configuration[SysConfiguration.ApplicationInsightsConnStringKeyName]
-            });
+                    ConnectionString = hostContext.Configuration[SysConfiguration.ApplicationInsightsConnStringKeyName],
+                    EnableAdaptiveSampling = bool.TryParse(hostContext.Configuration[SysConfiguration.ApplicationInsightsAdaptiveSamplingName], out bool result) ? result : true
+                });
 
                 services.AddSingleton<IDatabaseService, CosmosDbService>();
 

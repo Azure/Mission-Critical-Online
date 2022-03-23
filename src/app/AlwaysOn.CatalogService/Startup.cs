@@ -42,7 +42,8 @@ namespace AlwaysOn.CatalogService
                                 new ServerTelemetryChannel() { StorageFolder = "/tmp"});
             services.AddApplicationInsightsTelemetry(new ApplicationInsightsServiceOptions()
             {
-                ConnectionString = Configuration[SysConfiguration.ApplicationInsightsConnStringKeyName]
+                ConnectionString = Configuration[SysConfiguration.ApplicationInsightsConnStringKeyName],
+                EnableAdaptiveSampling = bool.TryParse(Configuration[SysConfiguration.ApplicationInsightsAdaptiveSamplingName], out bool result) ? result : true
             });
 
             services.AddHealthChecks();// Adds a simple liveness probe HTTP endpoint, path mapping happens further below

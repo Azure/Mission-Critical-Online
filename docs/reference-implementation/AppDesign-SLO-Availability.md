@@ -8,13 +8,13 @@ Azure Mission-Critical has set a targeted availability of **99.95%**. This docum
 
 An **SLA** describes a contractual commitment for application availability and as the purpose of Azure Mission-Critical is not to define contractual agreements, we prefer an availability target in the form of **SLO**. This is a percentage figure which represents the amount of time in a month when the application is *available*.
 
-**Availability** for Azure Mission-Critical means that end users are able to perform game operations using the website. These operations include:
+**Availability** for Azure Mission-Critical means that end users are able to perform data operations using the website. These operations include:
 
 1. Enter the home page.
-1. Sign in with provided credentials.
-1. Access their profile.
-1. Play a game against AI.
-1. See the leaderboard.
+1. Access a dataset from the database.
+1. View item details.
+1. Interact with an item (post comments, ratings).
+1. See the posted content.
 
 An SLO of 99.95% equates to an accepted downtime of **5 minutes per week** or **21.6 minutes per month** (This does not mean that an outage will necessarily happen, but if it did, this is the target outage duration which should be expected).
 

@@ -62,7 +62,11 @@ resource "azurerm_subnet" "kubernetes" {
   virtual_network_name = azurerm_virtual_network.stamp.name
   address_prefixes     = [module.subnet_addrs.network_cidr_blocks["kubernetes"]]
   service_endpoints = [
-    "Microsoft.Storage"
+    "Microsoft.Storage",
+    "Microsoft.AzureCosmosDB",
+    "Microsoft.KeyVault",
+    "Microsoft.ContainerRegistry",
+    "Microsoft.EventHub"
   ]
 
   enforce_private_link_endpoint_network_policies = true

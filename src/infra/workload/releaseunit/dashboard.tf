@@ -1,4 +1,4 @@
-resource "azurerm_dashboard" "global_board" {
+resource "azurerm_portal_dashboard" "global_board" {
   name                = "${local.prefix}-global-dashboard"
   resource_group_name = var.monitoring_resource_group_name
   location            = var.stamps[0]

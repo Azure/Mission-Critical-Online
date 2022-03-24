@@ -201,7 +201,7 @@ More information about the required permissions needed to deploy via Terraform c
 
 Our Azure Mission-Critical reference implementation knows three different environments: prod, int and e2e. These three environments can be selected for each individual pipeline run and can refer to the same or different (recommended) Azure subscriptions for proper separation. These environments are represented by service connections in Azure DevOps:
 
-> **Important!** Since these connection names are used in pipelines, use them exactly as specified above. If you change the name of the service connection, you have to also change it in pipeline YAML.
+> **Important!** Since these connection names are used in pipelines, use them exactly as specified below. If you change the name of the service connection, you have to also change it in pipeline YAML.
 
 - `alwayson-e2e-serviceconnection`
 - `alwayson-prod-serviceconnection`

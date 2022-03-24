@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # This script loops through the directory with queries and replaces placeholders to each of them in the dashboard file. 
 

@@ -823,7 +823,7 @@
         }
       ],
       "title": "Solution Health Model",
-      "type": "alwayson-healthmodelpanel"
+      "type": "healthmodelpanel"
     },
     {
       "datasource": null,
@@ -874,7 +874,7 @@
         }
       ],
       "title": "Solution Health Model",
-      "type": "alwayson-healthmodelpanel"
+      "type": "healthmodelpanel"
     },
     {
       "datasource": null,

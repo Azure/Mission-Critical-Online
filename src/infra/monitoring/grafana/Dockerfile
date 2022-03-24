@@ -1,34 +1,33 @@
-# Use a standard node image as the build container
+# Even though we're not building but only installing, we're still doing multi-stage because grafana does not have NPM
 FROM node:16 as builder
 
-# Copy the files into the builder container
-WORKDIR /usr/src/app
+# Copy all source files over to our working directory
+WORKDIR /app
 COPY . .
 
-# Build the healthmodel panel project
-WORKDIR /usr/src/app/healthmodelpanel
-RUN ["yarn", "install"]
-RUN ["yarn", "build"]
-
-# We also need to edit the dashboard file and insert the queries from separate files
-# We have a separate script to do this, called insertqueries.sh
-WORKDIR /usr/src/app/config
+# The queries are stored separately from the dashboard definitions, for maintainability reasons. 
+# The insertqueries script replaces the placeholders in the dashboard files with the actual KQL queries 
+WORKDIR /app/config
 RUN chmod +x insertqueries.sh && ./insertqueries.sh
 
-# Build phase is done, now build the container. Start with the office Grafana image
-# We're using 8.3.4 for now since in later versions our frontdoor origin is not accepted. 
-# This is a known issue and we'll upgrade to a later version once that's resolved. 
+# The healthmodel panel is a third party component, published on NPM. 
+# It contains only the built solution, so there is nothing to build, only install. 
+# We set the workdir before installing to give us an easy way to copy everything out to the Grafana container. 
+WORKDIR /app/healthmodelpanel
+RUN npm install
+
+# We're using Grafana 8.3.4 now since later versions give us issues with the header settings behind Front Door. 
+# As soon as that is resolved, we'll get back on the latest version. 
 FROM grafana/grafana:8.3.4
 
-# Load custom plugin that we built in the first stage
-# Since our plugin is unsigned, we have to specify it by name to allow it to run
-ENV GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS="alwayson-healthmodelpanel"
+# In order to run unsigned plugins such as our health model panel, we need to explicitly allow them in an env variable. 
+ENV GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS="healthmodelpanel"
+
+# Copy the files from the build container to the Grafana container.
 WORKDIR /var/lib/grafana/plugins/alwayson-healthmodelpanel/
-COPY --from=builder /usr/src/app/healthmodelpanel/dist* ./dist
+COPY --from=builder /app/healthmodelpanel/* ./
+COPY --from=builder /app/config/grafana.ini /etc/grafana/
+COPY --from=builder /app/config/provisioning /etc/grafana/provisioning/
 
-# Copy config. Since we want our edited copy (containing the inserted queries), we copy this from the builder container too.
-COPY --from=builder /usr/src/app/config/grafana.ini /etc/grafana
-COPY --from=builder /usr/src/app/config/provisioning /etc/grafana/provisioning
-
-# Open port 3000 for Grafana. We'll tell AppService to redirect there.
+# Web server runs on 3000, we'll tell AppService to redirect traffic there. 
 EXPOSE 3000/tcp

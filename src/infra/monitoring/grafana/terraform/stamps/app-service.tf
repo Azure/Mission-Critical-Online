@@ -45,7 +45,8 @@ resource "azurerm_linux_web_app" "appservice" {
     container_registry_use_managed_identity = true
 
     application_stack {
-      docker_image = var.wapp_container_image
+      docker_image = split(":",var.wapp_container_image)[0]
+      docker_image_tag = split(":",var.wapp_container_image)[1]
     }
 
     ip_restriction {

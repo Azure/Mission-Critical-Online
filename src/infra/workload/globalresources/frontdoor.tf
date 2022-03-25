@@ -1,7 +1,6 @@
 resource "azurerm_frontdoor" "main" {
   name                = local.frontdoor_name
   resource_group_name = azurerm_resource_group.global.name
-  #enforce_backend_pools_certificate_name_check = true # deprecated in azurerm 3.0
 
   tags = local.default_tags
 
@@ -159,8 +158,6 @@ resource "azurerm_frontdoor" "main" {
     load_balancing_name = "LoadBalancingSettings"
     health_probe_name   = "GlobalStorageHealthProbeSetting"
   }
-
-  #backend_pools_send_receive_timeout_seconds = 60 # deprecated in azurerm 3.0
 
   frontend_endpoint {
     name                     = local.frontdoor_default_frontend_name

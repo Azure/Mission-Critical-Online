@@ -41,9 +41,7 @@ resource "azurerm_frontdoor" "main" {
     forwarding_configuration {
       forwarding_protocol = "HttpsOnly"
       backend_pool_name   = "GlobalStorage"
-
-      # Cache the images
-      cache_enabled = true
+      cache_enabled       = true # Cache the images
     }
   }
 

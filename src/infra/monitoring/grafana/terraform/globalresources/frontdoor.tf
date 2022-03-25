@@ -1,8 +1,7 @@
 resource "azurerm_frontdoor" "afdgrafana" {
 
-  name                                         = local.frontdoor_name
-  resource_group_name                          = azurerm_resource_group.rg.name
-  enforce_backend_pools_certificate_name_check = true
+  name                = local.frontdoor_name
+  resource_group_name = azurerm_resource_group.rg.name
 
   routing_rule {
     name               = "routingrule-grafana"
@@ -48,8 +47,12 @@ resource "azurerm_frontdoor" "afdgrafana" {
 
   }
 
-  frontend_endpoint {
+  backend_pool_settings {
+    enforce_backend_pools_certificate_name_check = true
+    backend_pools_send_receive_timeout_seconds   = 60
+  }
 
+  frontend_endpoint {
     name      = local.frontdoor_default_frontend_name
     host_name = local.frontdoor_default_dns_name
   }

@@ -1,18 +1,12 @@
-resource "azurerm_app_service_plan" "asp" {
+resource "azurerm_service_plan" "asp" {
   for_each            = var.stamps
   name                = "${local.prefix}-${substr(each.value["location"], 0, 5)}-asp"
   location            = azurerm_resource_group.rg[each.key].location
   resource_group_name = azurerm_resource_group.rg[each.key].name
-  kind                = "Linux"
-  reserved            = true
-
-  sku {
-    tier = "PremiumV2"
-    size = "P1v2"
-  }
+  os_type             = "Linux"
+  sku_name            = "P1v2"
 
   tags = local.default_tags
-
 }
 
 resource "azurerm_app_service" "appservice" {
@@ -20,7 +14,7 @@ resource "azurerm_app_service" "appservice" {
   name                = "${local.prefix}-${substr(each.value["location"], 0, 5)}-app"
   location            = azurerm_resource_group.rg[each.key].location
   resource_group_name = azurerm_resource_group.rg[each.key].name
-  app_service_plan_id = azurerm_app_service_plan.asp[each.key].id
+  app_service_plan_id = azurerm_service_plan.asp[each.key].id
   https_only          = true
 
   identity {

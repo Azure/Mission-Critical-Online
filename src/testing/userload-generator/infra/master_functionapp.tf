@@ -1,4 +1,4 @@
-resource "azurerm_app_service_plan" "master" {
+resource "azurerm_linux_web_app_plan" "master" {
   name                = "${local.prefix}-loadgen-master-func-asp"
   location            = azurerm_resource_group.deployment.location
   resource_group_name = azurerm_resource_group.deployment.name
@@ -17,7 +17,7 @@ resource "azurerm_function_app" "master" {
   name                       = "${local.prefix}-loadgen-master-func"
   location                   = azurerm_resource_group.deployment.location
   resource_group_name        = azurerm_resource_group.deployment.name
-  app_service_plan_id        = azurerm_app_service_plan.master.id
+  app_service_plan_id        = azurerm_linux_web_app_plan.master.id
   storage_account_name       = azurerm_storage_account.master.name
   storage_account_access_key = azurerm_storage_account.master.primary_access_key
   os_type                    = "linux"

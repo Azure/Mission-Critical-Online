@@ -9,7 +9,7 @@ data "azurerm_monitor_diagnostic_categories" "asp" {
 
 data "azurerm_monitor_diagnostic_categories" "appservice" {
   for_each    = var.stamps
-  resource_id = azurerm_app_service.appservice[each.key].id
+  resource_id = azurerm_linux_web_app.appservice[each.key].id
 }
 
 data "azurerm_monitor_diagnostic_categories" "pgprimary" {

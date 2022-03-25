@@ -1,4 +1,4 @@
-resource "azurerm_app_service_plan" "regional" {
+resource "azurerm_linux_web_app_plan" "regional" {
   name                = "${var.prefix}-loadgen-${var.location}-func-asp"
   location            = var.location
   resource_group_name = var.resource_group_name
@@ -17,7 +17,7 @@ resource "azurerm_function_app" "regional" {
   name                       = "${var.prefix}-loadgen-${var.location}-func"
   location                   = var.location
   resource_group_name        = var.resource_group_name
-  app_service_plan_id        = azurerm_app_service_plan.regional.id
+  app_service_plan_id        = azurerm_linux_web_app_plan.regional.id
   storage_account_name       = azurerm_storage_account.regional.name
   storage_account_access_key = azurerm_storage_account.regional.primary_access_key
   os_type                    = "linux"

@@ -9,12 +9,12 @@ resource "azurerm_service_plan" "asp" {
   tags = local.default_tags
 }
 
-resource "azurerm_app_service" "appservice" {
+resource "azurerm_linux_web_app" "appservice" {
   for_each            = var.stamps
   name                = "${local.prefix}-${substr(each.value["location"], 0, 5)}-app"
   location            = azurerm_resource_group.rg[each.key].location
   resource_group_name = azurerm_resource_group.rg[each.key].name
-  app_service_plan_id = azurerm_service_plan.asp[each.key].id
+  service_plan_id     = azurerm_service_plan.asp[each.key].id
   https_only          = true
 
   identity {
@@ -38,11 +38,11 @@ resource "azurerm_app_service" "appservice" {
   }
 
   site_config {
-    always_on                            = true
-    scm_use_main_ip_restriction          = true
-    linux_fx_version                     = "DOCKER|${var.wapp_container_image}"
-    app_command_line                     = "docker run -p 3000:3000 -d --name=grafana ${var.wapp_container_image}"
-    acr_use_managed_identity_credentials = true
+    always_on                               = true
+    scm_use_main_ip_restriction             = true
+    linux_fx_version                        = "DOCKER|${var.wapp_container_image}"
+    app_command_line                        = "docker run -p 3000:3000 -d --name=grafana ${var.wapp_container_image}"
+    container_registry_use_managed_identity = true
 
     ip_restriction {
       service_tag = "AzureFrontDoor.Backend"
@@ -62,6 +62,6 @@ resource "azurerm_app_service" "appservice" {
 # This is required to enable outbound connectivity from app service.
 resource "azurerm_app_service_virtual_network_swift_connection" "vnetintegrationconnection" {
   for_each       = var.stamps
-  app_service_id = azurerm_app_service.appservice[each.key].id
+  app_service_id = azurerm_linux_web_app.appservice[each.key].id
   subnet_id      = azurerm_subnet.snet_app_outbound[each.key].id
 }

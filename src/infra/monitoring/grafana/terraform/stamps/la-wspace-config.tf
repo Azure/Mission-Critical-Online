@@ -4,7 +4,7 @@
 resource "azurerm_monitor_diagnostic_setting" "appservice" {
   for_each                   = var.stamps
   name                       = "${local.prefix}-${substr(each.value["location"], 0, 5)}-appdiag"
-  target_resource_id         = azurerm_app_service.appservice[each.key].id
+  target_resource_id         = azurerm_linux_web_app.appservice[each.key].id
   log_analytics_workspace_id = azurerm_log_analytics_workspace.log_analytics_workspace[each.key].id
 
   dynamic "log" {
@@ -157,7 +157,7 @@ resource "azurerm_monitor_diagnostic_setting" "vnet" {
 resource "azurerm_monitor_diagnostic_setting" "asp" {
   for_each                   = var.stamps
   name                       = "${local.prefix}-${substr(each.value["location"], 0, 5)}-aspdiag"
-  target_resource_id         = azurerm_app_service.asp[each.key].id
+  target_resource_id         = azurerm_service_plan.asp[each.key].id
   log_analytics_workspace_id = azurerm_log_analytics_workspace.log_analytics_workspace[each.key].id
 
   dynamic "log" {

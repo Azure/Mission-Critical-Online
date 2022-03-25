@@ -8,6 +8,11 @@ jobs:
   displayName: 'Build UI app'
   steps:
 
+  - task: NodeTool@0
+    displayName: 'Use Node v$(uiAppNodeVersion) for UI app'
+    inputs:
+      versionSpec: '$(uiAppNodeVersion)'
+
   - task: Npm@1
     displayName: 'NPM install'
     inputs:
@@ -26,3 +31,4 @@ jobs:
     inputs:
       targetPath: '${{ parameters.workingDirectory }}/dist'
       artifactName: 'uiApp'
+  

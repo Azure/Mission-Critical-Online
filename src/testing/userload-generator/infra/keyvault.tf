@@ -20,7 +20,7 @@ resource "azurerm_key_vault_access_policy" "devops_pipeline" {
   object_id = data.azurerm_client_config.current.object_id
 
   secret_permissions = [
-    "get", "list", "delete", "purge", "set", "backup", "restore", "recover"
+    "Get", "List", "Delete", "Purge", "Set", "Backup", "Restore", "Recover"
   ]
 }
 
@@ -31,7 +31,7 @@ resource "azurerm_key_vault_access_policy" "function_msi" {
   object_id = azurerm_user_assigned_identity.functions.principal_id
 
   secret_permissions = [
-    "get", "list"
+    "Get", "List"
   ]
 }
 

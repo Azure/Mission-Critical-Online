@@ -1,28 +1,23 @@
-resource "azurerm_linux_web_app_plan" "regional" {
+resource "azurerm_service_plan" "regional" {
   name                = "${var.prefix}-loadgen-${var.location}-func-asp"
   location            = var.location
   resource_group_name = var.resource_group_name
-  kind                = "FunctionApp"
-  reserved            = true
 
-  sku {
-    tier = "Dynamic"
-    size = "Y1"
-  }
+  os_type  = "Linux"
+  sku_name = "Y1"
 
   tags = var.default_tags
 }
 
-resource "azurerm_function_app" "regional" {
-  name                       = "${var.prefix}-loadgen-${var.location}-func"
-  location                   = var.location
-  resource_group_name        = var.resource_group_name
-  app_service_plan_id        = azurerm_linux_web_app_plan.regional.id
-  storage_account_name       = azurerm_storage_account.regional.name
-  storage_account_access_key = azurerm_storage_account.regional.primary_access_key
-  os_type                    = "linux"
-  version                    = "~4"
-  https_only                 = true
+resource "azurerm_linux_function_app" "regional" {
+  name                        = "${var.prefix}-loadgen-${var.location}-func"
+  location                    = var.location
+  resource_group_name         = var.resource_group_name
+  service_plan_id             = azurerm_service_plan.regional.id
+  storage_account_name        = azurerm_storage_account.regional.name
+  storage_account_access_key  = azurerm_storage_account.regional.primary_access_key
+  functions_extension_version = "~4"
+  https_only                  = true
 
   tags = var.default_tags
 
@@ -34,7 +29,10 @@ resource "azurerm_function_app" "regional" {
   key_vault_reference_identity_id = var.function_user_managed_identity_resource_id
 
   site_config {
-    linux_fx_version = "NODE|14"
+    # linux_fx_version = "NODE|14"
+    application_stack {
+      node_version = "14"
+    }
   }
 
   app_settings = merge(
@@ -50,6 +48,6 @@ resource "azurerm_function_app" "regional" {
 }
 
 data "azurerm_function_app_host_keys" "regional" {
-  name                = azurerm_function_app.regional.name
+  name                = azurerm_linux_function_app.regional.name
   resource_group_name = var.resource_group_name
 }

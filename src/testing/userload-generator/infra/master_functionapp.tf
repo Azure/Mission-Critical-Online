@@ -1,28 +1,22 @@
-resource "azurerm_linux_web_app_plan" "master" {
+resource "azurerm_service_plan" "master" {
   name                = "${local.prefix}-loadgen-master-func-asp"
   location            = azurerm_resource_group.deployment.location
   resource_group_name = azurerm_resource_group.deployment.name
-  kind                = "FunctionApp"
-  reserved            = true
-
-  sku {
-    tier = "Dynamic"
-    size = "Y1"
-  }
+  os_type             = "Linux"
+  sku_name            = "Y1"
 
   tags = local.default_tags
 }
 
-resource "azurerm_function_app" "master" {
-  name                       = "${local.prefix}-loadgen-master-func"
-  location                   = azurerm_resource_group.deployment.location
-  resource_group_name        = azurerm_resource_group.deployment.name
-  app_service_plan_id        = azurerm_linux_web_app_plan.master.id
-  storage_account_name       = azurerm_storage_account.master.name
-  storage_account_access_key = azurerm_storage_account.master.primary_access_key
-  os_type                    = "linux"
-  version                    = "~4"
-  https_only                 = true
+resource "azurerm_linux_function_app" "master" {
+  name                        = "${local.prefix}-loadgen-master-func"
+  location                    = azurerm_resource_group.deployment.location
+  resource_group_name         = azurerm_resource_group.deployment.name
+  service_plan_id             = azurerm_service_plan.master.id
+  storage_account_name        = azurerm_storage_account.master.name
+  storage_account_access_key  = azurerm_storage_account.master.primary_access_key
+  functions_extension_version = "~4"
+  https_only                  = true
 
   tags = local.default_tags
 
@@ -30,6 +24,8 @@ resource "azurerm_function_app" "master" {
     type         = "UserAssigned"
     identity_ids = [azurerm_user_assigned_identity.functions.id]
   }
+
+  site_config {}
 
   key_vault_reference_identity_id = azurerm_user_assigned_identity.functions.id
 

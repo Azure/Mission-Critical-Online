@@ -40,8 +40,6 @@ resource "azurerm_linux_web_app" "appservice" {
   site_config {
     always_on                   = true
     scm_use_main_ip_restriction = true
-    #linux_fx_version                        = "DOCKER|${var.wapp_container_image}"
-    #app_command_line                        = "docker run -p 3000:3000 -d --name=grafana ${var.wapp_container_image}"
     container_registry_use_managed_identity = true
 
     application_stack {

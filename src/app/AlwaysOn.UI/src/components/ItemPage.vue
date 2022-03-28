@@ -10,7 +10,7 @@
                <h1>{{ item.name }}</h1>
                <p>{{ item.description }}</p>
                <p>Price: ${{ item.price }}</p>
-               <p>Rating: {{ item.rating.averageRating }} ({{ item.rating.numberOfVotes }} vote{{ (item.rating.numberOfVotes > 1 || item.rating.numberOfVotes == 0) ? "s" : "" }})</p>
+               <p>Rating: {{ Math.round(item.rating.averageRating * 10)/10 }} ({{ item.rating.numberOfVotes }} vote{{ (item.rating.numberOfVotes > 1 || item.rating.numberOfVotes == 0) ? "s" : "" }})</p>
                <p class="rating-buttons" v-if="!ratedYet">
                   <button v-on:click="rate(1)" :disabled="ratedYet" id="rating-1">1</button>
                   <button v-on:click="rate(2)" :disabled="ratedYet" id="rating-2">2</button>

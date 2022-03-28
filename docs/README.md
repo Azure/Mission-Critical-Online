@@ -6,7 +6,7 @@
 
 ## Introduction to Azure Mission-Critical
 
-- [Introduction](https://github.com/Azure/Mission-Critical/blob/main/docs/introduction/README.md) (➡️ `Azure/Mission-Critical`)
+- [Introduction](https://github.com/Azure/Mission-Critical/blob/main/docs/Introduction.md) (➡️ `Azure/Mission-Critical`)
 
 ## Azure Mission-Critical Reference Implementation Guide
 

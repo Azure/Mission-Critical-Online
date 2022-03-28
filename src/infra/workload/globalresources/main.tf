@@ -14,7 +14,7 @@ provider "azurerm" {
 
     # Only in E2E can non-empty resource groups be deleted. This is not allowed in INT and PROD.
     resource_group {
-      prevent_deletion_if_contains_resources = var.environment == "e2e" ? "false" : "true"
+      prevent_deletion_if_contains_resources = var.environment == "e2e" ? false : true
     }
   }
 }

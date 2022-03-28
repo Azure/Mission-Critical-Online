@@ -41,7 +41,7 @@ namespace AlwaysOn.BackgroundProcessor
             .ConfigureAppConfiguration((context, config) =>
             {
                 // Load values from k8s CSI Key Vault driver mount point
-                config.AddKeyPerFile(directoryPath: "/mnt/secrets-store/..data/", optional: true, reloadOnChange: true);
+                config.AddKeyPerFile(directoryPath: "/mnt/secrets-store/", optional: true, reloadOnChange: true);
             })
             .ConfigureServices((hostContext, services) =>
             {

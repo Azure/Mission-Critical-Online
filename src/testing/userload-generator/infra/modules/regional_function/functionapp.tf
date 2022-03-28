@@ -29,7 +29,6 @@ resource "azurerm_linux_function_app" "regional" {
   key_vault_reference_identity_id = var.function_user_managed_identity_resource_id
 
   site_config {
-    # linux_fx_version = "NODE|14"
     application_stack {
       node_version = "14"
     }

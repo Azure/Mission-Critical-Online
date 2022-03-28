@@ -10,13 +10,7 @@ terraform {
 }
 
 provider "azurerm" {
-  features {
-
-    # Do not auto-generate some smart detection rules as this might lead to issues on destroy with non-TF managed resources
-    application_insights {
-      disable_generated_rule = true
-    }
-  }
+  features {}
 }
 
 # Random API key which needs to be identical between all stamps

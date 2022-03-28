@@ -30,7 +30,7 @@ Alternatively, there is a [cleanup script](/src/ops/scripts/Clean-StaleResources
 **Error:**
 
 ```console
-retrieving Diagnostics Categories for Resource "/subscriptions/[...]/frontDoors/afe2ece5c-global-fd": insights.DiagnosticSettingsCategoryClient#List: Failure responding to request: StatusCode=404 -- Original Error: autorest/azure: Service returned an error. Status=404 Code="ResourceNotFound" Message="The Resource 'Microsoft.Network/frontdoors/afe2ece5c-global-fd' under resource group 'afe2ece5c-global-rg' was not found. For more details please go to https://aka.ms/ARMResourceNotFoundFix"
+retrieving Diagnostics Categories for Resource "/subscriptions/[...]/frontDoors/afe******-global-fd": insights.DiagnosticSettingsCategoryClient#List: Failure responding to request: StatusCode=404 -- Original Error: autorest/azure: Service returned an error. Status=404 Code="ResourceNotFound" Message="The Resource 'Microsoft.Network/frontdoors/afe******-global-fd' under resource group 'afe******-global-rg' was not found. For more details please go to https://aka.ms/ARMResourceNotFoundFix"
 ```
 
 **Description:** Occurs on global deployment, when Terraform replaces global resources. Specifically on `data.azurerm_monitor_diagnostic_categories.frontdoor`.
@@ -38,6 +38,7 @@ retrieving Diagnostics Categories for Resource "/subscriptions/[...]/frontDoors/
 **Solution:** Run the failing step again.
 
 ---
+
 **Error:**
 
 ```console
@@ -49,6 +50,24 @@ Sorry, we are currently experiencing high demand in this region, and cannot fulf
 **Solution:** As a tactical solution, disable zone redundancy in the geolocation configuration. (`/src/infra/cosmosdb.tf` -> `dynamic "geo_location"` -> `"zone_redundant = false"`). Then *manually delete the failed Cosmos DB resource in the portal*. This will likely allow the deployment to succeed.
 
 As disabling zone redundancy is not a recommended solution for a production deployment, you should open an Azure Support Ticket to request quota for zone-redundant deployments for Cosmos DB in your required regions.
+
+---
+
+**Error:**
+
+```console
+Provisioning of resource(s) for container service afe******-<region>-aks in resource group afe******-stamp-<region>-rg failed. Message: Operation could not be completed as it results in exceeding approved Total Regional Cores quota.
+```
+
+Often times followed by more details about the affected region, the current usage and the additional required quota:
+
+```console
+Location: SwedenCentral, Current Limit: 100, Current Usage: 96, Additional Required: 8, (Minimum) New Limit Required: 104. 
+```
+
+**Description:** Occurs when a deployment requires more cores than the current quota allows.
+
+**Solution:** Either reduce the number of cores used, or request more quota for a given VM SKU size in a given region. See [regional quota requests](https://docs.microsoft.com/azure/azure-supportability/regional-quota-requests.) for more details.
 
 ### Deploy Workload stage
 

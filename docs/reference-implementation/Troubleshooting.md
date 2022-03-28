@@ -67,7 +67,7 @@ Location: SwedenCentral, Current Limit: 100, Current Usage: 96, Additional Requi
 
 **Description:** Occurs when a deployment requires more cores than the current quota allows.
 
-**Solution:** Either reduce the number of cores used, or request more quota for a given VM SKU size in a given region. See [regional quota requests](https://docs.microsoft.com/azure/azure-supportability/regional-quota-requests.) for more details.
+**Solution:** Either reduce the number of cores used, or request more quota for a given VM SKU size in a given region. See [regional quota requests](https://docs.microsoft.com/azure/azure-supportability/regional-quota-requests) for more details.
 
 ### Deploy Workload stage
 

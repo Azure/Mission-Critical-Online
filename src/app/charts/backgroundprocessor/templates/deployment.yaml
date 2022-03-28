@@ -51,7 +51,7 @@ spec:
               value: "30"
             - name: DOCKER_HEALTHCHECK_FILEPATH
               value: "/tmp/healthy"
-            - name: "DOTNET_USE_POLLING_FILE_WATCHER" # Docker is not sending file change notification reliably, this enables file system polling every 4 seconds (not configurable) and thus automatic configuration refresh
+            - name: "DOTNET_USE_POLLING_FILE_WATCHER" # Enables file system polling every 4 seconds (not configurable) when watching for configuration changes. CSI driver automatically updates secrets as files, but Docker is not sending file change notifications reliably
               value: "true"
         volumeMounts:
           - name: secrets-store-inline

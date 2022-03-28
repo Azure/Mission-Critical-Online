@@ -10,7 +10,13 @@ terraform {
 }
 
 provider "azurerm" {
-  features {}
+  features {
+
+    # Do not auto-generate some smart detection rules as this might lead to issues on destroy with non-TF managed resources
+    application_insights {
+      disable_generated_rule = true
+    }
+  }
 }
 
 data "azurerm_client_config" "current" {}

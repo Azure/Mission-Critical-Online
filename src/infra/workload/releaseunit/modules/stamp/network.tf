@@ -1,4 +1,4 @@
-# Dynamically calculate subnet addresses from the overall address space. Assumes (at least) a /20 address space
+# Dynamically calculate subnet addresses from the overall address space. Assumes (at least) a /22 address space
 # Uses the Hashicopr module "CIDR subnets" https://registry.terraform.io/modules/hashicorp/subnets/cidr/latest
 locals {
   netmask = tonumber(split("/", var.vnet_address_space)[1]) # Take the last part from the address space 10.0.0.0/16 => 16
@@ -11,8 +11,9 @@ module "subnet_addrs" {
   networks = [
     {
       name     = "kubernetes"
-      new_bits = 22 - local.netmask # For AKS we want a /22 sized subnet. So we calculate based on the provided input address space # Size: /22
+      new_bits = 22 - local.netmask # For AKS we want a /22 sized subnet. So we calculate based on the provided input address space
     }
+    # More subnets can be added here and terraform will dynamically calculate their CIDR ranges
   ]
 }
 

@@ -11,10 +11,8 @@ terraform {
 
 provider "azurerm" {
   features {
-
-    # Only in E2E can non-empty resource groups be deleted. This is not allowed in INT and PROD.
     resource_group {
-      prevent_deletion_if_contains_resources = var.environment != "e2e" ? true : false
+      prevent_deletion_if_contains_resources = false # Hardcoded to false (for all environments) as expression do not work at the moment
     }
   }
 }

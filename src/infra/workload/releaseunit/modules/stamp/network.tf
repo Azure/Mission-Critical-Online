@@ -68,8 +68,6 @@ resource "azurerm_subnet" "kubernetes" {
     "Microsoft.ContainerRegistry",
     "Microsoft.EventHub"
   ]
-
-  #enforce_private_link_endpoint_network_policies = true
 }
 
 # NSG - Assign default nsg to kubernetes-snet subnet

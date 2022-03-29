@@ -6,7 +6,7 @@ let Thresholds = datatable(MetricName: string, YellowThreshold: double, RedThres
 let timespanStart= todatetime(format_datetime(now(-2d), 'yyyy-MM-dd HH:ss')); // We need to remove any sub-second part from the start, otherwise the series are not to the seconds
 let timespanEnd = now(-2m); // there is some ingestion lag, so we account for this by stripping the last 2m
 //
-AzureDiagnostics
+let failureStats = AzureDiagnostics
 | where ResourceProvider == "MICROSOFT.KEYVAULT"
 // Ignore Authentication operations with a 401. This is normal when using Key Vault SDK, first an unauthenticated request is done then the response is used for authentication.
 | where Category=="AuditEvent" and not (OperationName == "Authentication" and httpStatusCode_d == 401)
@@ -17,12 +17,15 @@ AzureDiagnostics
 | extend ResultStatus = case ( ResultSignature == "", "Success",
                                ResultSignature == "OK", "Success",
                                ResultSignature == "Accepted", "Success",
-                               ResultSignature)
+                               ResultSignature);
+//
+let timespanStart= todatetime(format_datetime( todatetime(toscalar(failureStats| summarize min(TimeGenerated))), 'yyyy-MM-dd HH:ss'));
+let timespanEnd = now(-2m); // there is some ingestion lag, so we account for this by stripping the last 2m
+//
+failureStats 
 | make-series Value=countif(ResultStatus != "Success") default=0 on TimeGenerated from timespanStart to timespanEnd step 1m
 | mv-expand TimeGenerated, Value
 | extend TimeGenerated = todatetime(TimeGenerated), Value=toreal(Value), MetricName="failureCount"
 | lookup kind = inner Thresholds on MetricName
 | extend IsYellow = iff(todouble(Value) > YellowThreshold and todouble(Value) < RedThreshold, 1, 0)
 | extend IsRed = iff(todouble(Value) > RedThreshold, 1, 0)
-| project-reorder TimeGenerated, MetricName, Value, IsYellow, IsRed, YellowThreshold, RedThreshold
-| order by TimeGenerated, MetricName

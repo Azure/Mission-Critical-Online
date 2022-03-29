@@ -27,7 +27,7 @@ let Timeseries = AzureMetrics
 | where MetricName == "IncomingMessages"
 | extend ProcessingBacklog = iff(Total - ProcessedCount < 0, toreal(0), Total - ProcessedCount);
 //
-// Examining timegframe from series start to now-2m (ingestion delay)
+// Examining timeframe from series start to now-2m (ingestion delay)
 let timespanStart = todatetime(format_datetime( todatetime(toscalar(Timeseries | summarize min(TimeGenerated))), 'yyyy-MM-dd HH:ss'));
 let timespanEnd = now(-2m); // there is some ingestion lag, so we account for this by stripping the last 2m
 //

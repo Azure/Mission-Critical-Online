@@ -1,4 +1,3 @@
-
 // For that timeframe, compare the averages to the following threshold values:
 let Thresholds=datatable(MetricName: string, YellowThreshold: double, RedThreshold: double) [
     // Failed requests. Anything non-200. We allow a few more than 0 for user-caused errors like 404s. 
@@ -7,7 +6,7 @@ let Thresholds=datatable(MetricName: string, YellowThreshold: double, RedThresho
     "avgProcessingTime", 150, 500
     ];
 //
-let timespanStart= todatetime(format_datetime(now(-2d), 'yyyy-MM-dd HH:ss')); // We need to remove any sub-second part from the start, otherwise the series are not to the seconds
+let timespanStart= todatetime(format_datetime( todatetime(toscalar(AppRequests| summarize min(TimeGenerated))), 'yyyy-MM-dd HH:ss')); // We need to remove any sub-second part from the start, otherwise the series are not to the seconds
 let timespanEnd = now(-2m); // there is some ingestion lag, so we account for this by stripping the last 2m
 // Calculate average processing time for each request
 let avgProcessingTime = AppRequests

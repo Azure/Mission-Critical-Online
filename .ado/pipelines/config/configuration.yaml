@@ -7,7 +7,7 @@ variables:
 - name: 'terraformVersion'    # Terraform Version
   value: '1.1.7'
 - name: 'kubernetesVersion'   # kubernetes version used for aks clusters
-  value: '1.21.9'
+  value: '1.22.6'
 - name: 'helmVersion'         # helm package manager version
   value: 'v3.8.1'
 - name: 'ingressNginxVersion' # nginx ingress controller helm chart version
@@ -18,6 +18,8 @@ variables:
   value: '6.0.200'
 - name: 'chaosMeshVersion'    #  chaos-mesh chart version
   value: '2.1.3'
+- name: 'uiAppNodeVersion'    # nodejs version for the UI app
+  value: '16.x'
 
 - name: 'workloadNamespace'   # K8s namespace for workload deployment
   value: 'workload'

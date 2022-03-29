@@ -1,4 +1,4 @@
-# Dynamically calculate subnet addresses from the overall address space. Assumes (at least) a /20 address space
+# Dynamically calculate subnet addresses from the overall address space. Assumes (at least) a /22 address space
 # Uses the Hashicopr module "CIDR subnets" https://registry.terraform.io/modules/hashicorp/subnets/cidr/latest
 locals {
   netmask = tonumber(split("/", var.vnet_address_space)[1]) # Take the last part from the address space 10.0.0.0/16 => 16
@@ -11,12 +11,9 @@ module "subnet_addrs" {
   networks = [
     {
       name     = "kubernetes"
-      new_bits = 22 - local.netmask # For AKS we want a /22 sized subnet. So we calculate based on the provided input address space # Size: /22
-    },
-    {
-      name     = "private-endpoints"
-      new_bits = 27 - local.netmask # For the private endpoints we want a /27 sized subnet. So we calculate based on the provided input address space # Size: /27
+      new_bits = 22 - local.netmask # For AKS we want a /22 sized subnet. So we calculate based on the provided input address space
     }
+    # More subnets can be added here and terraform will dynamically calculate their CIDR ranges
   ]
 }
 
@@ -66,31 +63,17 @@ resource "azurerm_subnet" "kubernetes" {
   virtual_network_name = azurerm_virtual_network.stamp.name
   address_prefixes     = [module.subnet_addrs.network_cidr_blocks["kubernetes"]]
   service_endpoints = [
-    "Microsoft.Storage"
+    "Microsoft.Storage",
+    "Microsoft.AzureCosmosDB",
+    "Microsoft.KeyVault",
+    "Microsoft.ContainerRegistry",
+    "Microsoft.EventHub"
   ]
-
-  enforce_private_link_endpoint_network_policies = true
 }
 
 # NSG - Assign default nsg to kubernetes-snet subnet
 resource "azurerm_subnet_network_security_group_association" "kubernetes_default_nsg" {
   subnet_id                 = azurerm_subnet.kubernetes.id
-  network_security_group_id = azurerm_network_security_group.default.id
-}
-
-# Subnet for private endpoints
-resource "azurerm_subnet" "private_endpoints" {
-  name                 = "private-endpoints-snet"
-  resource_group_name  = azurerm_resource_group.stamp.name
-  virtual_network_name = azurerm_virtual_network.stamp.name
-  address_prefixes     = [module.subnet_addrs.network_cidr_blocks["private-endpoints"]]
-
-  enforce_private_link_endpoint_network_policies = true
-}
-
-# NSG - Assign default nsg to private-endpoints-snet subnet
-resource "azurerm_subnet_network_security_group_association" "private_endpoints_default_nsg" {
-  subnet_id                 = azurerm_subnet.private_endpoints.id
   network_security_group_id = azurerm_network_security_group.default.id
 }
 

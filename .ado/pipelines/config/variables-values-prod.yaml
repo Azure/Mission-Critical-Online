@@ -15,7 +15,6 @@ variables:
 - name: 'stampLocationsGrafana'
   value: '["eastus", "brazilsouth"]' # Check which regions are valid. There is a list in /src/infra/README.md
 
-
 # Terraform state variables
 - name:  'terraformResourceGroup'
   value: 'terraformstate-rg'         # <===== CHANGE THIS VALUE IF NEEDED

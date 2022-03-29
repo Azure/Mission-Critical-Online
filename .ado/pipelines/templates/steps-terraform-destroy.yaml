@@ -17,7 +17,6 @@ steps:
 
 - task: Bash@3
   displayName: 'Terraform destroy'
-  name: 'terraformdestroy'
   retryCountOnTaskFailure: 1
   inputs:
     workingDirectory: '${{ parameters.terraformWorkingDirectory }}'
@@ -25,6 +24,9 @@ steps:
     script: |
       # To have access to the input ARM_CLIENT_SECRET which was marked as secret, we need to explicitly reference it in the script
       export ARM_CLIENT_SECRET="$(ARM_CLIENT_SECRET)"
+
+      # Creates the tfvar files, if it does not exist. Otherwise terraform will fail
+      touch "variables-$(environment).tfvars"
 
       terraform destroy -auto-approve -input=false -parallelism=20 -var-file="variables-$(environment).tfvars" ${{ parameters.customAttributes }}
 

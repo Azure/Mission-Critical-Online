@@ -17,7 +17,7 @@ resource "azurerm_key_vault_access_policy" "devops_pipeline" {
   object_id = data.azurerm_client_config.current.object_id
 
   secret_permissions = [
-    "get", "list", "delete", "purge", "set", "backup", "restore", "recover"
+    "Get", "List", "Delete", "Purge", "Set", "Backup", "Restore", "Recover"
   ]
 }
 

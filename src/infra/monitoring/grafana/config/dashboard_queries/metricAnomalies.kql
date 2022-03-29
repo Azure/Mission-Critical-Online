@@ -3,6 +3,7 @@ PublicBlobStorageHealthStatus
 | union CatalogServiceHealthStatus
 | union BackgroundProcessorHealthStatus
 | union ClusterHealthStatus
+| union CheckpointStorageHealthStatus
 | union EventHubHealthStatus
 | where $__timeFilter(TimeGenerated)
 | where IsYellow > 0 or IsRed > 0

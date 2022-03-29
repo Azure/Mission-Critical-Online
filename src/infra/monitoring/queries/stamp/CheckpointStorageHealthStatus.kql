@@ -41,4 +41,4 @@ storageErrorSeries
 | lookup kind = inner Thresholds on MetricName
 | extend IsYellow = iff(todouble(Value) > YellowThreshold and todouble(Value) < RedThreshold, 1, 0)
 | extend IsRed = iff(todouble(Value) > RedThreshold, 1, 0)
-| project-reorder TimeGenerated, MetricName, Value, IsYellow, IsRed, YellowThreshold, RedThreshold
+| extend ComponentName="CheckpointStorage"

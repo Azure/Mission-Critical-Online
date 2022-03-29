@@ -22,7 +22,7 @@ let timespanEnd = now(-2m); // there is some ingestion lag, so we account for th
 failureStats 
 | make-series Value=countif(ResultStatus != "Success") default=0 on TimeGenerated from timespanStart to timespanEnd step 1m
 | mv-expand TimeGenerated, Value
-| extend TimeGenerated = todatetime(TimeGenerated), Value=toreal(Value), MetricName="failureCount"
+| extend TimeGenerated = todatetime(TimeGenerated), Value=toreal(Value), MetricName="failureCount", ComponentName="Keyvault"
 | lookup kind = inner Thresholds on MetricName
 | extend IsYellow = iff(todouble(Value) > YellowThreshold and todouble(Value) < RedThreshold, 1, 0)
 | extend IsRed = iff(todouble(Value) > RedThreshold, 1, 0)

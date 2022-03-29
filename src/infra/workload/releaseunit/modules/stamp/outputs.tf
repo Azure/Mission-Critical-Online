@@ -33,7 +33,7 @@ output "aks_cluster_name" {
 
 # Private Endpoint Subnet Address Range
 output "privatendpoints_addressrange" {
-  value = azurerm_subnet.private_endpoints.address_prefix
+  value = azurerm_subnet.private_endpoints.address_prefixes
 }
 
 # Name of the public Storage Account

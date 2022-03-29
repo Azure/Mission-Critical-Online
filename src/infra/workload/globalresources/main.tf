@@ -12,7 +12,8 @@ terraform {
 provider "azurerm" {
   features {
     resource_group {
-      prevent_deletion_if_contains_resources = false # Hardcoded to false (for all environments) as expression do not work at the moment
+      # Non-empty Resource Groups can only be deleted in E2E - in other envs this will fail
+      prevent_deletion_if_contains_resources = var.environment == "e2e" ? false : true
     }
   }
 }

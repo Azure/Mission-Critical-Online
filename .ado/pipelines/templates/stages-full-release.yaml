@@ -461,7 +461,7 @@ stages:
                   terraformStateFilename:             '$(terraformStateFileGlobal)'
                   terraformWorkingDirectory:          '$(workingDirectory)/globalresources'
                   customAttributes:           '-var=prefix="$(prefix)$(globalSuffix)"
-                                               -var=environment="{{ parameters.environment }}"
+                                               -var=environment="${{ parameters.environment }}"
                                                -var=branch="$(sourceBranch)"
                                                -var=queued_by="$(Build.QueuedBy)"
                                                -var=contact_email="$(contactEmail)"

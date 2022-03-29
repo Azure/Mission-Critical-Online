@@ -1,9 +1,9 @@
-(PublicBlobStorageHealthStatus | extend ComponentName="PublicBlobStorage")
-| union (KeyvaultHealthStatus | extend ComponentName="Keyvault")
-| union (CatalogServiceHealthStatus | extend ComponentName="CatalogService")
-| union (BackgroundProcessorHealthStatus | extend ComponentName="BackgroundProcessor")
-| union (ClusterHealthStatus | extend ComponentName="Cluster")
-| union (EventHubHealthStatus | extend ComponentName="EventHub")
+PublicBlobStorageHealthStatus
+| union KeyvaultHealthStatus
+| union CatalogServiceHealthStatus
+| union BackgroundProcessorHealthStatus
+| union ClusterHealthStatus
+| union EventHubHealthStatus
 | where $__timeFilter(TimeGenerated)
 | where IsYellow > 0 or IsRed > 0
 | extend Status=iif(IsRed == 1 ,'red', 'yellow')

@@ -2,6 +2,7 @@
 // This is the _lowest_ value of the CatalogService and BackgroundProcessor components
 BackgroundProcessorHealthStatus
 | union CatalogServiceHealthStatus
+| where TimeGenerated < ago(2m)
 | summarize YellowScore = max(IsYellow), RedScore = max(IsRed) by bin(TimeGenerated, 2m)
 | extend HealthScore = 1 - (YellowScore * 0.25) - (RedScore * 0.5)
 | order by TimeGenerated desc

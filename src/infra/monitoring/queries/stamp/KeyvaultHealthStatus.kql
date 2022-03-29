@@ -3,9 +3,6 @@ let Thresholds = datatable(MetricName: string, YellowThreshold: double, RedThres
     "failureCount", 3, 10
     ];
 //
-let timespanStart= todatetime(format_datetime(now(-2d), 'yyyy-MM-dd HH:ss')); // We need to remove any sub-second part from the start, otherwise the series are not to the seconds
-let timespanEnd = now(-2m); // there is some ingestion lag, so we account for this by stripping the last 2m
-//
 let failureStats = AzureDiagnostics
 | where ResourceProvider == "MICROSOFT.KEYVAULT"
 // Ignore Authentication operations with a 401. This is normal when using Key Vault SDK, first an unauthenticated request is done then the response is used for authentication.

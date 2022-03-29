@@ -1,7 +1,6 @@
 EventHubHealthStatus()
-| union CheckpointStorageHealthStatus()
 | where TimeGenerated < ago(2m)
 | summarize YellowScore = max(IsYellow), RedScore = max(IsRed) by TimeGenerated
 | extend HealthScore = 1 - (YellowScore * 0.25) - (RedScore * 0.5)
-| extend ComponentName = "EventHub", Dependencies = "CheckpointStorage"
+| extend ComponentName = "EventHub"
 | order by TimeGenerated desc

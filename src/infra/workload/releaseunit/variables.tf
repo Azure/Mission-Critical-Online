@@ -141,3 +141,9 @@ variable "global_storage_account_name" {
   description = "Name of the globally shared storage account, which is used for image storage"
   type        = string
 }
+
+variable "ai_adaptive_sampling" {
+  description = "Enable adaptive sampling in Application Insights. Setting this to false means that 100% of the telemetry will be collected."
+  type        = bool
+  default     = true
+}

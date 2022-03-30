@@ -238,7 +238,7 @@ jobs: # using jobs so they each run in parallel
             echo "*** Uploading UI app to storage account $($stamp.public_storage_account_name) in stamp $($stamp.location)"
 
             $keyVaultName = $stamp.key_vault_name
-            $appInsightsKey = $(az keyvault secret show --name APPINSIGHTS-INSTRUMENTATIONKEY --vault-name $keyVaultName --query "value" -o tsv)
+            $appInsightsConnString = $(az keyvault secret show --name APPLICATIONINSIGHTS-CONNECTION-STRING --vault-name $keyVaultName --query "value" -o tsv)
 
             # remove config.js file, which needs to be regenerated for each environment
             echo "*** Deleting the old config.js file"
@@ -247,7 +247,7 @@ jobs: # using jobs so they each run in parallel
             echo "*** Storing configuration to $configFilePath"
             # warning: make sure that these variable names are in sync with client code
             Add-Content -Path $configFilePath -Value "window.API_URL = `"/api`""
-            Add-Content -Path $configFilePath -Value "window.APPINSIGHTS_INSTRUMENTATIONKEY = `"$appInsightsKey`""
+            Add-Content -Path $configFilePath -Value "window.APPLICATIONINSIGHTS_CONNECTION_STRING = `"$appInsightsConnString`""
 
             $versionLabel = "$(riVariant)-$("$(Build.SourceBranch)" -Replace 'refs/heads/', '')-$(Build.BuildId)"
             echo "*** DEBUG: Setting VERSION_LABEL to $versionLabel"

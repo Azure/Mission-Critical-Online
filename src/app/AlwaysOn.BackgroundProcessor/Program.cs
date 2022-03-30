@@ -5,6 +5,7 @@ using AlwaysOn.Shared.Services;
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel;
+using Microsoft.ApplicationInsights.WorkerService;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -44,13 +45,13 @@ namespace AlwaysOn.BackgroundProcessor
             })
             .ConfigureServices((hostContext, services) =>
             {
-                var appinsightsKey = hostContext.Configuration[SysConfiguration.ApplicationInsightsKeyName];
+                // TODO: Transition Serilog AppInsights sink to use the connection string instead of Instrumentation Key, once that is fully supported
                 Log.Logger = new LoggerConfiguration()
                                     .ReadFrom.Configuration(hostContext.Configuration)
                                     .Enrich.FromLogContext()
                                     .WriteTo.Console(
                                             outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} {Level:u3}] {Message:lj} {Properties:j}{NewLine}{Exception}")
-                                    .WriteTo.ApplicationInsights(appinsightsKey, TelemetryConverter.Traces)
+                                    .WriteTo.ApplicationInsights(hostContext.Configuration[SysConfiguration.ApplicationInsightsInstrumentationKeyName], TelemetryConverter.Traces)
                                     .CreateLogger();
 
                 services.AddSingleton<SysConfiguration>();
@@ -60,9 +61,13 @@ namespace AlwaysOn.BackgroundProcessor
                     var sysConfig = sp.GetService<SysConfiguration>();
                     return new AlwaysOnCustomTelemetryInitializer($"{nameof(BackgroundProcessor)}-{sysConfig.AzureRegionShort}");
                 });
-                services.AddSingleton(typeof(ITelemetryChannel), new ServerTelemetryChannel() { StorageFolder = "/tmp/appinsightschannel" });
+                services.AddSingleton(typeof(ITelemetryChannel), new ServerTelemetryChannel() { StorageFolder = "/tmp" });
                 
-                services.AddApplicationInsightsTelemetryWorkerService(appinsightsKey);
+                services.AddApplicationInsightsTelemetryWorkerService(new ApplicationInsightsServiceOptions()
+                {
+                    ConnectionString = hostContext.Configuration[SysConfiguration.ApplicationInsightsConnStringKeyName],
+                    EnableAdaptiveSampling = bool.TryParse(hostContext.Configuration[SysConfiguration.ApplicationInsightsAdaptiveSamplingName], out bool result) ? result : true
+                });
 
                 services.AddSingleton<IDatabaseService, CosmosDbService>();
 

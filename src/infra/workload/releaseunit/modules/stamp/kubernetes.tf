@@ -28,7 +28,8 @@ resource "azurerm_kubernetes_cluster" "stamp" {
     vnet_subnet_id       = azurerm_subnet.kubernetes.id
     os_disk_type         = "Ephemeral"
     orchestrator_version = var.kubernetes_version
-    availability_zones   = [1, 2, 3]
+    
+    zones   = [1, 2, 3]
 
     upgrade_settings {
       max_surge = "33%"

@@ -4,12 +4,12 @@ data "azurerm_client_config" "current" {}
 # The following data sources are used for configuring LA workspace for individual services. 
 data "azurerm_monitor_diagnostic_categories" "asp" {
   for_each    = var.stamps
-  resource_id = azurerm_app_service_plan.asp[each.key].id
+  resource_id = azurerm_service_plan.asp[each.key].id
 }
 
 data "azurerm_monitor_diagnostic_categories" "appservice" {
   for_each    = var.stamps
-  resource_id = azurerm_app_service.appservice[each.key].id
+  resource_id = azurerm_linux_web_app.appservice[each.key].id
 }
 
 data "azurerm_monitor_diagnostic_categories" "pgprimary" {

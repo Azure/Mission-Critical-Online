@@ -114,11 +114,6 @@ jobs: # using jobs so they each run in parallel
             $fullContainerImageName = Get-Content -Path "$(Pipeline.Workspace)/catalogservice-containerImageName/catalogservice.txt"
             echo "*** Retrieved full container image name from artifact - $fullContainerImageName"
 
-            # Private Endpoints IP Address Range (currently not used)
-            # This can be used to limit an applications egress traffic. See networkPolicy.egressRange (helm chart) parameter for more.
-            # $privateEndpointsIPAddressRange = $stamp.privatendpoints_addressrange
-            # echo "*** Egress traffic will be restricted to $privateEndpointsIPAddressRange (using Network Policy)"
-
             # Apply workload CatalogService helm chart
             echo "*** Deploy workload CatalogService to $aksClusterName (in $aksClusterResourceGroup) via helm chart"
             echo "*** Using container image $fullContainerImageName"
@@ -194,11 +189,6 @@ jobs: # using jobs so they each run in parallel
 
             $fullContainerImageName = Get-Content -Path "$(Pipeline.Workspace)/backgroundprocessor-containerImageName/backgroundprocessor.txt"
             echo "*** Retrieved full container image name from artifact - $fullContainerImageName"
-
-            # Private Endpoints IP Address Range (currently not used)
-            # This can be used to limit an applications egress traffic. See networkPolicy.egressRange (helm chart) parameter for more.
-            # $privateEndpointsIPAddressRange = $stamp.privatendpoints_addressrange
-            # echo "*** Egress traffic will be restricted to $privateEndpointsIPAddressRange (using Network Policy)"
 
             # Apply workload BackgroundProcessor helm chart
             echo  "*** Deploy workload BackgroundProcessor to $aksClusterName (in $aksClusterResourceGroup) via helm chart"

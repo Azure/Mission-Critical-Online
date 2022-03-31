@@ -116,7 +116,7 @@ To manually force cert-manager to re-request the certificate you can delete the 
 # Check certificate status
 kubectl get certificates -n workload
 
-# Delete certificate (in FALSE state)
+# Delete certificate (if in `ready=FALSE` state). This will trigger cert-manager to create a new certificate request
 kubectl delete certificate/<certificatename> -n workload
 ```
 

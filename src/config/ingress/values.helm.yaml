@@ -3,6 +3,9 @@
 # Placesholders #..# will be replaced automatically
 
 controller:
+  securityContext:
+    readOnlyRootFilesystem: true # If a container does not need to write files, it should be run with a read-only filesystem. 
+    privileged: false # Running a container as privileged gives all capabilities to the container, and it also lifts all the limitations enforced by the device cgroup controller.
   autoscaling:
     enabled:     true
     minReplicas: 3
@@ -20,6 +23,6 @@ controller:
         prometheus.io/scrape: "true"
         prometheus.io/port: "10254"
   service:
-    type:           LoadBalancer
-    enableHttp:     true # enable plain http (req. for cert-manager)
-    enableHttps:    true  # enable https listener
+    type:        LoadBalancer
+    enableHttp:  true # enable plain http (req. for cert-manager)
+    enableHttps: true  # enable https listener

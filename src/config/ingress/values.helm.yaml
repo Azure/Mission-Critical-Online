@@ -1,15 +1,14 @@
 # NGINX Ingress Controller helm configuration
 # https://github.com/kubernetes/ingress-nginx/blob/master/charts/ingress-nginx/values.yaml
-# Placesholders #..# will be replaced automatically
 
 controller:
   securityContext:
     readOnlyRootFilesystem: true # If a container does not need to write files, it should be run with a read-only filesystem. 
     privileged: false # Running a container as privileged gives all capabilities to the container, and it also lifts all the limitations enforced by the device cgroup controller.
   autoscaling:
-    enabled:     true
-    minReplicas: 3
-    maxReplicas: 12 
+    enabled:     true # Enable autoscaling via horizontal pod autoscaler
+    minReplicas: 3 # Minimum number of nodes
+    maxReplicas: 12 # Maximum number of nodes
     targetCPUUtilizationPercentage: 75
     targetMemoryUtilizationPercentage: 75
   resources:

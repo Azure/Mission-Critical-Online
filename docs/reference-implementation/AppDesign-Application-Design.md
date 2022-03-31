@@ -18,7 +18,7 @@ In order to achieve high responsiveness for all operations, Azure Mission-Critic
 
 ![Competing consumers diagram](/docs/media/competing-consumers-diagram.png)
 
-*Image source: https://docs.microsoft.com/azure/architecture/patterns/competing-consumers*
+*Image source: [docs.microsoft.com](https://docs.microsoft.com/azure/architecture/patterns/competing-consumers)*
 
 - The current Azure Mission-Critical online reference implementation uses **Azure Event Hub** as the message queue but provides interfaces in code which enable the use of other messaging services if required (Azure Service Bus was successfully tested as an alternative solution).
 - **ASP.NET Core API** is used to implement the producer REST API.
@@ -41,15 +41,17 @@ There is no backchannel which communicates to the client if the operation comple
 This online reference implementation of Azure Mission-Critical uses a simple authentication scheme based on API keys for some restricted operations, such as creating new catalog items or deleting comments.
 More advanced scenarios such as user authentication and user roles are not in scope here.
 
-## Scalability
+## Scalability & Availability
 
-`CatalogService` as well as the `BackgroundProcessor` can scale in and out individually. Both services are stateless, deployed via Helm charts to each of the (regional) stamps, have proper requests and limits in place and have a pre-configured auto-scaling (HPA) rule in place.
+The `CatalogService` as well as the `BackgroundProcessor` workload component can scale in and out individually. Both services are stateless, packaged as and deployed via Helm charts to each of the (regional) stamps, have proper requests and limits in place and have a pre-configured auto-scaling (HPA) rule in place.
 
 `CatalogService` performance has a direct impact on the end user experience. The service is expected to be able to scale out automatically to provide a positive user experience and performance at any time.
 
-`CatalogService` has at least 3 instances per cluster to spread across three Availability Zones per Azure Region. Each instance requests one CPU core and a given amount of memory based on upfront load testing. Each instance is expected to serve ~250 requests/second based on a standardized usage pattern. `CatalogService` has a 3:1 relationship to the nginx-based Ingress controller.
+The `CatalogService` has at least 3 instances per cluster to spread automatically across three Availability Zones per Azure Region. Each instance requests one CPU core and a given amount of memory based on upfront load testing. Each instance is expected to serve ~250 requests/second based on a standardized usage pattern. `CatalogService` has a 3:1 relationship to the nginx-based Ingress controller.
 
 The `BackgroundProcessor` service has very different requirements and is considered a background worker which has no direct impact on the user experience. As such, `BackgroundProcessor` has a different auto-scaling configuration than `CatalogService` and it can scale between 2 and 32 instances (which matches the max. no. of EventHub partitions). The ratio between `CatalogService` and `BackgroundProcessor` is around 20:2.
+
+All workload components as well as supporting services like the `HealthService` are configured with at least 2 or in case of the `CatalogService` 3 instances (replicas) per cluster. This is supposed to prevent certain availability issues and to ensure that the service is always available. The instances are automatically spread across nodes and therefore also across Availability Zones. In addition to that does each component have [Pod Disruption Budgets (PDBs)](https://docs.microsoft.com/azure/aks/operator-best-practices-scheduler#plan-for-availability-using-pod-disruption-budgets) configured to ensure that a minimum number of instances is always available.
 
 ---
 

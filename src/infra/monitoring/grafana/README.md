@@ -55,6 +55,7 @@ WebsiteHealthScore
 | union KeyvaultHealthScore
 | union CatalogServiceHealthScore
 | union CheckpointStorageHealthScore
+| union EventHubHealthScore
 | union BackgroundProcessorHealthScore
 | union ClusterHealthScore
 ```
@@ -67,7 +68,8 @@ This gives the following result, which is the input for the health model panel:
 | ListCatalogItemsUserFlow | 1                   | CatalogService,KeyVault               |
 | AddCommentUserFlow       | 1                   | EventHub,BackgroundProcessor,KeyVault       |
 | CatalogService           | 1                   | Cluster                             |
-| BackgroundProcessor      | 1                   | Cluster                             |
+| BackgroundProcessor      | 1                   | Cluster,EventHub,CheckpointStorage  |
+| CheckpointStorage        | 1                   |                                     |
 | EventHub                 | 1                   |                                     |
 | KeyVault                 | 1                   |                                     |
 | Cluster                  | 1                   |                                     |

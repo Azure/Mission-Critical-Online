@@ -787,39 +787,6 @@
           "refId": "A",
           "subscription": "",
           "subscriptions": []
-        },
-        {
-          "appInsights": {
-            "dimension": [],
-            "metricName": "select",
-            "timeGrain": "auto"
-          },
-          "azureLogAnalytics": {
-            "query": "WebsiteHealthScore\n| union AddCommentUserFlowHealthScore\n| union ListCatalogItemsUserFlowHealthScore\n| union ShowStaticContentUserFlowHealthScore\n| union PublicBlobStorageHealthScore\n| union KeyvaultHealthScore\n| union CatalogServiceHealthScore\n| union BackgroundProcessorHealthScore\n| union ClusterHealthScore \n| summarize arg_max(TimeGenerated, *) by ComponentName,Dependencies\n| project-away TimeGenerated\n| mv-expand Dependencies = split(Dependencies, \",\") to typeof(string)\n| project id=strcat(ComponentName,Dependencies), source=ComponentName, target=Dependencies\n| where target != \"\"",
-            "resource": "$StampADataSource",
-            "resultFormat": "time_series",
-            "workspace": ""
-          },
-          "azureMonitor": {
-            "aggOptions": [],
-            "dimensionFilter": "*",
-            "dimensionFilters": [],
-            "timeGrain": "auto",
-            "timeGrains": [],
-            "top": "10"
-          },
-          "azureResourceGraph": {
-            "resultFormat": "table"
-          },
-          "hide": false,
-          "insightsAnalytics": {
-            "query": "",
-            "resultFormat": "time_series"
-          },
-          "queryType": "Azure Log Analytics",
-          "refId": "B",
-          "subscription": "",
-          "subscriptions": []
         }
       ],
       "title": "Solution Health Model",

@@ -88,8 +88,9 @@ Deployment of service [HealthService | BackgroundProcessor | CatalogService] fai
 ```console
 certificate for catalogservice-ingress-secret pending.. 
 Deployment not ready. Retrying... 1/5
-[..]
-
+..
+Deployment not ready. Retrying... 5/5
+##[error]Script failed with exit code: 1
 ```
 
 **Description:** The "Install workload CatalogService on AKS clusters" step actively monitors the provisioning of a LetsEncrypt certificate for the ingress. If the certificate is not ready, or cannot successfully provisioned this task will fail.

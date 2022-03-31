@@ -81,6 +81,34 @@ Deployment of service [HealthService | BackgroundProcessor | CatalogService] fai
 
 **Solution:** Re-run the failing step - there's a high probability that it will work. If not on second run, investigate pod health (look at AKS logs, potential error messages from deployment etc.).
 
+---
+
+**Error:** Deploy CatalogService workload / Install workload CatalogService on AKS clusters failed
+
+```console
+certificate for catalogservice-ingress-secret pending.. 
+Deployment not ready. Retrying... 1/5
+[..]
+
+```
+
+**Description:** The "Install workload CatalogService on AKS clusters" step actively monitors the provisioning of a LetsEncrypt certificate for the ingress. If the certificate is not ready, or cannot successfully provisioned this task will fail.
+
+**Solution:** This is most of the time caused by hitting LetsEncrypt thresholds (see [Rate Limits](https://letsencrypt.org/docs/rate-limits/) for more details) for certificate provisioning. You can try to re-run the step, or wait for the certificate to be ready.
+
+```console
+# Check certificate status
+kubectl get certificates -n workload
+
+# Check certificate request status
+kubectl get certificaterequests -n workload
+
+# Check cert-manager logs for more details
+kubectl logs deploy/cert-manager -n cert-manager 
+```
+
+Relevant log events are for example `cert-manager/certificates-trigger "msg"="Not re-issuing certificate as an attempt has been made in the last hour" "key"="workload/catalogservice-ingress-secret" "retry_delay"=3599055978096`.
+
 ### Testing stages
 
 **Error:**

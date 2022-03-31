@@ -1,6 +1,7 @@
 using AlwaysOn.Shared;
 using AlwaysOn.Shared.Interfaces;
 using AlwaysOn.Shared.Services;
+using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel;
@@ -34,8 +35,11 @@ namespace AlwaysOn.HealthService
             services.AddMemoryCache();
 
             services.AddSingleton(typeof(ITelemetryChannel),
-                                new ServerTelemetryChannel() { StorageFolder = "/tmp/appinsightschannel" });
-            services.AddApplicationInsightsTelemetry(Configuration[SysConfiguration.ApplicationInsightsKeyName]);
+                                new ServerTelemetryChannel() { StorageFolder = "/tmp" });
+            services.AddApplicationInsightsTelemetry(new ApplicationInsightsServiceOptions()
+            {
+                ConnectionString = Configuration[SysConfiguration.ApplicationInsightsConnStringKeyName]
+            });
 
             services.AddSingleton<IDatabaseService, CosmosDbService>();
 

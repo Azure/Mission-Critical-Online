@@ -1,6 +1,5 @@
 // Return the health status of the cluster. 
 let _ResourceType = "CONTAINERSERVICE/MANAGEDCLUSTERS"; // Azure resource type to filter on
-let _Interval = 2d;
 let Thresholds=datatable(MetricName: string, YellowThreshold: double, RedThreshold: double) [
     // Network errors in:
     "err_in", 0, 5,
@@ -18,61 +17,64 @@ let Thresholds=datatable(MetricName: string, YellowThreshold: double, RedThresho
     "pod_avg_cpu_utilization", 80, 90,
     ];
 //
-let podCpuLimits=
-Perf
+let podCpuLimits = Perf
 | where ObjectName == 'K8SContainer'
 | where CounterName == "cpuLimitNanoCores"
 | extend PodName = extract("^.+/(.+)$", 1, InstanceName)
-| take 100
-| summarize cpuLimit=max(CounterValue) by PodName;
-InsightsMetrics
-| where TimeGenerated > ago(_Interval)
+| summarize cpuLimit=max(CounterValue) by PodName, bin(TimeGenerated, 1m);
+//
+let insightsMetrics = InsightsMetrics
 | project-rename MetricName=Name
-| lookup kind=inner Thresholds on MetricName
 | extend NodeName = extract("([a-z0-9-]*)(-)([a-z0-9]*)$", 3, Computer) // Add a column for the name of the cluster node
-| project TimeGenerated, NodeName, MetricName, Value=Val
+| project TimeGenerated, NodeName, MetricName, Value=toreal(Val)
 | union (
     AzureMetrics
-    | where TimeGenerated > ago(_Interval)
     | where extract("(PROVIDERS/MICROSOFT.)([A-Z]*/[A-Z]*)", 2, ResourceId) == _ResourceType
-    | project TimeGenerated, MetricName, Value=Average
-    | lookup kind=inner Thresholds on MetricName
-    )
-| union (
+    | project TimeGenerated, MetricName, Value=toreal(Average)
+    );
+//
+let scaleMetrics = 
     // Query HPA auto scaling to see if we are getting close to the max scale out settings
     InsightsMetrics
-    | where TimeGenerated > ago(_Interval)
     | where Name == "kube_hpa_status_current_replicas"
     | extend TagsDynamic = parse_json(Tags)
     | extend Service = extract("(.+)-autoscaler", 1, tostring(TagsDynamic['hpa']))
     | where Service == "catalogservice" or Service == "backgroundprocessor"
     | extend maxReplica = TagsDynamic['spec_max_replicas']
     | extend PercentageAutoscaled = Val / maxReplica * 100
-    | project TimeGenerated, Service, Value=PercentageAutoscaled, currentReplicas=strcat(toint(Val)," / ", maxReplica), MetricName="autoscaled_percentage"
-    | lookup kind=inner Thresholds on MetricName
-)
-| union (
+    | project TimeGenerated, Service, Value=toreal(PercentageAutoscaled), currentReplicas=strcat(toint(Val)," / ", maxReplica), MetricName="autoscaled_percentage";
+//
+let podRestartMetrics = 
     // Count number of pod restarts per service
     KubePodInventory
-    | where TimeGenerated > ago(_Interval)
     | where Namespace == "workload"
     | extend Service = extract("(.+)-deploy.", 1, ControllerName)
-    | summarize Value=toreal(sum(PodRestartCount)) by TimeGenerated, Service, MetricName="pod_restart_count"
-    | lookup kind=inner Thresholds on MetricName
-)
-| union (
+    | extend MetricName="pod_restart_count", Value=toreal(PodRestartCount);
+    //| summarize Value=toreal(sum(PodRestartCount)) by TimeGenerated, Service, MetricName="pod_restart_count", bin(TimeGenerated, 1m);
+//
+let cpuUtilizationMetrics = 
     Perf
-    | where TimeGenerated > ago(_Interval)
     | where ObjectName == 'K8SContainer'
     | where InstanceName endswith "catalogservice" or InstanceName endswith "backgroundprocessor"
     | extend Service= extract("^.+/(.+)$", 1, InstanceName)
     | where CounterName == "cpuUsageNanoCores" //or CounterName == "cpuLimitNanoCores"
-    | summarize Value=avg(CounterValue) by bin(TimeGenerated, 1m), Service
+    //| summarize Value=avg(CounterValue) by bin(TimeGenerated, 1m), Service
     | lookup kind = inner podCpuLimits on $left.Service == $right.PodName
-    | extend Value=Value / cpuLimit * 100, MetricName="pod_avg_cpu_utilization"
-    | project-away cpuLimit
-    | lookup kind=inner Thresholds on MetricName
-)
+    | extend Value=toreal(CounterValue / cpuLimit * 100), MetricName="pod_avg_cpu_utilization"
+    | project-away cpuLimit;
+//
+// Examining timeframe from series start to now-2m (ingestion delay)
+let timespanStart = todatetime(format_datetime( todatetime(toscalar(AzureMetrics | summarize min(TimeGenerated))), 'yyyy-MM-dd HH:ss'));
+let timespanEnd = now(-2m); // there is some ingestion lag, so we account for this by stripping the last 2m
+//
+insightsMetrics 
+| union scaleMetrics 
+| union podRestartMetrics 
+| union cpuUtilizationMetrics
+| make-series Value=max(Value) default=0 on TimeGenerated from timespanStart to timespanEnd step 1m by MetricName
+| mv-expand TimeGenerated, Value
+| extend TimeGenerated = todatetime(TimeGenerated), Value=toreal(Value)
+| lookup kind=inner Thresholds on MetricName
 | extend IsYellow = iff(Value > YellowThreshold and Value < RedThreshold, 1, 0)
 | extend IsRed = iff(Value > RedThreshold, 1, 0)
-| union (datatable(IsYellow: long, IsRed: long)[0, 0]) // Needed to ensure there is at least one result row to parse in the dashboard
+| extend ComponentName="Cluster"

@@ -1,0 +1,41 @@
+// Returns the health status of an event hub. 
+// Currently we only look at the processingbacklog, i.e. the number of messages that comes in minus messages that go out. 
+let Thresholds = datatable(MetricName: string, YellowThreshold: double, RedThreshold: double) [
+    // Difference between incoming and outgoing messages:
+    "ProcessingBacklog", 3, 10
+    ];
+//
+let Timeseries = AzureMetrics
+| where ResourceProvider == "MICROSOFT.EVENTHUB"
+| where MetricName == "IncomingMessages" or MetricName == "OutgoingMessages"
+| order by TimeGenerated,ResourceId desc
+// Each row is either IncomingMessages or OutgoingMessages. Depending on that, the value we're looking for may be before or after the current row.
+| extend ProcessedCount = iff(MetricName=="IncomingMessages", // If this is an 'IncomingMessages' row, then:
+                                // The next or previous row on the same time and resource should be the OutgoingMessages count
+                                iff(next(MetricName)=="OutgoingMessages" // if next row is 'Outgoing' for same time and resource...
+                                        and next(TimeGenerated) == TimeGenerated 
+                                        and next(ResourceId) == ResourceId, 
+                                    next(Total), // then we want that value
+                                    iff(prev(MetricName)=="OutgoingMessages"   // If we're here then it wasnt the next, so maybe the previous row:
+                                        and prev(TimeGenerated) == TimeGenerated
+                                        and prev(ResourceId) == ResourceId,
+                                        prev(Total), // It was the previous, so we take that one
+                                        toreal(0) // It wasn't the previous either! oh oh, there were no messages processed
+                                    )
+                                ),
+                                toreal(-1)) // Otherwise this is an 'OutgoingMessage' row and we don't care
+| where MetricName == "IncomingMessages"
+| extend ProcessingBacklog = iff(Total - ProcessedCount < 0, toreal(0), Total - ProcessedCount);
+//
+// Examining timeframe from series start to now-2m (ingestion delay)
+let timespanStart = todatetime(format_datetime( todatetime(toscalar(Timeseries | summarize min(TimeGenerated))), 'yyyy-MM-dd HH:ss'));
+let timespanEnd = now(-2m); // there is some ingestion lag, so we account for this by stripping the last 2m
+//
+Timeseries 
+| make-series Value=sum(ProcessingBacklog) default=double(null) on TimeGenerated from timespanStart to timespanEnd step 1m
+| extend Value = series_fill_forward(Value) // Use the last value for any missing points
+| mv-expand TimeGenerated, Value
+| extend TimeGenerated = todatetime(TimeGenerated), Value=toreal(Value), MetricName='ProcessingBacklog', ComponentName="EventHub"
+| lookup kind=inner Thresholds on MetricName
+| extend IsYellow = iff(Value> YellowThreshold and Value < RedThreshold, 1, 0)
+| extend IsRed = iff(Value > RedThreshold, 1, 0)

@@ -93,9 +93,9 @@ Deployment not ready. Retrying... 5/5
 ##[error]Script failed with exit code: 1
 ```
 
-**Description:** The "Install workload CatalogService on AKS clusters" step actively monitors the provisioning of a LetsEncrypt certificate for the ingress. If the certificate is not ready, or cannot successfully provisioned this task will fail.
+**Description:** The "Install workload CatalogService on AKS clusters" step actively monitors the provisioning of a LetsEncrypt certificate for the ingress during the installation of the CatalogService helm chart. If the certificate is not ready, or cannot successfully provisioned this task will fail.
 
-**Solution:** This is most of the time caused by hitting LetsEncrypt thresholds (see [Rate Limits](https://letsencrypt.org/docs/rate-limits/) for more details) for certificate provisioning. You can try to re-run the step, or wait for the certificate to be ready.
+**Solution:** This is most of the time caused by hitting LetsEncrypt thresholds (see [Rate Limits](https://letsencrypt.org/docs/rate-limits/) for more details) for certificate provisioning. You can try to re-run the step, or wait for the certificate to be ready. The following commands can help to investigate the issue further:
 
 ```console
 # Check certificate status
@@ -109,6 +109,16 @@ kubectl logs deploy/cert-manager -n cert-manager
 ```
 
 Relevant log events are for example `cert-manager/certificates-trigger "msg"="Not re-issuing certificate as an attempt has been made in the last hour" "key"="workload/catalogservice-ingress-secret" "retry_delay"=3599055978096`.
+
+To manually force cert-manager to re-request the certificate you can delete the existing one:
+
+```console
+# Check certificate status
+kubectl get certificates -n workload
+
+# Delete certificate (in FALSE state)
+kubectl delete certificate/<certificatename> -n workload
+```
 
 ### Testing stages
 

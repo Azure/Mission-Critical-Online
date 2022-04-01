@@ -64,7 +64,7 @@ These environments are deployed using the E2E validation pipeline. They are eith
 
 ## Permanent
 
-These are `integration` (`int`) and `production` (`prod`) environments and live continuously i.e. not destroyed. They also use fixed domain names like *int.always-on.app*. In a real-world scenario, customers would probably also add a `staging` (or "pre-prod") environment. This would be used to deploy and validate `release/*` branches with the same update process as in `prod` (i.e. blue/green deployment). Azure Mission-Critical does not have a staging environment simply for cost reasons.
+These are `integration` (`int`) and `production` (`prod`) environments and live continuously i.e. not destroyed. They also use fixed domain names like *int.mission-critical.app*. In a real-world scenario, customers would probably also add a `staging` (or "pre-prod") environment. This would be used to deploy and validate `release/*` branches with the same update process as in `prod` (i.e. blue/green deployment). Azure Mission-Critical does not have a staging environment simply for cost reasons.
 
 ### Integration (int)
 

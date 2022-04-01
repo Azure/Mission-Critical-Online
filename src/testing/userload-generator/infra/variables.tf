@@ -28,7 +28,7 @@ variable "queued_by" {
 variable "targeturl" {
   description = "Target URL"
   type        = string
-  default     = "https://www.int.shop.always-on.app"
+  default     = "https://www.int.shop.mission-critical.app"
 }
 
 variable "regional_functions_workers" {

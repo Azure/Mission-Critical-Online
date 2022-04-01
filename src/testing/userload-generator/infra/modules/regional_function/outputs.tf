@@ -1,5 +1,5 @@
 output "function_name" {
-  value = azurerm_function_app.regional.name
+  value = azurerm_linux_function_app.regional.name
 }
 
 output "function_host_key" {

@@ -25,7 +25,7 @@ variable "queued_by" {
 variable "targeturl" {
   description = "Target URL"
   type        = string
-  default     = "https://www.int.always-on.app"
+  default     = "https://www.int.mission-critical.app"
 }
 
 variable "locust_headless" {

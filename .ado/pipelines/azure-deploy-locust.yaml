@@ -24,7 +24,7 @@ parameters:
 - name: loadTestTargetUrl
   displayName: 'Loadtest Target URL (can be overriden later)'
   type: string
-  default: "https://www.int.shop.always-on.app"
+  default: "https://www.int.shop.mission-critical.app"
 
 variables:
 - template: config/configuration.yaml # contains version numbers and global configuration settings

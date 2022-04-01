@@ -31,11 +31,6 @@ output "aks_cluster_name" {
   value = azurerm_kubernetes_cluster.stamp.name
 }
 
-# Private Endpoint Subnet Address Range
-output "privatendpoints_addressrange" {
-  value = azurerm_subnet.private_endpoints.address_prefix
-}
-
 # Name of the public Storage Account
 output "public_storage_account_name" {
   value = azurerm_storage_account.public.name

@@ -106,3 +106,9 @@ variable "api_key" {
   type        = string
   sensitive   = true
 }
+
+variable "ai_adaptive_sampling" {
+  description = "Enable adaptive sampling in Application Insights. Setting this to false means that 100% of the telemetry will be collected."
+  type        = bool
+  default     = true
+}

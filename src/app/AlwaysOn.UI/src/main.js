@@ -11,15 +11,15 @@ import CommentService from './services/comment-service'
 import RatingService from './services/rating-service'
 
 const appInsights = new ApplicationInsights(
-{ 
+{
    config: {
-      instrumentationKey: window.APPINSIGHTS_INSTRUMENTATIONKEY,
+      connectionString: window.APPLICATIONINSIGHTS_CONNECTION_STRING,
       enableCorsCorrelation: true,
       enableRequestHeaderTracking: true,
       enableResponseHeaderTracking: true,
       disableFetchTracking: false,
       enableAutoRouteTracking: true
-   } 
+   }
 });
 
 appInsights.loadAppInsights();

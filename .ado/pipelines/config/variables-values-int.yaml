@@ -11,6 +11,9 @@ variables:
 - name: 'stampLocations'
   value: '["swedencentral", "brazilsouth"]' # Check which regions are valid. There is a list in /src/infra/README.md
 
+- name: 'stampLocationsGrafana'
+  value: '["eastus", "brazilsouth"]' # Check which regions are valid. There is a list in /src/infra/README.md
+
 # Terraform state variables
 - name:  'terraformResourceGroup'
   value: 'terraformstate-rg'        # <===== CHANGE THIS VALUE IF NEEDED
@@ -21,7 +24,7 @@ variables:
 - name: 'envDnsZoneRG'
   value: 'ao-dns-rg'                # <===== CHANGE THIS OR LEAVE THE VALUE BLANK
 - name: 'envDomainName'
-  value: 'int.shop.always-on.app'   # <===== CHANGE THIS OR LEAVE THE VALUE BLANK
+  value: 'int.shop.mission-critical.app'   # <===== CHANGE THIS OR LEAVE THE VALUE BLANK
 
 # Other settings
 - name:  'contactEmail'

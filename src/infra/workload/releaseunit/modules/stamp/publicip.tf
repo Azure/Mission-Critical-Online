@@ -8,5 +8,7 @@ resource "azurerm_public_ip" "aks_ingress" {
 
   domain_name_label = "${local.prefix}-cluster"
 
+  zones = [ "1", "2", "3" ]
+
   tags = var.default_tags
 }

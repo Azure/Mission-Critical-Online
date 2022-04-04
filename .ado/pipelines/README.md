@@ -77,7 +77,6 @@ Environment config files are stored in `.ado/pipelines/config` and are named `va
 | envDomainName | OPTIONAL: Name of the Azure DNS Zone. Not required if you do not plan to use a custom DNS name | example.com |
 | contactEmail | E-mail alias used for alerting. **Be careful which address you put in here as it will potentially receive a lot of notification emails** | alwaysonappnet@example.com |
 
-
 ## Service Connections
 
 All pipelines are using Azure DevOps service connections to connect to Microsoft Azure. Access to these service connections is limited and needs to be granted on a per-pipeline level.

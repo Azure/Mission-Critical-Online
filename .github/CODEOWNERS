@@ -1,10 +1,2 @@
 # Owners of repository
-/.github/CODEOWNERS @calcof @hjscherer
-/README.md @calcof @hjscherer
-
-# Owners of reference implementation docs
-/docs/ @calcof @sebader @msimecek @heoelri @hjscherer @nielsams
-
-# Owners of reference implementation technical artifacts
-/src/ @calcof @sebader @msimecek @heoelri @hjscherer @nielsams
-/.ado/ @calcof @sebader @msimecek @heoelri @hjscherer @nielsams
+* @calcof @azure/alwayson-vteam

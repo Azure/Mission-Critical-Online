@@ -3,7 +3,7 @@ kind: PodDisruptionBudget
 metadata:
   name: {{ .Chart.Name }}-pdb
 spec:
-  minAvailable: 2
+  minAvailable: 1
   selector:
     matchLabels:
       app: {{ .Chart.Name }}

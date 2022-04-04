@@ -1,6 +1,6 @@
 # Owners of repository
-/.github/CODEOWNERS @calcof
-/README.md @calcof
+/.github/CODEOWNERS @calcof @hjscherer
+/README.md @calcof @hjscherer
 
 # Owners of reference implementation docs
 /docs/ @calcof @sebader @msimecek @heoelri @hjscherer @nielsams

@@ -14,6 +14,7 @@ jobs:
 
   - task: AzureCLI@2
     displayName: 'Install ingress-nginx $(ingressNginxVersion) on AKS clusters'
+    retryCountOnTaskFailure: 1
     inputs:
       azureSubscription: $(azureServiceConnection)
       scriptType: pscore
@@ -54,6 +55,7 @@ jobs:
 
   - task: AzureCLI@2
     displayName: 'Configure OMSAgent (Container Insights) on AKS clusters'
+    retryCountOnTaskFailure: 1
     inputs:
       azureSubscription: $(azureServiceConnection)
       scriptType: pscore
@@ -80,6 +82,7 @@ jobs:
 
   - task: AzureCLI@2
     displayName: 'Install cert-manager $(certManagerVersion) on AKS clusters'
+    retryCountOnTaskFailure: 1
     inputs:
       azureSubscription: $(azureServiceConnection)
       scriptType: pscore
@@ -118,6 +121,7 @@ jobs:
 
   - task: AzureCLI@2
     displayName: 'Install KeyVault CSI driver on AKS clusters'
+    retryCountOnTaskFailure: 1
     inputs:
       azureSubscription: $(azureServiceConnection)
       scriptType: pscore
@@ -169,6 +173,7 @@ jobs:
   - ${{ if eq(parameters.runChaosTesting, 'true') }}:
     - task: AzureCLI@2
       displayName: "Install Chaos Mesh $(chaosMeshVersion) on AKS clusters"
+      retryCountOnTaskFailure: 1
       inputs:
         azureSubscription: $(azureServiceConnection)
         scriptType: pscore

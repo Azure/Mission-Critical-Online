@@ -9,7 +9,7 @@ metadata:
     helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
   annotations:
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "120"   #  Set timout to read from the backend pods to 120s. Cosmos DB retries can go up to 60s
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "120"   #  Set timeout to read from the backend pods to 120s. Cosmos DB retries can go up to 60s
     nginx.ingress.kubernetes.io/use-regex: "true"
     # Rewrite for the Location response header. Replaces the internal FQDN of the cluster with the base URL of the environment
     # Docs: https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/#proxy-redirect

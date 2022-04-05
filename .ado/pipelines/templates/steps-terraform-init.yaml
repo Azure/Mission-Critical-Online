@@ -8,6 +8,7 @@ steps:
 # Install Terraform tooling
 - task: Bash@3
   displayName: 'Install Terraform CLI v$(terraformVersion)'
+  retryCountOnTaskFailure: 1
   inputs:
     targetType: 'inline'
     script: |
@@ -21,6 +22,7 @@ steps:
 # https://github.com/Microsoft/azure-pipelines-tasks/issues/9554#issuecomment-526391527
 - task: AzureCLI@2
   displayName: 'Set Terraform Backend config env vars'
+  retryCountOnTaskFailure: 1
   inputs:
     azureSubscription: $(azureServiceConnection)
     addSpnToEnvironment: true
@@ -41,6 +43,7 @@ steps:
 
 - task: Bash@3
   displayName: 'Terraform init'
+  retryCountOnTaskFailure: 1
   inputs:
     workingDirectory: ${{ parameters.terraformWorkingDirectory }}
     targetType: 'inline'

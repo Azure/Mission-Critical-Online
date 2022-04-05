@@ -11,6 +11,7 @@ jobs:
 
     - task: PowerShell@2
       displayName: 'Import sample data'
+      retryCountOnTaskFailure: 1
       inputs:
         targetType: inline
         script: |

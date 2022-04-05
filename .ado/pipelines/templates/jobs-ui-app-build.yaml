@@ -15,12 +15,14 @@ jobs:
 
   - task: Npm@1
     displayName: 'NPM install'
+    retryCountOnTaskFailure: 1
     inputs:
       command: 'install'
       workingDir: ${{ parameters.workingDirectory }}
 
   - task: Npm@1
     displayName: 'Build the static UI app for deployment'
+    retryCountOnTaskFailure: 1
     inputs:
       command: 'custom'
       customCommand: 'run build'
@@ -31,4 +33,3 @@ jobs:
     inputs:
       targetPath: '${{ parameters.workingDirectory }}/dist'
       artifactName: 'uiApp'
-  

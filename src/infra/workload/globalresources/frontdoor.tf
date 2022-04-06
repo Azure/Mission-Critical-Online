@@ -82,7 +82,7 @@ resource "azurerm_frontdoor" "main" {
     name                = "GlobalStorageHealthProbeSetting"
     protocol            = "Https"
     probe_method        = "HEAD"
-    path                = "/images/health.check"
+    path                = "/health.check"
     interval_in_seconds = 30
   }
 

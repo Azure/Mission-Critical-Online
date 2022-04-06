@@ -28,9 +28,9 @@ variables:
 
 # Custom DNS name settings
 - name: 'envDnsZoneRG'
-  value: ''                 # <===== CHANGE THIS OR LEAVE THE VALUE BLANK
+  value: 'ao-dns-rg'                # <===== CHANGE THIS OR LEAVE THE VALUE BLANK
 - name: 'envDomainName'
-  value: ''                 # <===== CHANGE THIS OR LEAVE THE VALUE BLANK
+  value: 'e2e.shop.mission-critical.app'   # <===== CHANGE THIS OR LEAVE THE VALUE BLANK
 
 # Other settings
 - name:  'contactEmail'

@@ -39,8 +39,8 @@ resource "azurerm_api_management_backend" "aks_cluster" {
   url                 = "https://${local.aks_ingress_fqdn}/"
 
   tls {
-    validate_certificate_chain = false # TODO: enable based on optional DNS
-    validate_certificate_name  = false
+    validate_certificate_chain = var.custom_dns_zone != "" # Do certificate checking only if we use a custom domain (for which we can request proper certifcates)
+    validate_certificate_name  = var.custom_dns_zone != ""
   }
 }
 

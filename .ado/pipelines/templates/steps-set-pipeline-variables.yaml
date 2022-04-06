@@ -59,6 +59,7 @@ steps:
   inputs:
     targetType: inline
     script: |
+
       $globalSuffix = ""
       if("$(environment)" -eq "e2e")
       {
@@ -66,13 +67,34 @@ steps:
         $globalSuffix = "$(customSuffix)"
       }
 
+      if("$(envDomainName)" -ne "")
+      {
+
+        if("$(environment)" -eq "e2e")
+        {
+          # For e2e, we are using prefix-suffix as a unique domain domain suffix
+          $domainSuffix = "$(prefix)$(customSuffix)."
+        }
+        else
+        {
+          # For INT and PROD we set the domain suffix to www.
+          $domainSuffix = "www."
+        }
+      }
+      else
+      {
+        $domainSuffix = ""
+      }
+
       $terraformStateFileGlobal = "terraform-global-$(prefix)$globalSuffix.state"
       $terraformStateFileReleaseUnit = "terraform-$(prefix)$(customSuffix).state"
 
       echo "*** DEBUG: Setting globalSuffix to '$globalSuffix'"
+      echo "*** DEBUG: Setting domainSuffix to '$domainSuffix'"
       echo "*** DEBUG: Setting terraformStateFileGlobal to '$terraformStateFileGlobal'"
       echo "*** DEBUG: Setting terraformStateFileReleaseUnit to '$terraformStateFileReleaseUnit'"
 
       echo "##vso[task.setvariable variable=globalSuffix]$globalSuffix"
+      echo "##vso[task.setvariable variable=domainSuffix]$domainSuffix"
       echo "##vso[task.setvariable variable=terraformStateFileGlobal]$terraformStateFileGlobal"
       echo "##vso[task.setvariable variable=terraformStateFileReleaseUnit]$terraformStateFileReleaseUnit"

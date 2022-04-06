@@ -129,9 +129,10 @@ stages:
                                           -var=queued_by="$(Build.QueuedBy)"
                                           -var=contact_email="$(contactEmail)"
                                           -var=''stamps=$(stampLocations)''
+                                          -var=custom_dns_zone_resourcegroup_name=$(envDnsZoneRG)
+                                          -var=custom_fqdn=$(domainSuffix)$(envDomainName)
                                           $(tfParameterFrontDoorBackendApis)
-                                          $(tfParameterFrontDoorStaticStorage)
-                                          $(terraformAdditionalParametersCustomDomains)'
+                                          $(tfParameterFrontDoorStaticStorage)'
 
 - stage: deployreleaseinfrastructure
   displayName: 'Deploy Release Unit Infrastructure' # Deploy Release Unit Azure Infrastructure
@@ -178,7 +179,9 @@ stages:
                                     -var=frontdoor_name="$(frontdoor_name)"
                                     -var=frontdoor_id_header="$(frontdoor_id_header)"
                                     -var=global_storage_account_name="$(global_storage_account_name)"
-                                    -var=azure_monitor_action_group_resource_id="$(azure_monitor_action_group_resource_id)"'
+                                    -var=azure_monitor_action_group_resource_id="$(azure_monitor_action_group_resource_id)"
+                                    -var=custom_dns_zone_resourcegroup_name=$(envDnsZoneRG)
+                                    -var=custom_dns_zone=$(envDomainName)'
 
 - stage: deployconfiguration
   displayName: 'Deploy Configuration' # Apply configuration to Azure Infrastructure
@@ -430,7 +433,9 @@ stages:
                                           -var=frontdoor_name="$(frontdoor_name)"
                                           -var=frontdoor_id_header="$(frontdoor_id_header)"
                                           -var=global_storage_account_name="$(global_storage_account_name)"
-                                          -var=azure_monitor_action_group_resource_id="$(azure_monitor_action_group_resource_id)"'
+                                          -var=azure_monitor_action_group_resource_id="$(azure_monitor_action_group_resource_id)"
+                                          -var=custom_dns_zone_resourcegroup_name=$(envDnsZoneRG)
+                                          -var=custom_dns_zone=$(envDomainName)'
 
             # Remove disabled backends from Front Door and reset weight on current ones to 50. (Not required for E2E since we destroy E2E Front Door anyway below)
             - ${{ if ne(parameters.environment, 'e2e') }}:
@@ -469,4 +474,6 @@ stages:
                                                -var=queued_by="$(Build.QueuedBy)"
                                                -var=contact_email="$(contactEmail)"
                                                -var=''stamps=$(stampLocations)''
-                                               $(terraformAdditionalParametersCustomDomains)'
+                                               -var=custom_dns_zone_resourcegroup_name=$(envDnsZoneRG)
+                                               -var=custom_fqdn=$(domainSuffix)$(envDomainName)'
+'

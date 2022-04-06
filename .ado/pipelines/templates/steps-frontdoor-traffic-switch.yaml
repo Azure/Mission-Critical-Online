@@ -158,9 +158,10 @@ steps:
                        -var=queued_by="$(Build.QueuedBy)"
                        -var=contact_email="$(contactEmail)"
                        -var=''stamps=$(stampLocations)''
+                       -var=custom_dns_zone_resourcegroup_name=$(envDnsZoneRG)
+                       -var=custom_fqdn=$(domainSuffix)$(envDomainName)
                        $(tfParameterFrontDoorBackendApis)
-                       $(tfParameterFrontDoorStaticStorage)
-                       $(terraformAdditionalParametersCustomDomains)'
+                       $(tfParameterFrontDoorStaticStorage)'
 
 # After new backends have been added to Front Door, we purge the cache so that content will be retrieved from the new backends as well
 - task: AzureCLI@2

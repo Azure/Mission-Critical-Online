@@ -33,12 +33,6 @@ variables:
 
 - template: config/variables-values-${{ variables.environment }}.yaml # contains environment-specific values (non-secret)
 
-- name: 'terraformAdditionalParametersCustomDomains'
-  ${{ if ne(variables.envDomainName, '') }}:
-    value: '-var custom_dns_zone_resourcegroup_name=$(envDnsZoneRG) -var custom_fqdn=www.$(envDomainName)'
-  ${{ else }}:
-    value: ''
-
 - name: dateBasedSuffix
   value: '${{ parameters.dateBasedSuffix }}'
 

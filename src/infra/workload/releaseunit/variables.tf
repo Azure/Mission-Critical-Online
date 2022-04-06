@@ -51,6 +51,18 @@ variable "vnet_address_space" {
   type        = string
 }
 
+variable "custom_dns_zone" {
+  description = "Optional: Custom DNS Zone name"
+  type        = string
+  default     = ""
+}
+
+variable "custom_dns_zone_resourcegroup_name" {
+  description = "Optional: Resource Group Name of the Custom DNS Zone"
+  type        = string
+  default     = ""
+}
+
 variable "global_resource_group_name" {
   description = "Name of the resource group which holds the globally shared resources"
   type        = string

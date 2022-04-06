@@ -36,6 +36,9 @@ module "stamp" {
   cosmosdb_database_name         = var.cosmosdb_database_name
   global_storage_account_name    = var.global_storage_account_name
 
+  custom_dns_zone                    = var.custom_dns_zone
+  custom_dns_zone_resourcegroup_name = var.custom_dns_zone_resourcegroup_name
+
   azure_monitor_action_group_resource_id = var.azure_monitor_action_group_resource_id
   frontdoor_id_header                    = var.frontdoor_id_header
   acr_name                               = var.acr_name

@@ -11,7 +11,8 @@ locals {
 
   aks_internal_lb_ip_address = cidrhost(azurerm_subnet.aks_lb.address_prefixes[0], 5) # 5th IP in the subnet as the previous ones are reserved by Azure
 
-  aks_ingress_fqdn = local.aks_internal_lb_ip_address # TODO: add optional DNS support there. ### trimsuffix(azurerm_dns_a_record.cluster_ingress.fqdn, ".") # remove trailing dot from the FQDN
+  # If custom domain names are used, return this, otherwise the internal IP address of the ingress controller
+  aks_ingress_fqdn = var.custom_dns_zone != "" ? trimsuffix(azurerm_dns_a_record.cluster_ingress[0].fqdn, ".") : local.aks_internal_lb_ip_address # remove trailing dot from the FQDN
 
   apim_tier  = split("_", var.apim_sku)[0] # extract tier from the sku name
   apim_units = split("_", var.apim_sku)[1] # extract tier from the sku name

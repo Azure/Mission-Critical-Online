@@ -27,6 +27,18 @@ variable "vnet_address_space" {
   type        = string
 }
 
+variable "custom_dns_zone" {
+  description = "Custom DNS Zone name"
+  type        = string
+  default     = ""
+}
+
+variable "custom_dns_zone_resourcegroup_name" {
+  description = "Resource Group Name of the Custom DNS Zone"
+  type        = string
+  default     = ""
+}
+
 variable "acr_name" {
   description = "Azure Container Registry name used for AcrPull role assignment"
   type        = string

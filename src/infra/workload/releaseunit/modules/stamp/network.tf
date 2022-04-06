@@ -104,6 +104,9 @@ resource "azurerm_network_security_group" "apim" {
   tags = var.default_tags
 }
 
+# See here for required NSG rules for APIM:
+# https://docs.microsoft.com/en-us/azure/api-management/api-management-using-with-vnet?tabs=stv2#configure-nsg-rules
+
 # Allow HTTPS inbound to APIM
 resource "azurerm_network_security_rule" "apim_allow_inbound_https" {
   name                        = "Allow_Inbound_HTTPS"
@@ -114,6 +117,21 @@ resource "azurerm_network_security_rule" "apim_allow_inbound_https" {
   source_port_range           = "*"
   destination_port_ranges     = ["443"]
   source_address_prefix       = "Internet"
+  destination_address_prefix  = "VirtualNetwork"
+  resource_group_name         = azurerm_resource_group.stamp.name
+  network_security_group_name = azurerm_network_security_group.apim.name
+}
+
+# Allow inbound traffic from LB to APIM (required for Premium tier)
+resource "azurerm_network_security_rule" "apim_allow_inbound_lb" {
+  name                        = "Allow_Inbound_LB"
+  priority                    = 150
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+  source_port_range           = "*"
+  destination_port_ranges     = ["6390"]
+  source_address_prefix       = "AzureLoadBalancer"
   destination_address_prefix  = "VirtualNetwork"
   resource_group_name         = azurerm_resource_group.stamp.name
   network_security_group_name = azurerm_network_security_group.apim.name

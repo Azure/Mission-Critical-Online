@@ -36,10 +36,6 @@ variables:
 
 - template: config/variables-values-${{ variables.environment }}.yaml # contains environment-specific values (non-secret)
 
-# We do not use custom domains for e2e envs so we set this variable to empty
-- name: 'terraformAdditionalParametersCustomDomains'
-  value: ''
-
 stages:
 
 - template: templates/stages-full-release.yaml

@@ -19,7 +19,7 @@ module "subnet_addrs" {
     },
     {
       name     = "apim"
-      new_bits = 29 - local.netmask # Subnet for API Management
+      new_bits = 28 - local.netmask # Subnet for API Management
     }
     # More subnets can be added here and terraform will dynamically calculate their CIDR ranges
   ]

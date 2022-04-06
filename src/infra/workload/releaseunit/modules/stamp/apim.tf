@@ -39,8 +39,8 @@ resource "azurerm_api_management_backend" "aks_cluster" {
   url                 = "https://${local.aks_ingress_fqdn}/"
 
   tls {
-    validate_certificate_chain = true
-    validate_certificate_name  = true
+    validate_certificate_chain = false # TODO: enable based on optional DNS
+    validate_certificate_name  = false
   }
 }
 

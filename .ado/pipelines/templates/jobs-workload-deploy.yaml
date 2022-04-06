@@ -110,10 +110,14 @@ jobs: # using jobs so they each run in parallel
             $fqdn = $stamp.aks_cluster_ingress_fqdn
             echo "*** Retrieved Ingress Controller FQDN $fqdn for AKS cluster $aksClusterName"
 
-            # We are using a wildcard hostname match for nginx (and thus getting a wildcard cert from Let's Encrypt)
-            # Therefore we replace the first part of the FQDN with a '*': "foo.bar.example.com" --> "*.bar.example.com"
-            $wildcardDomain = $fqdn -replace '^[^.]*','*'
-            echo "*** Using wildcard domain name $wildcardDomain"
+            # This could either be an IP address or a domain name. If a domain name, we make it a wildcard to get a wildcard cert
+            if(-not [ipaddress]::TryParse($fqdn, [ref][ipaddress]::Loopback)) # We just try to parse as an IP
+            {
+              # We are using a wildcard hostname match for nginx (and thus getting a wildcard cert from Let's Encrypt)
+              # Therefore we replace the first part of the FQDN with a '*': "foo.bar.example.com" --> "*.bar.example.com"
+              $fqdn = $fqdn -replace '^[^.]*','*'
+              echo "*** Using wildcard domain name $fqdn"
+            }
 
             $fullContainerImageName = Get-Content -Path "$(Pipeline.Workspace)/catalogservice-containerImageName/catalogservice.txt"
             echo "*** Retrieved full container image name from artifact - $fullContainerImageName"
@@ -126,7 +130,7 @@ jobs: # using jobs so they each run in parallel
                          --set azure.region="$region" `
                          --set azure.baseurl="$frontDoorFqdn" `
                          --set containerimage="$fullContainerImageName" `
-                         --set workload.domainname="$wildcardDomain" `
+                         --set workload.domainname="$fqdn" `
                          ${{ parameters.additionalHelmArguments }}
 
             # Wait for CatalogService-deploy k8s deployment to come up

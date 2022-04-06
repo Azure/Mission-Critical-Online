@@ -476,4 +476,3 @@ stages:
                                                -var=''stamps=$(stampLocations)''
                                                -var=custom_dns_zone_resourcegroup_name="$(envDnsZoneRG)"
                                                -var=custom_fqdn="$(domainSuffix)$(envDomainName)"'
-'

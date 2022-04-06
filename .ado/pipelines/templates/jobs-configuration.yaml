@@ -173,8 +173,7 @@ jobs:
           $allSecretNames = $(az keyvault secret list --vault-name $keyVaultName --query "join(',',[].name)" --output tsv)
           echo "*** Retrieved the names of $($allSecretNames.Split(',').Count) secrets in Key Vault $keyVaultName"
 
-          $kubeletIdentityClientId = $(az aks show --resource-group $aksClusterResourceGroup --name $aksClusterName `
-                                                   --query "identityProfile.kubeletidentity.clientId" --output tsv)
+          $kubeletIdentityClientId = $stamp.aks_kubelet_clientid
 
           echo "*** Retrieved Kubelet clientId $kubeletIdentityClientId for cluster $clusterName"
 

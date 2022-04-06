@@ -34,6 +34,10 @@ output "aks_cluster_name" {
   value = azurerm_kubernetes_cluster.stamp.name
 }
 
+output "aks_kubelet_clientid" {
+  value = azurerm_kubernetes_cluster.stamp.kubelet_identity.0.client_id
+}
+
 # Name of the public Storage Account
 output "public_storage_account_name" {
   value = azurerm_storage_account.public.name

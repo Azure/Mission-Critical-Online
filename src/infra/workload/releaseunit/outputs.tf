@@ -6,6 +6,7 @@ output "stamp_properties" {
     key_vault_name              = instance.key_vault_name
     aks_cluster_id              = instance.aks_cluster_id
     aks_cluster_name            = instance.aks_cluster_name
+    aks_kubelet_clientid        = instance.aks_kubelet_clientid
     aks_cluster_ingress_fqdn    = instance.aks_ingress_fqdn
     aks_internal_lb_ip_address  = instance.aks_internal_lb_ip_address
     apim_fqdn                   = instance.apim_fqdn

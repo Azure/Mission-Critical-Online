@@ -36,8 +36,8 @@ jobs:
           # Load AKS credentials
           az aks get-credentials --name $aksClusterName --resource-group $aksClusterResourceGroup --overwrite-existing
 
-          # Gather Ingress Load Balancer IP from pipeline artifact json
-          $aksIngressIp = $stamp.aks_cluster_ingress_ip_address
+          # Gather Ingress Internal Load Balancer IP from pipeline artifact json
+          $aksIngressIp = $stamp.aks_internal_lb_ip_address
 
           # Deploy ingress-nginx (helm) configuration
           echo "*** Installing nginx ingress controller ($aksIngressIp) on $aksClusterName in $aksClusterResourceGroup"
@@ -49,7 +49,8 @@ jobs:
                 --namespace kube-system `
                 --values src/config/ingress/values.helm.yaml `
                 --set controller.service.loadBalancerIP="$aksIngressIp" `
-                --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-resource-group"="$aksClusterResourceGroup" `
+                --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-internal"="true" `
+                --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-internal-subnet"="aks-lb-snet" `
                 --version "$(ingressNginxVersion)"
         }
 

@@ -66,7 +66,7 @@ resource "azurerm_frontdoor" "main" {
     name                = "ApiHealthProbeSetting"
     protocol            = "Https"
     probe_method        = "HEAD"
-    path                = "/health/stamp"
+    path                = "/healthservice/health/stamp"
     interval_in_seconds = 30
   }
 

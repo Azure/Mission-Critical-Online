@@ -94,7 +94,7 @@ foreach($target in $targets) {
 
   # test health endpoints for stamps only
   if ($mode -eq "stamp") {
-    $stampHealthUrl = "https://$targetFqdn/health/stamp"
+    $stampHealthUrl = "https://$targetFqdn/healthservice/health/stamp"
     Write-Output "*** Call - Stamp Health ($mode)"
 
     # custom retry loop to handle the situation when the SSL certificate is not valid yet and Invoke-WebRequest throws an exception

@@ -67,7 +67,7 @@ steps:
       foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
 
         # Build API backend config object for Front Door
-        $clusterFqdn = $stamp.aks_cluster_ingress_fqdn
+        $clusterFqdn = $stamp.apim_fqdn
 
         $apiProperties = @{address=$clusterFqdn; weight=$newBackendsWeight; enabled="true"}
         $apiBackend = New-Object PSObject –Property $apiProperties

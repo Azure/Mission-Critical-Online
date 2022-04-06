@@ -14,6 +14,12 @@ variable "queued_by" {
   default     = "n/a"
 }
 
+variable "contact_email" {
+  description = "Email address for alert notifications"
+  type        = string
+  default     = "OVERWRITE@noreply.com"
+}
+
 variable "default_tags" {}
 
 variable "vnet_address_space" {
@@ -79,6 +85,11 @@ variable "aks_node_pool_autoscale_minimum" {
 variable "aks_node_pool_autoscale_maximum" {
   description = "Maximum number of AKS worker nodes for auto-scale settings"
   type        = number
+}
+
+variable "apim_sku" {
+  description = "APIM SKU"
+  type        = string
 }
 
 variable "event_hub_thoughput_units" {

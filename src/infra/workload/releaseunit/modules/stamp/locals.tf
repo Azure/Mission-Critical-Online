@@ -8,4 +8,11 @@ locals {
   location_short = substr(var.location, 0, 9) # shortened location name used for resource naming
 
   global_resource_prefix = regex("^(.+)-global-rg$", var.global_resource_group_name)[0] # extract global resource prefix from the global resource group name
+
+  aks_internal_lb_ip_address = cidrhost(azurerm_subnet.aks_lb.address_prefixes[0], 5) # 5th IP in the subnet as the previous ones are reserved by Azure
+
+  aks_ingress_fqdn = local.aks_internal_lb_ip_address # TODO: add optional DNS support there. ### trimsuffix(azurerm_dns_a_record.cluster_ingress.fqdn, ".") # remove trailing dot from the FQDN
+
+  apim_tier  = split("_", var.apim_sku)[0] # extract tier from the sku name
+  apim_units = split("_", var.apim_sku)[1] # extract tier from the sku name
 }

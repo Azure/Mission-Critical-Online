@@ -11,14 +11,17 @@ output "key_vault_name" {
   value = azurerm_key_vault.stamp.name
 }
 
-# Ingress Controller PublicIP Address
-output "aks_ingress_publicip_address" {
-  value = azurerm_public_ip.aks_ingress.ip_address
+# Ingress Controller FQDN (points to private IP address)
+output "aks_ingress_fqdn" {
+  value = local.aks_ingress_fqdn
 }
 
-# Ingress Controller PublicIP FQDN
-output "aks_ingress_fqdn" {
-  value = azurerm_public_ip.aks_ingress.fqdn
+output "aks_internal_lb_ip_address" {
+  value = local.aks_internal_lb_ip_address
+}
+
+output "apim_fqdn" {
+  value = replace(azurerm_api_management.stamp.gateway_url, "https://", "")
 }
 
 # AKS Cluster (Azure Resource Manager) ResourceId

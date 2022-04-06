@@ -119,6 +119,12 @@ variable "aks_node_pool_autoscale_maximum" {
   default     = 9
 }
 
+variable "apim_sku" {
+  description = "APIM SKU. Number after the underscore determines the number of gateway units. For Premium (= Production), at least 2 units should be deploy for AZ-redundancy"
+  type        = string
+  default     = "Developer_1"
+}
+
 variable "event_hub_thoughput_units" {
   description = "Number of Throughput Units for Event Hub Namespace"
   type        = number

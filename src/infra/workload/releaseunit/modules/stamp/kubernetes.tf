@@ -28,8 +28,8 @@ resource "azurerm_kubernetes_cluster" "stamp" {
     vnet_subnet_id       = azurerm_subnet.kubernetes.id
     os_disk_type         = "Ephemeral"
     orchestrator_version = var.kubernetes_version
-    
-    zones   = [1, 2, 3]
+
+    zones = [1, 2, 3]
 
     upgrade_settings {
       max_surge = "33%"
@@ -61,10 +61,6 @@ resource "azurerm_kubernetes_cluster" "stamp" {
     secret_rotation_enabled  = true
     secret_rotation_interval = "5m"
   }
-
-  depends_on = [
-    azurerm_public_ip.aks_ingress
-  ]
 
   tags = var.default_tags
 }

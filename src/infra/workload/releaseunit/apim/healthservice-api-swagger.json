@@ -1,0 +1,44 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "AlwaysOn HealthService API",
+    "version": "v1"
+  },
+  "paths": {
+    "/Health/liveness": {
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/Health/stamp": {
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "head": {
+        "tags": [
+          "Health"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    }
+  },
+  "components": { }
+}

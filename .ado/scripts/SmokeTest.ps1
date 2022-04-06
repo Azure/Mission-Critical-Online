@@ -54,12 +54,12 @@ if ($mode -eq "stamp") {
   # loop through stamps from pipeline artifact json
   foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
     # from stamp we need:
-    # - aks_cluster_ingress_fqdn = endpoint to be called
+    # - apim_fqdn = endpoint to be called
     # - storage_web_host = ui host
 
     $props = @{
       # Individual Cluster Endpoint FQDN (from pipeline artifact json)
-      ApiEndpointFqdn = $stamp.aks_cluster_ingress_fqdn
+      ApiEndpointFqdn = $stamp.apim_fqdn
       UiEndpointFqdn = $stamp.storage_web_host
     }
 

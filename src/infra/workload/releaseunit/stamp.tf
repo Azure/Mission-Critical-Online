@@ -25,9 +25,10 @@ module "stamp" {
 
   kubernetes_version = var.kubernetes_version # kubernetes version
 
-  prefix       = local.prefix       # handing over the resource prefix
-  default_tags = local.default_tags # handing over the resource tags
-  queued_by    = var.queued_by
+  prefix        = local.prefix       # handing over the resource prefix
+  default_tags  = local.default_tags # handing over the resource tags
+  queued_by     = var.queued_by
+  contact_email = var.contact_email
 
   global_resource_group_name     = var.global_resource_group_name
   monitoring_resource_group_name = var.monitoring_resource_group_name
@@ -42,6 +43,8 @@ module "stamp" {
   aks_node_size                   = var.aks_node_size
   aks_node_pool_autoscale_minimum = var.aks_node_pool_autoscale_minimum
   aks_node_pool_autoscale_maximum = var.aks_node_pool_autoscale_maximum
+
+  apim_sku = var.apim_sku
 
   event_hub_thoughput_units         = var.event_hub_thoughput_units
   event_hub_enable_auto_inflate     = var.event_hub_enable_auto_inflate

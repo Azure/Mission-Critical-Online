@@ -1,6 +1,6 @@
 # Configuration Layer
 
-The "configuration layer" builds the bridge between the infrastructure deployed in the [Infrastructure Layer](../infra/README.md) and the application. Our reference implementation separates between infrastructure and configuration which allow us to use different toolkits to deploy the infrastructure, for example Terraform or ARM templates/Bicep.
+The "configuration layer" builds the bridge between the infrastructure deployed in the [Infrastructure Layer](../infra/README.md) and the application. This reference implementation separates between infrastructure and configuration which allow us to use different toolkits to deploy the infrastructure, for example Terraform or ARM templates/Bicep, though currently Terraform is used.
 
 ## Versioning
 
@@ -39,13 +39,13 @@ Important configurations are:
 * Set resource requests
 * Enable Prometheus metrics
 
-Further settings are set in the values YAML here [src/config/ingress/nginx.yaml](/src/config/ingress/nginx.yaml). See [ingress-nginx/values.yaml reference](https://github.com/kubernetes/ingress-nginx/blob/master/charts/ingress-nginx/values.yaml) for more ingress-nginx configuration options.
+Further settings are set in the values YAML here [src/config/ingress/values.helm.yaml](/src/config/ingress/values.helm.yaml). See [ingress-nginx/values.yaml reference](https://github.com/kubernetes/ingress-nginx/blob/master/charts/ingress-nginx/values.yaml) for more ingress-nginx configuration options.
 
 ### cert-manager
 
-Jetstack's cert-manager is used to auto-provision SSL/TLS certificates (using Let's Encrypt) for our ingress controllers. It is installed via a helm chart using the Configuration Layer pipeline.
+Jetstack's cert-manager is used to auto-provision SSL/TLS certificates (using Let's Encrypt) for ingress rules. It is installed via the `cert-manager` helm chart as part of the configuration stage.
 
-Additional configuration settings like Issuer (for Let's Encrypt) as well as the separate namespace for Kubernetes are stored in [src/config/cert-manager](/src/config/cert-manager/).
+Additional configuration settings like the `ClusterIssuer` (used to request certificates from Let's Encrypt) is deployed via a separate `cert-manager-config` helm chart stored in [src/config/cert-manager/chart](/src/config/cert-manager/chart/).
 
 This implementation is using `ClusterIssuer` instead of `Issuer` as documented [here](https://cert-manager.io/docs/concepts/issuer/) and [here](https://docs.cert-manager.io/en/release-0.7/tasks/issuing-certificates/ingress-shim.html) to avoid having issuers per namespaces.
 

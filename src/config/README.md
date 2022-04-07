@@ -1,6 +1,6 @@
 # Configuration Layer
 
-The "configuration layer" builds the bridge between the infrastructure deployed in the [Infrastructure Layer](../infra/README.md) and the application. This reference implementation separates between infrastructure and configuration which allow us to use different toolkits to deploy the infrastructure, for example Terraform or ARM templates/Bicep, though currently Terraform is used.
+The "configuration layer" builds the bridge between the infrastructure deployed in the [Infrastructure Layer](../infra/README.md) and the application. This reference implementation partially separates the infrastructure, configuration and workload deployment which allow us to use different toolkits for each part and to separate it into different stages.
 
 ## Versioning
 
@@ -20,7 +20,7 @@ These version definitions are not only used for the components installed, but al
 
 ## Components
 
-The configuration layer is responsible for installing a set of components on top of the Azure resources deployed as part of the infrastructure layer:
+The configuration layer is responsible for installing a set of components on top of the Azure resources, in this reference implementation mainly Azure Kubernetes Service, deployed as part of the infrastructure layer:
 
 * [ingress-nginx](#ingress-nginx)
 * [cert-manager](#cert-manager)
@@ -39,7 +39,7 @@ Important configurations are:
 * Set resource requests
 * Enable Prometheus metrics
 
-Further settings are set in the `values.helm.yaml` file in [src/config/ingress-nginx](/src/config/ingress/values.helm.yaml). See [ingress-nginx/values.yaml reference](https://github.com/kubernetes/ingress-nginx/blob/master/charts/ingress-nginx/values.yaml) for all configuration options available in for the ingress-nginx helm chart.
+Further settings are set in the `values.helm.yaml` file in [src/config/ingress-nginx](/src/config/ingress/values.helm.yaml). See [ingress-nginx/values.yaml](https://github.com/kubernetes/ingress-nginx/blob/master/charts/ingress-nginx/values.yaml) for all configuration options available in for the ingress-nginx helm chart.
 
 ### cert-manager
 

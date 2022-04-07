@@ -1,0 +1,29 @@
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: cert-manager-alwayson
+spec:
+  # If a DNS zone was specifed, we use the ACME issuer with AzureDNS solver, otherwise self-signed issuer
+  {{ if .Values.azure.dnsZoneName }}
+  acme:
+    # The ACME server URL
+    server: https://acme-v02.api.letsencrypt.org/directory
+    # Email address used for ACME registration
+    email: {{ .Values.letsencrypt.contactEmail }}
+    # Name of a secret used to store the ACME account private key
+    privateKeySecretRef:
+      name: cert-manager-alwayson
+    # Enable the DNS-01 challenge provider
+    solvers:
+      - dns01:
+          azureDNS:
+            environment: AzurePublicCloud
+            subscriptionID: {{ .Values.azure.subscriptionId | quote }}
+            resourceGroupName: {{ .Values.azure.dnsZoneResourceGroupName | quote }}
+            hostedZoneName: {{ .Values.azure.dnsZoneName | quote }}
+            managedIdentity:
+              # client id of the node pool managed identity
+              clientID: {{ .Values.azure.managedIdentityClientId | quote }}
+{{ else }}
+  selfSigned: {}
+{{ end }}

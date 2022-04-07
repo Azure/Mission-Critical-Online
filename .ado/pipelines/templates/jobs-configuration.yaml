@@ -47,7 +47,7 @@ jobs:
           # Deploy helm chart for ingress-nginx using a custom load balancer ip and resource group
           helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx `
                 --namespace kube-system `
-                --values src/config/ingress/values.helm.yaml `
+                --values src/config/ingress-ngnix/values.helm.yaml `
                 --set controller.service.loadBalancerIP="$aksIngressIp" `
                 --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-resource-group"="$aksClusterResourceGroup" `
                 --version "$(ingressNginxVersion)"
@@ -113,7 +113,7 @@ jobs:
                     --dry-run=client --output yaml | kubectl apply -f -
 
           echo "*** Setting up cert-manager ClusterIssuer with Let's Encrypt"
-          helm upgrade --install cert-manager-alwayson src/config/charts/cert-manager `
+          helm upgrade --install cert-manager-alwayson src/config/cert-manager/chart/cert-manager-config`
                        --namespace $certManagerNamespace `
                        --set letsencrypt.contactEmail="$(contactEmail)"
 
@@ -169,7 +169,7 @@ jobs:
 
           echo "*** Retrieved Kubelet clientId $kubeletIdentityClientId for cluster $clusterName"
 
-          helm upgrade --install csi-secrets-driver src/config/charts/csi-secrets-driver `
+          helm upgrade --install csi-secrets-driver src/config/csi-secrets-driver/chart/csi-secrets-driver-config `
                         --namespace "$(workloadNamespace)" `
                         --set azure.tenantId=$tenantId `
                         --set azure.keyVaultName="$keyVaultName" `

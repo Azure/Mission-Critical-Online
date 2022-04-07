@@ -110,20 +110,10 @@ jobs: # using jobs so they each run in parallel
             $fqdn = $stamp.aks_cluster_ingress_fqdn
             echo "*** Retrieved Ingress Controller FQDN $fqdn for AKS cluster $aksClusterName"
 
-            # This could either be an IP address or a domain name. If a domain name, we make it a wildcard to get a wildcard cert
-            if(-not [ipaddress]::TryParse($fqdn, [ref][ipaddress]::Loopback)) # We just try to parse as an IP
-            {
-              # We are using a wildcard hostname match for nginx (and thus getting a wildcard cert from Let's Encrypt)
-              # Therefore we replace the first part of the FQDN with a '*': "foo.bar.example.com" --> "*.bar.example.com"
-              $fqdn = $fqdn -replace '^[^.]*','*'
-              echo "*** Using wildcard domain name $fqdn"
-            }
-            else
-            {
-              # If using an IP, we use * instead to catch all, using IP does not work
-              $fqdn = "*"
-              echo "*** Using catch-all host $fqdn"
-            }
+            # We are using a wildcard hostname match for nginx (and thus getting a wildcard cert from Let's Encrypt)
+            # Therefore we replace the first part of the FQDN with a '*': "foo.bar.example.com" --> "*.bar.example.com"
+            $fqdn = $fqdn -replace '^[^.]*','*'
+            echo "*** Using wildcard domain name $fqdn"
 
             $fullContainerImageName = Get-Content -Path "$(Pipeline.Workspace)/catalogservice-containerImageName/catalogservice.txt"
             echo "*** Retrieved full container image name from artifact - $fullContainerImageName"

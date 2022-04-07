@@ -118,6 +118,12 @@ jobs: # using jobs so they each run in parallel
               $fqdn = $fqdn -replace '^[^.]*','*'
               echo "*** Using wildcard domain name $fqdn"
             }
+            else
+            {
+              # If using an IP, we use * instead to catch all, using IP does not work
+              $fqdn = "*"
+              echo "*** Using catch-all host $fqdn"
+            }
 
             $fullContainerImageName = Get-Content -Path "$(Pipeline.Workspace)/catalogservice-containerImageName/catalogservice.txt"
             echo "*** Retrieved full container image name from artifact - $fullContainerImageName"

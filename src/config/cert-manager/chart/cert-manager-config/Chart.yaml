@@ -1,7 +1,7 @@
 apiVersion: "v2"
 appVersion: 0.0.1
 name: cert-manager-alwayson
-description: "Configuration for cert-manager using lets encrypt"
+description: "Configuration for cert-manager using either Azure DNS or self-signed issuer"
 version: 0.0.1
 sources:
 - https://github.com/Azure/Mission-Critical

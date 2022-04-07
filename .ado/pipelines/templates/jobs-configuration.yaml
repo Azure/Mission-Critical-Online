@@ -113,7 +113,7 @@ jobs:
                     --dry-run=client --output yaml | kubectl apply -f -
 
           echo "*** Setting up cert-manager ClusterIssuer with Let's Encrypt"
-          helm upgrade --install cert-manager-alwayson src/config/cert-manager/chart/cert-manager-config`
+          helm upgrade --install cert-manager-config src/config/cert-manager/chart/cert-manager-config`
                        --namespace $certManagerNamespace `
                        --set letsencrypt.contactEmail="$(contactEmail)"
 

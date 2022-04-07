@@ -9,7 +9,7 @@ spec:
     # The ACME server URL
     server: https://acme-v02.api.letsencrypt.org/directory
     # Email address used for ACME registration
-    email: alwaysonappnet@microsoft.com
+    email: {{ .Values.letsencrypt.contactEmail }}
     # Name of a secret used to store the ACME account private key
     privateKeySecretRef:
       name: cert-manager-alwayson

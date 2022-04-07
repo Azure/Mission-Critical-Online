@@ -66,7 +66,7 @@ During the infra-config deployment step, all required components are installed v
 Those, in turn, are later loaded as ENV variables for easy application access inside the pods.
 Note: Even if a pod only wants to use the ENV variables, it still needs to do the file system mount in order for the secret retrieval to work. This step is done in the app deployment.
 
-The configuration helm chart is stored in [src/config/charts/csi-secrets-driver](./charts/csi-secrets-driver/)
+The configuration helm chart is stored in [src/config/csi-secrets-driver/chart](./csi-secrets-driver/chart)
 
 ### Monitoring
 

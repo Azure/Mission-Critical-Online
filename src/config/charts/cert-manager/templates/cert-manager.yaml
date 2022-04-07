@@ -1,10 +1,3 @@
-# cert-manager - Additional K8s configuration manifest file
-# Needed config to deploy cert-manager components into its own namespace
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: cert-manager
----
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
@@ -14,7 +7,7 @@ spec:
     # The ACME server URL
     server: https://acme-v02.api.letsencrypt.org/directory
     # Email address used for ACME registration
-    email: alwaysonappnet@microsoft.com
+    email: {{ .Values.letsencrypt.contactEmail }}
     # Name of a secret used to store the ACME account private key
     privateKeySecretRef:
       name: letsencrypt-prod

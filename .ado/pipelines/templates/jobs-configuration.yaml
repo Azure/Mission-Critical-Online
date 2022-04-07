@@ -119,7 +119,7 @@ jobs:
           $kubeletIdentityClientId = $stamp.aks_kubelet_clientid
 
           echo "*** Setting up cert-manager ClusterIssuer for Azure DNS-based Let's Encrypt issuer with domain name $(envDomainName)"
-          helm upgrade --install cert-manager-alwayson src/config/charts/cert-manager `
+          helm upgrade --install cert-manager-config src/config/cert-manager/chart/cert-manager-config `
                         --namespace $certManagerNamespace `
                         --set azure.subscriptionId=$subscriptionId `
                         --set azure.dnsZoneName="$(envDomainName)" `

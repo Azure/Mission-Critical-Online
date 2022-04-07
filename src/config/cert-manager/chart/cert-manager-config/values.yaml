@@ -1,0 +1,8 @@
+azure:
+  dnsZoneName:                  ""        # Name of the Azure DNS Zone
+  dnsZoneResourceGroupName:     ""        # Name of the resource group which holds the DNS Zone
+  subscriptionId:               ""        # ID of the Azure Subscription
+  managedIdentityClientId:      ""        # Client ID of the AKS Kubelet identity
+
+letsencrypt:
+  contactEmail: ""    # Email address which will get registered with Lets Encrypt

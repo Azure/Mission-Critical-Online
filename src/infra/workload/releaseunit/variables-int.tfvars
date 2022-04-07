@@ -2,7 +2,7 @@
 vnet_address_space = "10.1.0.0/18" # /18 allows for up to 4 stamps
 
 aks_node_size                   = "Standard_F8s_v2" # be aware of the disk size requirement for emphemral disks. Thus we currently cannot use a smaller SKU
-aks_node_pool_autoscale_minimum = 2
+aks_node_pool_autoscale_minimum = 2 # We need at least two nodes to run all the pods of our workload (plus system pods)
 aks_node_pool_autoscale_maximum = 6
 
 event_hub_thoughput_units     = 1

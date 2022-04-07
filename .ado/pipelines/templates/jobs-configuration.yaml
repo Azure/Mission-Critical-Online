@@ -47,7 +47,7 @@ jobs:
           # Deploy helm chart for ingress-nginx using a custom load balancer ip and resource group
           helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx `
                 --namespace kube-system `
-                --values src/config/ingress/values.helm.yaml `
+                --values src/config/ingress-ngnix/values.helm.yaml `
                 --set controller.service.loadBalancerIP="$aksIngressIp" `
                 --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-internal"="true" `
                 --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-internal-subnet"="aks-lb-snet" `
@@ -178,7 +178,7 @@ jobs:
 
           echo "*** Retrieved Kubelet clientId $kubeletIdentityClientId for cluster $clusterName"
 
-          helm upgrade --install csi-secrets-driver src/config/charts/csi-secrets-driver `
+          helm upgrade --install csi-secrets-driver src/config/csi-secrets-driver/chart/csi-secrets-driver-config `
                         --namespace "$(workloadNamespace)" `
                         --set azure.tenantId=$tenantId `
                         --set azure.keyVaultName="$keyVaultName" `

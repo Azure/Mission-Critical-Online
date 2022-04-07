@@ -21,6 +21,7 @@ steps:
 
 - task: AzureCLI@2
   displayName: 'Create updated Front Door backend list'
+  retryCountOnTaskFailure: 1
   inputs:
     azureSubscription: $(azureServiceConnection)
     scriptType: pscore
@@ -164,6 +165,7 @@ steps:
 # After new backends have been added to Front Door, we purge the cache so that content will be retrieved from the new backends as well
 - task: AzureCLI@2
   displayName: 'Purge Front Door cache'
+  retryCountOnTaskFailure: 1
   inputs:
     azureSubscription: $(azureServiceConnection)
     scriptType: pscore

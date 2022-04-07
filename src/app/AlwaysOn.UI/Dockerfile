@@ -1,5 +1,5 @@
 # Create build environment
-FROM node:17.6.0 as build-env
+FROM node:17.8.0 as build-env
 
 # enable node 17 support for vue-cli
 ENV NODE_OPTIONS=--openssl-legacy-provider

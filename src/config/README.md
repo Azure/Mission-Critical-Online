@@ -39,7 +39,7 @@ Important configurations are:
 * Set resource requests
 * Enable Prometheus metrics
 
-Further settings are set in the `values.helm.yaml` file in [src/config/ingress-nginx](/src/config/ingress/values.helm.yaml). See [ingress-nginx/values.yaml](https://github.com/kubernetes/ingress-nginx/blob/master/charts/ingress-nginx/values.yaml) for all configuration options available in for the ingress-nginx helm chart.
+Further settings are set in the `values.helm.yaml` file in [src/config/ingress-nginx](/src/config/ingress/values.helm.yaml). See [ingress-nginx/values.yaml](https://github.com/kubernetes/ingress-nginx/blob/master/charts/ingress-nginx/values.yaml) for all configuration options available for the `ingress-nginx` helm chart.
 
 ### cert-manager
 

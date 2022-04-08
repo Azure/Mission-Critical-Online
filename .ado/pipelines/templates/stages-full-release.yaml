@@ -182,7 +182,9 @@ stages:
 
 - stage: deployconfiguration
   displayName: 'Deploy Configuration' # Apply configuration to Azure Infrastructure
-  dependsOn: deployreleaseinfrastructure
+  dependsOn: 
+    - deployreleaseinfrastructure
+    - buildapplication
   jobs:
   - template: jobs-configuration.yaml
     parameters:

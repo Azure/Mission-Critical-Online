@@ -4,20 +4,32 @@
             "name": "afintglobalcr.azurecr.io/helm/catalogservice",
             "version": "0.0.7"
         },
-        "containerImage": "afintglobalcr.azurecr.io/alwayson/catalogservice:main-950"
+        "containerImage": {
+            "registry": "afintglobalcr.azurecr.io",
+            "name": "alwayson/catalogservice",
+            "tag": "main-950"
+        }
     },
     "healthservice": {
         "chart": {
             "name": "afintglobalcr.azurecr.io/helm/healthservice",
             "version": "0.0.7"
         },
-        "containerImage": "afintglobalcr.azurecr.io/alwayson/healthservice:main-950"
+        "containerImage": {
+            "registry": "afintglobalcr.azurecr.io",
+            "name": "alwayson/healthservice",
+            "tag": "main-950"
+        }
     },
     "backgroundprocessor": {
         "chart": {
             "name": "afintglobalcr.azurecr.io/helm/backgroundprocessor",
             "version": "0.0.7"
         },
-        "containerImage": "afintglobalcr.azurecr.io/alwayson/backgroundprocessor:main-950"
+        "containerImage": {
+            "registry": "afintglobalcr.azurecr.io",
+            "name": "alwayson/backgroundprocessor",
+            "tag": "main-950"
+        }
     }
 }

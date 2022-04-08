@@ -6,7 +6,7 @@ jobs:
   - download: current # download pipeline artifacts
 
   - task: AzureCLI@2
-    displayName: 'Docker container images import'
+    displayName: 'Container images import'
     retryCountOnTaskFailure: 1
     inputs:
       azureSubscription: $(azureServiceConnection)
@@ -42,8 +42,16 @@ jobs:
         {
           echo "*** Importing image $containerImage"
 
+          # If "registry" is empty, this means dockerhub, then we can ommit the registry and the /
+          if($containerImage.registry)
+          {
+            $fullImageName += "$($containerImage.registry)/"
+          }
+
+          $fullImageName += $($containerImage.name):$($containerImage.tag)"
+
           # If those images reside in an ACR, we assume our service principal has pull permissions
-          az acr import -n $acrName --source $containerImage --force
+          az acr import -n $acrName --source $fullImageName --force --verbose
 
           if ($LastExitCode -ne 0) {
               throw "*** Error - could not import image $containerImage"

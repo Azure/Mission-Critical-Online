@@ -33,6 +33,7 @@ steps:
 # Delete Terraform state file. We need to run this in any case, even if variables.oldReleaseCustomSuffix=='' since Terrraform init also will always run and thereby create an empty state file
 - task: AzureCLI@2
   displayName: 'Delete Terraform state file'
+  retryCountOnTaskFailure: 1
   inputs:
     azureSubscription: $(azureServiceConnection)
     scriptType: pscore

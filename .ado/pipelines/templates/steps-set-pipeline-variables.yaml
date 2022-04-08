@@ -3,6 +3,7 @@ steps:
 - task: PowerShell@2
   name: 'setPipelineVariables'
   displayName: 'Set pipeline variables'
+  retryCountOnTaskFailure: 1
   env:
     AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
   inputs:

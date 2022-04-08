@@ -13,6 +13,7 @@ jobs:
 
     - task: PowerShell@2
       displayName: 'Verify individual stamp endpoints'
+      retryCountOnTaskFailure: 1
       inputs:
         targetType: 'filePath'
         filePath: $(System.DefaultWorkingDirectory)/.ado/scripts/SmokeTest.ps1
@@ -30,6 +31,7 @@ jobs:
 
     - task: AzureCLI@2
       displayName: 'Verify global Front Foor state configuration'
+      retryCountOnTaskFailure: 1
       inputs:
         azureSubscription: $(azureServiceConnection)
         scriptType: pscore
@@ -53,6 +55,7 @@ jobs:
 
     - task: PowerShell@2
       displayName: 'Verify global Front Door endpoint'
+      retryCountOnTaskFailure: 1
       inputs:
         targetType: 'filePath'
         filePath: $(System.DefaultWorkingDirectory)/.ado/scripts/SmokeTest.ps1
@@ -68,6 +71,7 @@ jobs:
 
     - task: PowerShell@2
       displayName: 'Run PlayWright UI test and capture screenshots from global endpoint'
+      retryCountOnTaskFailure: 1
       inputs:
         targetType: inline
         script: |

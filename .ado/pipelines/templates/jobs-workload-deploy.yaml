@@ -32,7 +32,7 @@ jobs: # using jobs so they each run in parallel
 
           $workloadsFile = "$(System.DefaultWorkingDirectory)/.ado/pipelines/config/workloads.json"
 
-          if(-not Test-Path $workloadsFile)
+          if(-not (Test-Path $workloadsFile))
           {
             throw "*** Container workload file not found at $workloadsFile"
           }
@@ -128,7 +128,7 @@ jobs: # using jobs so they each run in parallel
 
           $workloadsFile = "$(System.DefaultWorkingDirectory)/.ado/pipelines/config/workloads.json"
 
-          if(-not Test-Path $workloadsFile)
+          if(-not (Test-Path $workloadsFile))
           {
             throw "*** Container workload file not found at $workloadsFile"
           }
@@ -242,7 +242,7 @@ jobs: # using jobs so they each run in parallel
 
           $workloadsFile = "$(System.DefaultWorkingDirectory)/.ado/pipelines/config/workloads.json"
 
-          if(-not Test-Path $workloadsFile)
+          if(-not (Test-Path $workloadsFile))
           {
             throw "*** Container workload file not found at $workloadsFile"
           }

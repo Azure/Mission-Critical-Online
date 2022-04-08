@@ -43,7 +43,7 @@ jobs:
           echo "*** Importing image $containerImage"
 
           # If those images reside in an ACR, we assume our service principal has pull permissions
-          az acr import -n $acrName --source $containerImage
+          az acr import -n $acrName --source $containerImage --force
 
           if ($LastExitCode -ne 0) {
               throw "*** Error - could not import image $containerImage"

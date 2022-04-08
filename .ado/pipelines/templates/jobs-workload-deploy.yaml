@@ -11,15 +11,6 @@ jobs: # using jobs so they each run in parallel
 
     - template: steps-buildagent-prerequisites.yaml
 
-- job: deploycontainerCatalogService
-  displayName: 'Deploy CatalogService workload'
-  dependsOn: deploycontainerHealthService
-  steps:
-
-    - download: current # download pipeline artifacts
-
-    - template: steps-buildagent-prerequisites.yaml
-
     - task: AzureCLI@2
       displayName: 'Install workload healthservice on AKS clusters'
       retryCountOnTaskFailure: 2

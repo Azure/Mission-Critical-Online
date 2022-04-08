@@ -8,7 +8,7 @@ The online reference implementation comes with its own virtual network and subne
 
 ## Existing container registry
 
-This reference implementation comes with its on Azure Container Registry, deployed as part of the global services and replicated to each of the regional deployment stamp locations, to host container images (for the sample catalog workload) build and pushed as part of the overall deployment pipelines. This is done to keep the dependencies of a proof-of-concept deployment as minimal as possible. In production environments it is often times required to use an already existing container registry.
+This reference implementation comes with its on Azure Container Registry, deployed as part of the global services and replicated to each of the regional deployment stamp locations, to host container images (for the sample catalog workload) build and pushed as part of the overall deployment pipelines. This is done to keep the external dependencies of a Proof-of-Concept deployment as minimal as possible and it also allows us to deploy the whole solution end-to-end as part of the E2E deployment pipeline. In production environments it is often times required to use an already existing container registry.
 
 When a central container registry is used following considerations should be taken into account:
 
@@ -23,6 +23,12 @@ Reasons for an individual container reference per solution are:
 * The container registry can be integrated with AKS (or other compute services) to reduce the need for individual credentials. Azure Container registry provides only a limited set of functionality to restrict access.
 * The container registry can be restricted to a given solution using Private Endpoints.
 * The container registry can be replicated to the same locations where the solution is deployed.
+
+## Existing workload
+
+When the Proof-of-Concept deployment of the Azure Mission-Critical reference implementation evolves towards a more production-ready environment the next ask is to replace the sample application with a real workload. The online reference implementation comes with a sample workload that can be used as a starting point for a real workload. It follows our best practices to build, push and deploy a workload.
+
+The [Bring your own workload](./Bring-your-own-Workload.md) guide describes the process to replace the sample workload with a real workload.
 
 ---
 

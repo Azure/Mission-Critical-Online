@@ -45,7 +45,7 @@ jobs: # using jobs so they each run in parallel
             throw "*** Workload '$workloadName' not found in $workloadsFile"
           }
 
-          $chartRegistry,$chartName = $workload.chart -split "/",2
+          $chartRegistry,$chartName = $workload.chart.name -split "/",2
 
           if($chartRegistry.EndsWith(".azurecr.io"))
           {
@@ -69,11 +69,12 @@ jobs: # using jobs so they each run in parallel
             echo "*** Load credentials for AKS Cluster $aksClusterName in $aksClusterResourceGroup"
             az aks get-credentials --name $aksClusterName --resource-group $aksClusterResourceGroup --overwrite-existing
 
-            echo "*** Installing helm chart $($workload.chart) with image $fullContainerImageName"
+            echo "*** Installing helm chart $($workload.chart.name) version $($workload.chart.version) with image $fullContainerImageName"
 
             # Apply workload worker helm chart
             echo  "*** Deploy healthservice to $aksClusterName (in $aksClusterResourceGroup) via helm chart"
-            helm upgrade --install healthservice-workload "oci://$($workload.chart)" `
+            helm upgrade --install healthservice-workload "oci://$($workload.chart.name)" `
+                          --version $workload.chart.version `
                           --namespace $(workloadNamespace) `
                           --set containerimage="$fullContainerImageName" `
                           --set azure.region="$region" `
@@ -138,7 +139,7 @@ jobs: # using jobs so they each run in parallel
             throw "*** Workload '$workloadName' not found in $workloadsFile"
           }
 
-          $chartRegistry,$chartName = $workload.chart -split "/",2
+          $chartRegistry,$chartName = $workload.chart.name -split "/",2
 
           if($chartRegistry.EndsWith(".azurecr.io"))
           {
@@ -175,9 +176,10 @@ jobs: # using jobs so they each run in parallel
             echo "*** Retrieved Ingress Controller FQDN $fqdn for AKS cluster $aksClusterName"
 
             # Apply workload CatalogService helm chart
-            echo "*** Installing helm chart $($workload.chart) with image $fullContainerImageName"
+            echo "*** Installing helm chart $($workload.chart.name) version $(workload.chart.version) with image $fullContainerImageName"
 
-            helm upgrade --install workload-catalogservice "oci://$($workload.chart)" `
+            helm upgrade --install workload-catalogservice "oci://$($workload.chart.name)" `
+                         --version $workload.chart.version `
                          --namespace "$(workloadNamespace)" `
                          --set azure.frontdoorid="$frontDoorId" `
                          --set azure.region="$region" `
@@ -252,7 +254,7 @@ jobs: # using jobs so they each run in parallel
             throw "*** Workload '$workloadName' not found in $workloadsFile"
           }
 
-          $chartRegistry,$chartName = $workload.chart -split "/",2
+          $chartRegistry,$chartName = $workload.chart.name -split "/",2
 
           if($chartRegistry.EndsWith(".azurecr.io"))
           {
@@ -279,9 +281,10 @@ jobs: # using jobs so they each run in parallel
             az aks get-credentials --name $aksClusterName --resource-group $aksClusterResourceGroup --overwrite-existing
 
             # Apply workload BackgroundProcessor helm chart
-            echo "*** Installing helm chart $($workload.chart) with image $fullContainerImageName"
+            echo "*** Installing helm chart $($workload.chart.name) version $($workload.chart.version) with image $fullContainerImageName"
 
-            helm upgrade --install workload-backgroundprocessor "oci://$($workload.chart)" `
+            helm upgrade --install workload-backgroundprocessor "oci://$($workload.chart.name)" `
+                         --version $workload.chart.version `
                          --namespace $(workloadNamespace) `
                          --set containerimage="$fullContainerImageName" `
                          --set azure.region="$region" `

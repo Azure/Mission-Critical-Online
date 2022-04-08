@@ -1,0 +1,14 @@
+{
+    "catalogservice": {
+        "chart": "afintglobalcr.azurecr.io/helm/catalogservice:0.0.7",
+        "containerImage": "afintglobalcr.azurecr.io/alwayson/catalogservice:main-950"
+    },
+    "healthservice": {
+        "chart": "afintglobalcr.azurecr.io/helm/healthservice:0.0.7",
+        "containerImage": "afintglobalcr.azurecr.io/alwayson/healthservice:main-950"
+    },
+    "backgroundprocessor": {
+        "chart": "afintglobalcr.azurecr.io/helm/backgroundprocessor:0.0.7",
+        "containerImage": "afintglobalcr.azurecr.io/alwayson/backgroundprocessor:main-950"
+    }
+}

@@ -47,7 +47,7 @@ jobs:
           $containers = Get-Content ./.ado/pipelines/config/import-containers.json | ConvertFrom-JSON 
           $container = $containers | where-object { $_name -eq 'ingress-nginx-controller' }
           if (($container).count -eq 1) {
-          $privateRegistryParams = "--set controller.image.registry=$acrName --set controller.image.image=$($container.image) --set controller.image.tag=$($container.tag)"
+          $privateRegistryParams = "--set controller.image.registry=$(acr_name) --set controller.image.image=$($container.image) --set controller.image.tag=$($container.tag)"
           }
 
           # Deploy ingress-nginx (helm) configuration
@@ -117,7 +117,7 @@ jobs:
           $containers = Get-Content ./.ado/pipelines/config/import-containers.json | ConvertFrom-JSON 
           $container = $containers | where-object { $_name -eq 'cert-manager-controller' }
           if (($container).count -eq 1) {
-          $privateRegistryParams = "--set image.registry=$acrName --set image.repository=$($container.image) --set image.tag=$($container.tag)"
+          $privateRegistryParams = "--set image.registry=$(acr_name) --set image.repository=$($container.image) --set image.tag=$($container.tag)"
           }
 
           # Deploy required custom resource definitions needed for cert-manager

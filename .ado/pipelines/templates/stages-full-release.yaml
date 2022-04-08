@@ -227,6 +227,10 @@ stages:
       jobName:          'buildui'
       workingDirectory: 'src/app/AlwaysOn.UI'
 
+  - template: jobs-container-import.yaml
+    parameters: 
+      jobName: 'importcontainers'
+
 - stage: deployworkload # Deploy workload to previously created infrastructure
   displayName: 'Deploy Workload'
   dependsOn:

@@ -1,0 +1,8 @@
+[
+    {
+        "name": "ingress-nginx-controller",
+        "image": "ingress-nginx/controller",
+        "registry": "k8s.gcr.io",
+        "tag": "v1.1.3"
+    }
+]

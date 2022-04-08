@@ -39,6 +39,13 @@ jobs:
           # Gather Ingress Load Balancer IP from pipeline artifact json
           $aksIngressIp = $stamp.aks_cluster_ingress_ip_address
 
+          # Load container image from private container registry
+          $containers = Get-Content /.ado/pipelines/config/import-containers.json | ConvertFrom-JSON 
+          $container = $containers | where-object { $_name -eq 'ingress-nginx-controller' }
+          if (($container).count -eq 1) {
+          $privateRegistryParams = "--set controller.image.registry=$($container.registry) --set controller.image.image=$($container.image) --set controller.image.tag=$($container.tag)"
+          }
+
           # Deploy ingress-nginx (helm) configuration
           echo "*** Installing nginx ingress controller ($aksIngressIp) on $aksClusterName in $aksClusterResourceGroup"
           helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
@@ -50,7 +57,7 @@ jobs:
                 --values src/config/ingress-nginx/values.helm.yaml `
                 --set controller.service.loadBalancerIP="$aksIngressIp" `
                 --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-resource-group"="$aksClusterResourceGroup" `
-                --version "$(ingressNginxVersion)"
+                --version "$(ingressNginxVersion) $privateRegistryParams"
         }
 
   - task: AzureCLI@2

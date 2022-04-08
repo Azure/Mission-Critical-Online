@@ -40,8 +40,7 @@ jobs:
         # Iterate through all the containerImages of each workload and import them into our ACR
         foreach($containerImage in $workloads.PSObject.Properties.value.containerImage)
         {
-          echo "*** Importing image $containerImage"
-
+          $fullImageName = ""
           # If "registry" is empty, this means dockerhub, then we can ommit the registry and the /
           if($containerImage.registry)
           {
@@ -49,6 +48,8 @@ jobs:
           }
 
           $fullImageName += "$($containerImage.name):$($containerImage.tag)"
+
+          echo "*** Importing image $fullImageName"
 
           # If those images reside in an ACR, we assume our service principal has pull permissions
           az acr import -n $acrName --source $fullImageName --force --verbose

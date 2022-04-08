@@ -8,7 +8,7 @@ The Azure Mission-Critical online reference implementation contains its own virt
 
 ## Existing container registry
 
-All Azure Mission-Critical reference implementations contain its ownn Azure Container Registry, deployed as part of the global services and replicated to each of the regional deployment stamp locations, to host container images (for the sample catalog workload) build and pushed as part of the overall deployment pipelines. This is done to keep the external dependencies of a deployment as minimal as possible and it also allows us to deploy the whole solution end-to-end as part of the E2E deployment pipeline.
+All Azure Mission-Critical reference implementations contain dedicated Azure Container Registrys per environment. They're deployed as part of the global services and replicated to each of the regional deployment stamp locations, to host container images (for the sample catalog workload) built and pushed as part of the overall deployment pipelines. This is done to keep the external dependencies of a deployment as minimal as possible and it also allows us to deploy the whole solution end-to-end as part of the E2E deployment pipeline.
 
 In brownfield environments it is often times considered to use an already existing central container registry for some or all container images. When a central container registry is used following considerations should be taken into account:
 
@@ -20,17 +20,18 @@ In brownfield environments it is often times considered to use an already existi
 Reasons for a dedicated container registries per solution are:
 
 * The blast radius of an outage of the container registry is limited to a single solution.
-* The container registry can be integrated with AKS (or other compute services) to reduce the need for individual credentials. On top of that provides Azure Container registry only a limited set of functionality to restrict access in multi-tenant scenarios.
+* The container registry can be integrated with AKS (or other compute services) to reduce the need for individual credentials.
+  > Azure Container Registries provide only a limited set of functionality to restrict access in multi-tenant scenarios.
 * The container registry can be restricted to a given solution using Private Endpoints.
 * The container registry can be replicated to the same locations where the solution is deployed.
 
-> **Important!** According to the Azure Mission-Critical design guidance, our clear recommendation is to use dedicated Azure Container Registries.
+> **Important!** According to the Azure Mission-Critical design guidance, our clear recommendation is to use dedicated Azure Container Registries. Container images that exist in another container registry should either be pushed or imported into the solution's container registry.
 
 ## Existing workload
 
 When the Proof-of-Concept deployment of the Azure Mission-Critical reference implementation evolves towards a more production-ready environment the next ask is to replace the sample application with a real workload. The online reference implementation comes with a sample workload that can be used as a starting point for a real workload. It follows our best practices to build, push and deploy a workload.
 
-The [Bring your own workload](./Bring-your-own-workload.md) guide describes the process to replace the sample workload with a real workload.
+The [Bring your own workload](./Bring-your-own-workload.md) section describes the process to replace the sample workload with a real workload.
 
 ---
 

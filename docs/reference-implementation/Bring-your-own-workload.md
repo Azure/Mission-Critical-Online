@@ -46,7 +46,7 @@ The main consideration here is to which registry the container images are pushed
 
 Assuming that we have our container images build and pushed to a container registry, the next step is to deploy the workload to each of our Kubernetes clusters in each of the region deployment stamps.
 
-The Azure Mission-Critical reference implementation uses Helm to package Kubernetes manifests and deploy them. The application-specific Helm charts are stored in `/src/app/charts`. These charts are not pushed to a container registry, they're applied directly from the repository as part of the deployment pipeline.
+The Azure Mission-Critical reference implementation uses [Helm](http://helm.sh) to package Kubernetes manifests and deploy them. The application-specific Helm charts are stored in `/src/app/charts`. These charts are not pushed to a container registry, they're applied directly from the repository as part of the deployment pipeline.
 
 Depending on the type of environment, using the [mono-repo](#mono-repo) or [multi-repo](#multi-repo) approach, these Helm charts might existing outside of the infrastructure repository as well either in another repo or pushed to a container registry.
 

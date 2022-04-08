@@ -3,7 +3,7 @@ parameters:
 
 jobs:
 - job: ${{ parameters.jobName }}
-  displayName: 'Import container'
+  displayName: 'Import containers'
   steps:
 
   - download: current # download pipeline artifacts
@@ -13,7 +13,7 @@ jobs:
       workingDirectory: '$(Pipeline.Workspace)/terraformOutputGlobalInfra'  # Global infra deploy output directory
 
   - task: AzureCLI@2
-    displayName: 'Import container images'
+    displayName: 'Import container images from external registries'
     retryCountOnTaskFailure: 1
     inputs:
       azureSubscription: $(azureServiceConnection)

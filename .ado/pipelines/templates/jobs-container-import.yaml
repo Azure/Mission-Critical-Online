@@ -21,13 +21,11 @@ jobs:
       scriptLocation: inlineScript
       inlineScript: |
 
-        # Login to ACR
-        az acr login -n $acrName
+        az acr login -n $acrName # Login to ACR
 
         $importContainers = Get-Content /.ado/pipelines/config/import-containers.json | ConvertFrom-JSON
 
         foreach ($container in $importContainers) {        
-
           az acr import --name $acrName `
             --source "$($container.registry)/$($container.image):$($container.tag)" `
             --image "$($container.image):$($container.tag)"

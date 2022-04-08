@@ -6,7 +6,8 @@ resource "azurerm_service_plan" "asp" {
   os_type             = "Linux"
   sku_name            = "P1v2"
 
-  zone_balancing_enabled = true # Balance Service Plan across Availability Zones (AZs).
+  zone_balancing_enabled = false # Balance Service Plan across Availability Zones (AZs)
+  # This is currently disabled as the database backend is not using AZs.
 
   tags = local.default_tags
 }

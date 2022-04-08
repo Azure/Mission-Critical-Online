@@ -1,0 +1,37 @@
+parameters:
+  jobName:                  '' # name for each build job - needs to be unique within a given stage/pipeline
+
+jobs:
+- job: ${{ parameters.jobName }}
+  displayName: 'Import container'
+  steps:
+
+  - download: current # download pipeline artifacts
+
+  - task: AzureCLI@2
+    displayName: 'Import container images'
+    retryCountOnTaskFailure: 1
+    inputs:
+      azureSubscription: $(azureServiceConnection)
+      scriptType: pscore
+      scriptLocation: inlineScript
+      inlineScript: |
+        # load json data from downloaded terraform artifact
+        $infraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputGlobalInfra/*.json | Get-Content | ConvertFrom-JSON
+
+        $acrName = $infraDeployOutput.acr_name.value # Container Registry Name (from terraform output)
+        $acrUrl = $infraDeployOutput.acr_login_server.value # Container Registry Login Server (from terraform output)
+
+        echo "*** Retrieved Azure Container Registry Login Server $acrUrl (from terraformOutputGlobalInfra)"
+
+        # Login to ACR so we can later push to it
+        az acr login -n $acrName
+
+        $importContainers = Get-Content /.ado/pipelines/config/import-containers.json | ConvertFrom-JSON
+
+        foreach ($container in $importContainers) {        
+
+          az acr import --name $acrName `
+            --source "$($container.registry)/$($container.image):$($container.tag)" `
+            --image "$($container.image):$($container.tag)"
+        }

@@ -23,7 +23,7 @@ jobs:
 
         az acr login -n $acrName # Login to ACR
 
-        $importContainers = Get-Content /.ado/pipelines/config/import-containers.json | ConvertFrom-JSON
+        $importContainers = Get-Content ./.ado/pipelines/config/import-containers.json | ConvertFrom-JSON
 
         foreach ($container in $importContainers) {        
 

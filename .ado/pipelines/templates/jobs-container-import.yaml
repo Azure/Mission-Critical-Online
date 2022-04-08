@@ -48,7 +48,7 @@ jobs:
             $fullImageName += "$($containerImage.registry)/"
           }
 
-          $fullImageName += $($containerImage.name):$($containerImage.tag)"
+          $fullImageName += "$($containerImage.name):$($containerImage.tag)"
 
           # If those images reside in an ACR, we assume our service principal has pull permissions
           az acr import -n $acrName --source $fullImageName --force --verbose

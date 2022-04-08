@@ -4,5 +4,11 @@
         "image": "ingress-nginx/controller",
         "registry": "k8s.gcr.io",
         "tag": "v1.1.3"
+    },
+    {
+        "name": "cert-manager-controller",
+        "image": "jetstack/cert-manager-controller",
+        "registry": "quay.io",
+        "tag": "v1.8.0"
     }
 ]

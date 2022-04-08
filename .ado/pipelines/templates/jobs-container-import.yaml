@@ -26,6 +26,8 @@ jobs:
         $importContainers = Get-Content /.ado/pipelines/config/import-containers.json | ConvertFrom-JSON
 
         foreach ($container in $importContainers) {        
+
+          echo "Import container image $($container.image) ($($container.tag)) from $($container.registry)"
           az acr import --name $acrName `
             --source "$($container.registry)/$($container.image):$($container.tag)" `
             --image "$($container.image):$($container.tag)"

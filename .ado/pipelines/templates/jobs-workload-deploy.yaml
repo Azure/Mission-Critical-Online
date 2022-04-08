@@ -69,9 +69,6 @@ jobs: # using jobs so they each run in parallel
             echo "*** Load credentials for AKS Cluster $aksClusterName in $aksClusterResourceGroup"
             az aks get-credentials --name $aksClusterName --resource-group $aksClusterResourceGroup --overwrite-existing
 
-            acr import -n $myRegistry $image
-            az login
-
             echo "*** Installing helm chart $($workload.chart) with image $fullContainerImageName"
 
             # Apply workload worker helm chart

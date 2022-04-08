@@ -8,7 +8,9 @@ jobs:
 
   - download: current # download pipeline artifacts
 
-  - template: steps-buildagent-prerequisites.yaml
+  - template: steps-parse-terraform-output.yaml
+    parameters:
+      workingDirectory: '$(Pipeline.Workspace)/terraformOutputGlobalInfra'  # Global infra deploy output directory
 
   - task: AzureCLI@2
     displayName: 'Import container images'

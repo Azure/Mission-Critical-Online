@@ -1,0 +1,11 @@
+apiVersion: "v2"
+appVersion: 0.0.1
+name: cert-manager-alwayson
+description: "Configuration for cert-manager using the HTTP issuer"
+version: 0.0.1
+sources:
+- https://github.com/Azure/Mission-Critical
+kubeVersion: ">=1.18.0"
+maintainers:
+- name: alwayson
+  email: alwaysonappnet@microsoft.com

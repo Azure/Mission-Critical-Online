@@ -121,7 +121,7 @@ jobs:
           $container = $containers | where-object { $_name -eq 'cert-manager-controller' }
           if (($container).count -eq 1) {
             echo "*** Using container image $($container.image) (tag $($container.tag)) from registry $($container.registry)"
-            $privateRegistryParams = "--set controller.image.registry=$(acr_name) --set controller.image.image=$($container.image) --set controller.image.tag=$($container.tag)"
+            $privateRegistryParams = "--set image.registry=$(acr_name) --set image.repository=$($container.image) --set image.tag=$($container.tag)"
           } else {
             echo "*** No private container image $($container.name) (tag $($container.tag)) found in registry $($container.registry) using defaults."
           }

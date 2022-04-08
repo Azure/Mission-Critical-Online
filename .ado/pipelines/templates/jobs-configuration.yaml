@@ -6,7 +6,6 @@ parameters:
 jobs:
 - job: deployconfiguration
   displayName: 'Deploy K8s Configuration'
-  dependsOn: buildapplication
   steps:
 
   - download: current # download pipeline artifacts

@@ -6,6 +6,8 @@ resource "azurerm_service_plan" "asp" {
   os_type             = "Linux"
   sku_name            = "P1v2"
 
+  zone_balancing_enabled = true # Balance Service Plan across Availability Zones (AZs).
+
   tags = local.default_tags
 }
 

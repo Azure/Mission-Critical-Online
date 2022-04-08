@@ -7,11 +7,11 @@ The Azure Mission-Critical reference implementation follows a mono-repo approach
 
 ## Application Code
 
-The easiest way to implement existing workloads is to continue with the **mono-repo** approach. New workloads including their sourcecode can be added to the repo and the pipelines extended to build, push and deploy it to the infrastructure.
+The easiest way to implement existing workloads is to continue with the **mono-repo** approach. New workloads including their sourcecode can be added to the repo, and the existing pipelines can be extended to build, push and deploy it to the infrastructure.
 
 In a **multi-repo** environment, the application code is stored in a different or in individual repositories, separated from the infrastructure. This also means that the application code is usually build and pushed in a separate pipeline.
 
-The following two sub-sections contain information how to either bring workloads either via the mono-repo approach or via the multi-repo approach into the Azure Mission-Critical environment.
+The following two sub-sections contain information on how to either bring workloads via the mono-repo approach or via the multi-repo approach into the Azure Mission-Critical environment.
 
 ### Mono-repo
 
@@ -19,11 +19,14 @@ The application code is stored in the `/src/app/` directory. Each application ha
 
 ```bash
 src/app/
-├── <application>
+├── <application1>
 │   ├── Dockerfile
+│   ├── ...
+├── <application2>
+│   ├── ...
 ```
 
-This `Dockerfile` is picked up by the `Build Application Code` stage of the pipeline. This pipeline can be easily extended to build and push additional images to the Azure Container Registry.
+This `Dockerfile` is picked up by the `Build Application Code` stage of the pipeline. This pipeline can be easily extended to build and push additional images to the Azure Container Registry. The process itself is baked into a template that requires only three parameters:
 
 ```yaml
   - template: jobs-container-build.yaml
@@ -33,7 +36,7 @@ This `Dockerfile` is picked up by the `Build Application Code` stage of the pipe
       containerImageDockerFile: '<dockerfile>' # dockerfile used to build the container image
 ```
 
-The `jobs-container-build.yaml` template expects the files to be stored in `/src/app`. This can be overridden by the `workingDirectory` parameter if needed.
+The `jobs-container-build.yaml` template expects the files to be stored in `/src/app/`. The `containerImageDockerFile` parameter specifies the relative path from there to the `Dockerfile` i.e. `application1\Dockerfile`. This can be overridden by the `workingDirectory` parameter if needed.
 
 ### Multi-repo
 

@@ -147,7 +147,10 @@ jobs:
           helm upgrade --install cert-manager jetstack/cert-manager `
                        --values src/config/cert-manager/values.helm.yaml `
                        --namespace $certManagerNamespace `
-                       --version "$(certManagerVersion)" $privateRegistryParams
+                       --version "$(certManagerVersion)" `
+                       --set image.registry=$($globalInfraDeployOutput.acr_login_server.value) `
+                       --set image.repository=$($container.image) `
+                       --set image.tag=$($container.tag)
         }
 
   - task: AzureCLI@2

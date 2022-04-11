@@ -61,7 +61,7 @@ jobs:
                 --values src/config/ingress-nginx/values.helm.yaml `
                 --set controller.service.loadBalancerIP="$aksIngressIp" `
                 --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-resource-group"="$aksClusterResourceGroup" `
-                --version "$(ingressNginxVersion)" $privateRegistryParams"
+                --version "$(ingressNginxVersion)" $privateRegistryParams
         }
 
   - task: AzureCLI@2
@@ -145,7 +145,7 @@ jobs:
           helm upgrade --install cert-manager jetstack/cert-manager `
                        --values src/config/cert-manager/values.helm.yaml `
                        --namespace $certManagerNamespace `
-                       --version "$(certManagerVersion)" $privateRegistryParams"
+                       --version "$(certManagerVersion)" $privateRegistryParams
         }
 
   - task: AzureCLI@2

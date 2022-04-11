@@ -80,7 +80,7 @@ Error: deleting Front Door (Subscription: "xxxxx-8cbd-46f2-a146-yyyyyyyyyy"
 
 ```
 
-**Description:** *This only happens when you are using custom domain names*. In order to protect customers from DNS-rebinding attacks, by default an Azure Front Door resource cannot be deleted while still a CNAME is pointing to it. However, because of the dependency tree of Terraform, there is no direct way to circumvent this.
+**Description:** *This only happens when you are using custom domain names*. In order to protect customers from DNS-rebinding attacks, by default an Azure Front Door resource cannot be deleted while still a CNAME is pointing to it. However, because of the way Terraform tracks and handles dependencies, there is no direct way to circumvent this.
 
 **Solution:** You can disable the protection by running the following command towards your Azure subscription:
 

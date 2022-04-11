@@ -1,0 +1,194 @@
+parameters:
+ - name: terraformWorkingDirectory
+   type: string
+   default: ''
+ - name: customPrefix
+   type: string
+ - name: embeddedLoadTest
+   type: boolean
+   default: false 
+ - name: destroyInfra
+   type: boolean
+   default: true 
+
+
+stages:
+
+- stage: deployazloadtest
+  displayName: 'Deploy Azure Load Test Infrastructure'
+  jobs:
+  - job: deployazloadtest
+    displayName: 'Deploy Azure Load Test via Terraform'
+    steps:
+    - checkout: self # checkout github repository
+    - download: current # download pipeline artifacts
+
+    - template: steps-set-pipeline-variables.yaml # load set-pipeline-variables function
+
+    - template: steps-terraform-init.yaml
+      parameters:
+        terraformStorageAccountName:       '$(terraformStorageAccount)'
+        terraformStorageResourceGroupName: '$(terraformResourceGroup)'
+        terraformStateFilename:            'terraform-azurelt-${{ parameters.customPrefix }}.state'
+        terraformWorkingDirectory:         '${{ parameters.terraformWorkingDirectory }}'
+
+    # Deploy the locust infrastructure. If running in headless mode, the test will automatically start once the infra is provisioned.
+    - template: steps-terraform-apply.yaml
+      parameters:
+        terraformWorkingDirectory:  '${{ parameters.terraformWorkingDirectory }}'
+        customPrefix:               '${{ parameters.customPrefix }}'
+        environment:                '$(environment)'
+        customAttributes:           '-var queued_by="$(Build.QueuedBy)"'
+
+    - template: steps-parse-terraform-output.yaml
+      parameters:
+        workingDirectory: '$(workingDirectory)'  
+
+    # All of the next tasks are only applicable in headless mode
+    - ${{ if eq(parameters.embeddedLoadTest, 'true') }}:
+
+      # create a new azure load test with an auto-generated loadTestId
+      - task: AzureCLI@2
+        displayName: 'Create a new Azure Load Test'
+        name: 'createAzureLoadTest'
+        inputs:
+          azureSubscription: '$(azureServiceConnection)'
+          scriptType: pscore
+          scriptLocation: 'scriptPath'
+          scriptPath: '$(System.DefaultWorkingDirectory)/src/testing/loadtest-azure/scripts/create-loadtest.ps1'
+          arguments:
+            -resourceGroupName "$(azureLoadResourceGroup)" `
+            -loadTestName "$(azureLoadTestName)" `
+            -loadTestDisplayName "load test run $(Build.BuildId)" `
+            -loadTestDescription "Pipeline generated load test" `
+            -engineSize "$(azureLoadTestEngineSize)" `
+            -engineInstances "$(azureLoadTestEngineInstances)" `
+            -pipeline $true
+
+      # upload a jmx file for the previously created azure load test with an auto-generated testFileId
+      - task: AzureCLI@2
+        displayName: 'Upload *.jmx files for Azure Load Test'
+        name: 'uploadAzureLoadTestJmx'
+        inputs:
+          azureSubscription: '$(azureServiceConnection)'
+          scriptType: pscore
+          scriptLocation: 'scriptPath'
+          scriptPath: '$(System.DefaultWorkingDirectory)/src/testing/loadtest-azure/scripts/file-upload-to-loadtest.ps1'
+          arguments:
+            -resourceGroupName "$(azureLoadResourceGroup)" `
+            -loadTestName "$(azureLoadTestName)" `
+            -loadTestId "$(loadTestId)" `
+            -testFileName "$(System.DefaultWorkingDirectory)/src/config/loadtest-azure/player-test.jmx"
+
+      # Create config csv for Azure Load Test
+      - task: PowerShell@2
+        displayName: 'Create config *.csv file'
+        name: 'createAzureLoadTestConfigCsv'
+        inputs:
+          targetType: inline
+          script: |      
+            $config = @(
+              [pscustomobject]@{
+              url = "www.$(envDomainName)"
+              tenant  = "$(b2cTenantName)"
+              gm_userid  = "$(smokeUser)"
+              gm_password = "$(smokePassword)"
+              ropc_policy = "$(b2cRopcPolicyName)"
+              client_id = "$(b2cUIClientID)"
+              numberOf_games = '100'
+              parallel_threads = '50'
+              test_duration = '120'
+            })
+            $config | export-csv "$(System.DefaultWorkingDirectory)/test-config.csv"  -NoTypeInformation
+      # upload a loadtest config file from previous task
+      - task: AzureCLI@2
+        displayName: 'Upload auto-generated load test config file for Azure Load Test'
+        name: 'uploadAzureLoadTestConfig'
+        inputs:
+          azureSubscription: '$(azureServiceConnection)'
+          scriptType: pscore
+          scriptLocation: 'scriptPath'
+          scriptPath: '$(System.DefaultWorkingDirectory)/src/testing/loadtest-azure/scripts/file-upload-to-loadtest.ps1'
+          arguments:
+            -resourceGroupName "$(azureLoadResourceGroup)" `
+            -loadTestName "$(azureLoadTestName)" `
+            -loadTestId "$(loadTestId)" `
+            -testFileName "$(System.DefaultWorkingDirectory)/test-config.csv"            
+
+      # upload user csv file
+      - task: AzureCLI@2
+        displayName: 'Upload *.csv files for Azure Load Test'
+        name: 'uploadAzureLoadTestUsers'
+        inputs:
+          azureSubscription: '$(azureServiceConnection)'
+          scriptType: pscore
+          scriptLocation: 'scriptPath'
+          scriptPath: '$(System.DefaultWorkingDirectory)/src/testing/loadtest-azure/scripts/file-upload-to-loadtest.ps1'
+          arguments:
+            -resourceGroupName "$(azureLoadResourceGroup)" `
+            -loadTestName "$(azureLoadTestName)" `
+            -loadTestId "$(loadTestId)" `
+            -testFileName "$(System.DefaultWorkingDirectory)/src/config/identity/generated-users.csv"
+
+      # start azure load test
+      - task: AzureCLI@2
+        displayName: 'Run Azure Load Test'
+        inputs:
+          azureSubscription: '$(azureServiceConnection)'
+          scriptType: pscore
+          scriptLocation: 'scriptPath'
+          scriptPath: '$(System.DefaultWorkingDirectory)/src/testing/loadtest-azure/scripts/run-loadtest.ps1'
+          arguments:
+            -resourceGroupName "$(azureLoadResourceGroup)" `
+            -loadTestName "$(azureLoadTestName)" `
+            -loadTestId "$(loadTestId)" `
+            -testRunName "Load Test run by ADO" `
+            -testRunDescription "Pipeline executed load test run" `
+            -testRunVUsers "$(azureLoadTestVUsers)" `
+            -pipeline $true
+
+      # TODO - get load test status and wait till it's done
+
+      - task: AzureCLI@2
+        displayName: 'Wait for load test to be finished'
+        inputs:
+          azureSubscription: $(azureServiceConnection)
+          scriptType: pscore
+          scriptLocation: inlineScript
+          inlineScript: |
+            
+            Do {
+              echo "*** Waiting additional 90 seconds for the load test run to complete.."
+              start-sleep -seconds 90
+              $result = $(System.DefaultWorkingDirectory)/src/testing/loadtest-azure/scripts/get-loadtest-run.ps1 `
+                          -resourceGroupName "$(azureLoadResourceGroup)" `
+                          -loadTestName "$(azureLoadTestName)" `
+                          -testRunId "$(testRunId)"
+              $testRunStatus = ($result).status
+              echo "*** Test Run $(testRunId) is in status $testRunStatus"
+              if ($result.status -eq "DONE") {
+                echo $result
+                $resultUrl = ($result).testArtifacts.outputArtifacts.resultUrl.url
+                $logsUrl = ($result).testArtifacts.outputArtifacts.logsUrl.url
+                New-Item -Path results -ItemType "directory"
+                echo "*** Download resultsUrl"
+                Invoke-WebRequest $resultUrl -OutFile "results/results.zip"
+                echo "*** Download logsUrl"
+                Invoke-WebRequest $logsUrl -OutFile "results/logs.zip"
+              }
+              # todo - timeout?
+            } while ($result.status -ne "DONE")
+      # TODO - publish load test results in azure devops
+      - task: PublishBuildArtifacts@1
+        inputs:
+          artifactName: 'loadtest'
+          pathToPublish: '$(System.DefaultWorkingDirectory)/results'
+
+    # All of the next tasks are only applicable in headless mode
+    - ${{ if and(eq(parameters.embeddedLoadTest, 'true'),eq(parameters.destroyInfra, 'true')) }}:
+      # Destroy Azure Load test infrastructure at the end
+      - template: steps-terraform-destroy.yaml
+        parameters:
+          terraformStateFilename:     'terraform-azurelt-${{ parameters.customPrefix }}.state'
+          terraformWorkingDirectory:  '${{ parameters.terraformWorkingDirectory }}'
+          customAttributes:           '-var prefix="${{ parameters.customPrefix }}"'

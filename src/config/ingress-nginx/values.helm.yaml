@@ -1,4 +1,5 @@
-# NGINX Ingress Controller helm configuration
+# ingress-nginx helm chart configuration values
+# This file contains additional configuration settings and parameters used for the ingress-nginx helm chart installation.
 # https://github.com/kubernetes/ingress-nginx/blob/master/charts/ingress-nginx/values.yaml
 
 controller:

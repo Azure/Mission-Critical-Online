@@ -1,6 +1,6 @@
 # Configuration Layer
 
-The "configuration layer" builds the bridge between the infrastructure deployed in the [Infrastructure Layer](../infra/README.md) and the application. Our reference implementation separates between infrastructure and configuration which allow us to use different toolkits to deploy the infrastructure, for example Terraform or ARM templates/Bicep.
+The "configuration layer" builds the bridge between the infrastructure deployed in the [Infrastructure Layer](../infra/README.md) and the application. This reference implementation partially separates the infrastructure, configuration and workload deployment which allow us to use different toolkits for each part and to separate it into different stages.
 
 ## Versioning
 
@@ -20,7 +20,7 @@ These version definitions are not only used for the components installed, but al
 
 ## Components
 
-The configuration layer is responsible for installing a set of components on top of the Azure resources deployed as part of the infrastructure layer:
+The configuration layer is responsible for installing a set of components on top of the Azure resources, in this reference implementation mainly Azure Kubernetes Service, deployed as part of the infrastructure layer:
 
 * [ingress-nginx](#ingress-nginx)
 * [cert-manager](#cert-manager)
@@ -39,13 +39,13 @@ Important configurations are:
 * Set resource requests
 * Enable Prometheus metrics
 
-Further settings are set in the values YAML here [src/config/ingress/nginx.yaml](/src/config/ingress/nginx.yaml). See [ingress-nginx/values.yaml reference](https://github.com/kubernetes/ingress-nginx/blob/master/charts/ingress-nginx/values.yaml) for more ingress-nginx configuration options.
+Further settings are set in the `values.helm.yaml` file in [src/config/ingress-nginx](/src/config/ingress/values.helm.yaml). See [ingress-nginx/values.yaml](https://github.com/kubernetes/ingress-nginx/blob/master/charts/ingress-nginx/values.yaml) for all configuration options available for the `ingress-nginx` helm chart.
 
 ### cert-manager
 
-Jetstack's cert-manager is used to auto-provision SSL/TLS certificates (using Let's Encrypt) for our ingress controllers. It is installed via a helm chart using the Configuration Layer pipeline.
+Jetstack's cert-manager is used to auto-provision SSL/TLS certificates (using Let's Encrypt) for ingress rules. It is installed via the `cert-manager` helm chart as part of the configuration stage.
 
-Additional configuration settings like Issuer (for Let's Encrypt) as well as the separate namespace for Kubernetes are stored in [src/config/cert-manager](/src/config/cert-manager/).
+Additional configuration settings like the `ClusterIssuer` (used to request certificates from Let's Encrypt) is deployed via a separate `cert-manager-config` helm chart stored in [src/config/cert-manager/chart](/src/config/cert-manager/chart/).
 
 This implementation is using `ClusterIssuer` instead of `Issuer` as documented [here](https://cert-manager.io/docs/concepts/issuer/) and [here](https://docs.cert-manager.io/en/release-0.7/tasks/issuing-certificates/ingress-shim.html) to avoid having issuers per namespaces.
 
@@ -66,7 +66,7 @@ During the infra-config deployment step, all required components are installed v
 Those, in turn, are later loaded as ENV variables for easy application access inside the pods.
 Note: Even if a pod only wants to use the ENV variables, it still needs to do the file system mount in order for the secret retrieval to work. This step is done in the app deployment.
 
-The configuration helm chart is stored in [src/config/charts/csi-secrets-driver](./charts/csi-secrets-driver/)
+The configuration helm chart is stored in [src/config/csi-secrets-driver/chart](./csi-secrets-driver/chart)
 
 ### Monitoring
 

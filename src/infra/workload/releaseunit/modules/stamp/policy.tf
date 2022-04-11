@@ -53,3 +53,23 @@ resource "azurerm_resource_group_policy_assignment" "aks_rbac_enabled" {
   policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/ac4a19c2-fa67-49b4-8ae5-0b2e78c49457"
   display_name         = "Role-Based Access Control (RBAC) should be used on Kubernetes Services"
 }
+
+# Limit access to external container registries (BuiltIn)
+# https://github.com/Azure/azure-policy/blob/master/built-in-policies/policyDefinitions/Kubernetes/ContainerAllowedImages.json
+resource "azurerm_resource_group_policy_assignment" "aks_limit_registries" {
+  name                 = "aks-limit-registries"
+  resource_group_id    = azurerm_resource_group.stamp.id
+  policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/febd0533-8e55-448f-b837-bd0e06f16469"
+  display_name         = "Kubernetes cluster containers should only use allowed images"
+
+  parameters = <<PARAMS
+  {
+    "allowedValues": {
+      "value": "deny"
+    },
+    "allowedContainerImagesRegex": {
+      "value": "^([^\\/]+\\.azurecr\\.io|mcr\\.microsoft\\.com)\\/.+$"
+    }
+  }
+PARAMS
+}

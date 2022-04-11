@@ -69,7 +69,7 @@ resource "azurerm_resource_group_policy_assignment" "aks_limit_registries" {
       "value": "^(${data.azurerm_container_registry.global.name}\\.azurecr\\.io|mcr\\.microsoft\\.com)\\/.+$"
     },
     "excludedNamespaces": {
-      "value": "[]"
+      "value": []
     }
   }
 PARAMS

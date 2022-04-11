@@ -14,6 +14,7 @@ jobs:
 
   - task: AzureCLI@2
     displayName: 'Install ingress-nginx $(ingressNginxVersion) on AKS clusters'
+    retryCountOnTaskFailure: 1
     inputs:
       azureSubscription: $(azureServiceConnection)
       scriptType: pscore
@@ -46,7 +47,7 @@ jobs:
           # Deploy helm chart for ingress-nginx using a custom load balancer ip and resource group
           helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx `
                 --namespace kube-system `
-                --values src/config/ingress/values.helm.yaml `
+                --values src/config/ingress-nginx/values.helm.yaml `
                 --set controller.service.loadBalancerIP="$aksIngressIp" `
                 --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-resource-group"="$aksClusterResourceGroup" `
                 --version "$(ingressNginxVersion)"
@@ -54,6 +55,7 @@ jobs:
 
   - task: AzureCLI@2
     displayName: 'Configure OMSAgent (Container Insights) on AKS clusters'
+    retryCountOnTaskFailure: 1
     inputs:
       azureSubscription: $(azureServiceConnection)
       scriptType: pscore
@@ -80,6 +82,7 @@ jobs:
 
   - task: AzureCLI@2
     displayName: 'Install cert-manager $(certManagerVersion) on AKS clusters'
+    retryCountOnTaskFailure: 1
     inputs:
       azureSubscription: $(azureServiceConnection)
       scriptType: pscore
@@ -103,21 +106,29 @@ jobs:
           echo "*** Apply cert-manager CRDs on $aksClusterName"
           kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/$(certManagerVersion)/cert-manager.crds.yaml
 
-          # Preparations to deploy cert-manager into it's own cert-manager namespace
-          echo "*** Create a separate namespace for cert-manager on $aksClusterName"
-          kubectl apply -f src/config/cert-manager/cert-manager.yaml
+          $certManagerNamespace = "cert-manager"
+
+          echo "*** Create namespace '$certManagerNamespace' on AKS cluster $aksClusterName via kubectl"
+          kubectl create namespace $certManagerNamespace `
+                    --dry-run=client --output yaml | kubectl apply -f -
+
+          echo "*** Setting up cert-manager ClusterIssuer with Let's Encrypt"
+          helm upgrade --install cert-manager-config src/config/cert-manager/chart/cert-manager-config`
+                       --namespace $certManagerNamespace `
+                       --set letsencrypt.contactEmail="$(contactEmail)"
 
           echo "*** Installing cert-manager via helm on $aksClusterName"
           helm repo add jetstack https://charts.jetstack.io
           helm repo update
           helm upgrade --install cert-manager jetstack/cert-manager `
                        --values src/config/cert-manager/values.helm.yaml `
-                       --namespace cert-manager `
+                       --namespace $certManagerNamespace `
                        --version "$(certManagerVersion)"
         }
 
   - task: AzureCLI@2
     displayName: 'Install KeyVault CSI driver on AKS clusters'
+    retryCountOnTaskFailure: 1
     inputs:
       azureSubscription: $(azureServiceConnection)
       scriptType: pscore
@@ -158,7 +169,7 @@ jobs:
 
           echo "*** Retrieved Kubelet clientId $kubeletIdentityClientId for cluster $clusterName"
 
-          helm upgrade --install csi-secrets-driver src/config/charts/csi-secrets-driver `
+          helm upgrade --install csi-secrets-driver src/config/csi-secrets-driver/chart/csi-secrets-driver-config `
                         --namespace "$(workloadNamespace)" `
                         --set azure.tenantId=$tenantId `
                         --set azure.keyVaultName="$keyVaultName" `
@@ -169,6 +180,7 @@ jobs:
   - ${{ if eq(parameters.runChaosTesting, 'true') }}:
     - task: AzureCLI@2
       displayName: "Install Chaos Mesh $(chaosMeshVersion) on AKS clusters"
+      retryCountOnTaskFailure: 1
       inputs:
         azureSubscription: $(azureServiceConnection)
         scriptType: pscore

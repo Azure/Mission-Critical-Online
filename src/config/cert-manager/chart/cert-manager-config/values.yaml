@@ -1,0 +1,2 @@
+letsencrypt:
+  contactEmail: ""    # Email address which will get registered with Lets Encrypt

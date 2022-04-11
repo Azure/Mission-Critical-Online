@@ -88,7 +88,10 @@ Error: deleting Front Door (Subscription: "xxxxx-8cbd-46f2-a146-yyyyyyyyyy"
 az feature register --namespace Microsoft.Network --name BypassCnameCheckForCustomDomainDeletion
 
 # Then you can check the state of it by running:
-az feature list -o table --query "[?contains(name, 'Microsoft.Network/BypassCnameCheckForCustomDomainDeletion')].{Name:name,State:properties.state}
+az feature list -o table --query "[?contains(name, 'Microsoft.Network/BypassCnameCheckForCustomDomainDeletion')].{Name:name,State:properties.state}"
+
+# To de-register the feature again, in case it is not needed/wanted anymore run:
+# az feature unregister --namespace Microsoft.Network --name BypassCnameCheckForCustomDomainDeletion
 ```
 
 Once the feature has been registered (this can take a couple of minutes), deletion should work fine.

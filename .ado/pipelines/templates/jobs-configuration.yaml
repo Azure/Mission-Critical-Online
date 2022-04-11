@@ -12,10 +12,6 @@ jobs:
 
   - template: steps-buildagent-prerequisites.yaml
 
-  - template: steps-parse-terraform-output.yaml
-    parameters:
-      workingDirectory: '$(Pipeline.Workspace)/terraformOutputGlobalInfra'  # Global infra deploy output directory
-
   - task: AzureCLI@2
     displayName: 'Install ingress-nginx $(ingressNginxVersion) on AKS clusters'
     retryCountOnTaskFailure: 1
@@ -26,6 +22,7 @@ jobs:
       inlineScript: |
 
         # load json data from downloaded pipeline artifact json
+        $globalInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputGlobalInfra/*.json | Get-Content | ConvertFrom-JSON
         $releaseUnitInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputReleaseUnitInfra/*.json | Get-Content | ConvertFrom-JSON
 
         # loop through stamps from pipeline artifact json
@@ -44,11 +41,11 @@ jobs:
           $aksIngressIp = $stamp.aks_cluster_ingress_ip_address
 
           # Load container image from private container registry
-          $containers = Get-Content ./.ado/pipelines/config/import-containers.json | ConvertFrom-JSON 
-          $container = $containers | where-object { $_name -eq 'ingress-nginx-controller' }
+          $containers = Get-Content "$(System.DefaultWorkingDirectory)/.ado/pipelines/config/import-containers.json" | ConvertFrom-JSON
+          $container = $containers | where-object { $_.name -eq 'ingress-nginx-controller' }
           if (($container).count -eq 1) {
             echo "*** Using container image $($container.image) (tag $($container.tag)) from registry $($container.registry)"
-            $privateRegistryParams = "--set controller.image.registry=$(acr_name) --set controller.image.image=$($container.image) --set controller.image.tag=$($container.tag)"
+            $privateRegistryParams = "--set controller.image.registry=$($globalInfraDeployOutput.acr_name.value) --set controller.image.image=$($container.image) --set controller.image.tag=$($container.tag)"
           } else {
             echo "*** No private container image $($container.name) (tag $($container.tag)) found in registry $($container.registry) using defaults."
           }
@@ -104,6 +101,7 @@ jobs:
       inlineScript: |
 
         # load json data from downloaded pipeline artifact json
+        $globalInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputGlobalInfra/*.json | Get-Content | ConvertFrom-JSON
         $releaseUnitInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputReleaseUnitInfra/*.json | Get-Content | ConvertFrom-JSON
 
         # loop through stamps from pipeline artifact json
@@ -118,10 +116,10 @@ jobs:
 
           # Load container image from private container registry
           $containers = Get-Content ./.ado/pipelines/config/import-containers.json | ConvertFrom-JSON 
-          $container = $containers | where-object { $_name -eq 'cert-manager-controller' }
+          $container = $containers | where-object { $_.name -eq 'cert-manager-controller' }
           if (($container).count -eq 1) {
             echo "*** Using container image $($container.image) (tag $($container.tag)) from registry $($container.registry)"
-            $privateRegistryParams = "--set image.registry=$(acr_name) --set image.repository=$($container.image) --set image.tag=$($container.tag)"
+            $privateRegistryParams = "--set image.registry=$($globalInfraDeployOutput.acr_name.value) --set image.repository=$($container.image) --set image.tag=$($container.tag)"
           } else {
             echo "*** No private container image $($container.name) (tag $($container.tag)) found in registry $($container.registry) using defaults."
           }

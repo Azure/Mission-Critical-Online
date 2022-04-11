@@ -8,10 +8,6 @@ jobs:
 
   - download: current # download pipeline artifacts
 
-  - template: steps-parse-terraform-output.yaml
-    parameters:
-      workingDirectory: '$(Pipeline.Workspace)/terraformOutputGlobalInfra'  # Global infra deploy output directory
-
   - task: AzureCLI@2
     displayName: 'Import container images from external registries'
     retryCountOnTaskFailure: 1
@@ -21,14 +17,14 @@ jobs:
       scriptLocation: inlineScript
       inlineScript: |
 
-        az acr login -n $(acr_name) # Login to ACR
+        $globalInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputGlobalInfra/*.json | Get-Content | ConvertFrom-JSON
 
         $importContainers = Get-Content ./.ado/pipelines/config/import-containers.json | ConvertFrom-JSON
 
-        foreach ($container in $importContainers) {        
+        foreach ($container in $importContainers) {
 
           echo "Import container image $($container.image) ($($container.tag)) from $($container.registry)"
-          az acr import --name $(acr_name) `
+          az acr import --name $globalInfraDeployOutput.acr_name.value `
             --source "$($container.registry)/$($container.image):$($container.tag)" `
             --image "$($container.image):$($container.tag)" --force --verbose
         }

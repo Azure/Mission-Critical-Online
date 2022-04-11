@@ -56,6 +56,7 @@ resource "azurerm_resource_group_policy_assignment" "aks_rbac_enabled" {
 
 # Limit access to external container registries (BuiltIn)
 # https://github.com/Azure/azure-policy/blob/master/built-in-policies/policyDefinitions/Kubernetes/ContainerAllowedImages.json
+# We only allow our own ACR plus the Microsoft-managed container registry (MCR) which holds all the system images used by AKS
 resource "azurerm_resource_group_policy_assignment" "aks_limit_registries" {
   name                 = "aks-limit-registries"
   resource_group_id    = azurerm_resource_group.stamp.id
@@ -68,7 +69,7 @@ resource "azurerm_resource_group_policy_assignment" "aks_limit_registries" {
       "value": "deny"
     },
     "allowedContainerImagesRegex": {
-      "value": "^([^\\/]+\\.azurecr\\.io|mcr\\.microsoft\\.com)\\/.+$"
+      "value": "^(${data.azurerm_container_registry.global.name}\\.azurecr\\.io|mcr\\.microsoft\\.com)\\/.+$"
     }
   }
 PARAMS

@@ -47,6 +47,7 @@ module "stamp" {
   event_hub_enable_auto_inflate     = var.event_hub_enable_auto_inflate
   event_hub_auto_inflate_maximum_tu = var.event_hub_auto_inflate_maximum_tu
 
-  alerts_enabled = var.alerts_enabled
-  api_key        = random_password.api_key.result
+  alerts_enabled       = var.alerts_enabled
+  api_key              = random_password.api_key.result
+  ai_adaptive_sampling = var.ai_adaptive_sampling
 }

@@ -2,7 +2,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "2.99.0"
+      version = "3.0.2"
     }
   }
 
@@ -10,7 +10,13 @@ terraform {
 }
 
 provider "azurerm" {
-  features {}
+  features {
+    resource_group {
+      # Allows the deletion of non-empty resource groups
+      # This is required to delete rgs with stale resources left
+      prevent_deletion_if_contains_resources = false
+    }
+  }
 }
 
 # Random API key which needs to be identical between all stamps

@@ -1,7 +1,6 @@
 resource "azurerm_frontdoor" "main" {
-  name                                         = local.frontdoor_name
-  resource_group_name                          = azurerm_resource_group.global.name
-  enforce_backend_pools_certificate_name_check = true
+  name                = local.frontdoor_name
+  resource_group_name = azurerm_resource_group.global.name
 
   tags = local.default_tags
 
@@ -42,9 +41,7 @@ resource "azurerm_frontdoor" "main" {
     forwarding_configuration {
       forwarding_protocol = "HttpsOnly"
       backend_pool_name   = "GlobalStorage"
-
-      # Cache the images
-      cache_enabled = true
+      cache_enabled       = true # Cache the images
     }
   }
 
@@ -85,8 +82,13 @@ resource "azurerm_frontdoor" "main" {
     name                = "GlobalStorageHealthProbeSetting"
     protocol            = "Https"
     probe_method        = "HEAD"
-    path                = "/images/health.check"
+    path                = "/health.check"
     interval_in_seconds = 30
+  }
+
+  backend_pool_settings {
+    enforce_backend_pools_certificate_name_check = true
+    backend_pools_send_receive_timeout_seconds   = 60
   }
 
   backend_pool {
@@ -154,8 +156,6 @@ resource "azurerm_frontdoor" "main" {
     load_balancing_name = "LoadBalancingSettings"
     health_probe_name   = "GlobalStorageHealthProbeSetting"
   }
-
-  backend_pools_send_receive_timeout_seconds = 60
 
   frontend_endpoint {
     name                     = local.frontdoor_default_frontend_name

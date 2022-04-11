@@ -24,8 +24,8 @@ variables:
 - name: 'envDnsZoneRG'
   value: 'ao-dns-rg'                # <===== CHANGE THIS OR LEAVE THE VALUE BLANK
 - name: 'envDomainName'
-  value: 'int.shop.always-on.app'   # <===== CHANGE THIS OR LEAVE THE VALUE BLANK
+  value: 'int.shop.mission-critical.app'   # <===== CHANGE THIS OR LEAVE THE VALUE BLANK
 
 # Other settings
 - name:  'contactEmail'
-  value: 'noreply@example.com'  # <===== CHANGE THIS VALUE TO ONE OF YOUR REAL EMAIL ADDRESSES (OR A GROUP)!
+  value: 'noreply@microsoft.com'  # <===== CHANGE THIS VALUE TO ONE OF YOUR REAL EMAIL ADDRESSES (OR A GROUP)!

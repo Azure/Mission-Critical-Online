@@ -1,4 +1,4 @@
-# Application insights which is used by the SLO query Function
+# Application insights which is used for global web tests
 resource "azurerm_application_insights" "monitoring" {
   name                 = "${local.prefix}-global-appi"
   location             = azurerm_resource_group.monitoring.location

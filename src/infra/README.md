@@ -143,8 +143,6 @@ As regional availability of services used in reference implementation and AZs ra
 - The account is replicated to every region in which there is a stamp deployed.
 - `zone_redundancy` is enabled for each replicated region.
 - Request Unit `autoscaling` is enabled on container-level.
-- Each stamp deploys an Azure Private Endpoint to the Cosmos DB.
-- Network restrictions are enabled to allow only access from Private Endpoints.
 
 #### Azure Container Registry
 
@@ -166,7 +164,7 @@ A _stamp_ is a regional deployment and can also be considered as a scale-unit. F
 
 #### Networking
 
-The current networking setup consists of a single Azure Virtual Network per _stamp_ that consists of one subnet dedicated for Azure Kubernetes Service (AKS) and an additional subnet for the Private Endpoints of different services.
+The current networking setup consists of a single Azure Virtual Network per _stamp_ that consists of one subnet dedicated for Azure Kubernetes Service (AKS).
 
 - Each stamp infrastructure includes a pre-provisioned static _Public IP address_ resource with a DNS name (_[prefix]-cluster.[region].cloudapp.azure.com_). This _Public IP address_ is used for the Kubernetes Ingress controller Load Balancer and as a backend address for Azure Front Door.
 - Diagnostic settings are configured to store all log and metric data in Log Analytics.
@@ -227,8 +225,6 @@ Azure Policy is used to monitor and enforce certain baselines. All policies are 
 - Each stamp has one `standard` tier, `zone_redundant` Event Hub Namespace.
 - Auto-inflate (auto-scaleup) can be optionally enabled via a Terraform variable.
 - The namespace holds one Event Hub `backendqueue-eh` with dedicated consumer groups for each consumer (currently only one).
-- A Private Endpoint is deployed which is used to securely access the Event Hub from within the stamp's VNet.
-- Network restrictions are enabled to allow only access through Private Endpoints.
 - Diagnostic settings are configured to store all log and metric data in Log Analytics.
 
 #### Azure Storage Accounts

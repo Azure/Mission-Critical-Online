@@ -6,8 +6,8 @@ module "regional_functions" {
   prefix              = local.prefix
   resource_group_name = azurerm_resource_group.deployment.name
   additional_app_settings = {
-    "APPINSIGHTS_INSTRUMENTATIONKEY" = azurerm_application_insights.deployment.instrumentation_key
-    "TEST_BASEURL"                   = var.targeturl
+    "APPLICATIONINSIGHTS_CONNECTION_STRING" = azurerm_application_insights.deployment.connection_string
+    "TEST_BASEURL"                          = var.targeturl
   }
 
   function_user_managed_identity_resource_id = azurerm_user_assigned_identity.functions.id

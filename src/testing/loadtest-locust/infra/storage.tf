@@ -63,5 +63,7 @@ data "azurerm_storage_account_sas" "locust_readwrite" {
     create  = false
     update  = false
     process = false
+    tag     = false
+    filter  = false
   }
 }

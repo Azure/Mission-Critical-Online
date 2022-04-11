@@ -32,7 +32,7 @@ resource "azurerm_key_vault_access_policy" "stamp_appservice" {
   for_each     = var.stamps
   key_vault_id = azurerm_key_vault.stamp[each.key].id
   tenant_id    = data.azurerm_client_config.current.tenant_id
-  object_id    = azurerm_app_service.appservice[each.key].identity[0].principal_id
+  object_id    = azurerm_linux_web_app.appservice[each.key].identity[0].principal_id
 
   secret_permissions = [
     "Get", "List"

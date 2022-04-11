@@ -1,0 +1,28 @@
+# ingress-nginx helm chart configuration values
+# This file contains additional configuration settings and parameters used for the ingress-nginx helm chart installation.
+# https://github.com/kubernetes/ingress-nginx/blob/master/charts/ingress-nginx/values.yaml
+
+controller:
+  securityContext:
+    readOnlyRootFilesystem: true # If a container does not need to write files, it should be run with a read-only filesystem. 
+    privileged: false # Running a container as privileged gives all capabilities to the container, and it also lifts all the limitations enforced by the device cgroup controller.
+  autoscaling:
+    enabled:     true # Enable autoscaling via horizontal pod autoscaler
+    minReplicas: 3 # Minimum number of nodes
+    maxReplicas: 12 # Maximum number of nodes
+    targetCPUUtilizationPercentage: 75
+    targetMemoryUtilizationPercentage: 75
+  resources:
+    requests:
+      cpu: 750m
+      memory: 750Mi
+  metrics:
+    enabled: true
+    service:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "10254"
+  service:
+    type:        LoadBalancer
+    enableHttp:  true # enable plain http (req. for cert-manager)
+    enableHttps: true  # enable https listener

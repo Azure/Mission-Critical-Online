@@ -188,19 +188,19 @@ stages:
     parameters:
       runChaosTesting: ${{ parameters.runChaosTesting }}
 
-- stage: testcode
-  displayName: 'Test Application Code'
-  dependsOn: [] # can run in parallel to the global infra deployment at the very start
-  jobs:
-  - template: jobs-code-tests.yaml
-    parameters:
-      jobName:          'CodeTests'
-      workingDirectory: 'src/app'
+# - stage: testcode
+#   displayName: 'Test Application Code'
+#   dependsOn: [] # can run in parallel to the global infra deployment at the very start
+#   jobs:
+#   - template: jobs-code-tests.yaml
+#     parameters:
+#       jobName:          'CodeTests'
+#       workingDirectory: 'src/app'
 
 - stage: buildapplication
   displayName: 'Build Application Code'
   dependsOn:
-   - testcode
+#   - testcode
    - deployglobalinfrastructure # requires the global infra to be deployed which contains the Container Registry
   jobs: # using jobs so they each runs in parallel
 
@@ -215,7 +215,7 @@ stages:
   displayName: 'Deploy Workload'
   dependsOn:
   - deployconfiguration
-  - testcode
+#  - testcode
   - buildapplication
   jobs:
   - template: jobs-workload-deploy.yaml

@@ -45,7 +45,7 @@ jobs:
           $container = $containers | where-object { $_.name -eq 'ingress-nginx-controller' }
           if (($container).count -eq 1) {
             echo "*** Using container image $($container.image) (tag $($container.tag)) from registry $($globalInfraDeployOutput.acr_login_server.value)"
-            $privateRegistryParams = "--set controller.image.registry=$($globalInfraDeployOutput.acr_login_server.value) --set controller.image.image=$($container.image) --set controller.image.tag=$($container.tag)"
+            $privateRegistryParams = "--set controller.image.repository=$($globalInfraDeployOutput.acr_login_server.value)/$($container.image) --set controller.image.tag=$($container.tag)"
           } else {
             echo "*** No private container image $($container.name) (tag $($container.tag)) found in registry $($container.registry) using defaults."
           }
@@ -115,7 +115,7 @@ jobs:
           az aks get-credentials --name $aksClusterName --resource-group $aksClusterResourceGroup --overwrite-existing
 
           # Load container image from private container registry
-          $containers = Get-Content ./.ado/pipelines/config/import-containers.json | ConvertFrom-JSON 
+          $containers = Get-Content ./.ado/pipelines/config/import-containers.json | ConvertFrom-JSON
           $container = $containers | where-object { $_.name -eq 'cert-manager-controller' }
           if (($container).count -eq 1) {
             echo "*** Using container image $($container.image) (tag $($container.tag)) from registry $($globalInfraDeployOutput.acr_login_server.value)"

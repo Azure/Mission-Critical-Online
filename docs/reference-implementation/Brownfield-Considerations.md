@@ -6,9 +6,14 @@ While the initial usage of the Azure Mission-Critical reference implementation o
 
 The Azure Mission-Critical online reference implementation contains its own virtual networks and subnets. It is supposed to be deployed fully independent of any existing infrastructure. For environments with existing networking infrastructure or requirements for connectivity to existing services either on-premises or in another virtual network it is recommended to use the [Azure Mission-Critical - Connected](https://github.com/Azure/Mission-Critical-Connected/) reference implementation.
 
+Considerations when using existing networking infrastructure:
+
+* Prefer using individual virtual networks and subnets for each solution rather than existing, shared ones. If interconnection is required evaluate the use of Virtual Network Peerings or Private Endpoints. This is recommended to avoid potential issues due to changes made to the shared infrastructure, noisy neighbour scenarios etc.
+* For shared networks do upfront planning to avoid overlapping IP address ranges or exhaustion.
+
 ## Existing container registry
 
-All Azure Mission-Critical reference implementations contain dedicated Azure Container Registrys per environment. They're deployed as part of the global services and replicated to each of the regional deployment stamp locations, to host container images (for the sample catalog workload) built and pushed as part of the overall deployment pipelines. This is done to keep the external dependencies of a deployment as minimal as possible and it also allows us to deploy the whole solution end-to-end as part of the E2E deployment pipeline.
+All Azure Mission-Critical reference implementations contain dedicated Azure Container Registries per environment. They're deployed as part of the global services and replicated to each of the regional deployment stamp locations, to host container images (for the sample catalog workload) built and pushed as part of the overall deployment pipelines. This is done to keep the external dependencies of a deployment as minimal as possible and it also allows us to deploy the whole solution end-to-end as part of the E2E deployment pipeline.
 
 In brownfield environments it is often times considered to use an already existing central container registry for some or all container images. When a central container registry is used following considerations should be taken into account:
 

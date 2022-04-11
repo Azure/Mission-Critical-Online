@@ -21,13 +21,6 @@ jobs:
 
         echo "*** Retrieved Azure Container Registry Login Server $acrUrl (from terraformOutputGlobalInfra)"
 
-        # Login to ACR so we can later push to it
-        az acr login -n $acrName
-
-        if ($LastExitCode -ne 0) {
-          throw "*** Error - could not log in to ACR $acrName"
-        }
-
         $workloadsFile = "$(System.DefaultWorkingDirectory)/.ado/pipelines/config/workloads.json"
 
         if(-not (Test-Path $workloadsFile))

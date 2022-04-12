@@ -46,8 +46,8 @@ jobs:
           if ($container)
           {
             echo "*** Using container image $($container.image) (tag $($container.tag)) from registry $($globalInfraDeployOutput.acr_login_server.value)"
-            $privateRegistryParams = "--set controller.image.repository=$($globalInfraDeployOutput.acr_login_server.value)/$($container.image) --set controller.image.tag=$($container.tag)"
-            $privateRegistryParams = $privateRegistryParams.Split(" ")
+            $privateRegistryParams = "--set=controller.image.repository=$($globalInfraDeployOutput.acr_login_server.value)/$($container.image),controller.image.tag=$($container.tag)"
+            #$privateRegistryParams = $privateRegistryParams.Split(" ")
           }
 
           # Deploy ingress-nginx (helm) configuration
@@ -104,6 +104,8 @@ jobs:
         $globalInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputGlobalInfra/*.json | Get-Content | ConvertFrom-JSON
         $releaseUnitInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputReleaseUnitInfra/*.json | Get-Content | ConvertFrom-JSON
 
+        $acrLoginServer = $globalInfraDeployOutput.acr_login_server.value
+
         # loop through stamps from pipeline artifact json
         foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
 
@@ -119,25 +121,25 @@ jobs:
           $controllerContainer = $containers | where-object { $_.name -eq 'cert-manager-controller' }
           if ($controllerContainer)
           {
-            echo "*** Using container image $($controllerContainer.image) (tag $($controllerContainer.tag)) from registry $($globalInfraDeployOutput.acr_login_server.value)"
-            $controllerPrivateRegistryParams = "--set image.registry=$($globalInfraDeployOutput.acr_login_server.value) --set image.repository=$($controllerContainer.image) --set image.tag=$($controllerContainer.tag)"
-            $controllerPrivateRegistryParams = $controllerPrivateRegistryParams.Split(" ")
+            echo "*** Using container image $($controllerContainer.image) (tag $($controllerContainer.tag)) from registry $acrLoginServer"
+            $controllerPrivateRegistryParams = "--set=image.registry=$acrLoginServer,image.repository=$($controllerContainer.image),image.tag=$($controllerContainer.tag)"
+            #$controllerPrivateRegistryParams = $controllerPrivateRegistryParams.Split(" ")
           }
 
           $webhookContainer = $containers | where-object { $_.name -eq 'cert-manager-webhook' }
           if ($webhookContainer)
           {
-            echo "*** Using container image $($webhookContainer.image) (tag $($webhookContainer.tag)) from registry $($globalInfraDeployOutput.acr_login_server.value)"
-            $webhookPrivateRegistryParams = "--set webhook.image.registry=$($globalInfraDeployOutput.acr_login_server.value) --set webhook.image.repository=$($webhookContainer.image) --set webhook.image.tag=$($webhookContainer.tag)"
-            $webhookPrivateRegistryParams = $webhookPrivateRegistryParams.Split(" ")
+            echo "*** Using container image $($webhookContainer.image) (tag $($webhookContainer.tag)) from registry $acrLoginServer"
+            $webhookPrivateRegistryParams = "--set=webhook.image.registry=$acrLoginServer,webhook.image.repository=$($webhookContainer.image),webhook.image.tag=$($webhookContainer.tag)"
+            #$webhookPrivateRegistryParams = $webhookPrivateRegistryParams.Split(" ")
           }
 
           $cainjectorContainer = $containers | where-object { $_.name -eq 'cert-manager-cainjector' }
-          if ($webhookContainer)
+          if ($cainjectorContainer)
           {
-            echo "*** Using container image $($cainjectorContainer.image) (tag $($cainjectorContainer.tag)) from registry $($globalInfraDeployOutput.acr_login_server.value)"
-            $cainjectorPrivateRegistryParams = "--set cainjector.image.registry=$($globalInfraDeployOutput.acr_login_server.value) --set cainjector.image.repository=$($cainjectorContainer.image) --set cainjector.image.tag=$($cainjectorContainer.tag)"
-            $cainjectorPrivateRegistryParams = $cainjectorPrivateRegistryParams.Split(" ")
+            echo "*** Using container image $($cainjectorContainer.image) (tag $($cainjectorContainer.tag)) from registry $acrLoginServer"
+            $cainjectorPrivateRegistryParams = "--set=cainjector.image.registry=$acrLoginServer,cainjector.image.repository=$($cainjectorContainer.image),cainjector.image.tag=$($cainjectorContainer.tag)"
+            #$cainjectorPrivateRegistryParams = $cainjectorPrivateRegistryParams.Split(" ")
           }
 
           # Deploy required custom resource definitions needed for cert-manager

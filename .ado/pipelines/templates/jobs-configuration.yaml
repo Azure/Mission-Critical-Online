@@ -117,7 +117,7 @@ jobs:
           # Load container image from private container registry
           $containers = Get-Content ./.ado/pipelines/config/import-containers.json | ConvertFrom-JSON
           $controllerContainer = $containers | where-object { $_.name -eq 'cert-manager-controller' }
-          if ($container)
+          if ($controllerContainer)
           {
             echo "*** Using container image $($controllerContainer.image) (tag $($controllerContainer.tag)) from registry $($globalInfraDeployOutput.acr_login_server.value)"
             $controllerPrivateRegistryParams = "--set image.registry=$($globalInfraDeployOutput.acr_login_server.value) --set image.repository=$($controllerContainer.image) --set image.tag=$($controllerContainer.tag)"

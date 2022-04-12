@@ -46,7 +46,8 @@ jobs:
           if ($container)
           {
             echo "*** Using container image $($container.image) (tag $($container.tag)) from registry $($globalInfraDeployOutput.acr_login_server.value)"
-            $privateRegistryParams = "--set controller.image.repository=$($globalInfraDeployOutput.acr_login_server.value)/$($container.image)","--set controller.image.tag=$($container.tag)"
+            $privateRegistryParams = "--set controller.image.repository=$($globalInfraDeployOutput.acr_login_server.value)/$($container.image) --set controller.image.tag=$($container.tag)"
+            $privateRegistryParams = $privateRegistryParams.Split(" ")
           }
           else
           {
@@ -123,7 +124,8 @@ jobs:
           if ($container)
           {
             echo "*** Using container image $($container.image) (tag $($container.tag)) from registry $($globalInfraDeployOutput.acr_login_server.value)"
-            $privateRegistryParams = "--set image.registry=$($globalInfraDeployOutput.acr_login_server.value)","--set image.repository=$($container.image)","--set image.tag=$($container.tag)"
+            $privateRegistryParams = "--set image.registry=$($globalInfraDeployOutput.acr_login_server.value) --set image.repository=$($container.image) --set image.tag=$($container.tag)"
+            $privateRegistryParams = $privateRegistryParams.Split(" ")
           }
           else
           {

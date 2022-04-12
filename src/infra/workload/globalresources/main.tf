@@ -2,11 +2,15 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "3.0.2"
+      version = "3.1.0"
     }
   }
 
-  backend "azurerm" {}
+  backend "azurerm" {
+    application_insights {
+      disable_generated_rule = true
+    }
+  }
 }
 
 provider "azurerm" {

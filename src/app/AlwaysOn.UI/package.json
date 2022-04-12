@@ -12,7 +12,7 @@
   "dependencies": {
     "@microsoft/applicationinsights-web": "^2.7.4",
     "tiny-emitter": "^2.1.0",
-    "vue": "^3.2.31",
+    "vue": "^3.2.32",
     "vue-router": "^4.0.14"
   },
   "devDependencies": {

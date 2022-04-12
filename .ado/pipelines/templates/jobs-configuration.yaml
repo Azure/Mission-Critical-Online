@@ -43,10 +43,13 @@ jobs:
           # Load container image from private container registry
           $containers = Get-Content "$(System.DefaultWorkingDirectory)/.ado/pipelines/config/import-containers.json" | ConvertFrom-JSON
           $container = $containers | where-object { $_.name -eq 'ingress-nginx-controller' }
-          if (($container).count -eq 1) {
+          if ($container)
+          {
             echo "*** Using container image $($container.image) (tag $($container.tag)) from registry $($globalInfraDeployOutput.acr_login_server.value)"
-            $privateRegistryParams = "--set controller.image.repository=$($globalInfraDeployOutput.acr_login_server.value)/$($container.image) --set controller.image.tag=$($container.tag)"
-          } else {
+            $privateRegistryParams = "--set controller.image.repository=$($globalInfraDeployOutput.acr_login_server.value)/$($container.image)","--set controller.image.tag=$($container.tag)"
+          }
+          else
+          {
             echo "*** No private container image $($container.name) (tag $($container.tag)) found in registry $($container.registry) using defaults."
           }
 
@@ -61,9 +64,7 @@ jobs:
                 --values src/config/ingress-nginx/values.helm.yaml `
                 --set controller.service.loadBalancerIP="$aksIngressIp" `
                 --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-resource-group"="$aksClusterResourceGroup" `
-                --version "$(ingressNginxVersion)" `
-                --set controller.image.repository="$($globalInfraDeployOutput.acr_login_server.value)/$($container.image)" `
-                --set controller.image.tag="$($container.tag)"
+                --version "$(ingressNginxVersion)" $privateRegistryParam
         }
 
   - task: AzureCLI@2
@@ -119,10 +120,13 @@ jobs:
           # Load container image from private container registry
           $containers = Get-Content ./.ado/pipelines/config/import-containers.json | ConvertFrom-JSON
           $container = $containers | where-object { $_.name -eq 'cert-manager-controller' }
-          if (($container).count -eq 1) {
+          if ($container)
+          {
             echo "*** Using container image $($container.image) (tag $($container.tag)) from registry $($globalInfraDeployOutput.acr_login_server.value)"
-            $privateRegistryParams = "--set image.registry=$($globalInfraDeployOutput.acr_login_server.value) --set image.repository=$($container.image) --set image.tag=$($container.tag)"
-          } else {
+            $privateRegistryParams = "--set image.registry=$($globalInfraDeployOutput.acr_login_server.value)","--set image.repository=$($container.image)","--set image.tag=$($container.tag)"
+          }
+          else
+          {
             echo "*** No private container image $($container.name) (tag $($container.tag)) found in registry $($container.registry) using defaults."
           }
 
@@ -147,10 +151,7 @@ jobs:
           helm upgrade --install cert-manager jetstack/cert-manager `
                        --values src/config/cert-manager/values.helm.yaml `
                        --namespace $certManagerNamespace `
-                       --version "$(certManagerVersion)" `
-                       --set image.registry=$($globalInfraDeployOutput.acr_login_server.value) `
-                       --set image.repository=$($container.image) `
-                       --set image.tag=$($container.tag)
+                       --version "$(certManagerVersion)" $privateRegistryParams
         }
 
   - task: AzureCLI@2

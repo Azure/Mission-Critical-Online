@@ -12,6 +12,7 @@ steps:
 # Check if Terraform state store exists and create it if not
 - task: AzureCLI@2
   displayName: 'Setup Terraform state store'
+  retryCountOnTaskFailure: 1
   inputs:
     azureSubscription: $(azureServiceConnection)
     scriptType: pscore

@@ -13,7 +13,7 @@ variables:
 - name: 'ingressNginxVersion' # nginx ingress controller helm chart version
   value: '4.0.18'
 - name: 'certManagerVersion'  # cert-manager helm chart version
-  value: 'v1.7.1'
+  value: 'v1.8.0'
 - name: 'dotnetSdkVersion'    # dotnet sdk version
   value: '6.0.200'
 - name: 'chaosMeshVersion'    #  chaos-mesh chart version

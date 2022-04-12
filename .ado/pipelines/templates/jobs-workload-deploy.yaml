@@ -13,6 +13,7 @@ jobs: # using jobs so they each run in parallel
 
     - task: AzureCLI@2
       displayName: 'Install workload healthservice on AKS clusters'
+      retryCountOnTaskFailure: 2
       inputs:
         azureSubscription: $(azureServiceConnection)
         scriptType: pscore
@@ -74,6 +75,7 @@ jobs: # using jobs so they each run in parallel
 
     - task: AzureCLI@2
       displayName: 'Install workload CatalogService on AKS clusters'
+      retryCountOnTaskFailure: 2
       inputs:
         azureSubscription: $(azureServiceConnection)
         scriptType: pscore
@@ -160,6 +162,7 @@ jobs: # using jobs so they each run in parallel
 
     - task: AzureCLI@2
       displayName: 'Install workload BackgroundProcessor on AKS clusters'
+      retryCountOnTaskFailure: 2
       inputs:
         azureSubscription: $(azureServiceConnection)
         scriptType: pscore
@@ -222,6 +225,7 @@ jobs: # using jobs so they each run in parallel
 
     - task: AzureCLI@2
       displayName: 'Upload UI app to Blob Storage'
+      retryCountOnTaskFailure: 2
       inputs:
         azureSubscription: $(azureServiceConnection)
         scriptType: pscore

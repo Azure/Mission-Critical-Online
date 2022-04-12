@@ -13,6 +13,7 @@ jobs:
 
   - task: AzureCLI@2
     displayName: 'Docker build and push ${{ parameters.containerImageName }}'
+    retryCountOnTaskFailure: 1
     inputs:
       azureSubscription: $(azureServiceConnection)
       scriptType: pscore

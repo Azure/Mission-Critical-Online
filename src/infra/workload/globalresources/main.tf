@@ -6,7 +6,11 @@ terraform {
     }
   }
 
-  backend "azurerm" {}
+  backend "azurerm" {
+    application_insights {
+      disable_generated_rule = true
+    }
+  }
 }
 
 provider "azurerm" {

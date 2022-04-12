@@ -10,5 +10,17 @@
         "image": "jetstack/cert-manager-controller",
         "registry": "quay.io",
         "tag": "v1.8.0"
+    },
+    {
+        "name": "cert-manager-webhook",
+        "image": "jetstack/cert-manager-webhook",
+        "registry": "quay.io",
+        "tag": "v1.8.0"
+    },
+    {
+        "name": "cert-manager-cainjector",
+        "image": "jetstack/cert-manager-cainjector",
+        "registry": "quay.io",
+        "tag": "v1.8.0"
     }
 ]

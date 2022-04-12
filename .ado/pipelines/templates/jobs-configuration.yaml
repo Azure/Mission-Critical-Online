@@ -49,10 +49,6 @@ jobs:
             $privateRegistryParams = "--set controller.image.repository=$($globalInfraDeployOutput.acr_login_server.value)/$($container.image) --set controller.image.tag=$($container.tag)"
             $privateRegistryParams = $privateRegistryParams.Split(" ")
           }
-          else
-          {
-            echo "*** No private container image $($container.name) (tag $($container.tag)) found in registry $($container.registry) using defaults."
-          }
 
           # Deploy ingress-nginx (helm) configuration
           echo "*** Installing nginx ingress controller ($aksIngressIp) on $aksClusterName in $aksClusterResourceGroup"
@@ -120,16 +116,28 @@ jobs:
 
           # Load container image from private container registry
           $containers = Get-Content ./.ado/pipelines/config/import-containers.json | ConvertFrom-JSON
-          $container = $containers | where-object { $_.name -eq 'cert-manager-controller' }
+          $controllerContainer = $containers | where-object { $_.name -eq 'cert-manager-controller' }
           if ($container)
           {
-            echo "*** Using container image $($container.image) (tag $($container.tag)) from registry $($globalInfraDeployOutput.acr_login_server.value)"
-            $privateRegistryParams = "--set image.registry=$($globalInfraDeployOutput.acr_login_server.value) --set image.repository=$($container.image) --set image.tag=$($container.tag)"
-            $privateRegistryParams = $privateRegistryParams.Split(" ")
+            echo "*** Using container image $($controllerContainer.image) (tag $($controllerContainer.tag)) from registry $($globalInfraDeployOutput.acr_login_server.value)"
+            $controllerPrivateRegistryParams = "--set image.registry=$($globalInfraDeployOutput.acr_login_server.value) --set image.repository=$($controllerContainer.image) --set image.tag=$($controllerContainer.tag)"
+            $controllerPrivateRegistryParams = $controllerPrivateRegistryParams.Split(" ")
           }
-          else
+
+          $webhookContainer = $containers | where-object { $_.name -eq 'cert-manager-webhook' }
+          if ($webhookContainer)
           {
-            echo "*** No private container image $($container.name) (tag $($container.tag)) found in registry $($container.registry) using defaults."
+            echo "*** Using container image $($webhookContainer.image) (tag $($webhookContainer.tag)) from registry $($globalInfraDeployOutput.acr_login_server.value)"
+            $webhookPrivateRegistryParams = "--set webhook.image.registry=$($globalInfraDeployOutput.acr_login_server.value) --set webhook.image.repository=$($webhookContainer.image) --set webhook.image.tag=$($webhookContainer.tag)"
+            $webhookPrivateRegistryParams = $webhookPrivateRegistryParams.Split(" ")
+          }
+
+          $cainjectorContainer = $containers | where-object { $_.name -eq 'cert-manager-cainjector' }
+          if ($webhookContainer)
+          {
+            echo "*** Using container image $($cainjectorContainer.image) (tag $($cainjectorContainer.tag)) from registry $($globalInfraDeployOutput.acr_login_server.value)"
+            $cainjectorPrivateRegistryParams = "--set cainjector.image.registry=$($globalInfraDeployOutput.acr_login_server.value) --set cainjector.image.repository=$($cainjectorContainer.image) --set cainjector.image.tag=$($cainjectorContainer.tag)"
+            $cainjectorPrivateRegistryParams = $cainjectorPrivateRegistryParams.Split(" ")
           }
 
           # Deploy required custom resource definitions needed for cert-manager
@@ -153,7 +161,7 @@ jobs:
           helm upgrade --install cert-manager jetstack/cert-manager `
                        --values src/config/cert-manager/values.helm.yaml `
                        --namespace $certManagerNamespace `
-                       --version "$(certManagerVersion)" $privateRegistryParams
+                       --version "$(certManagerVersion)" $controllerPrivateRegistryParams $webhookPrivateRegistryParams $cainjectorPrivateRegistryParams
         }
 
   - task: AzureCLI@2

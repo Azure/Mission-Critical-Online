@@ -65,7 +65,7 @@ jobs:
                 --values src/config/ingress-nginx/values.helm.yaml `
                 --set controller.service.loadBalancerIP="$aksIngressIp" `
                 --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-resource-group"="$aksClusterResourceGroup" `
-                --version "$(ingressNginxVersion)" $privateRegistryParam
+                --version "$(ingressNginxVersion)" $privateRegistryParams
         }
 
   - task: AzureCLI@2

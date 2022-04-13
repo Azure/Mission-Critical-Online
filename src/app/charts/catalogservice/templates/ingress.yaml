@@ -30,6 +30,7 @@ metadata:
   {{ toYaml .Values.ingress.annotations | nindent 4 }}
   {{- end }}
 spec:
+  ingressClassName: nginx
   tls:
   - hosts:
     - {{ .Values.workload.domainname }}

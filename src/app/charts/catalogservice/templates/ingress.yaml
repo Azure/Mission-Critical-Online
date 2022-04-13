@@ -60,4 +60,3 @@ spec:
             name: {{ .Values.healthservice.name | quote }}
             port:
               number: {{ .Values.healthservice.port | default 80 }}
-  ingressClassName: nginx

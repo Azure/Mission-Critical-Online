@@ -71,6 +71,27 @@ resource "azurerm_api_management_api" "catalogservice" {
   }
 }
 
+# Add two operations to expose swagger of the catalogservice API
+resource "azurerm_api_management_api_operation" "catalogservice_swagger_root" {
+  operation_id        = "swagger-root"
+  api_name            = azurerm_api_management_api.catalogservice.name
+  api_management_name = azurerm_api_management.stamp.name
+  resource_group_name = azurerm_resource_group.stamp.name
+  display_name        = "swagger"
+  method              = "GET"
+  url_template        = "/swagger"
+}
+
+resource "azurerm_api_management_api_operation" "catalogservice_swagger" {
+  operation_id        = "swagger"
+  api_name            = azurerm_api_management_api.catalogservice.name
+  api_management_name = azurerm_api_management.stamp.name
+  resource_group_name = azurerm_resource_group.stamp.name
+  display_name        = "swagger"
+  method              = "GET"
+  url_template        = "/swagger/*"
+}
+
 resource "azurerm_api_management_api_diagnostic" "catalogservice" {
   resource_group_name      = azurerm_resource_group.stamp.name
   api_management_name      = azurerm_api_management.stamp.name

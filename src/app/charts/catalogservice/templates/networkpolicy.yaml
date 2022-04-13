@@ -50,7 +50,7 @@ spec:
   - from:
     - namespaceSelector:
         matchLabels:
-          kubernetes.io/metadata.name: kube-system
+          kubernetes.io/metadata.name: ingress-nginx
     ports:
     - port: {{ .Values.workload.port | default 8080 }}
 ---

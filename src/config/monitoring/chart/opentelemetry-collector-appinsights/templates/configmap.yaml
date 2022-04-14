@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: otel-collector-conf
+  name: otel-collector-config
   labels:
-    component: otel-collector-conf
+    component: otel-collector-config
     app: {{ .Chart.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
     app.kubernetes.io/instance: {{ .Release.Name }}

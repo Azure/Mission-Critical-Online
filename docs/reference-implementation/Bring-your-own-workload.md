@@ -8,11 +8,11 @@ The Azure Mission-Critical reference implementation follows a mono-repo approach
 
 ## Application Code
 
-The simplest way to implement existing workloads is to continue with the **mono-repo** approach. New workloads including their source code can be added to the repo, and the existing pipelines can be extended to build, push and deploy it to the infrastructure.
+The simplest way to bring existing workloads into the reference implementation is to continue with the **mono-repo** approach. New workloads including their source code can be added to the repo, and the existing pipelines can be extended to build, push and deploy it to the infrastructure.
 
-In a **multi-repo** setup, the application code is stored in a different or in individual repositories, separated from each other and from the infrastructure. This also means that the application code is usually built and pushed in a separate pipeline.
+In a **multi-repo** setup, the application code is stored in a different or in individual repositories, separated from each other and from the infrastructure. This also means that the application code is usually built and published with a separate pipeline and drop to shared location (e.g. Artifact store).
 
-The following two sub-sections contain information on how to either bring workloads via the mono-repo approach or via the multi-repo approach into the Azure Mission-Critical environment.
+The following two sub-sections contain information on how to either bring workloads using the mono-repo approach or the multi-repo approach into a cloned Azure Mission-Critical environment.
 
 ### Mono-repo
 
@@ -39,7 +39,7 @@ The process itself is baked into a template that requires only three parameters:
       containerImageDockerFile: '<dockerfile>' # dockerfile used to build the container image
 ```
 
-The `jobs-container-build.yaml` template expects the files to be stored in `/src/app/`. The `containerImageDockerFile` parameter specifies the relative path from there to the `Dockerfile` i.e. `application1\Dockerfile`. This can be overwritten by the `workingDirectory` parameter if needed.
+The [`jobs-container-build.yaml`](/.ado/pipelines/templates/jobs-container-build.yaml) template expects the files to be stored in `/src/app/`. The `containerImageDockerFile` parameter specifies the relative path from there to the `Dockerfile` i.e. `application1\Dockerfile`. This can be overwritten by the `workingDirectory` parameter if needed.
 
 ### Multi-repo
 
@@ -55,7 +55,7 @@ The Azure Mission-Critical reference implementation uses [Helm](http://helm.sh) 
 
 Depending on the type of environment, using the [mono-repo](#mono-repo) or [multi-repo](#multi-repo) approach, these Helm charts might exist outside of the infrastructure repository as well either in another repo or pushed to a container registry.
 
-To deploy them into the Azure Mission-Critical environment, the `jobs-workload-deploy.yaml` template that contains individual tasks to deploy workloads to the clusters, needs to be extended.
+To deploy them into the Azure Mission-Critical environment, the [`jobs-workload-deploy.yaml`](/.ado/pipelines/templates/jobs-workload-deploy.yaml) template that contains individual tasks to deploy workloads to the clusters, needs to be extended.
 
 ## Parameters
 
@@ -65,7 +65,7 @@ The deployment of the global as well as of the regional components export all re
 
 ![Terraform apply outputs](../media/terraformApplyOutputs.png)
 
-These settings are available as variables in subsequent stages of the pipeline and can be used as parameters when deploying Helm charts.
+These settings are available as variables in subsequent stages of each pipeline and can be used as parameters when deploying Helm charts.
 
 Sensitive settings and secrets are automatically stored and updated in Azure Key Vault:
 

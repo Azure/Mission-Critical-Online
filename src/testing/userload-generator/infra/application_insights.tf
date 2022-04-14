@@ -1,5 +1,5 @@
 resource "azurerm_log_analytics_workspace" "deployment" {
-  name                = "${local.prefix}-log"
+  name                = "${local.prefix}-loadgen-log"
   location            = azurerm_resource_group.deployment.location
   resource_group_name = azurerm_resource_group.deployment.name
   sku                 = "PerGB2018"

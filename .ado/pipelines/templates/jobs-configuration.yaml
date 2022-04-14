@@ -110,8 +110,19 @@ jobs:
           az aks get-credentials --name $aksClusterName --resource-group $aksClusterResourceGroup --overwrite-existing
 
           # Application Insights Instrumentation Key
-          $appInsightsInstrumentationKey = $stamp.aks_cluster_name
+          foreach($monitoringstamp in $globalInfraDeployOutput.monitoringstamp_properties.value) {
+            if ($monitoringstamp.location -eq $stamp.location) {
+              $appInsightsInstrumentationKey = $monitoringstamp.app_insights_instrumentation_key
+            }
+          }
 
+          # Fail if no AppInsights instrumentation key for a given location is found
+          if ($appInsightsInstrumentationKey -eq "") {
+            echo "*** Application Insights Instrumentation Key not found for $stamp.location"
+            exit
+          }
+
+          # Define Kubernetes namespace where OpenTelemetry Collector will be deployed
           $openTelemetryNamespace = "opentelemetry"
 
           echo "*** Create namespace '$certManagerNamespace' on AKS cluster $aksClusterName via kubectl"
@@ -120,7 +131,7 @@ jobs:
 
           helm upgrade --install opentelemetry-collector-appinsights src/config/monitoring/chart/opentelemetry-collector-appinsights `
                        --namespace openTelemetryNamespace `
-                       --set letsencrypt.contactEmail="$(contactEmail)"
+                       --set azuremonitor.instrumentationKey="$(appInsightsInstrumentationKey)"
         }
 
   - task: AzureCLI@2

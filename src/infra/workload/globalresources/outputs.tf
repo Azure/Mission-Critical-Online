@@ -50,6 +50,7 @@ output "global_storage_account_name" {
 output "monitoringstamp_properties" {
   value = [for instance in module.stamp_monitoring : {
     appinsights_instrumentation_key = instance.appinsights_instrumentation_key
+    location = instance.location
   }]
   sensitive = true
 }

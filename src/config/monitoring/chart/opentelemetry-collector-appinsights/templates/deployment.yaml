@@ -22,9 +22,9 @@ spec:
       containers:
       - name: otel-collector
         image: otel/opentelemetry-collector-contrib:0.45.0
-        command:
-          - "/otelcontribcol"
-          - "--config=/conf/otel-collector-config.yaml"
+#        command:
+#          - "/otelcontribcol"
+#          - "--config=/conf/otel-collector-config.yaml"
         resources:
           limits:
             cpu: 100m

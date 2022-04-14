@@ -81,7 +81,7 @@ jobs:
           # load AKS cluster credentials
           az aks get-credentials --name $aksClusterName --resource-group $aksClusterResourceGroup --overwrite-existing
 
-          # Deploy required custom resource definitions needed for cert-manager
+          # Apply ConfigMap which configures OMS Agent's log and metric collection. Take a look at the reference file to understand what is being collected/excluded
           echo "*** Apply configmap for OMSAgent (Container Insights) on $aksClusterName"
           kubectl apply -f src/config/monitoring/container-azm-ms-agentconfig.yaml
         }

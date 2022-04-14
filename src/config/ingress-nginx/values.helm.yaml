@@ -32,4 +32,4 @@ controller:
     # X-Forwarded-For could also be logged, but as it may contain the end user IP address, we do not want to collect that. "x_forwarded_for": "$proxy_add_x_forwarded_for",
     data:
       enable-opentracing: "true"
-      zipkin-collector-host: zipkin.opentelemetry.svc.cluster.local
+      zipkin-collector-host: otel-collector.opentelemetry.svc.cluster.local

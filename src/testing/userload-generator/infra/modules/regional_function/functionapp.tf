@@ -32,6 +32,8 @@ resource "azurerm_linux_function_app" "regional" {
     application_stack {
       node_version = "14"
     }
+
+    application_insights_connection_string = var.application_insights_connection_string
   }
 
   app_settings = merge(

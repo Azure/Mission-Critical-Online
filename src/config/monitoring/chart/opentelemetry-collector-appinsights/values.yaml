@@ -1,4 +1,5 @@
 azuremonitor:
-  instrumentationKey: ""
-  maxbatchsize: 100
+  endpoint: "https://dc.services.visualstudio.com/v2/track"
+  instrumentationKey: "notset"
+  maxbatchsize: 1024
   maxbatchinterval: "10s"

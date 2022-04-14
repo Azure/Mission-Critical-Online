@@ -23,11 +23,11 @@ data:
       logging:
         loglevel: debug
       azuremonitor:
-        endpoint: "https://dc.services.visualstudio.com/v2/track"
+        endpoint: {{ .Values.azuremonitor.endpoint | default "https://dc.services.visualstudio.com/v2/track }}"
         instrumentation_key: "{{ .Values.azuremonitor.instrumentationKey }}"
         # maxbatchsize is the maximum number of items that can be
         # queued before calling to the configured endpoint
-        maxbatchsize: {{ .Values.azuremonitor.maxbatchsize | default 100 }}
+        maxbatchsize: {{ .Values.azuremonitor.maxbatchsize | default 1024 }}
         # maxbatchinterval is the maximum time to wait before calling
         # the configured endpoint.
         maxbatchinterval: {{ .Values.azuremonitor.maxbatchinterval | default "10s" }}

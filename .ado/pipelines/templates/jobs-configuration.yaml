@@ -113,7 +113,7 @@ jobs:
           foreach($monitoringstamp in $globalInfraDeployOutput.monitoringstamp_properties.value) {
             if ($monitoringstamp.location -eq $stamp.location) {
               echo "*** Found AppInsights instance for stamp location $($stamp.location)"
-              $appInsightsInstrumentationKey = $monitoringstamp.app_insights_instrumentation_key
+              $appInsightsInstrumentationKey = $monitoringstamp.appinsights_instrumentation_key
             }
           }
 

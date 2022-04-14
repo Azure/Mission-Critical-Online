@@ -35,10 +35,8 @@ spec:
         ports:
           - containerPort: 9411 # Default endpoint for Zipkin receiver.
         volumeMounts:
-          - mountPath: /etc/otelcol-contrib/config.yaml
-            name: data
-            subPath: config.yaml
-            readOnly: true
+          - mountPath: /etc/otelcol-contrib
+            name: otel-collector-config-vol
           - mountPath: /var/log
             name: varlog
             readOnly: true
@@ -51,9 +49,12 @@ spec:
             path: /
             port: 13133
       volumes:
-        - name: data
-          configMap:
-            name: otel-collector-config
+        - configMap:
+            name: otel-collector-conf
+            items:
+              - key: otel-collector-config
+                path: config.yaml
+          name: otel-collector-config-vol
         - name: varlog
           hostPath:
             path: /var/log

@@ -87,6 +87,43 @@ jobs:
         }
 
   - task: AzureCLI@2
+    displayName: 'Install OpenTelemetry collector on AKS clusters'
+    retryCountOnTaskFailure: 1
+    inputs:
+      azureSubscription: $(azureServiceConnection)
+      scriptType: pscore
+      scriptLocation: inlineScript
+      inlineScript: |
+
+        # load json data from downloaded pipeline artifact json
+        $releaseUnitInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputReleaseUnitInfra/*.json | Get-Content | ConvertFrom-JSON
+        $globalInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputGlobalInfra/*.json | Get-Content | ConvertFrom-JSON
+
+        # loop through stamps from pipeline artifact json
+        foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
+
+          $aksClusterName = $stamp.aks_cluster_name
+          $aksClusterResourceGroup = $stamp.resource_group_name
+          echo "*** Load credentials for AKS Cluster $aksClusterName in $aksClusterResourceGroup"
+
+          # load AKS cluster credentials
+          az aks get-credentials --name $aksClusterName --resource-group $aksClusterResourceGroup --overwrite-existing
+
+          # Application Insights Instrumentation Key
+          $appInsightsInstrumentationKey = $stamp.aks_cluster_name
+
+          $openTelemetryNamespace = "opentelemetry"
+
+          echo "*** Create namespace '$certManagerNamespace' on AKS cluster $aksClusterName via kubectl"
+          kubectl create namespace $openTelemetryNamespace `
+                    --dry-run=client --output yaml | kubectl apply -f -
+
+          helm upgrade --install opentelemetry-collector-appinsights src/config/monitoring/chart/opentelemetry-collector-appinsights `
+                       --namespace openTelemetryNamespace `
+                       --set letsencrypt.contactEmail="$(contactEmail)"
+        }
+
+  - task: AzureCLI@2
     displayName: 'Install cert-manager $(certManagerVersion) on AKS clusters'
     retryCountOnTaskFailure: 1
     inputs:

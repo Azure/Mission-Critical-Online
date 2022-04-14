@@ -131,7 +131,7 @@ jobs:
                     --dry-run=client --output yaml | kubectl apply -f -
 
           helm upgrade --install opentelemetry-collector-appinsights src/config/monitoring/chart/opentelemetry-collector-appinsights `
-                       --namespace openTelemetryNamespace `
+                       --namespace $openTelemetryNamespace `
                        --set azuremonitor.instrumentationKey="$appInsightsInstrumentationKey"
         }
 

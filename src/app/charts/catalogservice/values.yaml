@@ -16,7 +16,6 @@ scale: # Horizontal Pod Autoscaler (HPA) configuration
 ingress:
   annotations:
     cert-manager.io/cluster-issuer: "cert-manager-alwayson"
-    kubernetes.io/ingress.class: nginx
 
 networkPolicy:
   enabled: true # Enable Network Policy (contains a default-deny policy)

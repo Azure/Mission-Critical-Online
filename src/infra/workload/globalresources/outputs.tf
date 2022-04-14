@@ -51,10 +51,12 @@ output "monitoringstamp_properties" {
   value = [for instance in module.stamp_monitoring : {
     appinsights_instrumentation_key = instance.appinsights_instrumentation_key
   }]
+  sensitive = true
 }
 
 output "appinsights_instrumentation_key" {
   value = azurerm_application_insights.monitoring.instrumentation_key
+  sensitive = true
 }
 
 output "azure_monitor_action_group_resource_id" {

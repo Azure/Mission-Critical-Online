@@ -1,0 +1,4 @@
+azuremonitor:
+  instrumentationKey: ""
+  maxbatchsize: 100
+  maxbatchinterval: "10s"

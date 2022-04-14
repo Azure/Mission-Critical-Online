@@ -39,7 +39,6 @@ resource "azurerm_linux_function_app" "regional" {
   app_settings = merge(
     var.additional_app_settings,
     {
-      #"FUNCTIONS_WORKER_RUNTIME"       = "node"
       "PLAYWRIGHT_BROWSERS_PATH"       = "0"
       "ENABLE_ORYX_BUILD"              = "true"
       "SCM_DO_BUILD_DURING_DEPLOYMENT" = "true"

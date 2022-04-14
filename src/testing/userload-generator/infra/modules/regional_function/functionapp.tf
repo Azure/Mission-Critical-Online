@@ -29,9 +29,9 @@ resource "azurerm_linux_function_app" "regional" {
   key_vault_reference_identity_id = var.function_user_managed_identity_resource_id
 
   site_config {
-    # application_stack {
-    #   node_version = "14"
-    # }
+    application_stack {
+      node_version = "14"
+    }
 
     application_insights_connection_string = var.application_insights_connection_string
   }
@@ -39,7 +39,6 @@ resource "azurerm_linux_function_app" "regional" {
   app_settings = merge(
     var.additional_app_settings,
     {
-      "FUNCTIONS_WORKER_RUNTIME"       = "node"
       "PLAYWRIGHT_BROWSERS_PATH"       = "0"
       "ENABLE_ORYX_BUILD"              = "true"
       "SCM_DO_BUILD_DURING_DEPLOYMENT" = "true"

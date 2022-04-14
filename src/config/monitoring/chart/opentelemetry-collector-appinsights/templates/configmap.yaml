@@ -23,14 +23,14 @@ data:
       logging:
         loglevel: debug
       azuremonitor:
-        endpoint: {{ .Values.azuremonitor.endpoint | default "https://dc.services.visualstudio.com/v2/track }}"
-        instrumentation_key: "{{ .Values.azuremonitor.instrumentationKey }}"
+        endpoint: {{ .Values.azuremonitor.endpoint | quote | default "https://dc.services.visualstudio.com/v2/track" }}
+        instrumentation_key: {{ .Values.azuremonitor.instrumentationKey | quote | default "notset" }}
         # maxbatchsize is the maximum number of items that can be
         # queued before calling to the configured endpoint
         maxbatchsize: {{ .Values.azuremonitor.maxbatchsize | default 1024 }}
         # maxbatchinterval is the maximum time to wait before calling
         # the configured endpoint.
-        maxbatchinterval: {{ .Values.azuremonitor.maxbatchinterval | default "10s" }}
+        maxbatchinterval: {{ .Values.azuremonitor.maxbatchinterval | quote | default "10s" }}
     service:
       extensions: [pprof, zpages, health_check]
       pipelines:

@@ -44,7 +44,7 @@ resource "azurerm_linux_function_app" "regional" {
       "ENABLE_ORYX_BUILD"              = "true"
       "SCM_DO_BUILD_DURING_DEPLOYMENT" = "true"
       "WEBSITE_MOUNT_ENABLED"          = "1"
-      "WEBSITE_RUN_FROM_PACKAGE"       = "" # This value will be set by the Function deployment later
+      #"WEBSITE_RUN_FROM_PACKAGE"       = "" # This value will be set by the Function deployment later
   })
 }
 

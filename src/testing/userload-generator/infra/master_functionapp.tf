@@ -40,7 +40,6 @@ resource "azurerm_linux_function_app" "master" {
     { for secret in azurerm_key_vault_secret.functionkeys : replace(upper(secret.name), "-", "_") => "@Microsoft.KeyVault(VaultName=${azurerm_key_vault.deployment.name};SecretName=${secret.name})" },
     {
       "WEBSITE_MOUNT_ENABLED"    = "1"
-      "WEBSITE_RUN_FROM_PACKAGE" = "" # This value will be set by the Function deployment later
     }
   )
 }

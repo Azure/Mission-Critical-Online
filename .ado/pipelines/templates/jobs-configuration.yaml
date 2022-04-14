@@ -112,6 +112,7 @@ jobs:
           # Application Insights Instrumentation Key
           foreach($monitoringstamp in $globalInfraDeployOutput.monitoringstamp_properties.value) {
             if ($monitoringstamp.location -eq $stamp.location) {
+              echo "*** Found AppInsights instance for stamp location $($stamp.location)"
               $appInsightsInstrumentationKey = $monitoringstamp.app_insights_instrumentation_key
             }
           }
@@ -125,13 +126,13 @@ jobs:
           # Define Kubernetes namespace where OpenTelemetry Collector will be deployed
           $openTelemetryNamespace = "opentelemetry"
 
-          echo "*** Create namespace '$certManagerNamespace' on AKS cluster $aksClusterName via kubectl"
+          echo "*** Create namespace '$openTelemetryNamespace' on AKS cluster $aksClusterName via kubectl"
           kubectl create namespace $openTelemetryNamespace `
                     --dry-run=client --output yaml | kubectl apply -f -
 
           helm upgrade --install opentelemetry-collector-appinsights src/config/monitoring/chart/opentelemetry-collector-appinsights `
                        --namespace openTelemetryNamespace `
-                       --set azuremonitor.instrumentationKey="$(appInsightsInstrumentationKey)"
+                       --set azuremonitor.instrumentationKey="$appInsightsInstrumentationKey"
         }
 
   - task: AzureCLI@2

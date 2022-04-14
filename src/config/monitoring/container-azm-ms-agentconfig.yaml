@@ -1,4 +1,4 @@
-# ConfigMap template source: 
+# ConfigMap template source:
 # https://raw.githubusercontent.com/microsoft/Docker-Provider/ci_prod/kubernetes/container-azm-ms-agentconfig.yaml
 kind: ConfigMap
 apiVersion: v1

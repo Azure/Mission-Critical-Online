@@ -69,6 +69,33 @@ Location: SwedenCentral, Current Limit: 100, Current Usage: 96, Additional Requi
 
 **Solution:** Either reduce the number of cores used, request more quota for a given VM SKU size in a given region or switch to another region that provides the required quota. See [regional quota requests](https://docs.microsoft.com/azure/azure-supportability/regional-quota-requests) for more details.
 
+---
+
+**Error:**
+
+```console
+Error: deleting Front Door (Subscription: "xxxxx-8cbd-46f2-a146-yyyyyyyyyy"
+│ Resource Group Name: "xxxxx-global-rg"
+│ Front Door Name: "xxxxx-global-fd"): performing Delete: frontdoors.FrontDoorsClient#Delete: Failure sending request: StatusCode=0 -- Original Error: autorest/azure: Service returned an error. Status=<nil> Code="Conflict" Message="Cannot delete frontend endpoint \"xxxxx.e2e.example.com\" because it is still directly or indirectly (using \"afdverify\" prefix) CNAMEd to front door \"xxxxx-global-fd.azurefd.net\". Please remove the DNS CNAME records and try again."
+
+```
+
+**Description:** *This only happens when you are using custom domain names*. In order to protect customers from DNS-rebinding attacks, by default an Azure Front Door resource cannot be deleted while still a CNAME is pointing to it. However, because of the way Terraform tracks and handles dependencies, there is no direct way to circumvent this.
+
+**Solution:** You can disable the protection by running the following command towards your Azure subscription:
+
+```powershell
+az feature register --namespace Microsoft.Network --name BypassCnameCheckForCustomDomainDeletion
+
+# Then you can check the state of it by running:
+az feature list -o table --query "[?contains(name, 'Microsoft.Network/BypassCnameCheckForCustomDomainDeletion')].{Name:name,State:properties.state}"
+
+# To de-register the feature again, in case it is not needed/wanted anymore run:
+# az feature unregister --namespace Microsoft.Network --name BypassCnameCheckForCustomDomainDeletion
+```
+
+Once the feature has been registered (this can take a couple of minutes), deletion should work fine.
+
 ### Deploy Workload stage
 
 **Error:**

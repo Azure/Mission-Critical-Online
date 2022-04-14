@@ -37,7 +37,7 @@ resource "azurerm_linux_function_app" "master" {
     {
       "FUNCTIONS_WORKER_RUNTIME" = "dotnet",
       "WEBSITE_MOUNT_ENABLED"    = "1"
-      #"WEBSITE_RUN_FROM_PACKAGE" = "" # This value will be set by the Function deployment later
+      "WEBSITE_RUN_FROM_PACKAGE" = "" # This value will be set by the Function deployment later
     }
   )
 }

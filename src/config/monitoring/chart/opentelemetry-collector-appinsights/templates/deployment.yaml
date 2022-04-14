@@ -27,16 +27,21 @@ spec:
           - "--config=/conf/otel-collector-config.yaml"
         resources:
           limits:
-            cpu: 1
-            memory: 2Gi
+            cpu: 100m
+            memory: 200Mi
           requests:
-            cpu: 200m
-            memory: 400Mi
+            cpu: 100m
+            memory: 200Mi
         ports:
           - containerPort: 9411 # Default endpoint for Zipkin receiver.
         volumeMounts:
-          - name: otel-collector-config-vol
-            mountPath: /conf
+          - mountPath: /etc/otelcol-contrib/config.yaml
+            name: data
+            subPath: config.yaml
+            readOnly: true
+          - mountPath: /var/log
+            name: varlog
+            readOnly: true
         livenessProbe:
           httpGet:
             path: /
@@ -46,9 +51,9 @@ spec:
             path: /
             port: 13133
       volumes:
-        - configMap:
-            name: otel-collector-conf
-            items:
-              - key: otel-collector-config
-                path: otel-collector-config.yaml
-          name: otel-collector-config-vol
+        - name: data
+          configMap:
+            name: otel-collector-config
+        - name: varlog
+          hostPath:
+            path: /var/log

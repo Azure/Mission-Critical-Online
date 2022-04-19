@@ -6,5 +6,5 @@ service:
     prometheus.io/port:   "8080"
 
 configuration:
-  period:     "12h0m0s" # reboot check period (default 1h0m0s)
+  period:     "1h0m0s"      # reboot check period
   rebootDays: [su,tu,th]    # only reboot on these days (default [su,mo,tu,we,th,fr,sa])

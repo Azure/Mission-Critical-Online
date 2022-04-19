@@ -204,14 +204,16 @@ jobs:
           az aks get-credentials --name $aksClusterName --resource-group $aksClusterResourceGroup --overwrite-existing
           echo "*** Installing the KUbernetes REboot Daemon (kured) via helm on $aksClusterName"
 
-          echo "*** Create namespace 'kured' on AKS cluster $aksClusterName via kubectl"
-          kubectl create namespace kured `
+          $kuredNamespace = "kube-system"
+
+          echo "*** Create namespace '$kuredNamespace' on AKS cluster $aksClusterName via kubectl"
+          kubectl create namespace $kuredNamespace `
                     --dry-run=client --output yaml | kubectl apply -f -
 
           helm repo add kured https://weaveworks.github.io/kured
           helm repo update
           helm upgrade --install kured kured/kured `
-                        --namespace kured `
+                        --namespace $kuredNamespace `
                         --values src/config/kured/kured.yaml `
                         --version $(kuredVersion)
         }

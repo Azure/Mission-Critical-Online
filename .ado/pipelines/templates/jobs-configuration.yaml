@@ -214,6 +214,7 @@ jobs:
                         --namespace kured `
                         --values src/config/kured/kured.yaml `
                         --version $(kuredVersion)
+        }
 
   - ${{ if eq(parameters.runChaosTesting, 'true') }}:
     - task: AzureCLI@2

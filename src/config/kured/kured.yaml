@@ -7,4 +7,4 @@ service:
 
 configuration:
   period:     "12h0m0s" # reboot check period (default 1h0m0s)
-  rebootDays: [su,mo,tu,we,th,fr,sa]    # only reboot on these days (default [su,mo,tu,we,th,fr,sa])
+  rebootDays: [su,tu,th]    # only reboot on these days (default [su,mo,tu,we,th,fr,sa])

@@ -206,9 +206,9 @@ jobs:
 
           $kuredNamespace = "kube-system"
 
-          echo "*** Create namespace '$kuredNamespace' on AKS cluster $aksClusterName via kubectl"
-          kubectl create namespace $kuredNamespace `
-                    --dry-run=client --output yaml | kubectl apply -f -
+          # echo "*** Create namespace '$kuredNamespace' on AKS cluster $aksClusterName via kubectl"
+          # kubectl create namespace $kuredNamespace `
+          #           --dry-run=client --output yaml | kubectl apply -f -
 
           helm repo add kured https://weaveworks.github.io/kured
           helm repo update

@@ -26,6 +26,12 @@ variables:
 - name:  'terraformStorageAccount'
   value: '$(prefix)tfstatestore'  # Needs to be a globally unique name
 
+# Custom DNS name settings
+- name: 'envDnsZoneRG'
+  value: 'ao-dns-rg'                # <===== CHANGE THIS OR LEAVE THE VALUE BLANK
+- name: 'envDomainName'
+  value: 'e2e.shop.mission-critical.app'   # <===== CHANGE THIS OR LEAVE THE VALUE BLANK
+
 # Other settings
 - name:  'contactEmail'
   value: 'noreply@example.com'  # <===== CHANGE THIS VALUE TO ONE OF YOUR REAL EMAIL ADDRESSES (OR A GROUP)!

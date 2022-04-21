@@ -23,7 +23,7 @@ let avgLatency = AzureMetrics
 | where MetricName == "SuccessE2ELatency"
 | extend Value=Average, MetricName='averageLatency';
 //
-let timespanStart = _timespanStart; //todatetime(format_datetime( todatetime(toscalar(avgLatency| summarize min(TimeGenerated))), 'yyyy-MM-dd HH:ss'));
+let timespanStart = _timespanStart; //todatetime(format_datetime( todatetime(toscalar(avgLatency| summarize min(TimeGenerated))), 'yyyy-MM-dd HH:ss')) ;
 let timespanEnd = now(-2m); // there is some ingestion lag, so we account for this by stripping the last 2m
 //
 let storageErrorSeries = storageErrors // This series defaults to 0

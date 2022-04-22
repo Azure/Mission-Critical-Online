@@ -45,6 +45,12 @@ resource "azurerm_linux_function_app" "regional" {
       "WEBSITE_MOUNT_ENABLED"          = "1"
       "WEBSITE_RUN_FROM_PACKAGE"       = "" # This value will be set by the Function deployment later
   })
+
+  lifecycle {
+    ignore_changes = [
+      app_settings["WEBSITE_RUN_FROM_PACKAGE"], # prevent TF reporting configuration drift after app code is deployed
+    ]
+  }
 }
 
 data "azurerm_function_app_host_keys" "regional" {

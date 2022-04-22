@@ -43,4 +43,10 @@ resource "azurerm_linux_function_app" "master" {
       "WEBSITE_RUN_FROM_PACKAGE" = "" # This value will be set by the Function deployment later
     }
   )
+
+  lifecycle {
+    ignore_changes = [
+      app_settings["WEBSITE_RUN_FROM_PACKAGE"], # prevent TF reporting configuration drift after app code is deployed
+    ]
+  }
 }

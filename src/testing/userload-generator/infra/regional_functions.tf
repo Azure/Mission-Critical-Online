@@ -6,10 +6,10 @@ module "regional_functions" {
   prefix              = local.prefix
   resource_group_name = azurerm_resource_group.deployment.name
   additional_app_settings = {
-    "APPLICATIONINSIGHTS_CONNECTION_STRING" = azurerm_application_insights.deployment.connection_string
-    "TEST_BASEURL"                          = var.targeturl
+    "TEST_BASEURL" = var.targeturl
   }
 
+  application_insights_connection_string     = azurerm_application_insights.deployment.connection_string
   function_user_managed_identity_resource_id = azurerm_user_assigned_identity.functions.id
 
   default_tags = local.default_tags

@@ -22,4 +22,8 @@ variable "function_user_managed_identity_resource_id" {
   type = string
 }
 
+variable "application_insights_connection_string" {
+  type = string
+}
+
 variable "default_tags" {}

@@ -1,0 +1,13 @@
+service:
+  create: true
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/path:   "/metrics"
+    prometheus.io/port:   "8080"
+
+configuration:
+  period:     "0h5m0s"      # reboot check period
+  rebootDays: [su,tu,th,sa]    # only reboot on these days (default [su,mo,tu,we,th,fr,sa])
+  startTime: "1am"
+  endTime:   "4am"
+  timeZone:  "UTC"

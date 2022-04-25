@@ -183,6 +183,38 @@ jobs:
                         --set kvSecrets="{$allSecretNames}"
         }
 
+  - task: AzureCLI@2
+    displayName: 'Install kured on AKS clusters'
+    inputs:
+      azureSubscription: $(azureServiceConnection)
+      scriptType: pscore
+      scriptLocation: inlineScript
+      inlineScript: |
+        # load json data from downloaded pipeline artifact json
+        $releaseUnitInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputReleaseUnitInfra/*.json | Get-Content | ConvertFrom-JSON
+
+        # loop through stamps from pipeline artifact json
+        foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
+
+          $aksClusterName = $stamp.aks_cluster_name
+          $aksClusterResourceGroup = $stamp.resource_group_name
+
+          echo "*** Load credentials for AKS Cluster $aksClusterName in $aksClusterResourceGroup"
+          # load AKS cluster credentials
+          az aks get-credentials --name $aksClusterName --resource-group $aksClusterResourceGroup --overwrite-existing
+
+          helm repo add kured https://weaveworks.github.io/kured
+          helm repo update
+
+          $kuredNamespace = "kube-system"
+          echo "*** Installing the KUbernetes REboot Daemon (kured) via helm in namespace $kuredNamespace on $aksClusterName"
+
+          helm upgrade --install kured kured/kured `
+                        --namespace $kuredNamespace `
+                        --values src/config/kured/kured.yaml `
+                        --version $(kuredVersion)
+        }
+
   - ${{ if eq(parameters.runChaosTesting, 'true') }}:
     - task: AzureCLI@2
       displayName: "Install Chaos Mesh $(chaosMeshVersion) on AKS clusters"

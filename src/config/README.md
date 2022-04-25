@@ -22,10 +22,11 @@ These version definitions are not only used for the components installed, but al
 
 The configuration layer is responsible for installing a set of components on top of the Azure resources, in this reference implementation mainly Azure Kubernetes Service, deployed as part of the infrastructure layer:
 
-* [ingress-nginx](#ingress-nginx)
-* [cert-manager](#cert-manager)
-* [csi-driver-keyvault](#csi-driver-keyvault)
-* [monitoring](#monitoring)
+- [ingress-nginx](#ingress-nginx)
+- [cert-manager](#cert-manager)
+- [csi-driver-keyvault](#csi-driver-keyvault)
+- [monitoring](#monitoring)
+- [kured](#kured)
 
 Additional configuration and manifests files used to configure the additional services are stored within the `/src/config` directory.
 
@@ -85,6 +86,14 @@ Monitoring contains an additional YAML manifest to update and change the OMSAgen
 ```
 
 Our ConfigMap disabled Prometheus-scraping and stdout/stderr collection to reduce the amount of monitoring data sent to the corresponding Log Analytics workspace (per regional deployment).
+
+### kured
+
+[Kured](https://docs.microsoft.com/azure/aks/node-updates-kured), the "KUbernetes REboot Daemon", is included as a solution to handle occasional required reboots from daily OS patching. While most system patches do not require a reboot, some do to come into effect.
+
+> Kured is rebooting Kubernetes worker nodes and will re-schedule pods to other nodes if needed, this might affect the availability of the overall solution. To cope with that, enough capacity should be available and the reboots should be configured to occur during less frequented times.
+
+> Kured is a [3rd-party component](https://github.com/weaveworks/kured) and not supported by Microsoft Support.
 
 ---
 

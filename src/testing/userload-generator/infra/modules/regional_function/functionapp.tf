@@ -32,18 +32,25 @@ resource "azurerm_linux_function_app" "regional" {
     application_stack {
       node_version = "14"
     }
+
+    application_insights_connection_string = var.application_insights_connection_string
   }
 
   app_settings = merge(
     var.additional_app_settings,
     {
-      "FUNCTIONS_WORKER_RUNTIME"       = "node"
       "PLAYWRIGHT_BROWSERS_PATH"       = "0"
       "ENABLE_ORYX_BUILD"              = "true"
       "SCM_DO_BUILD_DURING_DEPLOYMENT" = "true"
       "WEBSITE_MOUNT_ENABLED"          = "1"
       "WEBSITE_RUN_FROM_PACKAGE"       = "" # This value will be set by the Function deployment later
   })
+
+  lifecycle {
+    ignore_changes = [
+      app_settings["WEBSITE_RUN_FROM_PACKAGE"], # prevent TF reporting configuration drift after app code is deployed
+    ]
+  }
 }
 
 data "azurerm_function_app_host_keys" "regional" {

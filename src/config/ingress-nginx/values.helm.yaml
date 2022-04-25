@@ -23,7 +23,8 @@ controller:
         prometheus.io/scrape: "true"
         prometheus.io/port: "10254"
   service:
-    type:        LoadBalancer
+    externalTrafficPolicy: "Local" # denotes if this Service desires to route external traffic to node-local or cluster-wide endpoints.
+    type: LoadBalancer
     enableHttp:  true # enable plain http (req. for cert-manager)
     enableHttps: true  # enable https listener
   config:

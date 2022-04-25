@@ -1,5 +1,10 @@
 # https://www.terraform.io/docs/providers/azurerm/r/kubernetes_cluster.html
 resource "azurerm_kubernetes_cluster" "stamp" {
+  depends_on = [
+    # The subnet for the internal load balancer must not be deleted before AKS, that's why we need an explicit dependency here
+    azurerm_subnet.aks_lb
+  ]
+
   name                = "${local.prefix}-${local.location_short}-aks"
   location            = azurerm_resource_group.stamp.location
   resource_group_name = azurerm_resource_group.stamp.name

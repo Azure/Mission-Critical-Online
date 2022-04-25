@@ -2,7 +2,9 @@ resource "azurerm_api_management" "stamp" {
 
   depends_on = [
     # APIM requires that an NSG is attached to the subnet
-    azurerm_subnet_network_security_group_association.apim_nsg
+    azurerm_subnet_network_security_group_association.apim_nsg,
+    # The apim control plane NSG rule must exist and must not be deleted before APIM is deleted
+    azurerm_network_security_rule.apim_allow_inbound_apim_control
   ]
 
   name                = "${local.prefix}-${local.location_short}-apim"

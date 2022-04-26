@@ -43,7 +43,7 @@ jobs: # using jobs so they each run in parallel
             # Apply workload worker helm chart
             echo  "*** Deploy healthservice to $aksClusterName (in $aksClusterResourceGroup) via helm chart"
             helm upgrade --install healthservice-workload src/app/charts/healthservice `
-                          --namespace $(workloadNamespace) `
+                          --namespace $(workloadNamespace) --create-namespace `
                           --set containerimage="$fullContainerImageName" `
                           --set azure.region="$region" `
                           ${{ parameters.additionalHelmArguments }}
@@ -120,7 +120,8 @@ jobs: # using jobs so they each run in parallel
             echo "*** Deploy workload CatalogService to $aksClusterName (in $aksClusterResourceGroup) via helm chart"
             echo "*** Using container image $fullContainerImageName"
 
-            helm upgrade --install workload-catalogservice src/app/charts/catalogservice --namespace "$(workloadNamespace)" `
+            helm upgrade --install workload-catalogservice src/app/charts/catalogservice `
+                         --namespace "$(workloadNamespace)" --create-namespace `
                          --set azure.frontdoorid="$frontDoorId" `
                          --set azure.region="$region" `
                          --set azure.baseurl="$frontDoorFqdn" `
@@ -196,7 +197,7 @@ jobs: # using jobs so they each run in parallel
             # Apply workload BackgroundProcessor helm chart
             echo  "*** Deploy workload BackgroundProcessor to $aksClusterName (in $aksClusterResourceGroup) via helm chart"
             helm upgrade --install workload-backgroundprocessor src/app/charts/backgroundprocessor `
-                         --namespace $(workloadNamespace) `
+                         --namespace $(workloadNamespace) --create-namespace `
                          --set containerimage="$fullContainerImageName" `
                          --set azure.region="$region" `
                          ${{ parameters.additionalHelmArguments }}

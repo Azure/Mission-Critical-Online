@@ -1,7 +1,7 @@
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
-  name: {{ .Chart.Name }}-alwayson
+  name: {{ .Chart.Name }}
   labels:
     app: {{ .Chart.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}

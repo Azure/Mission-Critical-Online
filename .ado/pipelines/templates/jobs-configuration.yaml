@@ -28,7 +28,6 @@ jobs:
         foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
 
           echo "*** Configuring stamp in region $($stamp.location)"
-
           $aksClusterName = $stamp.aks_cluster_name
           $aksClusterResourceGroup = $stamp.resource_group_name
           echo "*** Load credentials for AKS Cluster $aksClusterName in $aksClusterResourceGroup"
@@ -46,13 +45,9 @@ jobs:
 
           $ingressNamespace = "ingress-nginx"
 
-          echo "*** Create namespace '$ingressNamespace' on AKS cluster $aksClusterName via kubectl"
-          kubectl create namespace $ingressNamespace  `
-                    --dry-run=client --output yaml | kubectl apply -f -
-
           # Deploy helm chart for ingress-nginx using a custom load balancer ip and resource group
           helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx `
-                --namespace $ingressNamespace `
+                --namespace $ingressNamespace --create-namespace `
                 --values src/config/ingress-nginx/values.helm.yaml `
                 --set controller.service.loadBalancerIP="$aksIngressIp" `
                 --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-internal"="true" `
@@ -118,15 +113,11 @@ jobs:
 
           $certManagerNamespace = "cert-manager"
 
-          echo "*** Create namespace '$certManagerNamespace' on AKS cluster $aksClusterName via kubectl"
-          kubectl create namespace $certManagerNamespace `
-                    --dry-run=client --output yaml | kubectl apply -f -
-
           $kubeletIdentityClientId = $stamp.aks_kubelet_clientid
 
           echo "*** Setting up cert-manager ClusterIssuer for Azure DNS-based Let's Encrypt issuer with domain name $(envDomainName)"
           helm upgrade --install cert-manager-config src/config/cert-manager/chart/cert-manager-config `
-                        --namespace $certManagerNamespace `
+                        --namespace $certManagerNamespace --create-namespace `
                         --set azure.subscriptionId=$subscriptionId `
                         --set azure.dnsZoneName="$(envDomainName)" `
                         --set azure.dnsZoneResourceGroupName="$(envDnsZoneRG)" `
@@ -138,7 +129,7 @@ jobs:
           helm repo update
           helm upgrade --install cert-manager jetstack/cert-manager `
                        --values src/config/cert-manager/values.helm.yaml `
-                       --namespace $certManagerNamespace `
+                       --namespace $certManagerNamespace --create-namespace `
                        --version "$(certManagerVersion)"
         }
 
@@ -167,12 +158,6 @@ jobs:
           # load AKS cluster credentials
           az aks get-credentials --name $aksClusterName --resource-group $aksClusterResourceGroup --overwrite-existing
 
-          echo "*** Create namespace $(workloadNamespace) on AKS cluster $aksClusterName via kubectl"
-          kubectl create namespace $(workloadNamespace) `
-                    --dry-run=client --output yaml | kubectl apply -f -
-
-          echo "*** Configuring CSI secret driver on $aksClusterName via helm"
-
           # Gather Azure KeyVault name from terraform artifact
           $keyVaultName = $stamp.key_vault_name
           echo "*** Retrieved Key Vault name $keyVaultName"
@@ -183,9 +168,9 @@ jobs:
           $kubeletIdentityClientId = $stamp.aks_kubelet_clientid
 
           echo "*** Retrieved Kubelet clientId $kubeletIdentityClientId for cluster $clusterName"
-
+          echo "*** Configuring CSI secret driver on $aksClusterName via helm"
           helm upgrade --install csi-secrets-driver src/config/csi-secrets-driver/chart/csi-secrets-driver-config `
-                        --namespace "$(workloadNamespace)" `
+                        --namespace "$(workloadNamespace)" --create-namespace `
                         --set azure.tenantId=$tenantId `
                         --set azure.keyVaultName="$keyVaultName" `
                         --set azure.managedIdentityClientId="$kubeletIdentityClientId" `
@@ -215,9 +200,6 @@ jobs:
             # load AKS cluster credentials
             az aks get-credentials --name $aksClusterName --resource-group $aksClusterResourceGroup --overwrite-existing
 
-            echo "*** Create namespace $(chaosTestingNamespace) on AKS cluster $aksClusterName via kubectl"
-            kubectl create namespace $(chaosTestingNamespace) --dry-run=client --output yaml | kubectl apply -f -
-
             $helmOutput = helm list --namespace=$(chaosTestingNamespace) -o json | ConvertFrom-Json
             if($helmOutput.name.length.equals(0))
             {
@@ -230,7 +212,7 @@ jobs:
 
               # Install Chaos Mesh 
               helm install chaos-mesh chaos-mesh/chaos-mesh `
-                            --namespace=$(chaosTestingNamespace) `
+                            --namespace=$(chaosTestingNamespace) --create-namespace `
                             --version=$(chaosMeshVersion) `
                             --set chaosDaemon.runtime=containerd `
                             --set chaosDaemon.socketPath=/run/containerd/containerd.sock

@@ -6,7 +6,9 @@ Therefore there is a [separate branch](https://github.com/Azure/Mission-Critical
 
 ## Architecture overview
 
-**TODO ADD DIAGRAM**
+The architecture diagram for Azure Mission-Critical Online using an reginal APIM instance is shown below.
+
+![Mission-Critical architecture diagram with API Management](/docs/media/Mission-critical-APIM-architecture.svg)
 
 It is important to note that API Management is used as a regional resource, i.e. deployed per stamp, and not in the geo-replicated version of APIM. This is to not break the principle of having no regional dependencies wherever possible. While the geo-replicated deployment of APIM does provide resiliency of the data plane (i.e. the gateways) against a regional outage, the control plane is bound to the primary region. If APIM in that region experiences issues, no deployments/changes can be made. Hence, we deploy separate instances per stamp.
 

@@ -69,6 +69,29 @@ resource "azurerm_kubernetes_cluster" "stamp" {
   tags = var.default_tags
 }
 
+resource "azurerm_kubernetes_cluster_node_pool" "workload" {
+  name                  = "workload1"
+  kubernetes_cluster_id = azurerm_kubernetes_cluster.stamp.id
+  vm_size               = "Standard_DS2_v2" # Adjust SKU size based on workload needs
+
+  enable_auto_scaling  = true # Enable autoscaling
+  min_count            = 3 # Adjust minimum number of nodes based on workload needs
+  max_count            = 6 # Adjust maximum number of nodes based on workload needs
+
+  mode    = "User" # Define this node pool as a "user" aka workload node pool
+  zones   = [1, 2, 3] # Distribute user node pool nodes across all availability zones
+
+  node_labels = [
+    "role=workload"
+  ]
+
+  node_taints = [
+    "workload=true:NoSchedule"
+  ]
+
+  tags = var.default_tags
+}
+
 ####################################### DIAGNOSTIC SETTINGS #######################################
 
 # Use this data source to fetch all available log and metrics categories. We then enable all of them

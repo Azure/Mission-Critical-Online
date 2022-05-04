@@ -88,8 +88,8 @@ resource "azurerm_kubernetes_cluster_node_pool" "workload" {
     "role=workload"
   ]
 
-  node_taints = [
-    "workload=true:NoSchedule"
+  node_taints = [ # this prevents pods from accidentially being scheduled on the workload node pool
+    "workload=true:NoSchedule" # each pod / deployments needs a toleration for this taint
   ]
 
   tags = var.default_tags

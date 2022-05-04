@@ -84,9 +84,9 @@ resource "azurerm_kubernetes_cluster_node_pool" "workload" {
   mode  = "User"    # Define this node pool as a "user" aka workload node pool
   zones = [1, 2, 3] # Distribute user node pool nodes across all availability zones
 
-  node_labels = [
-    "role=workload"
-  ]
+  node_labels = {
+    "role" = "workload"
+  }
 
   node_taints = [              # this prevents pods from accidentially being scheduled on the workload node pool
     "workload=true:NoSchedule" # each pod / deployments needs a toleration for this taint

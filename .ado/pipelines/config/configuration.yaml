@@ -17,7 +17,7 @@ variables:
 - name: 'dotnetSdkVersion'    # dotnet sdk version
   value: '6.0.200'
 - name: 'chaosMeshVersion'    #  chaos-mesh chart version
-  value: '2.1.3'
+  value: '2.2.0'
 - name: 'uiAppNodeVersion'    # nodejs version for the UI app
   value: '16.x'
 

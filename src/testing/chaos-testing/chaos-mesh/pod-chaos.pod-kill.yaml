@@ -5,7 +5,7 @@ metadata:
   namespace: chaos-testing
 spec:
   action: pod-kill
-  mode: random-max-percent
+  mode: fixed-percent
   value: '50'
   selector:
     namespaces:

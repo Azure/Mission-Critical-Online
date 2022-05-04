@@ -13,7 +13,7 @@ parameters:
   - name: loadTestStartSeconds
     type: number
     default: 300
-  - name: podKiller
+  - name: podFailure
     type: boolean
     default: false
   - name: cpuStress
@@ -93,17 +93,17 @@ stages:
                     }
                 }
 
-      - ${{ if eq(parameters.podKiller, 'true') }}:
+      - ${{ if eq(parameters.podFailure, 'true') }}:
         - task: AzureCLI@2
-          displayName: "Run Pod Killer experiment"
+          displayName: "Run Pod Failure experiment"
           inputs:
             azureSubscription: $(azureServiceConnection)
             scriptType: pscore
             scriptLocation: scriptPath
             scriptPath: '$(System.DefaultWorkingDirectory)/.ado/scripts/Invoke-ChaosMeshExperiment.ps1'
             arguments:
-              -ExperimentName "${{ parameters.customPrefix }}-PodKiller"
-              -ExperimentJsonPath "$(System.DefaultWorkingDirectory)/src/testing/chaos-testing/experiment-json/aks_pod_killer.json"
+              -ExperimentName "${{ parameters.customPrefix }}-podFailure"
+              -ExperimentJsonPath "$(System.DefaultWorkingDirectory)/src/testing/chaos-testing/experiment-json/aks_pod_failure.json"
               -ExperimentLocation "$(chaosStudioLocation)"
               -ExperimentDurationSeconds "${{ parameters.testDurationSeconds }}"
               -ChaosStudioApiVersion "$(chaosStudioApiVersion)"

@@ -14,5 +14,3 @@ spec:
       workers: 1
       load: 100
   duration: '60s'
-  scheduler:
-    cron: '@every 5m'

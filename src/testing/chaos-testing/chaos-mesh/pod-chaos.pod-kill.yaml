@@ -11,5 +11,3 @@ spec:
     namespaces:
       - workload
   duration: '30s'
-  scheduler:
-    cron: '@every 1m'

@@ -13,5 +13,3 @@ spec:
     memory:
       workers: 1
   duration: '60s'
-  scheduler:
-    cron: '@every 5m'

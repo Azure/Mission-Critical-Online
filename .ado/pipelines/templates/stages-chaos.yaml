@@ -57,7 +57,7 @@ stages:
                 # load json data from downloaded pipeline artifact json
                 $releaseUnitInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputReleaseUnitInfra/*.json | Get-Content | ConvertFrom-JSON
 
-                $capabilities = "PodChaos-1.0", "StressChaos-1.0"
+                $capabilities = "PodChaos-2.1", "StressChaos-2.1"
 
                 $targetResourceIds = @()
 

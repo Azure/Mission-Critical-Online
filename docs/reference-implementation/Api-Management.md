@@ -6,7 +6,7 @@ Therefore there is a [separate branch](https://github.com/Azure/Mission-Critical
 
 ## Architecture overview
 
-The architecture diagram for Azure Mission-Critical Online using an reginal APIM instance is shown below.
+The architecture diagram for Azure Mission-Critical Online using an regional APIM instance is shown below.
 
 ![Mission-Critical architecture diagram with API Management](/docs/media/Mission-critical-APIM-architecture.svg)
 

@@ -22,10 +22,10 @@ parameters:
 stages:
 
 - stage: deploylocust
-  displayName: 'Run Locust Loadtest'
+  displayName: 'Run loadtest'
   jobs:
   - job: deploylocustterraform
-    displayName: 'Deploy Locust Terraform (and run test when in headless mode)'
+    displayName: 'Deploy loadtest infrastructure (and run test when in headless mode)'
     steps:
     - checkout: self # checkout github repository
     - download: current # download pipeline artifacts
@@ -104,7 +104,7 @@ stages:
 
     # Download locust stats and logs from storage account to build agent so we can then store it as a pipeline artifact
       - task: Bash@3
-        displayName: 'Download Locust stats and logs'
+        displayName: 'Download loadtest stats and logs'
         inputs:
           targetType: 'inline'
           workingDirectory: '${{ parameters.terraformWorkingDirectory }}'
@@ -130,7 +130,7 @@ stages:
 
       # Publish Loadtest results stats and logs as pipeline artifacts
       - task: PublishBuildArtifacts@1
-        displayName: 'Publish Locust Results and Logs'
+        displayName: 'Publish loadtest results and logs'
         inputs:
           pathToPublish: '${{ parameters.terraformWorkingDirectory }}/locust/'
           artifactName: 'locust-test-results'

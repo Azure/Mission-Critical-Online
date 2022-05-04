@@ -179,7 +179,7 @@ The current networking setup consists of a single Azure Virtual Network per _sta
 
 Azure Kubernetes Service (AKS) is used as the compute platform as it is most versatile and as Kubernetes is the de-facto compute platform standard for modern applications, both inside and outside of Azure.
 
-This Azure Mission-Critical reference implementation uses Linux-only clusters only as its sample workload is written in .NET core and there is no requirement for any Windows-based containers.
+This Azure Mission-Critical reference implementation uses Linux-only clusters as its sample workload is written in .NET Core and there is no requirement for any Windows-based containers.
 
 - `role_based_access_control` (RBAC) is **enabled**.
 - `sku_tier` set to **Paid** (Uptime SLA) to achieve the 99.95% SLA within a single region (with `availability_zones` enabled).

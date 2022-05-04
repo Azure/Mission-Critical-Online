@@ -39,7 +39,7 @@ module "stamp" {
   frontdoor_id_header                    = var.frontdoor_id_header
   acr_name                               = var.acr_name
 
-  aks_system_node_pool_sku_size                   = var.aks_system_node_pool_sku_size
+  aks_system_node_pool_sku_size          = var.aks_system_node_pool_sku_size
   aks_system_node_pool_autoscale_minimum = var.aks_system_node_pool_autoscale_minimum
   aks_system_node_pool_autoscale_maximum = var.aks_system_node_pool_autoscale_maximum
 

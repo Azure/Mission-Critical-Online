@@ -23,7 +23,7 @@ module "stamp" {
 
   vnet_address_space = module.stamp_addresses.network_cidr_blocks[each.value]
 
-  kubernetes_version = var.kubernetes_version # kubernetes version
+  aks_kubernetes_version = var.aks_kubernetes_version # kubernetes version
 
   prefix       = local.prefix       # handing over the resource prefix
   default_tags = local.default_tags # handing over the resource tags
@@ -39,9 +39,9 @@ module "stamp" {
   frontdoor_id_header                    = var.frontdoor_id_header
   acr_name                               = var.acr_name
 
-  aks_node_size                   = var.aks_node_size
-  aks_node_pool_autoscale_minimum = var.aks_node_pool_autoscale_minimum
-  aks_node_pool_autoscale_maximum = var.aks_node_pool_autoscale_maximum
+  aks_system_node_pool_sku_size                   = var.aks_system_node_pool_sku_size
+  aks_system_node_pool_autoscale_minimum = var.aks_system_node_pool_autoscale_minimum
+  aks_system_node_pool_autoscale_maximum = var.aks_system_node_pool_autoscale_maximum
 
   event_hub_thoughput_units         = var.event_hub_thoughput_units
   event_hub_enable_auto_inflate     = var.event_hub_enable_auto_inflate

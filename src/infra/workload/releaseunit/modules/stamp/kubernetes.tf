@@ -4,7 +4,7 @@ resource "azurerm_kubernetes_cluster" "stamp" {
   location            = azurerm_resource_group.stamp.location
   resource_group_name = azurerm_resource_group.stamp.name
   dns_prefix          = "${local.prefix}${var.location}aks"
-  kubernetes_version  = var.kubernetes_version
+  aks_kubernetes_version  = var.aks_kubernetes_version
   node_resource_group = "MC_${local.prefix}-stamp-${var.location}-aks-rg" # we manually specify the naming of the managed resource group to have it controlled and consistent
   sku_tier            = "Paid"                                            # Opt-in for AKS Uptime SLA
 
@@ -21,13 +21,13 @@ resource "azurerm_kubernetes_cluster" "stamp" {
 
   default_node_pool {
     name                 = "defaultpool"
-    vm_size              = var.aks_node_size
+    vm_size              = var.aks_system_node_pool_sku_size
     enable_auto_scaling  = true
-    min_count            = var.aks_node_pool_autoscale_minimum
-    max_count            = var.aks_node_pool_autoscale_maximum
+    min_count            = var.aks_system_node_pool_autoscale_minimum
+    max_count            = var.aks_system_node_pool_autoscale_maximum
     vnet_subnet_id       = azurerm_subnet.kubernetes.id
     os_disk_type         = "Ephemeral"
-    orchestrator_version = var.kubernetes_version
+    orchestrator_version = var.aks_kubernetes_version
     
     zones   = [1, 2, 3]
 
@@ -69,8 +69,11 @@ resource "azurerm_kubernetes_cluster" "stamp" {
   tags = var.default_tags
 }
 
+# IMPORTANT - THIS IS JUST AN EXAMPLE.
+# The workload node pool is not used in this reference implementation.
+
 resource "azurerm_kubernetes_cluster_node_pool" "workload" {
-  name                  = "workload1"
+  name                  = "workload1" # Name of the workload node pool
   kubernetes_cluster_id = azurerm_kubernetes_cluster.stamp.id
   vm_size               = "Standard_DS2_v2" # Adjust SKU size based on workload needs
 

@@ -92,11 +92,11 @@ stages:
               url = "$(frontdoor_fqdn)" 
             })
             $config | export-csv "$(System.DefaultWorkingDirectory)/test-config.csv"  -NoTypeInformation
+
       # upload a loadtest config file from previous task
       - task: AzureCLI@2
         displayName: 'Upload auto-generated load test config file for Azure Load Test'
         name: 'uploadAzureLoadTestConfig'
-        enabled: false
         inputs:
           azureSubscription: '$(azureServiceConnection)'
           scriptType: pscore

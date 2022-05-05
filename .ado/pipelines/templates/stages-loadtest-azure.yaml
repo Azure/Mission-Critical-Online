@@ -42,7 +42,7 @@ stages:
 
     - template: steps-parse-terraform-output.yaml
       parameters:
-        workingDirectory: '$(workingDirectory)'  
+        workingDirectory: '$(Pipeline.Workspace)/terraformOutputGlobalInfra'  # Global infra deploy output directory
 
     # All of the next tasks are only applicable in headless mode
     - ${{ if eq(parameters.embeddedLoadTest, 'true') }}:
@@ -84,21 +84,12 @@ stages:
       - task: PowerShell@2
         displayName: 'Create config *.csv file'
         name: 'createAzureLoadTestConfigCsv'
-        enabled: false
         inputs:
           targetType: inline
           script: |      
             $config = @(
               [pscustomobject]@{
-              url = "www.$(envDomainName)"
-              tenant  = "$(b2cTenantName)"
-              gm_userid  = "$(smokeUser)"
-              gm_password = "$(smokePassword)"
-              ropc_policy = "$(b2cRopcPolicyName)"
-              client_id = "$(b2cUIClientID)"
-              numberOf_games = '100'
-              parallel_threads = '50'
-              test_duration = '120'
+              url = "$(frontdoor_fqdn)" 
             })
             $config | export-csv "$(System.DefaultWorkingDirectory)/test-config.csv"  -NoTypeInformation
       # upload a loadtest config file from previous task

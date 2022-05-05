@@ -180,6 +180,26 @@ stages:
               }
               # todo - timeout?
             } while ($result.status -ne "DONE")
+
+      - script: |  
+          wget -c https://apache.newfountain.nl/jmeter/binaries/apache-jmeter-5.4.1.tgz
+          tar -xf apache-jmeter-5.4.1.tgz
+        displayName: 'Install the dependency packages'
+
+      - script: |
+          unzip results/results.zip -d results
+          JMETER_RESULTS=results/results.csv
+          JUNIT_RESULTS=output.xml
+          python3 jtl_junit_converter.py $JMETER_RESULTS $JUNIT_RESULTS
+        displayName: 'RESULTS: Convert JMeter Results to JUnit Format'
+
+      - task: PublishTestResults@2
+        inputs:
+          testResultsFormat: 'JUnit'
+          testResultsFiles: 'output.xml'
+          failTaskOnFailedTests: true
+        displayName: 'RESULTS: Publish Load Testing Results'
+
       # TODO - publish load test results in azure devops
       - task: PublishBuildArtifacts@1
         inputs:

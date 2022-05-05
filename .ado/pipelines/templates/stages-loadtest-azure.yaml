@@ -178,16 +178,17 @@ stages:
               # todo - timeout?
             } while ($result.status -ne "DONE")
 
-      - script: |  
-          wget -c https://dlcdn.apache.org//jmeter/binaries/apache-jmeter-5.4.3.tgz
-          tar -xf apache-jmeter-5.4.3.tgz
-        displayName: 'Install the dependency packages'
+      #- script: |  
+      #    #wget -c https://dlcdn.apache.org//jmeter/binaries/apache-jmeter-5.4.3.tgz
+      #    #tar -xf apache-jmeter-5.4.3.tgz
+      #  displayName: 'Install the dependency packages'
 
       - script: |
+          wget https://raw.githubusercontent.com/Azure-Samples/jmeter-aci-terraform/main/scripts/jtl_junit_converter.py -O $(System.DefaultWorkingDirectory)/junit-onverter.py
           unzip results/results.zip -d results
-          JMETER_RESULTS=results/results.csv
+          JMETER_RESULTS=results/testresults.csv
           JUNIT_RESULTS=output.xml
-          python3 jtl_junit_converter.py $JMETER_RESULTS $JUNIT_RESULTS
+          python3 junit-onverter.py $JMETER_RESULTS $JUNIT_RESULTS
         displayName: 'RESULTS: Convert JMeter Results to JUnit Format'
 
       - task: PublishTestResults@2

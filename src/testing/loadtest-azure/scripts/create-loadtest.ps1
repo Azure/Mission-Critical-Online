@@ -1,7 +1,5 @@
 param
 (
-  # Azure Load Test Resource Name
-  [string] $loadTestName,
   # Load Test Id - auto-generated when empty
   [string] $loadTestId,
   # Load Test Displayname shown in Azure Portal
@@ -22,8 +20,9 @@ if (!$loadTestId) {
   $loadTestId = (New-Guid).toString()
 }
 
+# setting loadTestDisplayName to loadTestName when empty
 if (!$loadTestDisplayName) {
-  $loadTestDisplayName = $loadTestName
+  $loadTestDisplayName = $loadTestId
 }
 
 function GetTestBody {

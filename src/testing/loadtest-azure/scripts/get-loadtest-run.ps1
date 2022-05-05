@@ -1,12 +1,14 @@
 param
 (
   # Load Test run id
+  [Parameter(Mandatory=$true)]
   [string] $testRunId,
   # Load Test data plane endpoint
+  [Parameter(Mandatory=$true)]
   [string] $apiEndpoint,
   # Load Test data plane api version
-  [string] $apiVersion,
-  [bool]$verbose = $False
+  [Parameter(Mandatory=$true)]
+  [string] $apiVersion
 )
 
 . "$PSScriptRoot/common.ps1"

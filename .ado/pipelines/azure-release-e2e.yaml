@@ -18,11 +18,17 @@ parameters:
   type: boolean
   default: false
 
+- name: loadTestingTool
+  displayName: "Load testing tool"
+  type: object
+  default: 
+    alt: 'Azure'
+    locust: 'Locust'
+
 - name: runChaosTesting
   displayName: "Run Chaos testing"
   type: boolean
   default: false
-
 
 variables:
 - name:  'environment' # set the environment name as variable

@@ -1,10 +1,10 @@
 param
 (
-  [string] $resourceGroupName,
   [string] $loadTestName,
   [string] $loadTestId,
   [string] $testFileName,
   [string] $testFileId,
+  [string] $apiEndpoint,
   [bool]$verbose = $False
 )
 

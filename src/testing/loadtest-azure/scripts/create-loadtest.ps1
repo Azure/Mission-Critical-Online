@@ -12,6 +12,8 @@ param
   [string] $loadTestDescription,
   [string] $engineSize,
   [int] $engineInstances = "0",
+  [string]$apiEndpoint,
+  [string]$apiVersion,
   [bool] $pipeline = $false 
 )
 

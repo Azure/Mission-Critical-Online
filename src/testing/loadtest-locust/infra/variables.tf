@@ -10,6 +10,12 @@ variable "environment" {
   default     = "int"
 }
 
+variable "branch" {
+  description = "Name of the repository branch used for the deployment. Used as an Azure Resource Tag."
+  type        = string
+  default     = "not set"
+}
+
 variable "locust_container_image" {
   description = "Locust Container Image"
   type        = string

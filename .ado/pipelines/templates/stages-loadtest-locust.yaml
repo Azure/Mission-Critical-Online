@@ -85,6 +85,7 @@ stages:
         environment:                '$(environment)'
         customAttributes:           '-var targeturl=$(loadTestTargetUrl)
                                     -var queued_by="$(Build.QueuedBy)"
+                                    -var branch="$(sourceBranch)"
                                     -var locust_workers=${{ parameters.loadTestNumberOfWorkerNodes }}
                                     -var locust_runtime="${{ parameters.loadTestDurationInSeconds }}s"
                                     -var locust_spawn_rate=${{ parameters.loadTestUserSpawnRate }}

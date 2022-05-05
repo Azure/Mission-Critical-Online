@@ -291,6 +291,7 @@ stages:
       terraformWorkingDirectory: 'src/testing/loadtest-azure/infra'
       customPrefix: '$(prefix)$(customSuffix)'
       destroyInfra: ${{ parameters.destroyOldEnvironment }}
+      embeddedLoadTest: true
 
 # Chaos testing for e2e (optional) with Azure Chaos Studio
 - ${{ if and(eq(parameters.environment, 'e2e'), eq(parameters.runChaosTesting, 'true')) }}: # only in e2e and when runChaosTesting is true

@@ -186,7 +186,7 @@ stages:
       - script: |
           wget https://raw.githubusercontent.com/Azure-Samples/jmeter-aci-terraform/main/scripts/jtl_junit_converter.py -O $(System.DefaultWorkingDirectory)/junit-onverter.py
           unzip results/results.zip -d results
-          JMETER_RESULTS=results/testresults.csv
+          JMETER_RESULTS=results/testreport.csv
           JUNIT_RESULTS=output.xml
           python3 junit-onverter.py $JMETER_RESULTS $JUNIT_RESULTS
         displayName: 'RESULTS: Convert JMeter Results to JUnit Format'

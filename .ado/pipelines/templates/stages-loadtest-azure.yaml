@@ -195,7 +195,7 @@ stages:
         inputs:
           testResultsFormat: 'JUnit'
           testResultsFiles: 'output.xml'
-          failTaskOnFailedTests: true
+          failTaskOnFailedTests: false
         displayName: 'RESULTS: Publish Load Testing Results'
 
       # TODO - publish load test results in azure devops

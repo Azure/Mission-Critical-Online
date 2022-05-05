@@ -179,21 +179,22 @@ The current networking setup consists of a single Azure Virtual Network per _sta
 
 Azure Kubernetes Service (AKS) is used as the compute platform as it is most versatile and as Kubernetes is the de-facto compute platform standard for modern applications, both inside and outside of Azure.
 
-Azure Mission-Critical uses Linux-only clusters as there is no requirement for any Windows-based containers and Linux is the more mature platform in terms of Kubernetes.
+This Azure Mission-Critical reference implementation uses Linux-only clusters as its sample workload is written in .NET Core and there is no requirement for any Windows-based containers.
 
 - `role_based_access_control` (RBAC) is **enabled**.
 - `sku_tier` set to **Paid** (Uptime SLA) to achieve the 99.95% SLA within a single region (with `availability_zones` enabled).
 - `http_application_routing` is **disabled** as it is [not recommended for production environments](https://docs.microsoft.com/azure/aks/http-application-routing), a separate Ingress controller solution will be used.
 - Managed Identities (SystemAssigned) are used, instead of Service Principals.
-- `addon_profile` configuration
-  - `azure_policy` is set to `true` to enable the use of [Azure Policies in Azure Kubernetes Service](https://docs.microsoft.com/azure/aks/use-azure-policy). The policy configured in the reference implementation is in "audit-only" mode. It is mostly integrated to demonstrate how to set this up through Terraform.
-  - `oms_agent` is configured to enable the Container Insights addon and ship AKS monitoring data to Azure Log Analytics via an in-cluster OMS Agent (DaemonSet).
+- `azure_policy_enabled` is set to `true` to enable the use of [Azure Policies in Azure Kubernetes Service](https://docs.microsoft.com/azure/aks/use-azure-policy). The policy configured in the reference implementation is in "audit-only" mode. It is mostly integrated to demonstrate how to set this up through Terraform.
+- `oms_agent` is configured to enable the Container Insights addon and ship AKS monitoring data to Azure Log Analytics via an in-cluster OMS Agent (DaemonSet).
 - Diagnostic settings are configured to store all log and metric data in Log Analytics.
 - `default_node_pool` settings
   - `availability_zones` is set to `3` to leverage all three AZs in a given region.
   - `enable_auto_scaling` is configured to let the default node pool automatically scale out if needed.
   - `os_disk_type` is set to `Ephemeral` to leverage [Ephemeral OS disks](https://docs.microsoft.com/azure/aks/cluster-configuration#ephemeral-os) for performance reasons.
   - `upgrade_settings` `max_surge` is set to `33%` which is the [recommended value for production workloads](https://docs.microsoft.com/azure/aks/upgrade-cluster#customize-node-surge-upgrade).
+  > **Important!** In production environments its recommended to separate system and user node pools (see [Manage system node pools in Azure Kubernetes Service](https://docs.microsoft.com/azure/aks/use-system-pools)). This Azure Mission-Critical reference implementation is using a single (system) node pool for cost-saving purposes and to reduce overhead.
+  > The `kubernetes.tf` file contains a commented-out example for an additional user node pool with a taint `workload=true:NoSchedule` set to prevent non-workload pods from being scheduled. The `node_label` set to `role=workload` can be used to target this node pool when deploying a workload (see [charts/catalogservice](/src/app/charts/catalogservice/) for an example).
 
 Individual stamps are considered ephemeral and stateless. Updates to the infrastructure and application are following a [Zero-downtime Update Strategy](/docs/reference-implementation/DeployAndTest-DevOps-Zero-Downtime-Update-Strategy.md) and do not touch existing stamps. Updates to Kubernetes are therefore primarily rolled out by releasing new versions and replacing existing stamps. To update node images between two releases, the `automatic_channel_upgrade` in combination with `maintenance_window` is used:
 

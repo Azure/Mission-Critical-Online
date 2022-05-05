@@ -15,11 +15,6 @@ parameters:
 
 - name: runLoadTesting
   displayName: "Run embedded load testing"
-  type: boolean
-  default: false
-
-- name: loadTestingTool
-  displayName: "Load testing tool"
   type: string
   default: 'none'
   values:

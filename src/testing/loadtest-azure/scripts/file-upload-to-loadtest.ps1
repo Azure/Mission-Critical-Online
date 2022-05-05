@@ -20,14 +20,15 @@ if (!$testFileId) {
 #./file-verify.ps1  -testFileName $testFileName
 
 if (!(Test-Path $testFileName -PathType leaf)) {
-  echo "File $testFileName does not exist"
-  exit 0
+  trow "File $testFileName does not exist"
 }
 
 $urlRoot = "https://" + $apiEndpoint + "/loadtests/" + $loadTestId + "/files/" + $testFileId
 
 # Following is to get Invoke-RestMethod to work
 $url = $urlRoot + "?api-version=" + $apiVersion
+
+Write-Verbose "*** Load test service data plane: $urlRoot"
 
 # Secure string to use access token with Invoke-RestMethod in Powershell
 $accessTokenSecure = ConvertTo-SecureString -String $accessToken -AsPlainText -Force

@@ -77,7 +77,8 @@ stages:
             -loadTestId "$(loadTestId)" `
             -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
             -apiVersion "$(azureLoadTestApiVersion)" `
-            -testFileName "$(System.DefaultWorkingDirectory)/src/config/loadtest-azure/scripts/catalogue-test.jmx"
+            -testFileName "$(System.DefaultWorkingDirectory)/src/testing/loadtest-azure/scripts/catalogue-test.jmx" `
+            -verbose:$true
 
       # Create config csv for Azure Load Test
       - task: PowerShell@2
@@ -120,6 +121,7 @@ stages:
       - task: AzureCLI@2
         displayName: 'Upload *.csv files for Azure Load Test'
         name: 'uploadAzureLoadTestUsers'
+        enabled: false
         inputs:
           azureSubscription: '$(azureServiceConnection)'
           scriptType: pscore
@@ -146,7 +148,7 @@ stages:
             -testRunName "Load Test run by ADO" `
             -testRunDescription "Pipeline executed load test run" `
             -testRunVUsers "$(azureLoadTestVUsers)" `
-            -pipeline $true
+            -pipeline $true -verbose:$true
 
       # TODO - get load test status and wait till it's done
 

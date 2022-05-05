@@ -54,7 +54,7 @@ GetTestBody -loadTestDisplayName $loadTestDisplayName `
 
 $urlRoot = "https://" + $apiEndpoint + "/loadtests/" + $loadTestId
 
-Write-Verbose "Load test service data plane: $urlRoot"
+Write-Verbose "*** Load test service data plane: $urlRoot"
 
 # Create a new load test resource or update existing, if loadTestId already exists
 az rest --url $urlRoot `
@@ -74,4 +74,4 @@ if($pipeline) {
 Remove-Item $accessTokenFileName
 Remove-Item $testDataFileName
 
-return $loadTestId
+Write-Verbose "*** Load test $loadTestId successfully created."

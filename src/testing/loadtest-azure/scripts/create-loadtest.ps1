@@ -9,8 +9,10 @@ param
   # Load Test engine instances
   [int] $engineInstances = "0",
   # Load Test data plane endpoint
+  [Parameter(Mandatory=$true)]
   [string] $apiEndpoint,
   # Load Test data plane api version
+  [Parameter(Mandatory=$true)]
   [string] $apiVersion,
   [bool] $pipeline = $false
 )
@@ -57,9 +59,7 @@ GetTestBody -loadTestDisplayName $loadTestDisplayName `
 
 $urlRoot = $apiEndpoint + "/loadtests/" + $loadTestId
 
-if ($verbose) {
-  Write-Verbose $urlRoot
-}
+Write-Verbose "Load test service data plane: " + $urlRoot
 
 # Create a new load test resource or update existing, if loadTestId already exists
 az rest --url $urlRoot `

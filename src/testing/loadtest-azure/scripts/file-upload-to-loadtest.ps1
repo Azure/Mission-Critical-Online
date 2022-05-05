@@ -24,7 +24,7 @@ if (!(Test-Path $testFileName -PathType leaf)) {
   exit 0
 }
 
-$urlRoot = $apiEndpoint + "/loadtests/" + $loadTestId + "/files/" + $testFileId
+$urlRoot = "https://" + $apiEndpoint + "/loadtests/" + $loadTestId + "/files/" + $testFileId
 
 # Following is to get Invoke-RestMethod to work
 $url = $urlRoot + "?api-version=" + $apiVersion

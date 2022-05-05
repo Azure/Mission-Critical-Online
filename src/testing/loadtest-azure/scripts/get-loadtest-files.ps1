@@ -11,7 +11,7 @@ param
 
 . "$PSScriptRoot/common.ps1"
 
-$urlRoot = $apiEndpoint + "/loadtests/" + $loadTestId + "/files"
+$urlRoot = "https://" + $apiEndpoint + "/loadtests/" + $loadTestId + "/files"
 
 az rest --url $urlRoot `
   --method GET `

@@ -10,7 +10,7 @@ param
 
 . "$PSScriptRoot/common.ps1"
 
-$urlRoot = $apiEndpoint + "/file/" + $testFileName + ":validate"
+$urlRoot = "https://" + $apiEndpoint + "/file/" + $testFileName + ":validate"
 
 #$jsonResult = az rest --url $urlRoot `
 #  --method POST `

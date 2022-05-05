@@ -40,7 +40,7 @@ function GetTestRunBody {
 }
 
 $testRunId = (New-Guid).toString()
-$urlRoot = "$apiEndpoint/testruns/$testRunId"
+$urlRoot = "https://" + $apiEndpoint + "/testruns/" + $testRunId
 
 # Prep load test run body
 $testRunData = GetTestRunBody -testId $loadTestId `

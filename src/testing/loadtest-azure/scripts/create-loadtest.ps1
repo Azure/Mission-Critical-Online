@@ -10,7 +10,6 @@ param
   [string] $loadTestDisplayName,
   # Load Test Description shown in Azure Portal
   [string] $loadTestDescription,
-  [string] $engineSize,
   [int] $engineInstances = "0",
   [string]$apiEndpoint,
   [string]$apiVersion,
@@ -31,7 +30,6 @@ function GetTestBody {
   (
     [string] $loadTestDisplayName,
     [string] $loadTestDescription,
-    [string] $engineSize,
     [int] $engineInstances
   )
 
@@ -40,7 +38,6 @@ function GetTestBody {
       "displayName": "$loadTestDisplayName",
       "description": "$loadTestDescription",
       "loadTestConfig": {
-          "engineSize": "$engineSize",
           "engineInstances": $engineInstances
       }
   }
@@ -56,10 +53,7 @@ function GetTestBody {
 $testDataFileName = $loadTestId + ".txt"
 GetTestBody -loadTestDisplayName $loadTestDisplayName `
             -loadTestDescription $loadTestDescription `
-            -engineSize $engineSize `
             -engineInstances $engineInstances
-
-#$resourceScope = "/subscriptions/" + $subscriptionId + "/resourceGroups/" + $resourceGroupName + "/providers/Microsoft.LoadTestService/loadtests/" + $loadTestName
 
 $urlRoot = $apiEndpoint + "/loadtests/" + $loadTestId
 
@@ -70,7 +64,7 @@ az rest --url $urlRoot `
   --headers ('@' + $accessTokenFileName) "Content-Type=application/merge-patch+json" `
   --url-parameters testId=$loadTestId api-version=$apiVersion `
   --body ('@' + $testDataFileName) `
-  -o none $verbose #  --resource $resourceScope   --url-parameters resourceId=$resourceScope
+  -o none $verbose 
 
 # Outputs and exports for pipeline usage
 if($pipeline) {

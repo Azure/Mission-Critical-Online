@@ -56,10 +56,10 @@ variables:
   value: 10
 
 # Microsoft Azure Load Test (MALT) configuration
-- name: 'azureLoadTestEngineSize'
-  value: 'M'
 - name: 'azureLoadTestEngineInstances'
   value: '1'
+- name: 'azureLoadTestApiVersion'
+  value: '2021-07-01-preview'
 
 # Others
 - name: 'smokeTestRetryCount' # How many times a request in the smoke tests is retried before declared as failed (retries HTTP response codes from 400-599 as well as issues like certificate errors)

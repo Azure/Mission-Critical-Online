@@ -37,15 +37,6 @@ stages:
 
       - template: steps-set-pipeline-variables.yaml # load the set-pipeline-variables function (used for tags and prefixes)
 
-      # Sleep for the duration of the load test startup this is a simple attempt to sync the start of both tests.
-      - task: Bash@3
-        displayName: 'Sleep for ${{ parameters.loadTestStartSeconds }} seconds'
-        inputs:
-          targetType: "inline"
-          script: |
-                echo "Sleeping for ${{ parameters.loadTestStartSeconds }} seconds while the load test is starting..."
-                sleep ${{ parameters.loadTestStartSeconds }}
-
       - task: AzureCLI@2
         displayName: "Prepare AKS clusters as Chaos targets"
         inputs:
@@ -92,6 +83,15 @@ stages:
                         }
                     }
                 }
+
+      # Sleep for the duration of the load test startup; this is a simple attempt to sync the start of both tests.
+      - task: Bash@3
+        displayName: 'Sleep for ${{ parameters.loadTestStartSeconds }} seconds'
+        inputs:
+          targetType: "inline"
+          script: |
+                echo "Sleeping for ${{ parameters.loadTestStartSeconds }} seconds while the load test is starting..."
+                sleep ${{ parameters.loadTestStartSeconds }}
 
       - ${{ if eq(parameters.podFailure, 'true') }}:
         - task: AzureCLI@2

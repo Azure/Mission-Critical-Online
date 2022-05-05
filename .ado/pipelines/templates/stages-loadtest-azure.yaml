@@ -40,9 +40,15 @@ stages:
         environment:               '$(environment)'
         customAttributes:          '-var queued_by="$(Build.QueuedBy)"'
 
+    # Parsing the Terraform output for the global infrastructure deployment to extract data like the Azure Front Door FQDN
     - template: steps-parse-terraform-output.yaml
       parameters:
         workingDirectory: '$(Pipeline.Workspace)/terraformOutputGlobalInfra'  # Global infra deploy output directory
+
+    # Parsing the Terraform output for the MALT service deployment
+    - template: steps-parse-terraform-output.yaml
+      parameters:
+        workingDirectory: '${{ parameters.terraformWorkingDirectory }}'
 
     # All of the next tasks are only applicable in headless mode
     - ${{ if eq(parameters.embeddedLoadTest, 'true') }}:

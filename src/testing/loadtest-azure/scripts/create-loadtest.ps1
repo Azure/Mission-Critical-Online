@@ -1,7 +1,5 @@
 param
 (
-  # Azure Load Test Resource Group
-  #[string] $resourceGroupName,
   # Azure Load Test Resource Name
   [string] $loadTestName,
   # Load Test Id - auto-generated when empty
@@ -10,8 +8,11 @@ param
   [string] $loadTestDisplayName,
   # Load Test Description shown in Azure Portal
   [string] $loadTestDescription,
+  # Load Test engine instances
   [int] $engineInstances = "0",
+  # Load Test data plane endpoint
   [string]$apiEndpoint,
+  # Load Test data plane api version
   [string]$apiVersion,
   [bool] $pipeline = $false 
 )

@@ -20,10 +20,12 @@ parameters:
 
 - name: loadTestingTool
   displayName: "Load testing tool"
-  type: object
-  default: 
-    alt: 'Azure'
-    locust: 'Locust'
+  type: string
+  default: 'none'
+  values:
+  - none
+  - Azure
+  - Locust
 
 - name: runChaosTesting
   displayName: "Run Chaos testing"

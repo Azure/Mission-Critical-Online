@@ -53,7 +53,6 @@ GetTestBody -loadTestDisplayName $loadTestDisplayName `
             -engineInstances $engineInstances | Out-File $testDataFileName -Encoding utf8
 
 $urlRoot = "https://" + $apiEndpoint + "/loadtests/" + $loadTestId
-
 Write-Verbose "*** Load test service data plane: $urlRoot"
 
 # Create a new load test resource or update existing, if loadTestId already exists

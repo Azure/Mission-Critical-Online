@@ -1,13 +1,13 @@
-$resourceGroupName = "aoint-azloadtest-rg"
-$loadTestName = "aoint-azloadtest"
-$loadTestId = "bac7393b-1988-4753-854d-35f51447b4ce
-"
-#$testFileName = "../../../config/loadtest-azure/player-test.jmx"
-$testFileName = "../../../config/identity/generated-users.csv"
+$loadTestId = "6ac85c38-e783-4ec7-94cc-db6c68fef1aa"
+$testFileName = "/mnt/c/git/AlwaysOn-foundational/src/testing/loadtest-azure/scripts/catalogue-test.jmx"
 $testFileId = ""
 
-. "$PSScriptRoot/config.ps1"
+$apiVersion = "2021-07-01-preview"
+$apiEndpoint = "https://5e241573-3a5f-4361-bf53-1ae7bde73cb7.neu.cnt-prod.loadtesting.azure.com" #needs to be updated... will be returned when resource is created
 
-. ./file-upload-to-loadtest.ps1 -resourceGroupName "$resourceGroupName" `
-                                -loadTestName "$loadTestName" -loadTestId "$loadTestId" `
-                                -testFileName "$testFileName" -testFileId "$testFileId"
+. ./file-upload-to-loadtest.ps1 -loadTestId "$loadTestId" `
+                                -testFileName "$testFileName" `
+                                -testFileId "$testFileId" `
+                                -apiVersion "$apiVersion" `
+                                -apiEndpoint "$apiEndpoint" `
+                                -verbose:$true

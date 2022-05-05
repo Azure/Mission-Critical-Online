@@ -1,20 +1,24 @@
 param
 (
-  [string] $resourceGroupName,
-  [string] $loadTestName,
-  [string] $loadTestId
+  # Load Test Id
+  [string] $loadTestId,
+  # Load Test data plane endpoint
+  [string]$apiEndpoint,
+  # Load Test data plane api version
+  [string]$apiVersion
 )
 
-. ./common.ps1
+if (!$loadTestId) {
+  throw "ERROR - Parameter loadTestId is required and cannot be empty."
+}
 
-$resourceScope = "/subscriptions/$subscriptionId/resourceGroups/$resourceGroupName/providers/Microsoft.LoadTestService/loadtests/$loadTestName"
+. ./common.ps1
 
 $urlRoot = $apiEndpoint + "/loadtests/" + "$loadTestId"
 
 az rest --url $urlRoot `
   --method DELETE `
   --skip-authorization-header `
-  --resource $resourceScope `
   --headers "$accessTokenHeader" `
-  --url-parameters resourceId="$resourceScope" testId="$loadTestId" api-version="$apiVersion" `
+  --url-parameters testId="$loadTestId" api-version="$apiVersion" `
   $verbose

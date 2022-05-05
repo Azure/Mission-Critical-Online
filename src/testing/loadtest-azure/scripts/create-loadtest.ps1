@@ -53,7 +53,7 @@ function GetTestBody {
 $testDataFileName = $loadTestId + ".txt"
 GetTestBody -loadTestDisplayName $loadTestDisplayName `
             -loadTestDescription $loadTestDescription `
-            -engineInstances $engineInstances
+            -engineInstances $engineInstances | Out-File $testDataFileName -Encoding utf8
 
 $urlRoot = $apiEndpoint + "/loadtests/" + $loadTestId
 

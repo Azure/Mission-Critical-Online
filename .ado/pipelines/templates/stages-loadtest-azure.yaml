@@ -164,8 +164,8 @@ stages:
               echo "*** Waiting additional 90 seconds for the load test run to complete.."
               start-sleep -seconds 90
               $result = $(System.DefaultWorkingDirectory)/src/testing/loadtest-azure/scripts/get-loadtest-run.ps1 `
-                          -resourceGroupName "$(azureLoadResourceGroup)" `
-                          -loadTestName "$(azureLoadTestName)" `
+                          -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
+                          -apiVersion "$(azureLoadTestApiVersion)" `
                           -testRunId "$(testRunId)"
               $testRunStatus = ($result).status
               echo "*** Test Run $(testRunId) is in status $testRunStatus"

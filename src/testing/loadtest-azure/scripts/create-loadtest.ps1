@@ -12,7 +12,7 @@ param
   [string] $apiEndpoint,
   # Load Test data plane api version
   [string] $apiVersion,
-  [bool] $pipeline = $false 
+  [bool] $pipeline = $false
 )
 
 # the testId is auto-generated (if not set)
@@ -56,6 +56,10 @@ GetTestBody -loadTestDisplayName $loadTestDisplayName `
             -engineInstances $engineInstances | Out-File $testDataFileName -Encoding utf8
 
 $urlRoot = $apiEndpoint + "/loadtests/" + $loadTestId
+
+if ($verbose) {
+  Write-Verbose $urlRoot
+}
 
 # Create a new load test resource or update existing, if loadTestId already exists
 az rest --url $urlRoot `

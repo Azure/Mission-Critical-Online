@@ -40,35 +40,35 @@ stages:
         environment:               '$(environment)'
         customAttributes:          '-var queued_by="$(Build.QueuedBy)"'
 
-    # Parsing the Terraform output for the global infrastructure deployment to extract data like the Azure Front Door FQDN
-    - template: steps-parse-terraform-output.yaml
-      parameters:
-        workingDirectory: '$(Pipeline.Workspace)/terraformOutputGlobalInfra'  # Global infra deploy output directory
-
     # Parsing the Terraform output for the MALT service deployment
     - template: steps-parse-terraform-output.yaml
       parameters:
         workingDirectory: '${{ parameters.terraformWorkingDirectory }}'
 
+    # create a new azure load test with an auto-generated loadTestId
+    - task: AzureCLI@2
+      displayName: 'Create a new Azure Load Test'
+      name: 'createAzureLoadTest'
+      inputs:
+        azureSubscription: '$(azureServiceConnection)'
+        scriptType: pscore
+        scriptLocation: 'scriptPath'
+        scriptPath: '$(System.DefaultWorkingDirectory)/src/testing/loadtest-azure/scripts/create-loadtest.ps1'
+        arguments:
+          -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
+          -apiVersion "$(azureLoadTestApiVersion)" `
+          -loadTestDisplayName "load test for $(Build.BuildId)" `
+          -loadTestDescription "Pipeline-embedded load test for $(Build.BuildId)" `
+          -engineInstances "$(azureLoadTestEngineInstances)" `
+          -pipeline $true -verbose:$true
+
     # All of the next tasks are only applicable in headless mode
     - ${{ if eq(parameters.embeddedLoadTest, 'true') }}:
 
-      # create a new azure load test with an auto-generated loadTestId
-      - task: AzureCLI@2
-        displayName: 'Create a new Azure Load Test'
-        name: 'createAzureLoadTest'
-        inputs:
-          azureSubscription: '$(azureServiceConnection)'
-          scriptType: pscore
-          scriptLocation: 'scriptPath'
-          scriptPath: '$(System.DefaultWorkingDirectory)/src/testing/loadtest-azure/scripts/create-loadtest.ps1'
-          arguments:
-            -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
-            -apiVersion "$(azureLoadTestApiVersion)" `
-            -loadTestDisplayName "load test for $(Build.BuildId)" `
-            -loadTestDescription "Pipeline-embedded load test for $(Build.BuildId)" `
-            -engineInstances "$(azureLoadTestEngineInstances)" `
-            -pipeline $true -verbose:$true
+      # Parsing the Terraform output for the global infrastructure deployment to extract data like the Azure Front Door FQDN
+      - template: steps-parse-terraform-output.yaml
+        parameters:
+          workingDirectory: '$(Pipeline.Workspace)/terraformOutputGlobalInfra'  # Global infra deploy output directory
 
       # upload a jmx file for the previously created azure load test with an auto-generated testFileId
       - task: AzureCLI@2

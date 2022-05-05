@@ -7,4 +7,4 @@ $apiEndpoint = "5e241573-3a5f-4361-bf53-1ae7bde73cb7.neu.cnt-prod.loadtesting.az
   -loadTestDescription "$loadTestDescription" `
   -engineInstances "$engineInstances" `
   -apiVersion "$apiVersion" `
-  -apiEndpoint "$apiEndpoint"
+  -apiEndpoint "$apiEndpoint" -verbose:$true

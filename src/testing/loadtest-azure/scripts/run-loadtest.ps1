@@ -11,7 +11,6 @@ param
   [string] $testRunName,
   [string] $testRunDescription,
   [int] $testRunVUsers,
-  [bool]$verbose = $False,
   [bool]$pipeline = $False 
 )
 
@@ -24,8 +23,7 @@ function GetTestRunBody {
         [string] $testRunName,
         [string] $description,
         [string] $testRunId,
-        [int] $vusers,
-        [bool]$verbose = $False
+        [int] $vusers
     )
 
     $result = @"
@@ -43,6 +41,7 @@ function GetTestRunBody {
 
 $testRunId = (New-Guid).toString()
 $urlRoot = "https://" + $apiEndpoint + "/testruns/" + $testRunId
+Write-Verbose "*** Load test service data plane: $urlRoot"
 
 # Prep load test run body
 $testRunData = GetTestRunBody -testId $loadTestId `
@@ -52,7 +51,7 @@ $testRunData = GetTestRunBody -testId $loadTestId `
     -vusers $testRunVUsers
 
 # Following is to get Invoke-RestMethod to work
-$url = $urlRoot + "?api-version=" + $apiVersion + "&tenantId=" + $tenantId
+$url = $urlRoot + "?api-version=" + $apiVersion # + "&tenantId=" + $tenantId
 
 $header = @{
     'Content-Type'='application/merge-patch+json'

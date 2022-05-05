@@ -191,7 +191,7 @@ jobs:
             # load AKS cluster credentials
             az aks get-credentials --name $aksClusterName --resource-group $aksClusterResourceGroup --overwrite-existing
 
-            $chaosTestingNamespace = "kube-system"
+            $chaosTestingNamespace = "chaos-testing"
 
             echo "*** Installing Chaos Mesh via helm on $aksClusterName"
 

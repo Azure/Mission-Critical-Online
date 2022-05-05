@@ -56,28 +56,28 @@ variable "frontdoor_id_header" {
   type        = string
 }
 
-variable "kubernetes_version" {
-  description = "Kubernetes Version"
-  type        = string
-}
-
 variable "alerts_enabled" {
   description = "Enable alerts?"
   type        = bool
 }
 
-variable "aks_node_size" {
-  description = "VM SKU of the AKS worker nodes"
+variable "aks_kubernetes_version" {
+  description = "Kubernetes version used in AKS"
   type        = string
 }
 
-variable "aks_node_pool_autoscale_minimum" {
-  description = "Minimum number of AKS worker nodes for auto-scale settings"
+variable "aks_system_node_pool_sku_size" {
+  description = "VM SKU size used for AKS default (system) node pool nodes"
+  type        = string
+}
+
+variable "aks_system_node_pool_autoscale_minimum" {
+  description = "Minimum number of AKS worker nodes (system node pool) for auto-scale settings"
   type        = number
 }
 
-variable "aks_node_pool_autoscale_maximum" {
-  description = "Maximum number of AKS worker nodes for auto-scale settings"
+variable "aks_system_node_pool_autoscale_maximum" {
+  description = "Maximum number of AKS worker nodes (system node pool) for auto-scale settings"
   type        = number
 }
 

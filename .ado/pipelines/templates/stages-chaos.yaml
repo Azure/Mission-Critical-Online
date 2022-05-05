@@ -102,7 +102,7 @@ stages:
             scriptLocation: scriptPath
             scriptPath: '$(System.DefaultWorkingDirectory)/.ado/scripts/Invoke-ChaosMeshExperiment.ps1'
             arguments:
-              -ExperimentName "${{ parameters.customPrefix }}-podFailure"
+              -ExperimentName "${{ parameters.customPrefix }}-PodFailure"
               -ExperimentJsonPath "$(System.DefaultWorkingDirectory)/src/testing/chaos-testing/experiment-json/aks_pod_failure.json"
               -ExperimentLocation "$(chaosStudioLocation)"
               -ExperimentDurationSeconds "${{ parameters.testDurationSeconds }}"

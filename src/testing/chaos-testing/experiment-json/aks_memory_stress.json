@@ -1,5 +1,5 @@
 {
-    "location": "uksouth",
+    "location": "REPLACE-ME-WITH-AZURE-REGION",
     "identity": {
       "type": "SystemAssigned"
     },

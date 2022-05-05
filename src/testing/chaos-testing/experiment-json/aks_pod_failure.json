@@ -1,15 +1,15 @@
 {
-    "location": "uksouth",
+    "location": "REPLACE-ME-WITH-AZURE-REGION",
     "identity": {
       "type": "SystemAssigned"
     },
     "properties": {
       "steps": [
         {
-          "name": "AKS pod chaos step 1",
+          "name": "AKS pod failure step 1",
           "branches": [
             {
-              "name": "AKS pod chaos branch 1",
+              "name": "AKS pod failure branch 1",
               "actions": [
                 {
                   "type": "continuous",

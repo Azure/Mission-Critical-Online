@@ -59,8 +59,8 @@ stages:
           arguments:
             -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
             -apiVersion "$(azureLoadTestApiVersion)" `
-            -loadTestDisplayName "load test run $(Build.BuildId)" `
-            -loadTestDescription "Pipeline generated load test" `
+            -loadTestDisplayName "load test for $(Build.BuildId)" `
+            -loadTestDescription "Pipeline-embedded load test for $(Build.BuildId)" `
             -engineInstances "$(azureLoadTestEngineInstances)" `
             -pipeline $true -verbose $true
 

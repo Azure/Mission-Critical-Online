@@ -1,7 +1,7 @@
 param
 (
   # Load Test Id - auto-generated when empty
-  [string] $loadTestId,
+  [string] $loadTestId = (New-Guid).toString(),
   # Load Test Displayname shown in Azure Portal
   [string] $loadTestDisplayName,
   # Load Test Description shown in Azure Portal
@@ -16,11 +16,6 @@ param
   [string] $apiVersion,
   [bool] $pipeline = $false
 )
-
-# the testId is auto-generated (if not set)
-if (!$loadTestId) {
-  $loadTestId = (New-Guid).toString()
-}
 
 # setting loadTestDisplayName to loadTestName when empty
 if (!$loadTestDisplayName) {

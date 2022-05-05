@@ -3,9 +3,9 @@ param
   # Load Test Id
   [string] $loadTestId,
   # Load Test data plane endpoint
-  [string]$apiEndpoint,
+  [string] $apiEndpoint,
   # Load Test data plane api version
-  [string]$apiVersion
+  [string] $apiVersion
 )
 
 if (!$loadTestId) {

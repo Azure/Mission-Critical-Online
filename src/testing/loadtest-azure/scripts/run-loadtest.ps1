@@ -1,13 +1,16 @@
 param
 (
-    [string] $resourceGroupName,
-    [string] $loadTestName,
-    [string] $loadTestId,
-    [string] $testRunName,
-    [string] $testRunDescription,
-    [int] $testRunVUsers,
-    [bool]$verbose = $False,
-    [bool]$pipeline = $False 
+  # Load Test Id
+  [string] $loadTestId,
+  # Load Test data plane endpoint
+  [string] $apiEndpoint,
+  # Load Test data plane api version
+  [string] $apiVersion,
+  [string] $testRunName,
+  [string] $testRunDescription,
+  [int] $testRunVUsers,
+  [bool]$verbose = $False,
+  [bool]$pipeline = $False 
 )
 
 . "$PSScriptRoot/common.ps1"
@@ -18,7 +21,6 @@ function GetTestRunBody {
         [string] $testId,
         [string] $testRunName,
         [string] $description,
-        [string] $resourceScope,
         [string] $testRunId,
         [int] $vusers,
         [bool]$verbose = $False
@@ -30,7 +32,6 @@ function GetTestRunBody {
         "testRunId": "$testRunId",
         "displayName": "$testRunName",
         "description": "$testRunDescription",
-        "resourceId": "$resourceScope",
         "vusers": $vusers
     }
 "@
@@ -41,16 +42,15 @@ function GetTestRunBody {
 $testRunId = (New-Guid).toString()
 $urlRoot = "$apiEndpoint/testruns/$testRunId"
 
-$resourceScope = "/subscriptions/" + $subscriptionId + "/resourceGroups/" + $resourceGroupName + "/providers/Microsoft.LoadTestService/loadtests/" + $loadTestName
-
 # Prep load test run body
-$testRunData = GetTestRunBody -testId $loadTestId -testRunName $testRunName `
-    -testRunDescription $testRunDescription -resoureScope $resourceScope `
-    -testRunId $testRunId -vusers $testRunVUsers
+$testRunData = GetTestRunBody -testId $loadTestId `
+    -testRunName $testRunName `
+    -testRunDescription $testRunDescription `
+    -testRunId $testRunId `
+    -vusers $testRunVUsers
 
 # Following is to get Invoke-RestMethod to work
-$resourceScopeEncoded = $resourceScope.Replace("/", "%2F")
-$url = $urlRoot + "?api-version=" + $apiVersion + "&resourceId=" + $resourceScopeEncoded + "&tenantId=" + $tenantId
+$url = $urlRoot + "?api-version=" + $apiVersion + "&tenantId=" + $tenantId
 
 $header = @{
     'Content-Type'='application/merge-patch+json'

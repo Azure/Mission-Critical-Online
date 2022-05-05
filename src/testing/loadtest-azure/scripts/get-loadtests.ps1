@@ -1,14 +1,15 @@
 param
 (
-  [string] $resourceGroupName,
-  [string] $loadTestName,
+  # Load Test Id
   [string] $loadTestId,
+  # Load Test data plane endpoint
+  [string] $apiEndpoint,
+  # Load Test data plane api version
+  [string] $apiVersion,
   [int] $maxPageSize
 )
 
 . "$PSScriptRoot/common.ps1"
-
-#$resourceScope = "/subscriptions/" + $subscriptionId + "/resourceGroups/" + $resourceGroupName + "/providers/Microsoft.LoadTestService/loadtests/" + $loadTestName
 
 $urlRoot = $apiEndpoint + "/loadtests/sortAndFilter"
 

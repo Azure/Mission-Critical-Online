@@ -9,9 +9,9 @@ param
   # Load Test engine instances
   [int] $engineInstances = "0",
   # Load Test data plane endpoint
-  [string]$apiEndpoint,
+  [string] $apiEndpoint,
   # Load Test data plane api version
-  [string]$apiVersion,
+  [string] $apiVersion,
   [bool] $pipeline = $false 
 )
 

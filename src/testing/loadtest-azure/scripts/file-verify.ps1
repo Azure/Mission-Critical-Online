@@ -1,14 +1,16 @@
 param
 (
-  [string] $resourceGroupName,
-  [string] $loadTestName,
-  [string] $testFileName
+  # Load Test Id
+  [string] $loadTestId,
+  # Load Test data plane endpoint
+  [string] $apiEndpoint,
+  # Load Test data plane api version
+  [string] $apiVersion
 )
 
 . "$PSScriptRoot/common.ps1"
 
 $urlRoot = $apiEndpoint + "/file/" + $testFileName + ":validate"
-$resourceScope = "/subscriptions/" + $subscriptionId + "/resourceGroups/" + $resourceGroupName + "/providers/Microsoft.LoadTestService/loadtests/" + $loadTestName
 
 #$jsonResult = az rest --url $urlRoot `
 #  --method POST `
@@ -29,7 +31,6 @@ Invoke-RestMethod `
   -Authentication Bearer `
   -Token $accessTokenSecure `
   -Form @{ 
-    resourceId=$resourceScope
     'api-version'="$apiVersion"
     file = Get-Item $testFileName 
   }

@@ -8,7 +8,7 @@ param
   [string] $apiEndpoint,
   # Load Test data plane api version
   [string] $apiVersion,
-  [bool]$verbose = $False
+  [bool] $verbose = $False
 )
 
 . "$PSScriptRoot/common.ps1"
@@ -17,7 +17,7 @@ if (!$testFileId) {
   $testFileId = (New-Guid).toString()
 }
 
-#./file-verify.ps1 -resourceGroupName $resourceGroupName -loadTestName $loadTestName -testFileName $testFileName
+#./file-verify.ps1  -testFileName $testFileName
 
 if (!(Test-Path $testFileName -PathType leaf)) {
   echo "File $testFileName does not exist"

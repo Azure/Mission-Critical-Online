@@ -1,7 +1,11 @@
 param
 (
-  [string] $resourceGroupName,
-  [string] $loadTestName,
+  # Load Test Id
+  [string] $loadTestId,
+  # Load Test data plane endpoint
+  [string] $apiEndpoint,
+  # Load Test data plane api version
+  [string] $apiVersion,
   [string] $testRunId,
   [bool]$verbose = $False
 )
@@ -9,11 +13,9 @@ param
 . "$PSScriptRoot/common.ps1"
 
 $urlRoot = $apiEndpoint + "/testruns/" + $testRunId + "/clientMetrics"
-$resourceScope = "/subscriptions/" + $subscriptionId + "/resourceGroups/" + $resourceGroupName + "/providers/Microsoft.LoadTestService/loadtests/" + $loadTestName
 
 # Following is to get Invoke-RestMethod to work
-$resourceScopeEncoded = $resourceScope.Replace("/", "%2F")
-$url = $urlRoot + "?api-version=" + $apiVersion + "&resourceId=" + $resourceScopeEncoded
+$url = $urlRoot + "?api-version=" + $apiVersion
 
 # Secure string to use access token with Invoke-RestMethod in Powershell
 $accessTokenSecure = ConvertTo-SecureString -String $accessToken -AsPlainText -Force

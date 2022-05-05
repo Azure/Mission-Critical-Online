@@ -83,6 +83,7 @@ stages:
       - task: PowerShell@2
         displayName: 'Create config *.csv file'
         name: 'createAzureLoadTestConfigCsv'
+        enabled: false
         inputs:
           targetType: inline
           script: |      
@@ -103,15 +104,16 @@ stages:
       - task: AzureCLI@2
         displayName: 'Upload auto-generated load test config file for Azure Load Test'
         name: 'uploadAzureLoadTestConfig'
+        enabled: false
         inputs:
           azureSubscription: '$(azureServiceConnection)'
           scriptType: pscore
           scriptLocation: 'scriptPath'
           scriptPath: '$(System.DefaultWorkingDirectory)/src/testing/loadtest-azure/scripts/file-upload-to-loadtest.ps1'
           arguments:
-            -resourceGroupName "$(azureLoadResourceGroup)" `
-            -loadTestName "$(azureLoadTestName)" `
             -loadTestId "$(loadTestId)" `
+            -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
+            -apiVersion "$(azureLoadTestApiVersion)" `
             -testFileName "$(System.DefaultWorkingDirectory)/test-config.csv"            
 
       # upload user csv file
@@ -124,9 +126,9 @@ stages:
           scriptLocation: 'scriptPath'
           scriptPath: '$(System.DefaultWorkingDirectory)/src/testing/loadtest-azure/scripts/file-upload-to-loadtest.ps1'
           arguments:
-            -resourceGroupName "$(azureLoadResourceGroup)" `
-            -loadTestName "$(azureLoadTestName)" `
             -loadTestId "$(loadTestId)" `
+            -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
+            -apiVersion "$(azureLoadTestApiVersion)" `
             -testFileName "$(System.DefaultWorkingDirectory)/src/config/identity/generated-users.csv"
 
       # start azure load test
@@ -138,9 +140,9 @@ stages:
           scriptLocation: 'scriptPath'
           scriptPath: '$(System.DefaultWorkingDirectory)/src/testing/loadtest-azure/scripts/run-loadtest.ps1'
           arguments:
-            -resourceGroupName "$(azureLoadResourceGroup)" `
-            -loadTestName "$(azureLoadTestName)" `
             -loadTestId "$(loadTestId)" `
+            -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
+            -apiVersion "$(azureLoadTestApiVersion)" `
             -testRunName "Load Test run by ADO" `
             -testRunDescription "Pipeline executed load test run" `
             -testRunVUsers "$(azureLoadTestVUsers)" `

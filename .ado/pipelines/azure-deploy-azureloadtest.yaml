@@ -14,10 +14,6 @@ parameters:
   default: 'int'
   values:
   - int
-- name: runLoadTesting # for testing only will later disappear here
-  displayName: "Run embedded load testing"
-  type: boolean
-  default: false
 - name: destroyInfra # option to unselect destroy infrastructure
   displayName: "Destroy infrastructure when done"
   type: boolean
@@ -40,5 +36,5 @@ stages:
   parameters:
     terraformWorkingDirectory: '$(workingDirectory)'
     customPrefix: '$(prefix)'
-    embeddedLoadTest: ${{ parameters.runLoadTesting }}
+    embeddedLoadTest: true # will be set to false later - standalone pipeline will only create the test, not run it
     destroyInfra: ${{ parameters.destroyInfra }}

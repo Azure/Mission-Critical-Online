@@ -204,7 +204,7 @@ stages:
           pathToPublish: '$(System.DefaultWorkingDirectory)/results'
 
     # All of the next tasks are only applicable in headless mode
-    - ${{ if and(eq(parameters.embeddedLoadTest, 'true'),eq(parameters.destroyInfra, 'true')) }}:
+    - ${{ if eq(parameters.destroyInfra, 'true') }}:
       # Destroy Azure Load test infrastructure at the end
       - template: steps-terraform-destroy.yaml
         parameters:

@@ -1,6 +1,7 @@
 param
 (
   # Load Test Id
+  [Parameter(Mandatory=$true)]
   [string] $loadTestId,
   # Load Test data plane endpoint
   [Parameter(Mandatory=$true)]
@@ -10,7 +11,7 @@ param
   [string] $apiVersion,
   [string] $testRunName,
   [string] $testRunDescription,
-  [int] $testRunVUsers,
+  [int] $testRunVUsers = 1,
   [bool]$pipeline = $False 
 )
 
@@ -44,7 +45,8 @@ $urlRoot = "https://" + $apiEndpoint + "/testruns/" + $testRunId
 Write-Verbose "*** Load test service data plane: $urlRoot"
 
 # Prep load test run body
-$testRunData = GetTestRunBody -testId $loadTestId `
+$testRunData = GetTestRunBody `
+    -testId $loadTestId `
     -testRunName $testRunName `
     -testRunDescription $testRunDescription `
     -testRunId $testRunId `

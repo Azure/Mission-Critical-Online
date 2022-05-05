@@ -173,8 +173,8 @@ stages:
             } while ($result.status -ne "DONE")
 
       - script: |  
-          wget -c https://apache.newfountain.nl/jmeter/binaries/apache-jmeter-5.4.1.tgz
-          tar -xf apache-jmeter-5.4.1.tgz
+          wget -c https://dlcdn.apache.org//jmeter/binaries/apache-jmeter-5.4.3.tgz
+          tar -xf apache-jmeter-5.4.3.tgz
         displayName: 'Install the dependency packages'
 
       - script: |

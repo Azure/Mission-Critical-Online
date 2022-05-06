@@ -6,10 +6,10 @@
     "properties": {
       "steps": [
         {
-          "name": "AKS pod killer step 1",
+          "name": "AKS pod failure step 1",
           "branches": [
             {
-              "name": "AKS pod killer branch 1",
+              "name": "AKS pod failure branch 1",
               "actions": [
                 {
                   "type": "continuous",
@@ -18,7 +18,7 @@
                   "parameters": [
                     {
                         "key": "jsonSpec",
-                        "value": "{\"action\":\"pod-kill\",\"mode\":\"fixed-percent\",\"value\":\"50\",\"selector\":{\"namespaces\":[\"workload\"]},\"duration\":\"60s\"}"
+                        "value": "{\"action\":\"pod-failure\",\"mode\":\"fixed-percent\",\"value\":\"50\",\"selector\":{\"namespaces\":[\"workload\"]},\"duration\":\"60s\"}"
                     }
                   ],
                   "name": "urn:csci:microsoft:azureKubernetesServiceChaosMesh:podChaos/2.1"

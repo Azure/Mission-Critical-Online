@@ -57,11 +57,11 @@ $experimentId = $experimentCreationResult.id
 # Get Managed Identity Id for the newly created experiment
 $experimentPrincipalId = $experimentCreationResult.identity.principalId
 
-# Assign Azure Kubernetes Service Cluster User Role to each cluster for the experiement identity
+# Assign Azure Kubernetes Service Cluster Admin Role to each cluster for the experiement identity
 # This is required for Chaos Studio to be able to control AKS (via Chaos Mesh)
 foreach ($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
     $resourceId = $stamp.aks_cluster_id
-    $role = "Azure Kubernetes Service Cluster User Role"
+    $role = "Azure Kubernetes Service Cluster Admin Role"
     echo "*** Assigning role '$role' to principal $experimentPrincipalId on $resourceId"
     az role assignment create --role $role --assignee-object-id $experimentPrincipalId --scope $resourceId --assignee-principal-type ServicePrincipal
 }

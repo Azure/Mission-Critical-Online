@@ -302,7 +302,7 @@ stages:
       testDurationSeconds: 180 # Chaos test duration for each experiment
       memoryStress: true # run Chaos Memory stress
       cpuStress: true # run Chaos CPU stress
-      podKiller: true # run Chaos Pod Killer
+      podFailure: true # run Chaos Pod Failure
       dependsOn:
       - testingGlobalEndpoints
 

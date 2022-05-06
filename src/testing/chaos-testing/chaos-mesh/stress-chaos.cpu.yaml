@@ -4,7 +4,7 @@ metadata:
   name: burn-cpu
   namespace: chaos-testing
 spec:
-  mode: random-max-percent
+  mode: fixed-percent
   value: '50'
   selector:
     namespaces:
@@ -14,5 +14,3 @@ spec:
       workers: 1
       load: 100
   duration: '60s'
-  scheduler:
-    cron: '@every 5m'

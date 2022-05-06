@@ -41,9 +41,9 @@ stages:
         customAttributes:          '-var queued_by="$(Build.QueuedBy)"'
 
     # Parsing the Terraform output for the MALT service deployment
-    # - template: steps-parse-terraform-output.yaml
-    #   parameters:
-    #     workingDirectory: '${{ parameters.terraformWorkingDirectory }}'
+    - template: steps-parse-terraform-output.yaml
+      parameters:
+        workingDirectory: '${{ parameters.terraformWorkingDirectory }}'
 
     # create a new azure load test with an auto-generated loadTestId
     - task: AzureCLI@2

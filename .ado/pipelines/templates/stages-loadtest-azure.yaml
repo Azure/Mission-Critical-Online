@@ -93,6 +93,7 @@ stages:
       - task: PowerShell@2
         displayName: 'Create config *.csv file'
         name: 'createAzureLoadTestConfigCsv'
+        enabled: false # currently not used / vars handed over via env vars and parameters
         inputs:
           targetType: inline
           script: |      
@@ -106,6 +107,7 @@ stages:
       - task: AzureCLI@2
         displayName: 'Upload auto-generated load test config file for Azure Load Test'
         name: 'uploadAzureLoadTestConfig'
+        enabled: false # currently not used / vars handed over via env vars and parameters
         inputs:
           azureSubscription: '$(azureServiceConnection)'
           scriptType: pscore
@@ -116,22 +118,6 @@ stages:
             -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
             -apiVersion "$(azureLoadTestApiVersion)" `
             -testFileName "$(System.DefaultWorkingDirectory)/test-config.csv"            
-
-      # upload user csv file
-      - task: AzureCLI@2
-        displayName: 'Upload *.csv files for Azure Load Test'
-        name: 'uploadAzureLoadTestUsers'
-        enabled: false
-        inputs:
-          azureSubscription: '$(azureServiceConnection)'
-          scriptType: pscore
-          scriptLocation: 'scriptPath'
-          scriptPath: '$(System.DefaultWorkingDirectory)/src/testing/loadtest-azure/scripts/file-upload-to-loadtest.ps1'
-          arguments:
-            -loadTestId "$(loadTestId)" `
-            -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
-            -apiVersion "$(azureLoadTestApiVersion)" `
-            -testFileName "$(System.DefaultWorkingDirectory)/src/config/identity/generated-users.csv"
 
       # start azure load test
       - task: AzureCLI@2
@@ -181,11 +167,6 @@ stages:
               # todo - timeout?
             } while ($result.status -ne "DONE")
 
-      #- script: |  
-      #    #wget -c https://dlcdn.apache.org//jmeter/binaries/apache-jmeter-5.4.3.tgz
-      #    #tar -xf apache-jmeter-5.4.3.tgz
-      #  displayName: 'Install the dependency packages'
-
       - script: |
           wget https://raw.githubusercontent.com/Azure-Samples/jmeter-aci-terraform/main/scripts/jtl_junit_converter.py -O $(System.DefaultWorkingDirectory)/junit-onverter.py
           unzip results/results.zip -d results
@@ -201,7 +182,7 @@ stages:
           failTaskOnFailedTests: false
         displayName: 'RESULTS: Publish Load Testing Results'
 
-      # TODO - publish load test results in azure devops
+      # publish load test results as pipeline artifacts in azure devops
       - task: PublishBuildArtifacts@1
         inputs:
           artifactName: 'loadtest'

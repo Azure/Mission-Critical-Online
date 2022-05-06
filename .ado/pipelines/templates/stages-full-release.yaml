@@ -473,6 +473,9 @@ stages:
 
               - template: steps-set-pipeline-variables.yaml # load set-pipeline-variables function
 
+              # TODO - Delete Azure Load Test resource (if still present)
+              # There might be edge cases when load testing artifacts remain and need to be cleaned up
+
               # Initialize Terraform for destroy
               - template: steps-terraform-destroy.yaml
                 parameters:

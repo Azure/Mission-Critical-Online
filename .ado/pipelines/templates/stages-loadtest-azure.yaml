@@ -50,7 +50,7 @@ stages:
 
     # Global Terraform output is only parsed when running in embedded mode
     - ${{ if eq(parameters.embeddedLoadTest, 'true') }}:
-    
+
       # Parsing the Terraform output for the global infrastructure deployment to extract data like the Azure Front Door FQDN
       - template: steps-parse-terraform-output.yaml
         parameters:
@@ -58,7 +58,7 @@ stages:
 
       # Set loadTestTargetFQDN to the Azure Front Door FQDN (when load test is embedded)
       - script: |
-          echo "*** Setting loadTestTargetFQDN to $(frontdoor_fqdn)"
+          echo "*** Setting loadTestTargetFQDN to Azure Front Door FQDN"
           echo "##vso[task.setvariable variable=loadTestTargetFQDN]$(frontdoor_fqdn)" 
         displayName: 'Set Loadtest targetUrl to $(frontdoor_fqdn)'
 
@@ -84,8 +84,8 @@ stages:
           -loadTestDisplayName "load test for $(Build.BuildId)" `
           -loadTestDescription "Pipeline-embedded load test for $(Build.BuildId)" `
           -loadTestTargetUrl "$(loadTestTargetFQDN)" `
-          -loadTestUserThreads 100 `
-          -loadTestDurationSeconds 10 `
+          -loadTestUserThreads "$(azureLoadTestUserThreads)" `
+          -loadTestDurationSeconds "$(azureLoadTestDurationSeconds)" `
           -engineInstances "$(azureLoadTestEngineInstances)" `
           -pipeline $true -verbose:$true
 

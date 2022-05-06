@@ -2,8 +2,13 @@ parameters:
   - name: environment
     type: string
   - name: runLoadTesting # embedded load testing
-    type: boolean
-    default: false
+    displayName: "Run embedded load testing"
+    type: string
+    default: 'none'
+    values:
+    - none
+    - Azure
+    - Locust
   - name: runChaosTesting # Chaos testing
     type: boolean
     default: false
@@ -264,9 +269,11 @@ stages:
       testStampEndpoints: false
       testGlobalEndpoint: true
 
-# headless load testing for e2e (optional) with locust. Runs if either Load test or Chaos test was selected by the user
-- ${{ if and(eq(parameters.environment, 'e2e'), or(eq(parameters.runLoadTesting, 'true'), eq(parameters.runChaosTesting, 'true'))) }}: # only in e2e and when either runLoadTesting or runChaosTesting is true
-  - template: stages-locust.yaml # headless load testing
+
+# Pipeline-embedded load testing for e2e (optional) with locust. 
+# Runs if either Load test or Chaos test was selected by the user
+- ${{ if and(eq(parameters.environment, 'e2e'), or(eq(parameters.runLoadTesting, 'Locust'), eq(parameters.runChaosTesting, 'true'))) }}: # only in e2e and when either runLoadTesting or runChaosTesting is true
+  - template: stages-loadtest-locust.yaml # headless load testing
     parameters:
       terraformWorkingDirectory: 'src/testing/loadtest-locust/infra'
       customPrefix: '$(prefix)$(customSuffix)'
@@ -275,6 +282,16 @@ stages:
       loadTestNumberOfUsers: $(loadTestNumberOfUsers)
       loadTestUserSpawnRate: $(loadTestUserSpawnRate)
       locustHeadless: true # run locust in headless mode
+
+# Pipeline-embedded load testing for e2e (optional) with Microsoft Azure Load Test (MALT). 
+# Runs if either Load test or Chaos test was selected by the user
+- ${{ if and(eq(parameters.environment, 'e2e'), or(eq(parameters.runLoadTesting, 'Azure'), eq(parameters.runChaosTesting, 'true'))) }}: # only in e2e and when either runLoadTesting or runChaosTesting is true
+  - template: stages-loadtest-azure.yaml # headless load testing
+    parameters:
+      terraformWorkingDirectory: 'src/testing/loadtest-azure/infra'
+      customPrefix: '$(prefix)$(customSuffix)'
+      destroyInfra: ${{ parameters.destroyOldEnvironment }}
+      embeddedLoadTest: true
 
 # Chaos testing for e2e (optional) with Azure Chaos Studio
 - ${{ if and(eq(parameters.environment, 'e2e'), eq(parameters.runChaosTesting, 'true')) }}: # only in e2e and when runChaosTesting is true
@@ -455,6 +472,9 @@ stages:
               - download: current # download pipeline artifacts
 
               - template: steps-set-pipeline-variables.yaml # load set-pipeline-variables function
+
+              # TODO - Delete Azure Load Test resource (if still present)
+              # There might be edge cases when load testing artifacts remain and need to be cleaned up
 
               # Initialize Terraform for destroy
               - template: steps-terraform-destroy.yaml

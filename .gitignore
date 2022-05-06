@@ -10,3 +10,4 @@ locals.txt
 .vscode
 .tfstate
 .vs
+src/testing/loadtest-azure/scripts/accesstoken.txt

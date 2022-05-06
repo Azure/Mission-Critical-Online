@@ -15,14 +15,17 @@ parameters:
 
 - name: runLoadTesting
   displayName: "Run embedded load testing"
-  type: boolean
-  default: false
+  type: string
+  default: 'none'
+  values:
+  - none
+  - Azure
+  - Locust
 
 - name: runChaosTesting
   displayName: "Run Chaos testing"
   type: boolean
   default: false
-
 
 variables:
 - name:  'environment' # set the environment name as variable

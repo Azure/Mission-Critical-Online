@@ -14,22 +14,19 @@ parameters:
   default: 'int'
   values:
   - int
-  - prod
-
-- name: loadTestNumberOfWorkerNodes
-  displayName: 'Number of Worker Nodes. Set to 0 to also destroy the master node.'
-  type: number
-  default: 0
-
-- name: loadTestTargetUrl
-  displayName: 'Loadtest Target URL (can be overriden later)'
+- name: loadTestTargetFQDN
+  displayName: 'Load test target FQDN'
   type: string
-  default: "https://www.int.shop.mission-critical.app"
+  default: 'www.int.shop.mission-critical.app'
+- name: destroyInfra # option to unselect destroy infrastructure
+  displayName: "Destroy infrastructure when done"
+  type: boolean
+  default: true
 
 variables:
 - template: config/configuration.yaml # contains version numbers and global configuration settings
-- name:  'workingDirectory' # Terraform working directory (containing the locust infra definition)
-  value: 'src/testing/loadtest-locust/infra'
+- name:  'workingDirectory' # Terraform working directory (containing the azure load test infra definition)
+  value: 'src/testing/loadtest-azure/infra'
 - name:  'environment' # set the environment name as variable
   value: '${{ parameters.environment }}'
 - name:  'azureServiceConnection' # environment specific service connection
@@ -39,10 +36,10 @@ variables:
 
 stages:
 
-- template: templates/stages-loadtest-locust.yaml
+- template: templates/stages-loadtest-azure.yaml
   parameters:
     terraformWorkingDirectory: '$(workingDirectory)'
     customPrefix: '$(prefix)'
-    loadTestTargetUrl: ${{ parameters.loadTestTargetUrl }}
-    loadTestNumberOfWorkerNodes: ${{ parameters.loadTestNumberOfWorkerNodes }}
-    locustHeadless: false # set to false to run in webui mode
+    embeddedLoadTest: 'false' # embedded is only used in e2e, the standalone pipeline is not executing the test
+    destroyInfra: ${{ parameters.destroyInfra }} # whether to destroy the infra at the end or not
+    loadTestTargetFQDN: ${{ parameters.loadTestTargetFQDN }}

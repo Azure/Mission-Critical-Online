@@ -1,11 +1,17 @@
 param
 (
   # Load Test Id
+  [Parameter(Mandatory=$true)]
   [string] $loadTestId,
+  
   # Load Test data plane endpoint
+  [Parameter(Mandatory=$true)]
   [string] $apiEndpoint,
+
   # Load Test data plane api version
+  [Parameter(Mandatory=$true)]
   [string] $apiVersion,
+
   [int] $maxPageSize
 )
 
@@ -19,13 +25,5 @@ az rest --url $urlRoot `
   --headers ('@' + $accessTokenFileName) `
   --url-parameters api-version="$apiVersion" testId="$loadTestId" maxPageSize=$maxPageSize `
   $verbose
-
-#az rest --url $urlRoot `
-#  --method GET `
-#  --skip-authorization-header `
-#  --resource "$resourceScope" `
-#  --headers ('@' + $accessTokenFileName) `
-#  --url-parameters resourceId="$resourceScope" api-version="$apiVersion" testId="$loadTestId" maxPageSize=$maxPageSize `
-#  $verbose
 
 Remove-Item $accessTokenFileName

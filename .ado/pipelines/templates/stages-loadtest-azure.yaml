@@ -21,7 +21,7 @@ parameters:
 stages:
 
 - stage: deployazloadtest
-  displayName: 'Deploy Azure Load Test Infrastructure'
+  displayName: 'Run Azure Load Test'
   jobs:
   - job: deployazloadtest
     displayName: 'Deploy Azure Load Test via Terraform'

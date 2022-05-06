@@ -36,5 +36,5 @@ stages:
   parameters:
     terraformWorkingDirectory: '$(workingDirectory)'
     customPrefix: '$(prefix)'
-    embeddedLoadTest: true # will be set to false later - standalone pipeline will only create the test, not run it
+    embeddedLoadTest: false # embedded is only used in e2e, the standalone pipeline is not executing the test
     destroyInfra: ${{ parameters.destroyInfra }}

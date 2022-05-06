@@ -42,3 +42,4 @@ stages:
     customPrefix: '$(prefix)'
     embeddedLoadTest: false # embedded is only used in e2e, the standalone pipeline is not executing the test
     destroyInfra: ${{ parameters.destroyInfra }}
+    loadTestTargetFQDN: ${{ parameters.loadTestTargetFQDN }}

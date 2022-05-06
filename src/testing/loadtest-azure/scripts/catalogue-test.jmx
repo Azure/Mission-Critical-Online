@@ -34,11 +34,11 @@
       <hashTree/>
       <kg.apc.jmeter.threads.UltimateThreadGroup guiclass="kg.apc.jmeter.threads.UltimateThreadGroupGui" testclass="kg.apc.jmeter.threads.UltimateThreadGroup" testname="Ultimate Thread Group" enabled="true">
         <collectionProp name="ultimatethreadgroupdata">
-          <collectionProp name="1399362279">
-            <stringProp name="49">1</stringProp>
+          <collectionProp name="1865468421">
+            <stringProp name="-284491829">${threads}</stringProp>
             <stringProp name="48">0</stringProp>
             <stringProp name="48">0</stringProp>
-            <stringProp name="1567">10</stringProp>
+            <stringProp name="-1943655769">${load_duration_seconds}</stringProp>
             <stringProp name="1598">20</stringProp>
           </collectionProp>
         </collectionProp>

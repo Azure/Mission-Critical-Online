@@ -16,28 +16,17 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="url" elementType="Argument">
             <stringProp name="Argument.name">url</stringProp>
-            <stringProp name="Argument.value">www.int.shop.mission-critical.app</stringProp>
-            <stringProp name="Argument.desc">${__P(url,)}</stringProp>
+            <stringProp name="Argument.value">${__BeanShell( System.getenv(&quot;target_url&quot;) )}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-          <elementProp name="tenant" elementType="Argument">
-            <stringProp name="Argument.name">tenant</stringProp>
-            <stringProp name="Argument.value">alwaysondev</stringProp>
+          <elementProp name="load_duration_seconds" elementType="Argument">
+            <stringProp name="Argument.name">load_duration_seconds</stringProp>
+            <stringProp name="Argument.value">${__BeanShell( System.getenv(&quot;load_duration_seconds&quot;) )}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-          <elementProp name="ropc_policy" elementType="Argument">
-            <stringProp name="Argument.name">ropc_policy</stringProp>
-            <stringProp name="Argument.value">b2c_1_ropc_signin</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="client_id" elementType="Argument">
-            <stringProp name="Argument.name">client_id</stringProp>
-            <stringProp name="Argument.value">04162f80-c8ab-4a4e-b284-2f4c41819a93</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="selection" elementType="Argument">
-            <stringProp name="Argument.name">selection</stringProp>
-            <stringProp name="Argument.value">rock,paper,scissors,lizard,spock</stringProp>
+          <elementProp name="threads" elementType="Argument">
+            <stringProp name="Argument.name">threads</stringProp>
+            <stringProp name="Argument.value">${__BeanShell( System.getenv(&quot;threads&quot;) )}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -45,11 +34,11 @@
       <hashTree/>
       <kg.apc.jmeter.threads.UltimateThreadGroup guiclass="kg.apc.jmeter.threads.UltimateThreadGroupGui" testclass="kg.apc.jmeter.threads.UltimateThreadGroup" testname="Ultimate Thread Group" enabled="true">
         <collectionProp name="ultimatethreadgroupdata">
-          <collectionProp name="-341038778">
-            <stringProp name="48780">150</stringProp>
+          <collectionProp name="1399362279">
             <stringProp name="49">1</stringProp>
-            <stringProp name="1598">20</stringProp>
-            <stringProp name="53430">600</stringProp>
+            <stringProp name="48">0</stringProp>
+            <stringProp name="48">0</stringProp>
+            <stringProp name="1567">10</stringProp>
             <stringProp name="1598">20</stringProp>
           </collectionProp>
         </collectionProp>
@@ -88,6 +77,12 @@
           <intProp name="LoopController.loops">-1</intProp>
         </LoopController>
         <hashTree>
+          <DebugSampler guiclass="TestBeanGUI" testclass="DebugSampler" testname="Debug Sampler" enabled="false">
+            <boolProp name="displayJMeterProperties">true</boolProp>
+            <boolProp name="displayJMeterVariables">true</boolProp>
+            <boolProp name="displaySystemProperties">false</boolProp>
+          </DebugSampler>
+          <hashTree/>
           <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="List catalog items" enabled="true">
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
               <collectionProp name="Arguments.arguments"/>

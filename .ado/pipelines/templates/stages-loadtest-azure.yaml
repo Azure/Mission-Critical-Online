@@ -13,6 +13,7 @@ parameters:
  - name: loadTestTargetFQDN
    displayName: 'Load test target FQDN'
    type: string
+   default: ''
 
 stages:
 

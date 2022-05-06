@@ -14,7 +14,7 @@ parameters:
   default: 'int'
   values:
   - int
-  
+
 - name: loadTestTargetFQDN
   displayName: 'Load test target FQDN'
   type: string
@@ -45,3 +45,4 @@ stages:
     embeddedLoadTest: false # embedded is only used in e2e, the standalone pipeline is not executing the test
     destroyInfra: ${{ parameters.destroyInfra }} # whether to destroy the infra at the end or not
     loadTestTargetFQDN: '${{ parameters.loadTestTargetFQDN }}'
+

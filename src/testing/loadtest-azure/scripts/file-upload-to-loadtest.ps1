@@ -12,9 +12,7 @@ param
 
   # Load Test data plane api version
   [Parameter(Mandatory = $true)]
-  [string] $apiVersion,
-
-  [bool] $verbose = $False
+  [string] $apiVersion
 )
 
 . "$PSScriptRoot/common.ps1"

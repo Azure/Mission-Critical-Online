@@ -6,8 +6,7 @@ param
   [string] $apiEndpoint,
   # Load Test data plane api version
   [string] $apiVersion,
-  [string] $testRunId,
-  [bool]$verbose = $False
+  [string] $testRunId
 )
 
 . "$PSScriptRoot/common.ps1"

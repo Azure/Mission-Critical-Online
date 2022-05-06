@@ -47,6 +47,7 @@ stages:
     - template: steps-parse-terraform-output.yaml
       parameters:
         workingDirectory: '${{ parameters.terraformWorkingDirectory }}'
+        displayName: 'Parse MALT deployment outputs'
 
     # Global Terraform output is only parsed when running in embedded mode
     - ${{ if eq(parameters.embeddedLoadTest, 'true') }}:
@@ -55,6 +56,7 @@ stages:
       - template: steps-parse-terraform-output.yaml
         parameters:
           workingDirectory: '$(Pipeline.Workspace)/terraformOutputGlobalInfra'  # Global infra deploy output directory
+          displayName: 'Parse global infrastructure deployment outputs'
 
       # Set loadTestTargetFQDN to the Azure Front Door FQDN (when load test is embedded)
       - script: |
@@ -87,7 +89,8 @@ stages:
           -loadTestUserThreads "$(azureLoadTestUserThreads)" `
           -loadTestDurationSeconds "$(azureLoadTestDurationSeconds)" `
           -engineInstances "$(azureLoadTestEngineInstances)" `
-          -pipeline $true -verbose:$true
+          -pipeline $true `
+          -verbose:$true
 
     # All of the next tasks are only applicable in headless mode
     - ${{ if eq(parameters.embeddedLoadTest, 'true') }}:
@@ -153,7 +156,8 @@ stages:
             -testRunName "Load Test run by ADO" `
             -testRunDescription "Pipeline executed load test run" `
             -testRunVUsers "$(azureLoadTestVUsers)" `
-            -pipeline $true -verbose:$true
+            -pipeline $true `
+            -verbose:$true
 
       # get load test status and wait till it's done
       - task: AzureCLI@2

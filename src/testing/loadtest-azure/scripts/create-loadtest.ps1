@@ -36,6 +36,11 @@ function GetTestBody {
       "description": "$loadTestDescription",
       "loadTestConfig": {
           "engineInstances": $engineInstances
+      },
+      "environmentVariables": {
+        "target_url": "www.int.shop.mission-critical.app",
+        "threads": 1,
+        "load_duration_seconds": 10
       }
   }
 "@

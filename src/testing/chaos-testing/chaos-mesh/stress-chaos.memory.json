@@ -1,1 +1,1 @@
-{"mode":"one","value":"","selector":{"namespaces":["workload"]},"stressors":{"memory":{"workers":1}},"duration":"60s"}
+{"mode":"all","selector":{"namespaces":["workload"],"labelSelectors":{"app":"catalogservice"}},"stressors":{"memory":{"workers":1,"size":"80%"}},"duration":"180s"}

@@ -181,28 +181,27 @@ jobs:
           # load json data from downloaded pipeline artifact json
           $releaseUnitInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputReleaseUnitInfra/*.json | Get-Content | ConvertFrom-JSON
 
-          # loop through stamps from pipeline artifact json
-          foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
+          # take only the first stamp to inject faults into
+          $stamp = $releaseUnitInfraDeployOutput.stamp_properties.value[0]
 
-            $aksClusterName = $stamp.aks_cluster_name
-            $aksClusterResourceGroup = $stamp.resource_group_name
-            echo "*** Load credentials for AKS Cluster $aksClusterName in $aksClusterResourceGroup"
+          $aksClusterName = $stamp.aks_cluster_name
+          $aksClusterResourceGroup = $stamp.resource_group_name
+          echo "*** Load credentials for AKS Cluster $aksClusterName in $aksClusterResourceGroup"
 
-            # load AKS cluster credentials
-            az aks get-credentials --name $aksClusterName --resource-group $aksClusterResourceGroup --overwrite-existing
+          # load AKS cluster credentials
+          az aks get-credentials --name $aksClusterName --resource-group $aksClusterResourceGroup --overwrite-existing
 
-            $chaosTestingNamespace = "chaos-testing"
+          $chaosTestingNamespace = "chaos-testing"
 
-            echo "*** Installing Chaos Mesh via helm on $aksClusterName"
+          echo "*** Installing Chaos Mesh via helm on $aksClusterName"
 
-            # Add Chaos Mesh Helm Repo
-            helm repo add chaos-mesh https://charts.chaos-mesh.org
-            helm repo update
+          # Add Chaos Mesh Helm Repo
+          helm repo add chaos-mesh https://charts.chaos-mesh.org
+          helm repo update
 
-            # Install Chaos Mesh
-            helm upgrade --install chaos-mesh chaos-mesh/chaos-mesh `
-                          --namespace=$chaosTestingNamespace --create-namespace `
-                          --version=$(chaosMeshVersion) `
-                          --set chaosDaemon.runtime=containerd `
-                          --set chaosDaemon.socketPath=/run/containerd/containerd.sock
-          }
+          # Install Chaos Mesh
+          helm upgrade --install chaos-mesh chaos-mesh/chaos-mesh `
+                        --namespace=$chaosTestingNamespace --create-namespace `
+                        --version=$(chaosMeshVersion) `
+                        --set chaosDaemon.runtime=containerd `
+                        --set chaosDaemon.socketPath=/run/containerd/containerd.sock

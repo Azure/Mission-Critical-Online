@@ -308,12 +308,12 @@ stages:
         testDurationSeconds: 180 # Chaos test duration for each experiment
         memoryStress: true # run Chaos Memory stress
         cpuStress: true # run Chaos CPU stress
-        podKiller: true # run Chaos Pod Killer
+        podFailure: true # run Chaos Pod Killer
         dependsOn:
         - testingGlobalEndpoints
 
 - ${{ if eq(parameters.destroyOldEnvironment, 'true') }}: # Only for E2E the user could have manually chosen not to destroy the environment
-  - stage: destroyOldInfrastructure                # In E2E this will destroy the infrastructure that was deployed from the same branch. For int/prod, this will fetch the previous release infra and destroy that
+  - stage: destroyOldInfrastructure # In E2E this will destroy the infrastructure that was deployed from the same branch. For int/prod, this will fetch the previous release infra and destroy that
     displayName: 'Destroy Infrastructure'
     jobs:
     - deployment: 'destroyOldReleaseStampsJob' # Using a deployment job so that we can have manual approves, which are configured on the environment specificed below

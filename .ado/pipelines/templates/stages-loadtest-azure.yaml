@@ -50,20 +50,20 @@ stages:
 
     # Global Terraform output is only parsed when running in embedded mode
     - ${{ if eq(parameters.embeddedLoadTest, 'true') }}:
+    
       # Parsing the Terraform output for the global infrastructure deployment to extract data like the Azure Front Door FQDN
       - template: steps-parse-terraform-output.yaml
         parameters:
           workingDirectory: '$(Pipeline.Workspace)/terraformOutputGlobalInfra'  # Global infra deploy output directory
 
-    # Set loadTestTargetFQDN to the Azure Front Door FQDN
-    - ${{ if and(eq(parameters.loadTestTargetFQDN, ''),eq(parameters.embeddedLoadTest, 'true')) }}:
+      # Set loadTestTargetFQDN to the Azure Front Door FQDN (when load test is embedded)
       - script: |
           echo "*** Setting loadTestTargetFQDN to $(frontdoor_fqdn)"
           echo "##vso[task.setvariable variable=loadTestTargetFQDN]$(frontdoor_fqdn)" 
         displayName: 'Set Loadtest targetUrl to $(frontdoor_fqdn)'
 
     # Set loadTestTargetFQDN to the FQDN specified in the pipeline parameters
-    - ${{ if and(ne(parameters.loadTestTargetFQDN, ''),eq(parameters.embeddedLoadTest, 'false')) }}:
+    - ${{ if eq(parameters.embeddedLoadTest, 'false') }}:
       - script: |
           echo "*** Setting loadTestTargetFQDN to ${{ parameters.loadTestTargetFQDN }}"
           echo "##vso[task.setvariable variable=loadTestTargetFQDN]${{ parameters.loadTestTargetFQDN }}" 

@@ -1,13 +1,19 @@
 param
 (
   # Load Test Id
+  [Parameter(Mandatory = $true)]
   [string] $loadTestId,
+  
   [string] $testFileName,
   [string] $testFileId,
   # Load Test data plane endpoint
+  [Parameter(Mandatory = $true)]
   [string] $apiEndpoint,
+
   # Load Test data plane api version
+  [Parameter(Mandatory = $true)]
   [string] $apiVersion,
+
   [bool] $verbose = $False
 )
 

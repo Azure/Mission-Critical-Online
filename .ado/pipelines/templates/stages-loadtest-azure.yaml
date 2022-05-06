@@ -2,16 +2,19 @@ parameters:
  - name: terraformWorkingDirectory
    type: string
    default: ''
+
  - name: customPrefix
    type: string
+
  - name: embeddedLoadTest
    type: boolean
-   default: false 
+   default: false
+
  - name: destroyInfra
    type: boolean
-   default: true 
+   default: true
+
  - name: loadTestTargetFQDN
-   displayName: 'Load test target FQDN'
    type: string
    default: ''
 

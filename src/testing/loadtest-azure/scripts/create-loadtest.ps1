@@ -2,10 +2,23 @@ param
 (
   # Load Test Id - auto-generated when empty
   [string] $loadTestId = (New-Guid).toString(),
+
   # Load Test Displayname shown in Azure Portal
   [string] $loadTestDisplayName,
+
   # Load Test Description shown in Azure Portal
   [string] $loadTestDescription,
+  
+  [Parameter(Mandatory = $true)]
+  [string] $loadTestTargetUrl,
+
+  [Parameter(Mandatory = $true)]
+  [int] $loadTestUserThreads,
+
+  [Parameter(Mandatory = $true)]
+  [int] $loadTestDurationSeconds,
+
+
   # Load Test engine instances
   [int] $engineInstances = "0",
   # Load Test data plane endpoint
@@ -38,9 +51,9 @@ function GetTestBody {
           "engineInstances": $engineInstances
       },
       "environmentVariables": {
-        "target_url": "www.int.shop.mission-critical.app",
-        "threads": 1,
-        "load_duration_seconds": 10
+        "target_url": "$loadTestTargetUrl",
+        "threads": $loadTestUserThreads,
+        "load_duration_seconds": $loadTestDurationSeconds
       }
   }
 "@

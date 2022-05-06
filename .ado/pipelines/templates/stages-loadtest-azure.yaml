@@ -59,6 +59,9 @@ stages:
           -apiVersion "$(azureLoadTestApiVersion)" `
           -loadTestDisplayName "load test for $(Build.BuildId)" `
           -loadTestDescription "Pipeline-embedded load test for $(Build.BuildId)" `
+          -loadTestTargetUrl "www.int.shop.mission-critical.app" `
+          -loadTestUserThreads 100 `
+          -loadTestDurationSeconds 10 `
           -engineInstances "$(azureLoadTestEngineInstances)" `
           -pipeline $true -verbose:$true
 

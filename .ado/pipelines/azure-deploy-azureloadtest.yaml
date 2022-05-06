@@ -14,6 +14,9 @@ parameters:
   default: 'int'
   values:
   - int
+- name: loadTestTargetFQDN
+  displayName: 'Load test target FQDN'
+  type: string
 - name: destroyInfra # option to unselect destroy infrastructure
   displayName: "Destroy infrastructure when done"
   type: boolean

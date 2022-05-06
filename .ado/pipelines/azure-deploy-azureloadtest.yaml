@@ -17,6 +17,7 @@ parameters:
 - name: loadTestTargetFQDN
   displayName: 'Load test target FQDN'
   type: string
+  default: 'www.int.shop.mission-critical.app'
 - name: destroyInfra # option to unselect destroy infrastructure
   displayName: "Destroy infrastructure when done"
   type: boolean

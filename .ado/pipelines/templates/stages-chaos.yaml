@@ -52,35 +52,35 @@ stages:
 
                 $targetResourceIds = @()
 
-                # onboard targets and capabilities for each AKS cluster to prepare for Chaos deployment
-                foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
-                    $resourceId = $stamp.aks_cluster_id
+                # onboard targets and capabilities for the first stamp's AKS cluster to prepare for Chaos deployment
 
-                    # Target Resource Id is the ID of the AKS cluster with a child resource indicator
-                    $targetResourceId = "$resourceId/providers/Microsoft.Chaos/targets/Microsoft-AzureKubernetesServiceChaosMesh"
-                    $targetResourceIds += $targetResourceId
+                $stamp = $stamp in $releaseUnitInfraDeployOutput.stamp_properties.value[0]
+                $resourceId = $stamp.aks_cluster_id
 
-                    echo "*** Creating Chaos Target sub-resource: $targetResourceId "
-                    # Create chaos target as AKS sub-resource
-                    $url = "https://management.azure.com$($targetResourceId)?api-version=$(chaosStudioApiVersion)"
-                    az rest --method put --url $url --body '{\"properties\":{}}'
+                # Target Resource Id is the ID of the AKS cluster with a child resource indicator
+                $targetResourceId = "$resourceId/providers/Microsoft.Chaos/targets/Microsoft-AzureKubernetesServiceChaosMesh"
+                $targetResourceIds += $targetResourceId
+
+                echo "*** Creating Chaos Target sub-resource: $targetResourceId "
+                # Create chaos target as AKS sub-resource
+                $url = "https://management.azure.com$($targetResourceId)?api-version=$(chaosStudioApiVersion)"
+                az rest --method put --url $url --body '{\"properties\":{}}'
+                if($LastExitCode -ne 0)
+                {
+                    throw "*** Error on chaos target creation against $targetResourceId" # This can, for instance, happen if the region is not supported by Chaos Studio
+                }
+
+                $targetCreationResult # print for debug
+
+                # Enable all capabilities on the cluster
+                foreach($capability in $capabilities)
+                {
+                    echo "*** Enabling capability $capability on sub-resource: $targetResourceId "
+                    $url = "https://management.azure.com$($targetResourceId)/capabilities/$($capability)?api-version=$(chaosStudioApiVersion)"
+                    az rest --method put --url $url --body '{}'
                     if($LastExitCode -ne 0)
                     {
-                        throw "*** Error on chaos target creation against $targetResourceId" # This can, for instance, happen if the region is not supported by Chaos Studio
-                    }
-
-                    $targetCreationResult # print for debug
-
-                    # Enable all capabilities on the cluster
-                    foreach($capability in $capabilities)
-                    {
-                        echo "*** Enabling capability $capability on sub-resource: $targetResourceId "
-                        $url = "https://management.azure.com$($targetResourceId)/capabilities/$($capability)?api-version=$(chaosStudioApiVersion)"
-                        az rest --method put --url $url --body '{}'
-                        if($LastExitCode -ne 0)
-                        {
-                            throw "*** Error on chaos capability '$capability' against $targetResourceId"
-                        }
+                        throw "*** Error on chaos capability '$capability' against $targetResourceId"
                     }
                 }
 

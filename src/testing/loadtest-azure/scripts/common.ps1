@@ -12,5 +12,5 @@ $accessTokenFileName = "./accesstoken.txt"
 $accessTokenHeader | Out-File -FilePath $accessTokenFileName -Force
 
 # The data plane API is using self-signed certificates
-$env:ADAL_PYTHON_SSL_NO_VERIFY = '1'
-$env:AZURE_CLI_DISABLE_CONNECTION_VERIFICATION = '1'
+#$env:ADAL_PYTHON_SSL_NO_VERIFY = '1'
+#$env:AZURE_CLI_DISABLE_CONNECTION_VERIFICATION = '1'

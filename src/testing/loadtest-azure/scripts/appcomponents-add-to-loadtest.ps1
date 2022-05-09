@@ -4,12 +4,8 @@ param
   [Parameter(Mandatory = $true)]
   [string] $loadTestId,
 
-  # Appcomponent Name
-  [Parameter(Mandatory = $true)]
-  [string] $resourceName,
-  [string] $resourceGroup,
-  [string] $resourceType,
-  [string] $subscriptionId,
+  # Load Test Run Id (optional - not implemented yet)
+  [string] $loadTestRunId,
 
   # Appcomponent Azure ResourceId
   [Parameter(Mandatory = $true)]
@@ -26,6 +22,28 @@ param
 
 . "$PSScriptRoot/common.ps1"
 
+function validateResourceId($resourceId) {
+  $split = $resourceId.split("/")
+
+  if ($split[1] -ne "subscriptions") {
+    return $false
+  }
+
+  if ($split[3] -ne "resourcegroups") {
+    return $false
+  }
+
+  if ($split[5] -ne "providers") {
+    return $false
+  }
+
+  return $true
+}
+
+if (!(validateResourceId -resourceId $resourceId)) {
+  throw "No valid resourceId provided."
+}
+
 function AppComponent {
     param
     (
@@ -34,7 +52,8 @@ function AppComponent {
       [string] $resourceId,
       [string] $resourceType,
       [string] $subscriptionId,
-      [string] $loadTestId
+      [string] $loadTestId,
+      [string] $loadTestRunId
     )
   
     $result = @"
@@ -42,10 +61,10 @@ function AppComponent {
         "testId": "$loadTestId",
         "value": {
             "$resourceId": {
-              "displayName": null,
-              "kind": null,
+              "displayName": "null",
+              "kind": "null",
               "resourceName": "$resourceName",
-              "resourceGroup": "$resourceGroup"
+              "resourceGroup": "$resourceGroup",
               "resourceId": "$resourceId",
               "resourceType": "$resourceType",
               "subscriptionId": "$subscriptionId"
@@ -58,9 +77,13 @@ function AppComponent {
   return $result
 }
 
+# Split Azure ResourceID
+$resource = $resourceId.split("/")
+$resourceType = $resource[6]+"/"+$resource[7]
+
 $testDataFileName = $loadTestId + ".txt"
-AppComponent -resourceName $resourceName -resourceType $resourceType `
-            -resourceId $resourceId -resourceGroup $resourceGroup -subscriptionId $subscriptionId `
+AppComponent -resourceName $resource[8] -resourceType $resourceType `
+            -resourceId $resourceId -resourceGroup $resource[4] -subscriptionId $resource[2] `
             -loadTestId $loadTestId | Out-File $testDataFileName -Encoding utf8
 
 $urlRoot = "https://" + $apiEndpoint + "/appcomponents/" + $loadTestId

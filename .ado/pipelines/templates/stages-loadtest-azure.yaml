@@ -102,7 +102,7 @@ stages:
       name: 'addAppComponentsToLoadTest'
       inputs:
         azureSubscription: '$(azureServiceConnection)'
-        workingDirectory: '$(Pipeline.Workspace)'
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
         scriptType: pscore
         scriptLocation: inlineScript
         inlineScript: |

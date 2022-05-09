@@ -1,0 +1,11 @@
+apiVersion: "v2"
+appVersion: 0.0.1
+name: workload-ingress
+description: "ingress definition for all the workload services that are exposed via HTTP ingress to the outside"
+version: 0.0.1
+sources:
+- https://github.com/Azure/Mission-Critical
+kubeVersion: ">=1.21.0"
+maintainers:
+- name: alwayson
+  email: alwaysonappnet@microsoft.com

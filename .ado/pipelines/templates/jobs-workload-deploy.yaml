@@ -130,26 +130,26 @@ jobs: # using jobs so they each run in parallel
                          ${{ parameters.additionalHelmArguments }}
 
             # Wait for CatalogService-deploy k8s deployment to come up
-            $retrycount = 0;
-            $maxretrycount = 5
-            do {
-              kubectl rollout status deployment/catalogservice-deploy -n $(workloadNamespace)
+            # $retrycount = 0;
+            # $maxretrycount = 5
+            # do {
+            #   kubectl rollout status deployment/catalogservice-deploy -n $(workloadNamespace)
 
-              # checking if certificate for CatalogService-ingress-secret was issued
-              if ($(kubectl get certificates/catalogservice-ingress-secret -n $(workloadNamespace) -o 'jsonpath={..status.conditions[?(@.type==\"Ready\")].status}') -ne "True")
-              {
-                $LASTEXITCODE=1
-                echo "certificate for catalogservice-ingress-secret pending.. "
-              }
+            #   # checking if certificate for CatalogService-ingress-secret was issued
+            #   if ($(kubectl get certificates/catalogservice-ingress-secret -n $(workloadNamespace) -o 'jsonpath={..status.conditions[?(@.type==\"Ready\")].status}') -ne "True")
+            #   {
+            #     $LASTEXITCODE=1
+            #     echo "certificate for catalogservice-ingress-secret pending.. "
+            #   }
 
-              if ($LastExitCode -ne 0) {
-                $retrycount++;
-                echo "Deployment not ready. Retrying... $retrycount/$maxretrycount";
-                start-sleep $(60*$retrycount) # sleep for <retry> * 60 seconds
-              } else {
-                $retrycount = $maxretrycount
-              }
-            } while ( ($retrycount -lt $maxretrycount) )
+            #   if ($LastExitCode -ne 0) {
+            #     $retrycount++;
+            #     echo "Deployment not ready. Retrying... $retrycount/$maxretrycount";
+            #     start-sleep $(60*$retrycount) # sleep for <retry> * 60 seconds
+            #   } else {
+            #     $retrycount = $maxretrycount
+            #   }
+            # } while ( ($retrycount -lt $maxretrycount) )
           }
 
 - job: deploycontainerBackgroundProcessor

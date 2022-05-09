@@ -24,8 +24,6 @@ variables:
 - name: 'workloadNamespace'   # K8s namespace for workload deployment
   value: 'workload'
 
-- name: 'chaosStudioLocation' # Chaos Studio is currently only available in selected Azure regions. So we are picking a region here
-  value: 'uksouth'
 - name: 'chaosStudioApiVersion'
   value: '2021-09-15-preview'
 

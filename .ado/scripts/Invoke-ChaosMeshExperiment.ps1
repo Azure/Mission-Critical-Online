@@ -8,8 +8,6 @@ param(
 
 $releaseUnitInfraDeployOutput = Get-ChildItem $env:PIPELINE_WORKSPACE/terraformOutputReleaseUnitInfra/*.json | Get-Content | ConvertFrom-JSON
 
-# Use the first stamps' resource group
-$resourceGroupName = $releaseUnitInfraDeployOutput.stamp_properties.value[0].resource_group_name
 $subscriptionId = $(az account show -o tsv --query 'id')
 
 echo "Deploying Chaos Experiment - $ExperimentName"
@@ -35,6 +33,8 @@ $experimentLocation = $locations[0]
 $experiment.location = $ExperimentLocation
 
 $stamp = $releaseUnitInfraDeployOutput.stamp_properties.value | Where-Object { $_.location -eq $experimentLocation }
+
+$resourceGroupName = $stamp.resource_group_name
 
 $target = $targetTemplate.PsObject.Copy()
 

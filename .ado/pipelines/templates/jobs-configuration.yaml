@@ -26,9 +26,6 @@ jobs:
 
         $globalInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputGlobalInfra/*.json | Get-Content | ConvertFrom-JSON
 
-        $frontDoorId = $globalInfraDeployOutput.frontdoor_id_header.value
-        echo "*** Retrieved Azure Front Door Header ID $frontDoorId"
-
         $frontDoorFqdn = $globalInfraDeployOutput.frontdoor_fqdn.value
         echo "*** Retrieved Azure Front Door FQDN $frontDoorFqdn"
 
@@ -63,8 +60,14 @@ jobs:
                 --version "$(ingressNginxVersion)" `
                 --wait
 
+
           $fqdn = $stamp.aks_cluster_ingress_fqdn
           echo "*** Retrieved Ingress Controller FQDN $fqdn for AKS cluster $aksClusterName"
+
+          # We are using a wildcard hostname match for nginx (and thus getting a wildcard cert from Let's Encrypt)
+          # Therefore we replace the first part of the FQDN with a '*': "foo.bar.example.com" --> "*.bar.example.com"
+          $fqdn = $fqdn -replace '^[^.]*','*'
+          echo "*** Using wildcard domain name $fqdn"
 
           # Apply workload-ingress helm chart.
           # This contains the different path-based routing rules for all the services that shall be exposed via HTTPS to the outside
@@ -72,7 +75,6 @@ jobs:
 
           helm upgrade --install workload-ingress src/config/ingress `
                         --namespace "$(workloadNamespace)" --create-namespace `
-                        --set azure.frontdoorid="$frontDoorId" `
                         --set azure.baseurl="$frontDoorFqdn" `
                         --set workload.domainname="$fqdn" `
                         --wait

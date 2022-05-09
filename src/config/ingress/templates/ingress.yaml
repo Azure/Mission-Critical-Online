@@ -27,7 +27,7 @@ spec:
   ingressClassName: nginx
   tls:
   - hosts:
-    - {{ .Values.workload.domainname }}
+    - {{ .Values.workload.domainname | quote }}
     secretName: {{ .Chart.Name }}-secret
   rules:
   - host: {{ .Values.workload.domainname | quote }}

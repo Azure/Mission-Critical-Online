@@ -6,5 +6,4 @@ ingress:
     cert-manager.io/cluster-issuer: "cert-manager-alwayson"
 
 azure:
-  frontdoorid: "" # Azure Front Door Header ID (blank = disabled)
   baseurl: "OVERWRITE.myalwaysonapp.net" # FQDN used by the Azure Front Door endpoint

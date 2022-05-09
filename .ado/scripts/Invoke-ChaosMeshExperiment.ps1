@@ -1,7 +1,7 @@
 param(
+    $StampLocations, # List of Azure Regions which the env has been deployed to. The first one will be used for the experiments
     $ExperimentName, # Name of the experiment to create and run
     $ExperimentJsonPath, # Path to the JSON file which contains the experiment defintion template
-    $ExperimentLocation, # Azure Region to which to deploy the Chaos experiement
     $ExperimentDurationSeconds, # Duration of the experiments in seconds
     $ChaosStudioApiVersion # REST API version for Chaos Studio
 )
@@ -17,9 +17,6 @@ echo "Deploying Chaos Experiment - $ExperimentName"
 # Load experiment JSON content
 $experiment = Get-Content -path $ExperimentJsonPath | ConvertFrom-Json
 
-# Set location
-$experiment.location = $ExperimentLocation
-
 # Set duration
 $experiment.properties.steps[0].branches[0].actions[0].duration = "PT$($ExperimentDurationSeconds)S"
 
@@ -29,16 +26,23 @@ $targetTemplate = $experiment.properties.selectors[0].targets[0]
 # Remove existing template targets (replace by empty array)
 $experiment.properties.selectors[0].targets = @()
 
-# Loop through all AKS resource IDs and set them as targets in the JSON
-foreach ($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
-    $target = $targetTemplate.PsObject.Copy()
+$locations = $StampLocations | ConvertFrom-Json -NoEnumerate # get the stamp locations
 
-    $resourceId = $stamp.aks_cluster_id
-    $targetResourceId = "$resourceId/providers/Microsoft.Chaos/targets/Microsoft-AzureKubernetesServiceChaosMesh"
+# Use the first stamp's AKS cluster to prepare for Chaos deployment
+$experimentLocation = $locations[0]
 
-    $target.id = $targetResourceId
-    $experiment.properties.selectors[0].targets += $target
-}
+# Set location
+$experiment.location = $ExperimentLocation
+
+$stamp = $releaseUnitInfraDeployOutput.stamp_properties.value | Where-Object { $_.location -eq $experimentLocation }
+
+$target = $targetTemplate.PsObject.Copy()
+
+$resourceId = $stamp.aks_cluster_id
+$targetResourceId = "$resourceId/providers/Microsoft.Chaos/targets/Microsoft-AzureKubernetesServiceChaosMesh"
+
+$target.id = $targetResourceId
+$experiment.properties.selectors[0].targets += $target
 
 # Convert back to JSON
 $experimentJson = $experiment | ConvertTo-Json -Depth 20 -Compress
@@ -57,14 +61,10 @@ $experimentId = $experimentCreationResult.id
 # Get Managed Identity Id for the newly created experiment
 $experimentPrincipalId = $experimentCreationResult.identity.principalId
 
-# Assign Azure Kubernetes Service Cluster Admin Role to each cluster for the experiement identity
-# This is required for Chaos Studio to be able to control AKS (via Chaos Mesh)
-foreach ($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
-    $resourceId = $stamp.aks_cluster_id
-    $role = "Azure Kubernetes Service Cluster Admin Role"
-    echo "*** Assigning role '$role' to principal $experimentPrincipalId on $resourceId"
-    az role assignment create --role $role --assignee-object-id $experimentPrincipalId --scope $resourceId --assignee-principal-type ServicePrincipal
-}
+# Assign Azure Kubernetes Service Cluster Admin Role to the cluster for the experiment identity
+$role = "Azure Kubernetes Service Cluster Admin Role"
+echo "*** Assigning role '$role' to principal $experimentPrincipalId on $resourceId"
+az role assignment create --role $role --assignee-object-id $experimentPrincipalId --scope $resourceId --assignee-principal-type ServicePrincipal
 
 echo "*** Starting experiment '$ExperimentName' ..."
 # Start the experiment

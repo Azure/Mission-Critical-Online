@@ -105,7 +105,7 @@ stages:
             arguments:
               -ExperimentName "${{ parameters.customPrefix }}-PodFailure"
               -ExperimentJsonPath "$(System.DefaultWorkingDirectory)/src/testing/chaos-testing/experiment-json/aks_pod_failure.json"
-              -ExperimentLocation "$(chaosStudioLocation)"
+              -StampLocations '$(stampLocations)'
               -ExperimentDurationSeconds "${{ parameters.testDurationSeconds }}"
               -ChaosStudioApiVersion "$(chaosStudioApiVersion)"
 
@@ -120,7 +120,7 @@ stages:
             arguments:
               -ExperimentName "${{ parameters.customPrefix }}-CpuStress"
               -ExperimentJsonPath "$(System.DefaultWorkingDirectory)/src/testing/chaos-testing/experiment-json/aks_cpu_stress.json"
-              -ExperimentLocation "$(chaosStudioLocation)"
+              -StampLocations '$(stampLocations)'
               -ExperimentDurationSeconds "${{ parameters.testDurationSeconds }}"
               -ChaosStudioApiVersion "$(chaosStudioApiVersion)"
 
@@ -135,6 +135,6 @@ stages:
             arguments:
               -ExperimentName "${{ parameters.customPrefix }}-MemoryStress"
               -ExperimentJsonPath "$(System.DefaultWorkingDirectory)/src/testing/chaos-testing/experiment-json/aks_memory_stress.json"
-              -ExperimentLocation "$(chaosStudioLocation)"
+              -StampLocations '$(stampLocations)'
               -ExperimentDurationSeconds "${{ parameters.testDurationSeconds }}"
               -ChaosStudioApiVersion "$(chaosStudioApiVersion)"

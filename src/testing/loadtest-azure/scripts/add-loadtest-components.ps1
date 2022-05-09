@@ -48,7 +48,7 @@ AppComponent -componentName $componentName `
             -componentResourceId $componentResourceId `
             -loadTestId $loadTestId | Out-File $testDataFileName -Encoding utf8
 
-$urlRoot = "https://" + $apiEndpoint + "/loadtests/" + $loadTestId
+$urlRoot = "https://" + $apiEndpoint + "/appcomponents/" + $loadTestId
 Write-Verbose "*** Load test service data plane: $urlRoot"
 
 # Create a new load test resource or update existing, if loadTestId already exists

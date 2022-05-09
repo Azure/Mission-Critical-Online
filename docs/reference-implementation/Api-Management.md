@@ -17,7 +17,7 @@ It is important to note that API Management is used as a regional resource, i.e.
 1) Add a subnet to host API Management in ["external" VNet mode](https://docs.microsoft.com/azure/api-management/virtual-network-concepts?tabs=stv2#access-options) plus the required Network Security Group and rules.
 1) Add a subnet to host the new internal Kubernetes load balancer for the ingress controller
 1) Add a definition for the APIM service into the Terraform IaC part
-1) Add definitions for all the APIs, operations and polices, also in Terraform
+1) Add definitions for all the APIs, operations and polices, also to Terraform
 1) Change the publicly exposed Kubernetes service for the ingress controller to an internal load balancer
 1) Change all tests and other tasks which were targeting the public IP of the load balancer to now target APIM
 1) Change Azure Front Door backend to point to APIM

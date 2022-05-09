@@ -69,7 +69,8 @@ stages:
         displayName: 'Set Loadtest targetUrl to Azure Front Door'
 
     # Set loadTestTargetFQDN to the FQDN specified in the pipeline parameters
-    - ${{ if eq(parameters.embeddedLoadTest, 'false') }}:
+    - ${{ if ne(parameters.embeddedLoadTest, 'true') }}:
+
       - script: |
           echo "*** Setting loadTestTargetFQDN to ${{ parameters.loadTestTargetFQDN }}"
           echo "##vso[task.setvariable variable=azureLoadTestTargetFQDN]${{ parameters.loadTestTargetFQDN }}" 

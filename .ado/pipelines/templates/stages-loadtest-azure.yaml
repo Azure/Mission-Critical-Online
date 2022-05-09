@@ -24,7 +24,7 @@ stages:
   displayName: 'Run Azure Load Test'
   jobs:
   - job: deployazloadtest
-    displayName: 'Deploy Azure Load Test via Terraform'
+    displayName: 'Run Azure Load Testing'
     steps:
     - checkout: self # checkout github repository
     - download: current # download pipeline artifacts

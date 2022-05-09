@@ -29,7 +29,7 @@ stages:
     dependsOn: ${{ parameters.dependsOn }}
     jobs:
     - job: deploychaosjob
-      displayName: 'Deploy and Run Chaos Experiments'
+      displayName: 'Run Azure Chaos Studio'
       steps:
       - checkout: self # checkout github repository
 

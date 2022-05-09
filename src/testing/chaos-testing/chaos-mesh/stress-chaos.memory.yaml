@@ -12,4 +12,3 @@ spec:
   stressors:
     memory:
       workers: 1
-  duration: '60s'

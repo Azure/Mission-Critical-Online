@@ -1,1 +1,1 @@
-{"action":"pod-kill","mode":"one","value":"","selector":{"namespaces":["workload"]},"duration":"180s"}
+{"action":"pod-kill","mode":"one","value":"","selector":{"namespaces":["workload"]}}

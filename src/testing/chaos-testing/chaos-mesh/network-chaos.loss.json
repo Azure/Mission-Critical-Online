@@ -1,1 +1,1 @@
-{"action":"loss","mode":"all","duration":"180s","selector":{"namespaces":["workload"]},"loss":{"loss":"30","correlation":"50"}}
+{"action":"loss","mode":"all","selector":{"namespaces":["workload"]},"loss":{"loss":"30","correlation":"50"}}

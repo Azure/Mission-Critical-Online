@@ -72,7 +72,9 @@ namespace AlwaysOn.HealthService
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.UsePathBase("/healthservice");
+            const string BasePath = "/healthservice";
+
+            app.UsePathBase(BasePath);
 
             if (env.IsDevelopment())
             {
@@ -89,7 +91,7 @@ namespace AlwaysOn.HealthService
                 // specifying the Swagger JSON endpoint.
                 app.UseSwaggerUI(c =>
                 {
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "AlwaysOn HealthService");
+                    c.SwaggerEndpoint($"{BasePath}/swagger/v1/swagger.json", "AlwaysOn HealthService");
                 });
             }
 

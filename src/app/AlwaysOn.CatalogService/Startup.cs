@@ -89,7 +89,9 @@ namespace AlwaysOn.CatalogService
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.UsePathBase("/catalogservice");
+            const string BasePath = "/catalogservice";
+
+            app.UsePathBase(BasePath);
 
             if (env.IsDevelopment())
             {
@@ -110,7 +112,7 @@ namespace AlwaysOn.CatalogService
                 // specifying the Swagger JSON endpoint.
                 app.UseSwaggerUI(c =>
                 {
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "AlwaysOn CatalogService");
+                    c.SwaggerEndpoint($"{BasePath}/swagger/v1/swagger.json", "AlwaysOn CatalogService");
                 });
             }
 

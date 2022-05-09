@@ -25,6 +25,8 @@ resource "azurerm_load_test" "deployment" {
   name = "${local.prefix}-azloadtest"
   resource_group_name = azurerm_resource_group.deployment.name
   location = azurerm_resource_group.deployment.location
+
+  tags     = local.default_tags
 }
 
 output "azureLoadTestName" {

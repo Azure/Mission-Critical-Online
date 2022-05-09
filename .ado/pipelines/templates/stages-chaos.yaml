@@ -53,8 +53,9 @@ stages:
             $targetResourceIds = @()
 
             # onboard targets and capabilities for the first stamp's AKS cluster to prepare for Chaos deployment
+            $locations = '$(stampLocations)' | ConvertFrom-Json -NoEnumerate # get the stamp locations
+            $stamp = $releaseUnitInfraDeployOutput.stamp_properties.value | Where-Object { $_.location -eq $locations[0] }
 
-            $stamp = $stamp = $releaseUnitInfraDeployOutput.stamp_properties.value[0]
             $resourceId = $stamp.aks_cluster_id
 
             # Target Resource Id is the ID of the AKS cluster with a child resource indicator

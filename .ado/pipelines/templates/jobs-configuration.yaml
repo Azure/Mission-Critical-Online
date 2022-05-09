@@ -182,7 +182,8 @@ jobs:
           $releaseUnitInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputReleaseUnitInfra/*.json | Get-Content | ConvertFrom-JSON
 
           # take only the first stamp to inject faults into
-          $stamp = $releaseUnitInfraDeployOutput.stamp_properties.value[0]
+          $locations = '$(stampLocations)' | ConvertFrom-Json -NoEnumerate # get the stamp locations
+          $stamp = $releaseUnitInfraDeployOutput.stamp_properties.value | Where-Object { $_.location -eq $locations[0] }
 
           $aksClusterName = $stamp.aks_cluster_name
           $aksClusterResourceGroup = $stamp.resource_group_name

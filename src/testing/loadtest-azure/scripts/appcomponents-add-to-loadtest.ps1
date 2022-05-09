@@ -73,7 +73,6 @@ function AppComponent {
     }
 "@
 
-  Write-Host $result
   return $result
 }
 

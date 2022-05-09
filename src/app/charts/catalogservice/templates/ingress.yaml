@@ -11,6 +11,9 @@ metadata:
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "120"   #  Set timeout to read from the backend pods to 120s. Cosmos DB retries can go up to 60s
     nginx.ingress.kubernetes.io/use-regex: "true"
+
+    # Rewrite taret path to remove the name of the service
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
     # Rewrite for the Location response header. Replaces the internal FQDN of the cluster with the base URL of the environment
     # Docs: https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/#proxy-redirect
     # Backend header might look like this: http://adaptedanteater-cluster.northeurope.cloudapp.azure.com/api/1.0/game/123
@@ -39,21 +42,14 @@ spec:
   - host: {{ .Values.workload.domainname }}
     http:
       paths:
-      - path: /(api|swagger).*
+      - path: /catalogservice(/|$)(.*)
         pathType: Prefix
         backend:
           service:
             name: {{ .Chart.Name }}-service
             port:
               number: {{ .Values.workload.service.port | default 80 }}
-      - path: /swagger # exposing the swagger endpoint
-        pathType: Prefix
-        backend:
-          service:
-            name: {{ .Chart.Name }}-service
-            port:
-              number: {{ .Values.workload.service.port | default 80 }}
-      - path: /health # exposing the 'healthservice'
+      - path: /healthservice(/|$)(.*) # exposing the 'healthservice'
         pathType: Prefix
         backend:
           service:

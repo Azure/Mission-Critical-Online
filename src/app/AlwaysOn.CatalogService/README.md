@@ -107,7 +107,7 @@ public async Task<ActionResult<CatalogItem>> GetCatalogItemByIdAsyncV2(Guid item
 }
 ```
 
-- Providing version string in the URL is mandatory (e.g. `https://localhost:5000/1.0/catalogitem/` or `https://ao6bd5-global-fd.azurefd.net/api/1.0/catalogitem`).
+- Providing version string in the URL is mandatory (e.g. `https://localhost:5000/1.0/catalogitem/` or `https://ao6bd5-global-fd.azurefd.net/catalogservice/api/1.0/catalogitem`).
 - If version is `1.0`, the first implementation will get called (`GetCatalogItemByIdAsync`).
 - If version is `2.0`, the second implementation will get called (`GetCatalogItemByIdAsyncV2`).
 - If version `3.0` is specified on the controller, but no actions map to it, first implementation will be called.

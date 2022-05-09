@@ -30,7 +30,7 @@ jobs:
           # We cannot send it through Front Door at this point, since the new stamp might not be wired up yet in AFD
           $stamp = $releaseUnitInfraDeployOutput.stamp_properties.value[0]
 
-          $url = "https://$($stamp.aks_cluster_ingress_fqdn)/api/1.0/CatalogItem"
+          $url = "https://$($stamp.aks_cluster_ingress_fqdn)/catalogservice/api/1.0/CatalogItem"
 
           Write-Host "*** Using URL $url"
 

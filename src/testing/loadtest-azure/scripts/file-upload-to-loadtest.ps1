@@ -5,7 +5,9 @@ param
   [string] $loadTestId,
   
   [string] $testFileName,
+  [Parameter(Mandatory=$true)]
   [string] $testFileId,
+  
   # Load Test data plane endpoint
   [Parameter(Mandatory = $true)]
   [string] $apiEndpoint,

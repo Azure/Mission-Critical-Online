@@ -97,32 +97,31 @@ stages:
           -pipeline $true `
           -verbose:$true
 
-    # This step adds additional App Components to the Load Test dashboard
-    - task: AzureCLI@2 
-      displayName: 'Add AppComponents to Load Test' 
-      name: 'addAppComponentsToLoadTest'
-      inputs:
-        azureSubscription: '$(azureServiceConnection)'
-        workingDirectory: '$(System.DefaultWorkingDirectory)'
-        scriptType: pscore
-        scriptLocation: inlineScript
-        inlineScript: |
-          $releaseUnitInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputReleaseUnitInfra/*.json | Get-Content | ConvertFrom-JSON
-
-          # loop through stamps from pipeline artifact json
-          foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
-            ./src/testing/loadtest-azure/scripts/appcomponents-add-to-loadtest.ps1 `
-              -loadTestId "$(loadTestId)" `
-              -apiVersion "$(azureLoadTestApiVersion)" `
-              -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
-              -resourceId "$($stamp.aks_cluster_id)"
-
-            echo "*** Adding $($stamp.aks_cluster_id)"
-          }
-      
-
     # All of the next tasks are only applicable in headless mode
     - ${{ if eq(parameters.embeddedLoadTest, 'true') }}:
+
+      # This step adds additional App Components to the Load Test dashboard
+      - task: AzureCLI@2 
+        displayName: 'Add AppComponents to Load Test' 
+        name: 'addAppComponentsToLoadTest'
+        inputs:
+          azureSubscription: '$(azureServiceConnection)'
+          workingDirectory: '$(System.DefaultWorkingDirectory)'
+          scriptType: pscore
+          scriptLocation: inlineScript
+          inlineScript: |
+            $releaseUnitInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputReleaseUnitInfra/*.json | Get-Content | ConvertFrom-JSON
+
+            # loop through stamps from pipeline artifact json
+            foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
+              ./src/testing/loadtest-azure/scripts/appcomponents-add-to-loadtest.ps1 `
+                -loadTestId "$(loadTestId)" `
+                -apiVersion "$(azureLoadTestApiVersion)" `
+                -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
+                -resourceId "$($stamp.aks_cluster_id)"
+
+              echo "*** Adding $($stamp.aks_cluster_id)"
+            }
 
       # upload a jmx file for the previously created azure load test with an auto-generated testFileId
       - task: AzureCLI@2

@@ -5,7 +5,7 @@ variables:
   value: 'foundational-online'
 
 - name: 'terraformVersion'    # Terraform Version
-  value: '1.1.8'
+  value: '1.1.9'
 - name: 'kubernetesVersion'   # kubernetes version used for aks clusters
   value: '1.22.6'
 - name: 'helmVersion'         # helm package manager version
@@ -48,7 +48,7 @@ variables:
 - name: 'loadTestNumberOfWorkerNodes' # number of worker nodes
   value: 10
 - name: 'loadTestDurationInSeconds' # load test duration
-  value: 300
+  value: 600
 - name: 'loadTestNumberOfUsers' # number of simulated users in the load test
   value: 500
 - name: 'loadTestUserSpawnRate' # load test spawn rate users / per second

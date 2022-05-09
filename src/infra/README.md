@@ -120,13 +120,13 @@ As of March 2022, following regions have been successfully tested with the refer
 - japaneast
 - koreacentral
 
->Note: Depending on which regions you select, you might need to first request quota with Azure Support for some of the services (mostly for AKS VMs and Cosmos DB).
+> Note: Depending on which regions you select, you might need to first request quota with Azure Support for some of the services (mostly for AKS VMs and Cosmos DB).
 
 It's worth calling out that where an Azure service is not available, an equivalent service may be deployed in its place. Availability Zones are the main limiting factor as far as the reference implementation of AZ is concerned.
 
 As regional availability of services used in reference implementation and AZs ramp-up, we foresee this list changing and support for additional Azure regions improving where reference implementation can be deployed.
 
-> Note: If the target  availability SLA for your application workload can be achieved without AZs and/or your workload is not bound compliance related to data sovereignty, an alternate region where all services/AZs are available can be considered.
+> Note: If the target availability SLA for your application workload can be achieved without AZs and/or your workload is not bound with compliance related to data sovereignty, an alternate region where all services/AZs are available can be considered.
 
 ### Global resources
 
@@ -193,17 +193,19 @@ This Azure Mission-Critical reference implementation uses Linux-only clusters as
   - `enable_auto_scaling` is configured to let the default node pool automatically scale out if needed.
   - `os_disk_type` is set to `Ephemeral` to leverage [Ephemeral OS disks](https://docs.microsoft.com/azure/aks/cluster-configuration#ephemeral-os) for performance reasons.
   - `upgrade_settings` `max_surge` is set to `33%` which is the [recommended value for production workloads](https://docs.microsoft.com/azure/aks/upgrade-cluster#customize-node-surge-upgrade).
-  > **Important!** In production environments its recommended to separate system and user node pools (see [Manage system node pools in Azure Kubernetes Service](https://docs.microsoft.com/azure/aks/use-system-pools)). This Azure Mission-Critical reference implementation is using a single (system) node pool for cost-saving purposes and to reduce overhead.
-  > The `kubernetes.tf` file contains a commented-out example for an additional user node pool with a taint `workload=true:NoSchedule` set to prevent non-workload pods from being scheduled. The `node_label` set to `role=workload` can be used to target this node pool when deploying a workload (see [charts/catalogservice](/src/app/charts/catalogservice/) for an example).
+
+> **Important!** In production environments it's recommended to separate system and user node pools (see [Manage system node pools in Azure Kubernetes Service](https://docs.microsoft.com/azure/aks/use-system-pools)). This Azure Mission-Critical reference implementation is using a single (system) node pool for cost-saving purposes and to reduce overhead.
+
+> The `kubernetes.tf` file contains a commented-out example for an additional user node pool with a taint `workload=true:NoSchedule` set to prevent non-workload pods from being scheduled. The `node_label` set to `role=workload` can be used to target this node pool when deploying a workload (see [charts/catalogservice](/src/app/charts/catalogservice/) for an example).
 
 Individual stamps are considered ephemeral and stateless. Updates to the infrastructure and application are following a [Zero-downtime Update Strategy](/docs/reference-implementation/DeployAndTest-DevOps-Zero-Downtime-Update-Strategy.md) and do not touch existing stamps. Updates to Kubernetes are therefore primarily rolled out by releasing new versions and replacing existing stamps. To update node images between two releases, the `automatic_channel_upgrade` in combination with `maintenance_window` is used:
 
 - `automatic_channel_upgrade` is set to `node-image` to [automatically upgrade node pools](https://docs.microsoft.com/azure/aks/upgrade-cluster#set-auto-upgrade-channel) with the most recent AKS node image.
-- `maintenance_window` contains the allowed window to run `automatic_channel_upgrade` upgrades. It is currently set to `allowed` on `Sunday` between 0 and 2 am.
+- `maintenance_window` contains the allowed window to run `automatic_channel_upgrade` upgrades. It is currently set to `allowed` on `Sunday` between 0 and 2 AM.
 
 #### Azure Log Analytics for Stamp Resources
 
-Each region has an individual Log Analytics workspace configured to store all log and metric data. As each stamp deployment is considered ephemeral, these workspaces are deployed as part of the global resources and does not share the lifecycle of a stamp. This ensures that when a stamp is deleted (which happens regularly), logs are still available. Log Analytics workspaces reside in a separate resource group `<prefix>-monitoring-rg`.
+Each region has an individual Log Analytics workspace configured to store all log and metric data. As each stamp deployment is considered ephemeral, these workspaces are deployed as part of the global resources and do not share the lifecycle of a stamp. This ensures that when a stamp is deleted (which happens regularly), logs are still available. Log Analytics workspaces reside in a separate resource group `<prefix>-monitoring-rg`.
 
 - `sku` is set to *PerGB2018*.
 - `daily_quota_gb` is set to `30` GB to prevent overspend, especially on environments that are used for load testing.

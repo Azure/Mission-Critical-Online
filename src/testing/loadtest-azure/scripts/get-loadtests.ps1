@@ -1,7 +1,6 @@
 param
 (
-  # Load Test Id
-  [Parameter(Mandatory=$true)]
+  # Load Test Id (optional)
   [string] $loadTestId,
   
   # Load Test data plane endpoint
@@ -19,11 +18,15 @@ param
 
 $urlRoot = "https://" + $apiEndpoint + "/loadtests/sortAndFilter"
 
+if (!$loadTestId) {
+  $urlRoot = $urlRoot + "?testId=" + $loadTestId
+}
+
 az rest --url $urlRoot `
   --method GET `
   --skip-authorization-header `
   --headers ('@' + $accessTokenFileName) `
-  --url-parameters api-version="$apiVersion" testId="$loadTestId" maxPageSize=$maxPageSize `
+  --url-parameters api-version="$apiVersion" maxPageSize=$maxPageSize `
   $verbose
 
 Remove-Item $accessTokenFileName

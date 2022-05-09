@@ -3,9 +3,7 @@ param
   # Load Test Id
   [Parameter(Mandatory = $true)]
   [string] $loadTestId,
-  
-  [string] $testFileName,
-  [string] $testFileId,
+
   # Load Test data plane endpoint
   [Parameter(Mandatory = $true)]
   [string] $apiEndpoint,
@@ -13,13 +11,14 @@ param
   # Load Test data plane api version
   [Parameter(Mandatory = $true)]
   [string] $apiVersion
+
+  # Filename to upload
+  [Parameter(Mandatory = $true)]
+  [string] $testFileName,
+  [string] $testFileId = (New-Guid).toString()
 )
 
 . "$PSScriptRoot/common.ps1"
-
-if (!$testFileId) {
-  $testFileId = (New-Guid).toString()
-}
 
 #./file-verify.ps1  -testFileName $testFileName
 

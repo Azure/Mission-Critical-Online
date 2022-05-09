@@ -6,11 +6,14 @@ param
 
   # Appcomponent Name
   [Parameter(Mandatory = $true)]
-  [string] $componentName,
+  [string] $resourceName,
+  [string] $resourceGroup,
+  [string] $resourceType,
+  [string] $subscriptionId,
 
   # Appcomponent Azure ResourceId
   [Parameter(Mandatory = $true)]
-  [string] $componentResourceId,
+  [string] $resourceId,
 
   # Load Test data plane endpoint
   [Parameter(Mandatory = $true)]
@@ -26,29 +29,41 @@ param
 function AppComponent {
     param
     (
-      [string] $componentName,
-      [string] $componentResourceId,
+      [string] $resourceName,
+      [string] $resourceGroup,
+      [string] $resourceId,
+      [string] $resourceType,
+      [string] $subscriptionId,
       [string] $loadTestId
     )
   
     $result = @"
     {
-        "resourceId": "$componentResourceId",
         "testId": "$loadTestId",
-        "testRunId": "",
-        "name": "$componentName"
+        "value": {
+            "$resourceId": {
+              "displayName": null,
+              "kind": null,
+              "resourceName": "$resourceName",
+              "resourceGroup": "$resourceGroup"
+              "resourceId": "$resourceId",
+              "resourceType": "$resourceType",
+              "subscriptionId": "$subscriptionId"
+            }
+        }
     }
 "@
 
+  Write-Host $result
   return $result
 }
 
 $testDataFileName = $loadTestId + ".txt"
-AppComponent -componentName $componentName `
-            -componentResourceId $componentResourceId `
+AppComponent -resourceName $resourceName -resourceType $resourceType `
+            -resourceId $resourceId -resourceGroup $resourceGroup -subscriptionId $subscriptionId `
             -loadTestId $loadTestId | Out-File $testDataFileName -Encoding utf8
 
-$urlRoot = "https://" + $apiEndpoint + "/loadtests/" + $loadTestId
+$urlRoot = "https://" + $apiEndpoint + "/appcomponents/" + $loadTestId
 Write-Verbose "*** Load test service data plane: $urlRoot"
 
 # Create a new load test resource or update existing, if loadTestId already exists
@@ -58,7 +73,7 @@ az rest --url $urlRoot `
   --headers ('@' + $accessTokenFileName) "Content-Type=application/merge-patch+json" `
   --url-parameters testId=$loadTestId api-version=$apiVersion `
   --body ('@' + $testDataFileName) `
-  -o none $verbose 
+  $verbose #-o none 
 
 # Delete the access token and test data files
 Remove-Item $accessTokenFileName

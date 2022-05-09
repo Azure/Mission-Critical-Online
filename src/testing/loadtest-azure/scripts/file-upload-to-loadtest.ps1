@@ -10,7 +10,7 @@ param
 
   # Load Test data plane api version
   [Parameter(Mandatory = $true)]
-  [string] $apiVersion
+  [string] $apiVersion,
 
   # Filename to upload
   [Parameter(Mandatory = $true)]

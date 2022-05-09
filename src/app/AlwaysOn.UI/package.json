@@ -10,10 +10,10 @@
   "author": "CAE AppDev",
   "license": "ISC",
   "dependencies": {
-    "@microsoft/applicationinsights-web": "^2.8.1",
+    "@microsoft/applicationinsights-web": "^2.8.2",
     "tiny-emitter": "^2.1.0",
     "vue": "^3.2.33",
-    "vue-router": "^4.0.14"
+    "vue-router": "^4.0.15"
   },
   "devDependencies": {
     "@vue/cli-service": "^5.0.4",

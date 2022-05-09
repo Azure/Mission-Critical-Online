@@ -115,7 +115,7 @@ stages:
               -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
               -resourceId "$(stamp.aks_cluster_id)"
 
-              echo "*** Adding $(stamp.aks_cluster_id)"
+            echo "*** Adding $(stamp.aks_cluster_id)"
           }
       
 

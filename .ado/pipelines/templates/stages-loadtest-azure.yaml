@@ -44,7 +44,8 @@ stages:
         terraformWorkingDirectory: '${{ parameters.terraformWorkingDirectory }}'
         customPrefix:              '${{ parameters.customPrefix }}'
         environment:               '$(environment)'
-        customAttributes:          '-var queued_by="$(Build.QueuedBy)"'
+        customAttributes:          '-var queued_by="$(Build.QueuedBy)"
+                                    -var branch="$(sourceBranch)"'
 
     # Parsing the Terraform output for the MALT service deployment
     - template: steps-parse-terraform-output.yaml

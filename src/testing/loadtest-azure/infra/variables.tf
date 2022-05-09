@@ -16,6 +16,12 @@ variable "queued_by" {
   default     = "not set"
 }
 
+variable "branch" {
+  description = "Name of the repository branch used for the deployment. Used as an Azure Resource Tag."
+  type        = string
+  default     = "not set"
+}
+
 variable "prefix" {
   description = "A prefix used for all resources in this example. Must not contain any special characters. Must not be longer than 10 characters."
   type        = string

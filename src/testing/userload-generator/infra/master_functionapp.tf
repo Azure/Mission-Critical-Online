@@ -25,7 +25,13 @@ resource "azurerm_linux_function_app" "master" {
     identity_ids = [azurerm_user_assigned_identity.functions.id]
   }
 
-  site_config {}
+  site_config {
+    application_stack {
+      dotnet_version = "6.0"
+    }
+
+    application_insights_connection_string = azurerm_application_insights.deployment.connection_string
+  }
 
   key_vault_reference_identity_id = azurerm_user_assigned_identity.functions.id
 
@@ -33,10 +39,14 @@ resource "azurerm_linux_function_app" "master" {
     local.function_names_per_geo,
     { for secret in azurerm_key_vault_secret.functionkeys : replace(upper(secret.name), "-", "_") => "@Microsoft.KeyVault(VaultName=${azurerm_key_vault.deployment.name};SecretName=${secret.name})" },
     {
-      "FUNCTIONS_WORKER_RUNTIME"              = "dotnet",
-      "APPLICATIONINSIGHTS_CONNECTION_STRING" = azurerm_application_insights.deployment.connection_string
-      "WEBSITE_MOUNT_ENABLED"                 = "1"
-      "WEBSITE_RUN_FROM_PACKAGE"              = "" # This value will be set by the Function deployment later
+      "WEBSITE_MOUNT_ENABLED"    = "1"
+      "WEBSITE_RUN_FROM_PACKAGE" = "" # This value will be set by the Function deployment later
     }
   )
+
+  lifecycle {
+    ignore_changes = [
+      app_settings["WEBSITE_RUN_FROM_PACKAGE"], # prevent TF reporting configuration drift after app code is deployed
+    ]
+  }
 }

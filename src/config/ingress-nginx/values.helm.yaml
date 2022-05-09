@@ -1,0 +1,34 @@
+# ingress-nginx helm chart configuration values
+# This file contains additional configuration settings and parameters used for the ingress-nginx helm chart installation.
+# https://github.com/kubernetes/ingress-nginx/blob/master/charts/ingress-nginx/values.yaml
+
+controller:
+  securityContext:
+    readOnlyRootFilesystem: true # If a container does not need to write files, it should be run with a read-only filesystem. 
+    privileged: false # Running a container as privileged gives all capabilities to the container, and it also lifts all the limitations enforced by the device cgroup controller.
+  autoscaling:
+    enabled:     true # Enable autoscaling via horizontal pod autoscaler
+    minReplicas: 3 # Minimum number of nodes
+    maxReplicas: 12 # Maximum number of nodes
+    targetCPUUtilizationPercentage: 75
+    targetMemoryUtilizationPercentage: 75
+  resources:
+    requests:
+      cpu: 750m
+      memory: 750Mi
+  metrics:
+    enabled: true
+    service:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "10254"
+  service:
+    type: LoadBalancer
+    enableHttp:  true # enable plain http (req. for cert-manager)
+    enableHttps: true  # enable https listener
+    annotations:
+      service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: "/healthz"
+  config:
+    # Use a custom, more structured logging format
+    log-format-upstream: '{"time": "$time_iso8601", "remote_addr": "$remote_addr", "request_id": "$req_id", "http_traceparent": "$http_traceparent", "http_correlation_id": "$sent_http_x_correlation_id", "bytes_sent": $bytes_sent, "request_time": $request_time, "status": $status, "vhost": "$host", "request_proto": "$server_protocol", "path": "$uri", "request_query": "$args", "request_length": $request_length, "duration": $request_time,"method": "$request_method", "http_referrer": "$http_referer","http_user_agent": "$http_user_agent", "upstream_addr": "$upstream_addr", "response_length": "$upstream_response_length", "response_time": "$upstream_response_time", "response_status": "$upstream_status" }'
+    # X-Forwarded-For could also be logged, but as it may contain the end user IP address, we do not want to collect that. "x_forwarded_for": "$proxy_add_x_forwarded_for",

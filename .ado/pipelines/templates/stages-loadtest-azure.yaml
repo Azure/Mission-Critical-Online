@@ -101,21 +101,20 @@ stages:
       name: 'addAppComponentsToLoadTest'
       inputs:
         azureSubscription: '$(azureServiceConnection)'
-        scriptType: pscore
-        scriptLocation: 'inlineScript'
         workingDirectory: '$(Pipeline.Workspace)'
-        arguments:
+        scriptType: pscore
+        scriptLocation: inlineScript
+        inlineScript: |
           $releaseUnitInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputReleaseUnitInfra/*.json | Get-Content | ConvertFrom-JSON
 
           # loop through stamps from pipeline artifact json
           foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
-            ./src/testing/loadtest-azure/scripts/appcomponents-add-to-loadtest.ps1 ` 
-              -loadTestId "$loadTestId" `
+            ./src/testing/loadtest-azure/scripts/appcomponents-add-to-loadtest.ps1 -loadTestId "$(loadTestId)" `
               -apiVersion "$(azureLoadTestApiVersion)" `
               -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
-              -resourceId "$(stamp.aks_cluster_id)"
+              -resourceId "$($stamp.aks_cluster_id)"
 
-            echo "*** Adding $(stamp.aks_cluster_id)"
+            echo "*** Adding $($stamp.aks_cluster_id)"
           }
       
 

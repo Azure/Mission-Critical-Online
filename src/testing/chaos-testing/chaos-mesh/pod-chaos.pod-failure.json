@@ -1,1 +1,1 @@
-{"action":"pod-failure","mode":"fixed-percent","value":"50","selector":{"namespaces":["workload"]},"duration":"600s"}
+{"action":"pod-failure","mode":"fixed-percent","value":"50","selector":{"namespaces":["workload"]}}

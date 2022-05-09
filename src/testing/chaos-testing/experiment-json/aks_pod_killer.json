@@ -18,7 +18,7 @@
                   "parameters": [
                     {
                         "key": "jsonSpec",
-                        "value": "{\"action\":\"pod-kill\",\"mode\":\"fixed-percent\",\"value\":\"50\",\"selector\":{\"namespaces\":[\"workload\"]},\"duration\":\"60s\"}"
+                        "value": "{\"action\":\"pod-kill\",\"mode\":\"fixed-percent\",\"value\":\"50\",\"selector\":{\"namespaces\":[\"workload\"]}}"
                     }
                   ],
                   "name": "urn:csci:microsoft:azureKubernetesServiceChaosMesh:podChaos/2.1"

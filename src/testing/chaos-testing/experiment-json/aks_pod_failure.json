@@ -18,7 +18,7 @@
                   "parameters": [
                     {
                         "key": "jsonSpec",
-                        "value": "{\"action\":\"pod-failure\",\"mode\":\"all\",\"selector\":{\"namespaces\":[\"workload\"]},\"duration\":\"600s\"}"
+                        "value": "{\"action\":\"pod-failure\",\"mode\":\"all\",\"selector\":{\"namespaces\":[\"workload\"]}}"
                     }
                   ],
                   "name": "urn:csci:microsoft:azureKubernetesServiceChaosMesh:podChaos/2.1"

@@ -18,7 +18,7 @@
                   "parameters": [
                     {
                         "key": "jsonSpec",
-                        "value": "{\"mode\":\"fixed-percent\",\"value\":\"50\",\"selector\":{\"namespaces\":[\"workload\"]},\"stressors\":{\"cpu\":{\"workers\":1, \"load\":100}},\"duration\":\"600s\"}"
+                        "value": "{\"mode\":\"fixed-percent\",\"value\":\"50\",\"selector\":{\"namespaces\":[\"workload\"]},\"stressors\":{\"cpu\":{\"workers\":1, \"load\":100}}}"
                     }
                   ],
                   "name": "urn:csci:microsoft:azureKubernetesServiceChaosMesh:stressChaos/2.1"

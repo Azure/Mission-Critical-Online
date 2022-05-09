@@ -8,17 +8,13 @@ variables:
 
 # The first value in 'stampLocations' is the primary region used for global services.
 # IMPORTANT! Changing the primary region (first value) is a BREAKING change and will destroy CosmosDB and Front Door.
+# Check which regions are valid. There is a list in /src/infra/README.md
+# If you are planning to run Chaos Studio experiments, make sure the first region in the list does support Azure Chaos Studio. Not all regions do yet
 - name: 'stampLocations'
-  value: '["uksouth","swedencentral"]'    # Check which regions are valid. There is a list in /src/infra/README.md
+  value: '["uksouth","swedencentral"]'
 
 - name: 'stampLocationsGrafana'
   value: '["eastus", "brazilsouth"]' # Check which regions are valid. There is a list in /src/infra/README.md
-
-##### NOTE #####
-# If you want to run embedded Chaos Studio testing, only the following regions are supported as of 11-Oct-2021:
-# eastus, centralus, uksouth, westeurope, japaneast
-# westcentralus and westus3 are also supported by Chaos studio, but not by other parts of the reference implementation!
-######################
 
 # Terraform state variables
 - name:  'terraformResourceGroup'

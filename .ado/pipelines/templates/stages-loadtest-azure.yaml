@@ -96,23 +96,28 @@ stages:
           -pipeline $true `
           -verbose:$true
 
-    - script: |
-        $releaseUnitInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputReleaseUnitInfra/*.json | Get-Content | ConvertFrom-JSON
+    - task: AzureCLI@2
+      displayName: 'Add AppComponents to Load Test'
+      name: 'addAppComponentsToLoadTest'
+      inputs:
+        azureSubscription: '$(azureServiceConnection)'
+        scriptType: pscore
+        scriptLocation: 'inlineScript'
+        workingDirectory: '$(Pipeline.Workspace)'
+        arguments:
+          $releaseUnitInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputReleaseUnitInfra/*.json | Get-Content | ConvertFrom-JSON
 
-        # loop through stamps from pipeline artifact json
-        foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
+          # loop through stamps from pipeline artifact json
+          foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
+            ./src/testing/loadtest-azure/scripts/appcomponents-add-to-loadtest.ps1 ` 
+              -loadTestId "$loadTestId" `
+              -apiVersion "$(azureLoadTestApiVersion)" `
+              -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
+              -resourceId "$(stamp.aks_cluster_id)"
 
-          ./src/testing/loadtest-azure/scripts/appcomponents-add-to-loadtest.ps1 ` 
-            -loadTestId "$loadTestId" `
-            -apiVersion "$(azureLoadTestApiVersion)" `
-            -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
-            -resourceId "$(stamp.aks_cluster_id)"
-
-            echo "*** Adding $(stamp.aks_cluster_id)"
-
-        }
-      workingDirectory: '$(System.DefaultWorkingDirectory)'
-      displayName: 'Add AppComponents to Load Test'    
+              echo "*** Adding $(stamp.aks_cluster_id)"
+          }
+      
 
     # All of the next tasks are only applicable in headless mode
     - ${{ if eq(parameters.embeddedLoadTest, 'true') }}:

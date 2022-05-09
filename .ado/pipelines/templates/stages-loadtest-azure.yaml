@@ -83,7 +83,7 @@ stages:
         azureSubscription: '$(azureServiceConnection)'
         scriptType: pscore
         scriptLocation: 'scriptPath'
-        scriptPath: '$(System.DefaultWorkingDirectory)/src/testing/loadtest-azure/scripts/create-loadtest.ps1'
+        scriptPath: '$(System.DefaultWorkingDirectory)/src/testing/loadtest-azure/scripts/loadtest-create.ps1'
         arguments:
           -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
           -apiVersion "$(azureLoadTestApiVersion)" `
@@ -111,6 +111,7 @@ stages:
             echo "*** Adding $(stamp.aks_cluster_id)"
 
         }
+      workingDirectory: '$(System.DefaultWorkingDirectory)'
       displayName: 'Add AppComponents to Load Test'    
 
     # All of the next tasks are only applicable in headless mode
@@ -169,7 +170,7 @@ stages:
           azureSubscription: '$(azureServiceConnection)'
           scriptType: pscore
           scriptLocation: 'scriptPath'
-          scriptPath: '$(System.DefaultWorkingDirectory)/src/testing/loadtest-azure/scripts/run-loadtest.ps1'
+          scriptPath: '$(System.DefaultWorkingDirectory)/src/testing/loadtest-azure/scripts/loadtest-run.ps1'
           arguments:
             -loadTestId "$(loadTestId)" `
             -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
@@ -192,7 +193,7 @@ stages:
             Do {
               echo "*** Waiting additional 90 seconds for the load test run to complete.."
               start-sleep -seconds 90
-              $result = $(System.DefaultWorkingDirectory)/src/testing/loadtest-azure/scripts/get-loadtest-run.ps1 `
+              $result = $(System.DefaultWorkingDirectory)/src/testing/loadtest-azure/scripts/loadtest-get-run.ps1 `
                           -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
                           -apiVersion "$(azureLoadTestApiVersion)" `
                           -testRunId "$(testRunId)"

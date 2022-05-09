@@ -7,7 +7,7 @@ $testRunName = "09f8e7ae-3c1b-4727-b47a-ba8f8f23cdd6"
 $testRunDescription = "$testRunName Description"
 $testRunVUsers = 10
 
-. ./run-loadtest.ps1 `
+. ./loadtest-run.ps1 `
     -apiEndpoint $apiEndpoint `
     -apiVersion $apiVersion `
     -loadTestId "$loadTestId" `

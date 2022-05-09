@@ -3,7 +3,7 @@ $apiEndpoint = "5e241573-3a5f-4361-bf53-1ae7bde73cb7.neu.cnt-prod.loadtesting.az
 
 $loadTestId = "5899bda7-5d7d-4faf-9a5a-7020105b80c6"
 
-. ./delete-loadtest.ps1 `
+. ./loadtest-delete.ps1 `
     -loadTestId "$loadTestId" `
     -apiVersion "$apiVersion" `
     -apiEndpoint "$apiEndpoint"

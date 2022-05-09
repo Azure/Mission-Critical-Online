@@ -65,7 +65,8 @@ jobs:
           $fqdn = $stamp.aks_cluster_ingress_fqdn
           echo "*** Retrieved Ingress Controller FQDN $fqdn for AKS cluster $aksClusterName"
 
-          # Apply workload-ingress helm chart
+          # Apply workload-ingress helm chart.
+          # This contains the different path-based routing rules for all the services that shall be exposed via HTTPS to the outside
           echo "*** Deploy workload-ingress to $aksClusterName (in $aksClusterResourceGroup) via helm chart"
 
           helm upgrade --install workload-ingress src/config/ingress `

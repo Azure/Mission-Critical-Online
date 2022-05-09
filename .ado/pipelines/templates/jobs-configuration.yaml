@@ -59,7 +59,8 @@ jobs:
                 --values src/config/ingress-nginx/values.helm.yaml `
                 --set controller.service.loadBalancerIP="$aksIngressIp" `
                 --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-resource-group"="$aksClusterResourceGroup" `
-                --version "$(ingressNginxVersion)"
+                --version "$(ingressNginxVersion)" `
+                --wait
 
           $fqdn = $stamp.aks_cluster_ingress_fqdn
           echo "*** Retrieved Ingress Controller FQDN $fqdn for AKS cluster $aksClusterName"

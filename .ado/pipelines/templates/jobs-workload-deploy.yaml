@@ -87,14 +87,6 @@ jobs: # using jobs so they each run in parallel
           # load json data from downloaded terraform artifact
           $releaseUnitInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputReleaseUnitInfra/*.json | Get-Content | ConvertFrom-JSON
 
-          $globalInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputGlobalInfra/*.json | Get-Content | ConvertFrom-JSON
-
-          $frontDoorId = $globalInfraDeployOutput.frontdoor_id_header.value
-          echo "*** Retrieved Azure Front Door Header ID $frontDoorId"
-
-          $frontDoorFqdn = $globalInfraDeployOutput.frontdoor_fqdn.value
-          echo "*** Retrieved Azure Front Door FQDN $frontDoorFqdn"
-
           # loop through stamps from pipeline artifact json
           foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
 
@@ -122,34 +114,24 @@ jobs: # using jobs so they each run in parallel
 
             helm upgrade --install workload-catalogservice src/app/charts/catalogservice `
                          --namespace "$(workloadNamespace)" --create-namespace `
-                         --set azure.frontdoorid="$frontDoorId" `
                          --set azure.region="$region" `
-                         --set azure.baseurl="$frontDoorFqdn" `
                          --set containerimage="$fullContainerImageName" `
                          --set workload.domainname="$fqdn" `
                          ${{ parameters.additionalHelmArguments }}
 
             # Wait for CatalogService-deploy k8s deployment to come up
-            # $retrycount = 0;
-            # $maxretrycount = 5
-            # do {
-            #   kubectl rollout status deployment/catalogservice-deploy -n $(workloadNamespace)
-
-            #   # checking if certificate for CatalogService-ingress-secret was issued
-            #   if ($(kubectl get certificates/catalogservice-ingress-secret -n $(workloadNamespace) -o 'jsonpath={..status.conditions[?(@.type==\"Ready\")].status}') -ne "True")
-            #   {
-            #     $LASTEXITCODE=1
-            #     echo "certificate for catalogservice-ingress-secret pending.. "
-            #   }
-
-            #   if ($LastExitCode -ne 0) {
-            #     $retrycount++;
-            #     echo "Deployment not ready. Retrying... $retrycount/$maxretrycount";
-            #     start-sleep $(60*$retrycount) # sleep for <retry> * 60 seconds
-            #   } else {
-            #     $retrycount = $maxretrycount
-            #   }
-            # } while ( ($retrycount -lt $maxretrycount) )
+            $retrycount = 0;
+            $maxretrycount = 5
+            do {
+              kubectl rollout status deployment/catalogservice-deploy -n $(workloadNamespace)
+              if ($LastExitCode -ne 0) {
+                $retrycount++;
+                echo "Deployment not ready. Retrying... $retrycount/$maxretrycount";
+                start-sleep $(60*$retrycount) # sleep for <retry> * 60 seconds
+              } else {
+                $retrycount = $maxretrycount
+              }
+            } while ( ($retrycount -lt $maxretrycount) )
           }
 
 - job: deploycontainerBackgroundProcessor

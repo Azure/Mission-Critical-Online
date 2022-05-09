@@ -1,3 +1,0 @@
-# How's the health service exposed?
-# The healthservice is only available within the cluster 
-# and is getting exposed via the CatalogService on /health

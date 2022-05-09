@@ -96,8 +96,9 @@ stages:
           -pipeline $true `
           -verbose:$true
 
-    - task: AzureCLI@2
-      displayName: 'Add AppComponents to Load Test'
+    # This step adds additional App Components to the Load Test dashboard
+    - task: AzureCLI@2 
+      displayName: 'Add AppComponents to Load Test' 
       name: 'addAppComponentsToLoadTest'
       inputs:
         azureSubscription: '$(azureServiceConnection)'
@@ -109,7 +110,8 @@ stages:
 
           # loop through stamps from pipeline artifact json
           foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
-            ./src/testing/loadtest-azure/scripts/appcomponents-add-to-loadtest.ps1 -loadTestId "$(loadTestId)" `
+            ./src/testing/loadtest-azure/scripts/appcomponents-add-to-loadtest.ps1 `
+              -loadTestId "$(loadTestId)" `
               -apiVersion "$(azureLoadTestApiVersion)" `
               -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
               -resourceId "$($stamp.aks_cluster_id)"

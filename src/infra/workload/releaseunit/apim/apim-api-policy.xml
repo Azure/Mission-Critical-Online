@@ -6,6 +6,9 @@
         </check-header>
         <!-- send all requests to our AKS backend -->
         <set-backend-service backend-id="aks-cluster" />
+        <!-- Keep the original path, which contains the API suffix.
+             Otherwise APIM will drop it but is is required on the ingress controller for routing -->
+        <rewrite-uri template="@(context.Request.OriginalUrl.Path)" />
     </inbound>
     <backend>
         <forward-request />

@@ -10,16 +10,17 @@
   "author": "CAE AppDev",
   "license": "ISC",
   "dependencies": {
-    "@microsoft/applicationinsights-web": "^2.7.4",
+    "@microsoft/applicationinsights-web": "^2.8.1",
     "tiny-emitter": "^2.1.0",
-    "vue": "^3.2.31",
+    "vue": "^3.2.33",
     "vue-router": "^4.0.14"
   },
   "devDependencies": {
-    "@vue/cli-service": "^4.5.15",
+    "@vue/cli-service": "^5.0.4",
     "is-primitive": "^3.0.1",
     "nprogress": "^0.2.0",
-    "vue-template-compiler": "^2.6.14"
+    "vue-template-compiler": "^2.6.14",
+    "ajv": "8.11.0"
   },
   "resolutions": {
     "glob-parent": "6.0.2",

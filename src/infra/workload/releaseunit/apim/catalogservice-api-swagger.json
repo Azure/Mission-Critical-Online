@@ -4,6 +4,11 @@
     "title": "AlwaysOn CatalogService API",
     "version": "v1"
   },
+  "servers": [
+    {
+      "url": "/catalogservice"
+    }
+  ],
   "paths": {
     "/api/{version}/CatalogItem": {
       "get": {
@@ -113,7 +118,7 @@
         },
         "responses": {
           "201": {
-            "description": "Success",
+            "description": "Created",
             "content": {
               "text/plain": {
                 "schema": {
@@ -244,7 +249,7 @@
         },
         "responses": {
           "202": {
-            "description": "Success",
+            "description": "Accepted",
             "content": {
               "text/plain": {
                 "schema": {
@@ -303,7 +308,7 @@
         ],
         "responses": {
           "202": {
-            "description": "Success"
+            "description": "Accepted"
           }
         }
       }
@@ -417,7 +422,7 @@
         ],
         "responses": {
           "202": {
-            "description": "Success"
+            "description": "Accepted"
           }
         }
       }
@@ -529,7 +534,7 @@
         },
         "responses": {
           "202": {
-            "description": "Success"
+            "description": "Accepted"
           }
         }
       }
@@ -643,7 +648,7 @@
         ],
         "responses": {
           "202": {
-            "description": "Success"
+            "description": "Accepted"
           }
         }
       }
@@ -746,7 +751,7 @@
         },
         "responses": {
           "202": {
-            "description": "Success"
+            "description": "Accepted"
           }
         }
       }

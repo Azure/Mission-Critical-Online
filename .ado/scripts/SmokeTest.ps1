@@ -101,7 +101,7 @@ foreach($target in $targets) {
     Invoke-WebRequestWithRetry -Uri $stampHealthUrl -Method 'GET' -Headers $header -MaximumRetryCount $smokeTestRetryCount -RetryWaitSeconds $smokeTestRetryWaitSeconds
   }
 
-  $listCatalogUrl = "https://$targetFqdn/api/1.0/catalogitem"
+  $listCatalogUrl = "https://$targetFqdn/catalogservice/api/1.0/catalogitem"
   Write-Output "*** Call - List Catalog ($mode)"
   $responseListCatalog = Invoke-WebRequestWithRetry -Uri $listCatalogUrl -Method 'get' -Headers $header -MaximumRetryCount $smokeTestRetryCount -RetryWaitSeconds $smokeTestRetryWaitSeconds
   $responseListCatalog
@@ -114,11 +114,11 @@ foreach($target in $targets) {
 
   $randomItem = Get-Random $allItems
 
-  $itemUrl = "https://$targetFqdn/api/1.0/catalogitem/$($randomItem.id)"
+  $itemUrl = "https://$targetFqdn/catalogservice/api/1.0/catalogitem/$($randomItem.id)"
   Write-Output "*** Call - Get get item ($($randomItem.id)) ($mode)"
   Invoke-WebRequestWithRetry -Uri $itemUrl -Method 'GET' -Headers $header -MaximumRetryCount $smokeTestRetryCount -RetryWaitSeconds $smokeTestRetryWaitSeconds
 
-  $postCommentUrl = "https://$targetFqdn/api/1.0/catalogitem/$($randomItem.id)/comments"
+  $postCommentUrl = "https://$targetFqdn/catalogservice/api/1.0/catalogitem/$($randomItem.id)/comments"
   Write-Output "*** Call - Post new comment to item $($randomItem.id) ($mode)"
 
   $responsePostComment = Invoke-WebRequestWithRetry -Uri $postCommentUrl -Method 'POST' -Headers $header -Body $post_comment_body -MaximumRetryCount $smokeTestRetryCount -RetryWaitSeconds $smokeTestRetryWaitSeconds -ExpectedResponseCode 202

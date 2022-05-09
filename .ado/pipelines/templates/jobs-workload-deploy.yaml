@@ -87,11 +87,6 @@ jobs: # using jobs so they each run in parallel
           # load json data from downloaded terraform artifact
           $releaseUnitInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputReleaseUnitInfra/*.json | Get-Content | ConvertFrom-JSON
 
-          $globalInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputGlobalInfra/*.json | Get-Content | ConvertFrom-JSON
-
-          $frontDoorFqdn = $globalInfraDeployOutput.frontdoor_fqdn.value
-          echo "*** Retrieved Azure Front Door FQDN $frontDoorFqdn"
-
           # loop through stamps from pipeline artifact json
           foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
 
@@ -125,7 +120,6 @@ jobs: # using jobs so they each run in parallel
             helm upgrade --install workload-catalogservice src/app/charts/catalogservice `
                          --namespace "$(workloadNamespace)" --create-namespace `
                          --set azure.region="$region" `
-                         --set azure.baseurl="$frontDoorFqdn" `
                          --set containerimage="$fullContainerImageName" `
                          --set workload.domainname="$fqdn" `
                          ${{ parameters.additionalHelmArguments }}
@@ -135,14 +129,6 @@ jobs: # using jobs so they each run in parallel
             $maxretrycount = 5
             do {
               kubectl rollout status deployment/catalogservice-deploy -n $(workloadNamespace)
-
-              # checking if certificate for CatalogService-ingress-secret was issued
-              if ($(kubectl get certificates/catalogservice-ingress-secret -n $(workloadNamespace) -o 'jsonpath={..status.conditions[?(@.type==\"Ready\")].status}') -ne "True")
-              {
-                $LASTEXITCODE=1
-                echo "certificate for catalogservice-ingress-secret pending.. "
-              }
-
               if ($LastExitCode -ne 0) {
                 $retrycount++;
                 echo "Deployment not ready. Retrying... $retrycount/$maxretrycount";
@@ -252,7 +238,7 @@ jobs: # using jobs so they each run in parallel
 
             echo "*** Storing configuration to $configFilePath"
             # warning: make sure that these variable names are in sync with client code
-            Add-Content -Path $configFilePath -Value "window.API_URL = `"/api`""
+            Add-Content -Path $configFilePath -Value "window.API_URL = `"/catalogservice/api`""
             Add-Content -Path $configFilePath -Value "window.APPLICATIONINSIGHTS_CONNECTION_STRING = `"$appInsightsConnString`""
 
             $versionLabel = "$(riVariant)-$("$(Build.SourceBranch)" -Replace 'refs/heads/', '')-$(Build.BuildId)"

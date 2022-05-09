@@ -108,24 +108,24 @@ variable "acr_name" {
   type        = string
 }
 
-variable "kubernetes_version" {
+variable "aks_kubernetes_version" {
   description = "Kubernetes Version"
   type        = string
 }
 
-variable "aks_node_size" {
+variable "aks_system_node_pool_sku_size" {
   description = "VM SKU of the AKS worker nodes"
   type        = string
   default     = "Standard_F8s_v2"
 }
 
-variable "aks_node_pool_autoscale_minimum" {
+variable "aks_system_node_pool_autoscale_minimum" {
   description = "Minimum number of AKS worker nodes for auto-scale settings"
   type        = number
   default     = 3
 }
 
-variable "aks_node_pool_autoscale_maximum" {
+variable "aks_system_node_pool_autoscale_maximum" {
   description = "Maximum number of AKS worker nodes for auto-scale settings"
   type        = number
   default     = 9

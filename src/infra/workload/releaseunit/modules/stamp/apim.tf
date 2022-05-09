@@ -62,7 +62,7 @@ resource "azurerm_api_management_api" "catalogservice" {
   api_management_name = azurerm_api_management.stamp.name
   revision            = "1"
   display_name        = "AlwaysOn CatalogService API"
-  path                = ""
+  path                = "catalogservice"
   protocols           = ["https"]
 
   subscription_required = false

@@ -24,6 +24,14 @@ jobs:
         # load json data from downloaded pipeline artifact json
         $releaseUnitInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputReleaseUnitInfra/*.json | Get-Content | ConvertFrom-JSON
 
+        $globalInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputGlobalInfra/*.json | Get-Content | ConvertFrom-JSON
+
+        $frontDoorId = $globalInfraDeployOutput.frontdoor_id_header.value
+        echo "*** Retrieved Azure Front Door Header ID $frontDoorId"
+
+        $frontDoorFqdn = $globalInfraDeployOutput.frontdoor_fqdn.value
+        echo "*** Retrieved Azure Front Door FQDN $frontDoorFqdn"
+
         # loop through stamps from pipeline artifact json
         foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
 
@@ -50,9 +58,24 @@ jobs:
                 --namespace $ingressNamespace --create-namespace `
                 --values src/config/ingress-nginx/values.helm.yaml `
                 --set controller.service.loadBalancerIP="$aksIngressIp" `
-                --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-internal"="true" `
+				--set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-internal"="true" `
                 --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-internal-subnet"="aks-lb-snet" `
-                --version "$(ingressNginxVersion)"
+                --version "$(ingressNginxVersion)" `
+                --wait
+
+          $fqdn = $stamp.aks_cluster_ingress_fqdn
+          echo "*** Retrieved Ingress Controller FQDN $fqdn for AKS cluster $aksClusterName"
+
+          # Apply workload-ingress helm chart.
+          # This contains the different path-based routing rules for all the services that shall be exposed via HTTPS to the outside
+          echo "*** Deploy workload-ingress to $aksClusterName (in $aksClusterResourceGroup) via helm chart"
+
+          helm upgrade --install workload-ingress src/config/ingress `
+                        --namespace "$(workloadNamespace)" --create-namespace `
+                        --set azure.frontdoorid="$frontDoorId" `
+                        --set azure.baseurl="$frontDoorFqdn" `
+                        --set workload.domainname="$fqdn" `
+                        --wait
         }
 
   - task: AzureCLI@2

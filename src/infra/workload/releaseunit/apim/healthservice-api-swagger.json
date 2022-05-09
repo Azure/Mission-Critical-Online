@@ -4,6 +4,11 @@
     "title": "AlwaysOn HealthService API",
     "version": "v1"
   },
+  "servers": [
+    {
+      "url": "/healthservice"
+    }
+  ],
   "paths": {
     "/Health/liveness": {
       "get": {

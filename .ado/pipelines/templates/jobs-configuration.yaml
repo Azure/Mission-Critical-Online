@@ -72,7 +72,7 @@ jobs:
                         --set azure.frontdoorid="$frontDoorId" `
                         --set azure.baseurl="$frontDoorFqdn" `
                         --set workload.domainname="$fqdn" `
-                        ${{ parameters.additionalHelmArguments }}
+                        --wait
         }
 
   - task: AzureCLI@2

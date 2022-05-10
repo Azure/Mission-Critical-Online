@@ -48,6 +48,8 @@ stages:
             # load json data from downloaded pipeline artifact json
             $releaseUnitInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputReleaseUnitInfra/*.json | Get-Content | ConvertFrom-JSON
 
+            $chaosStudioApiVersion = "2021-09-15-preview"
+
             $capabilities = "PodChaos-2.1", "StressChaos-2.1"
 
             $targetResourceIds = @()
@@ -64,7 +66,7 @@ stages:
 
             echo "*** Creating Chaos Target sub-resource: $targetResourceId "
             # Create chaos target as AKS sub-resource
-            $url = "https://management.azure.com$($targetResourceId)?api-version=$(chaosStudioApiVersion)"
+            $url = "https://management.azure.com$($targetResourceId)?api-version=$($chaosStudioApiVersion)"
             az rest --method put --url $url --body '{\"properties\":{}}'
             if($LastExitCode -ne 0)
             {
@@ -77,7 +79,7 @@ stages:
             foreach($capability in $capabilities)
             {
                 echo "*** Enabling capability $capability on sub-resource: $targetResourceId "
-                $url = "https://management.azure.com$($targetResourceId)/capabilities/$($capability)?api-version=$(chaosStudioApiVersion)"
+                $url = "https://management.azure.com$($targetResourceId)/capabilities/$($capability)?api-version=$($chaosStudioApiVersion)"
                 az rest --method put --url $url --body '{}'
                 if($LastExitCode -ne 0)
                 {
@@ -107,7 +109,6 @@ stages:
               -ExperimentJsonPath "$(System.DefaultWorkingDirectory)/src/testing/chaos-testing/experiment-json/aks_pod_failure.json"
               -StampLocations '$(stampLocations)'
               -ExperimentDurationSeconds "${{ parameters.testDurationSeconds }}"
-              -ChaosStudioApiVersion "$(chaosStudioApiVersion)"
 
       - ${{ if eq(parameters.cpuStress, 'true') }}:
         - task: AzureCLI@2
@@ -122,7 +123,6 @@ stages:
               -ExperimentJsonPath "$(System.DefaultWorkingDirectory)/src/testing/chaos-testing/experiment-json/aks_cpu_stress.json"
               -StampLocations '$(stampLocations)'
               -ExperimentDurationSeconds "${{ parameters.testDurationSeconds }}"
-              -ChaosStudioApiVersion "$(chaosStudioApiVersion)"
 
       - ${{ if eq(parameters.memoryStress, 'true') }}:
         - task: AzureCLI@2
@@ -137,4 +137,3 @@ stages:
               -ExperimentJsonPath "$(System.DefaultWorkingDirectory)/src/testing/chaos-testing/experiment-json/aks_memory_stress.json"
               -StampLocations '$(stampLocations)'
               -ExperimentDurationSeconds "${{ parameters.testDurationSeconds }}"
-              -ChaosStudioApiVersion "$(chaosStudioApiVersion)"

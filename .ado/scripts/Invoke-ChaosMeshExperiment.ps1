@@ -3,8 +3,9 @@ param(
     $ExperimentName, # Name of the experiment to create and run
     $ExperimentJsonPath, # Path to the JSON file which contains the experiment defintion template
     $ExperimentDurationSeconds, # Duration of the experiments in seconds
-    $ChaosStudioApiVersion # REST API version for Chaos Studio
 )
+
+$ChaosStudioApiVersion = "2021-09-15-preview" # REST API version for Chaos Studio
 
 $releaseUnitInfraDeployOutput = Get-ChildItem $env:PIPELINE_WORKSPACE/terraformOutputReleaseUnitInfra/*.json | Get-Content | ConvertFrom-JSON
 

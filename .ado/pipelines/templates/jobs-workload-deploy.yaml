@@ -25,6 +25,14 @@ jobs: # using jobs so they each run in parallel
           # load json data from downloaded terraform artifact
           $releaseUnitInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputReleaseUnitInfra/*.json | Get-Content | ConvertFrom-JSON
 
+          $globalInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputGlobalInfra/*.json | Get-Content | ConvertFrom-JSON
+
+          $frontDoorId = $globalInfraDeployOutput.frontdoor_id_header.value
+          echo "*** Retrieved Azure Front Door Header ID $frontDoorId"
+
+          $frontDoorFqdn = $globalInfraDeployOutput.frontdoor_fqdn.value
+          echo "*** Retrieved Azure Front Door FQDN $frontDoorFqdn"
+
           # loop through stamps from pipeline artifact json
           foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
 
@@ -39,6 +47,9 @@ jobs: # using jobs so they each run in parallel
 
             $fullContainerImageName = Get-Content -Path "$(Pipeline.Workspace)/healthservice-containerImageName/healthservice.txt"
             echo "*** Retrieved container image name from artifact - $fullContainerImageName"
+
+            $fqdn = $stamp.aks_cluster_ingress_fqdn
+            echo "*** Retrieved Ingress Controller FQDN $fqdn for AKS cluster $aksClusterName"
 
             # Apply workload worker helm chart
             echo  "*** Deploy healthservice to $aksClusterName (in $aksClusterResourceGroup) via helm chart"

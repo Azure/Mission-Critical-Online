@@ -1,3 +1,4 @@
+# loadtest-run.ps1 | Execute a load test run
 param
 (
   # Load Test Id
@@ -11,7 +12,11 @@ param
   # Load Test data plane api version
   [string] $apiVersion = "2021-07-01-preview",
 
+  # Load Test run displayname
+  [Parameter(Mandatory=$true)]
   [string] $testRunName,
+
+  # Load test run description
   [string] $testRunDescription,
   [int] $testRunVUsers = 1,
   [bool]$pipeline = $False 

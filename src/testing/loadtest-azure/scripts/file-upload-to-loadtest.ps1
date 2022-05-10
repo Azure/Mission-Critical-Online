@@ -1,3 +1,4 @@
+# file-upload-to-loadtest.ps1 | Upload files (jmx and others) to a load test
 param
 (
   # Load Test Id
@@ -15,6 +16,7 @@ param
   [Parameter(Mandatory = $true)]
   [string] $testFileName,
   
+  # Test File ID is auto-generated when not set (default)
   [string] $testFileId = (New-Guid).toString()
 )
 

@@ -1,3 +1,4 @@
+# loadtest-get-run.ps1 | Retrieve details from a load test run
 param
 (
   # Load Test run id

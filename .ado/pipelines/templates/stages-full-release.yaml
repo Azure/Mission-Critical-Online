@@ -492,7 +492,7 @@ stages:
                     echo "*** Delete MALT resources in $(prefix)$(customSuffix)-azloadtest-rg"
                     az group delete --name "$(prefix)$(customSuffix)-azloadtest-rg" --yes 
 
-                    echo "*** Delete Locust resources in $(prefix)$(customSuffix)-azloadtest-rg"
+                    echo "*** Delete Locust resources in $(prefix)$(customSuffix)-loadtest-rg"
                     az group delete --name "$(prefix)$(customSuffix)-loadtest-rg" --yes
 
               # Initialize Terraform for destroy

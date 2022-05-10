@@ -168,9 +168,9 @@ jobs:
                         --set kvSecrets="{$allSecretNames}"
         }
 
-  - ${{ if eq(parameters.runChaosTesting, 'true') }}:
+  - ${{ if eq(parameters.runChaosTesting, 'true') }}: # If chaos experiments are executed, we need to prepare one stamps AKS cluster by installing Chaos Mesh
     - task: AzureCLI@2
-      displayName: "Install Chaos Mesh $(chaosMeshVersion) on AKS clusters"
+      displayName: "Install Chaos Mesh $(chaosMeshVersion) on AKS cluster"
       retryCountOnTaskFailure: 1
       inputs:
         azureSubscription: $(azureServiceConnection)

@@ -1,5 +1,6 @@
 // This looks at the state of the storage account that is used for the checkpoint data from Event Hub
 //
+let _timespanStart = ago(1d); // Start time for the timespan
 let Thresholds=datatable(MetricName: string, YellowThreshold: double, RedThreshold: double) [
     // Average Latency in milliseconds
     "averageLatency", 100, 200,
@@ -22,7 +23,7 @@ let avgLatency = AzureMetrics
 | where MetricName == "SuccessE2ELatency"
 | extend Value=Average, MetricName='averageLatency';
 //
-let timespanStart= todatetime(format_datetime( todatetime(toscalar(avgLatency| summarize min(TimeGenerated))), 'yyyy-MM-dd HH:ss'));
+let timespanStart = _timespanStart; //todatetime(format_datetime( todatetime(toscalar(avgLatency| summarize min(TimeGenerated))), 'yyyy-MM-dd HH:ss')) ;
 let timespanEnd = now(-2m); // there is some ingestion lag, so we account for this by stripping the last 2m
 //
 let storageErrorSeries = storageErrors // This series defaults to 0

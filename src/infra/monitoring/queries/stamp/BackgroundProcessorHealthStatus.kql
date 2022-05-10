@@ -1,3 +1,4 @@
+let _timespanStart = ago(1d); // Start time for the timespan
 let Thresholds=datatable(MetricName: string, YellowThreshold: double, RedThreshold: double) [
     // Average time the message has spent on the event hub:
     "avgTimeSinceEnqueued", 200, 1000,
@@ -7,7 +8,7 @@ let Thresholds=datatable(MetricName: string, YellowThreshold: double, RedThresho
     "avgProcessingTime", 100, 200
     ];
 //
-let timespanStart= todatetime(format_datetime( todatetime(toscalar(AppRequests| summarize min(TimeGenerated))), 'yyyy-MM-dd HH:ss'));
+let timespanStart = _timespanStart;//todatetime(format_datetime( todatetime(toscalar(AppRequests| summarize min(TimeGenerated))), 'yyyy-MM-dd HH:ss'));
 let timespanEnd = now(-2m); // there is some ingestion lag, so we account for this by stripping the last 2m
 // Calculate the number of exceptions
 let exceptions = AppExceptions

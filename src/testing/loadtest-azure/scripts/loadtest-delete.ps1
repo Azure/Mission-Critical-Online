@@ -1,3 +1,4 @@
+# loadtest-delete.ps1 | Delete a load test
 param
 (
   # Load Test Id

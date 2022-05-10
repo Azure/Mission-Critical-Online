@@ -1,3 +1,4 @@
+# loadtest-create.ps1 | Create new load tests in an existing Azure Load Test service instance
 param
 (
   # Load Test Id - auto-generated when empty

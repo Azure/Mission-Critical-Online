@@ -1,3 +1,4 @@
+# loadtest-get-files.ps1 | List all files uploaded to a load test
 param
 (
   # Load Test Id

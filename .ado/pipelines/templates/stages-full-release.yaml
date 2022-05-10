@@ -168,7 +168,7 @@ stages:
                                     -var=queued_by="$(Build.QueuedBy)"
                                     -var=contact_email="$(contactEmail)"
                                     -var=''stamps=$(stampLocations)''
-                                    -var=kubernetes_version="$(kubernetesVersion)"
+                                    -var=aks_kubernetes_version="$(kubernetesVersion)"
                                     -var=global_resource_group_name="$(global_resource_group_name)"
                                     -var=monitoring_resource_group_name="$(monitoring_resource_group_name)"
                                     -var=cosmosdb_account_name="$(cosmosdb_account_name)"
@@ -404,7 +404,7 @@ stages:
                                           -var=queued_by="$(Build.QueuedBy)"
                                           -var=contact_email="$(contactEmail)"
                                           -var=''stamps=$(stampLocations)''
-                                          -var=kubernetes_version="$(kubernetesVersion)"
+                                          -var=aks_kubernetes_version="$(kubernetesVersion)"
                                           -var=global_resource_group_name="$(global_resource_group_name)"
                                           -var=monitoring_resource_group_name="$(monitoring_resource_group_name)"
                                           -var=cosmosdb_account_name="$(cosmosdb_account_name)"

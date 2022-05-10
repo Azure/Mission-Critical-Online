@@ -74,7 +74,7 @@ jobs: # using jobs so they each run in parallel
             echo  "*** Deploy healthservice to $aksClusterName (in $aksClusterResourceGroup) via helm chart"
             helm upgrade --install healthservice-workload "oci://$($workload.chart.name)" `
                           --version $workload.chart.version `
-                          --namespace $(workloadNamespace) `
+                          --namespace $(workloadNamespace) --create-namespace `
                           --set containerimage="$fullContainerImageName" `
                           --set azure.region="$region" `
                           ${{ parameters.additionalHelmArguments }}
@@ -178,7 +178,7 @@ jobs: # using jobs so they each run in parallel
 
             helm upgrade --install workload-catalogservice "oci://$($workload.chart.name)" `
                          --version $workload.chart.version `
-                         --namespace "$(workloadNamespace)" `
+                         --namespace "$(workloadNamespace)" --create-namespace `
                          --set azure.frontdoorid="$frontDoorId" `
                          --set azure.region="$region" `
                          --set azure.baseurl="$frontDoorFqdn" `
@@ -282,7 +282,7 @@ jobs: # using jobs so they each run in parallel
 
             helm upgrade --install workload-backgroundprocessor "oci://$($workload.chart.name)" `
                          --version $workload.chart.version `
-                         --namespace $(workloadNamespace) `
+                         --namespace $(workloadNamespace) --create-namespace `
                          --set containerimage="$fullContainerImageName" `
                          --set azure.region="$region" `
                          ${{ parameters.additionalHelmArguments }}

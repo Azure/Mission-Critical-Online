@@ -1,5 +1,6 @@
 // Return the health status of the cluster. 
 let _ResourceType = "CONTAINERSERVICE/MANAGEDCLUSTERS"; // Azure resource type to filter on
+let _timespanStart = ago(1d); // Start time for the timespan
 let Thresholds=datatable(MetricName: string, YellowThreshold: double, RedThreshold: double) [
     // Network errors in:
     "err_in", 0, 5,
@@ -64,7 +65,7 @@ let cpuUtilizationMetrics =
     | project-away cpuLimit;
 //
 // Examining timeframe from series start to now-2m (ingestion delay)
-let timespanStart = todatetime(format_datetime( todatetime(toscalar(AzureMetrics | summarize min(TimeGenerated))), 'yyyy-MM-dd HH:ss'));
+let timespanStart = _timespanStart; // todatetime(format_datetime( todatetime(toscalar(AzureMetrics | summarize min(TimeGenerated))), 'yyyy-MM-dd HH:ss'));
 let timespanEnd = now(-2m); // there is some ingestion lag, so we account for this by stripping the last 2m
 //
 insightsMetrics 

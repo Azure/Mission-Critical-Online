@@ -23,7 +23,7 @@ parameters:
 - name: destroyInfra # option to unselect destroy infrastructure
   displayName: "Destroy infrastructure"
   type: boolean
-  default: true
+  default: false
 
 variables:
 - template: config/configuration.yaml # contains version numbers and global configuration settings

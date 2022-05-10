@@ -1,4 +1,4 @@
-let _timespanStart = ago(3d); // Start time for the timespan
+let _timespanStart = ago(1d); // Start time for the timespan
 // For the timeframe, compare the averages to the following threshold values:
 let Thresholds=datatable(MetricName: string, YellowThreshold: double, RedThreshold: double) [
     // Failed requests. Anything non-200. We allow a few more than 0 for user-caused errors like 404s. 

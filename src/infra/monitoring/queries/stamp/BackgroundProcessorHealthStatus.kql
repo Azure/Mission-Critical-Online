@@ -1,4 +1,4 @@
-let _timespanStart = ago(3d); // Start time for the timespan
+let _timespanStart = ago(1d); // Start time for the timespan
 let Thresholds=datatable(MetricName: string, YellowThreshold: double, RedThreshold: double) [
     // Average time the message has spent on the event hub:
     "avgTimeSinceEnqueued", 200, 1000,

@@ -1,6 +1,6 @@
 // Return the health status of the cluster. 
 let _ResourceType = "CONTAINERSERVICE/MANAGEDCLUSTERS"; // Azure resource type to filter on
-let _timespanStart = ago(3d); // Start time for the timespan
+let _timespanStart = ago(1d); // Start time for the timespan
 let Thresholds=datatable(MetricName: string, YellowThreshold: double, RedThreshold: double) [
     // Network errors in:
     "err_in", 0, 5,

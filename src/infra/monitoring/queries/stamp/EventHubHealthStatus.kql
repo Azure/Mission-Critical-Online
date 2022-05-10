@@ -1,6 +1,6 @@
 // Returns the health status of an event hub. 
 // Currently we only look at the processingbacklog, i.e. the number of messages that comes in minus messages that go out. 
-let _timespanStart = ago(3d); // Start time for the timespan
+let _timespanStart = ago(1d); // Start time for the timespan
 let Thresholds = datatable(MetricName: string, YellowThreshold: double, RedThreshold: double) [
     // Difference between incoming and outgoing messages:
     "ProcessingBacklog", 3, 10

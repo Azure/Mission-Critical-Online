@@ -4,6 +4,7 @@ container:
 
 workload:
   domainname: "OVERWRITE-cluster.eastus2.cloudapp.azure.com" # External Domain Name of the AKS cluster (used for Ingress)
+  tlsSecret: workload-ingress-secret # k8s secret name for the tls cert - make sure that the name is the same when shared
   port: 8080 # Port of the container workload
   service:
     port: 80 # Service Port (not used for Ingress)

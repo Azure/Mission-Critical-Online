@@ -34,7 +34,7 @@ spec:
   tls:
   - hosts:
     - {{ .Values.workload.domainname }}
-    secretName: workload-ingress-secret # shouldn't be changed as this might be used by other services
+    secretName: {{ .Values.workload.tlsSecret }} # shouldn't be changed as this might be used by other services
   rules:
   - host: {{ .Values.workload.domainname }}
     http:

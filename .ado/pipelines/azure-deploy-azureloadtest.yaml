@@ -21,7 +21,7 @@ parameters:
   default: 'www.int.shop.mission-critical.app'
 
 - name: destroyInfra # option to unselect destroy infrastructure
-  displayName: "Destroy infrastructure when done"
+  displayName: "Destroy infrastructure"
   type: boolean
   default: true
 

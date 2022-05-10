@@ -9,12 +9,12 @@ param
   [string] $apiEndpoint,
 
   # Load Test data plane api version
-  [Parameter(Mandatory = $true)]
-  [string] $apiVersion,
+  [string] $apiVersion = "2021-07-01-preview",
 
   # Filename to upload
   [Parameter(Mandatory = $true)]
   [string] $testFileName,
+  
   [string] $testFileId = (New-Guid).toString()
 )
 

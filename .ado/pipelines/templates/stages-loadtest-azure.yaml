@@ -96,7 +96,7 @@ stages:
           -pipeline $true `
           -verbose:$true
 
-    # All of the next tasks are only applicable in headless mode
+    # All of the next tasks are only applicable in embedded mode
     - ${{ if eq(parameters.embeddedLoadTest, 'true') }}:
 
       # This step adds additional App Components to the Load Test dashboard

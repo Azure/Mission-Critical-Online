@@ -4,9 +4,6 @@ param
   [Parameter(Mandatory = $true)]
   [string] $loadTestId,
 
-  # Load Test Run Id (optional - not implemented yet)
-  [string] $loadTestRunId,
-
   # Appcomponent Azure ResourceId
   [Parameter(Mandatory = $true)]
   [string] $resourceId,
@@ -16,8 +13,7 @@ param
   [string] $apiEndpoint,
 
   # Load Test data plane api version
-  [Parameter(Mandatory = $true)]
-  [string] $apiVersion
+  [string] $apiVersion = "2021-07-01-preview"
 )
 
 . "$PSScriptRoot/common.ps1"
@@ -48,12 +44,9 @@ function AppComponent {
     param
     (
       [string] $resourceName,
-      [string] $resourceGroup,
       [string] $resourceId,
       [string] $resourceType,
-      [string] $subscriptionId,
-      [string] $loadTestId,
-      [string] $loadTestRunId
+      [string] $loadTestId
     )
   
     $result = @"
@@ -61,13 +54,9 @@ function AppComponent {
         "testId": "$loadTestId",
         "value": {
             "$resourceId": {
-              "displayName": "null",
-              "kind": "null",
               "resourceName": "$resourceName",
-              "resourceGroup": "$resourceGroup",
               "resourceId": "$resourceId",
-              "resourceType": "$resourceType",
-              "subscriptionId": "$subscriptionId"
+              "resourceType": "$resourceType"
             }
         }
     }
@@ -81,9 +70,10 @@ $resource = $resourceId.split("/")
 $resourceType = $resource[6]+"/"+$resource[7]
 
 $testDataFileName = $loadTestId + ".txt"
-AppComponent -resourceName $resource[8] -resourceType $resourceType `
-            -resourceId $resourceId -resourceGroup $resource[4] -subscriptionId $resource[2] `
-            -loadTestId $loadTestId | Out-File $testDataFileName -Encoding utf8
+AppComponent -resourceName $resource[8] `
+             -resourceType $resourceType `
+             -resourceId $resourceId `
+             -loadTestId $loadTestId | Out-File $testDataFileName -Encoding utf8
 
 $urlRoot = "https://" + $apiEndpoint + "/appcomponents/" + $loadTestId
 Write-Verbose "*** Load test service data plane: $urlRoot"

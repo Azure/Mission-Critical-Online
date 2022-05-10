@@ -24,9 +24,6 @@ variables:
 - name: 'workloadNamespace'   # K8s namespace for workload deployment
   value: 'workload'
 
-- name: 'chaosStudioApiVersion'
-  value: '2021-09-15-preview'
-
 # Docker image names and paths to the Dockerfiles for the different components
 - name: 'catalogserviceDockerfile'
   value: 'AlwaysOn.CatalogService/Dockerfile'

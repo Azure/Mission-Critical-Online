@@ -34,7 +34,7 @@ spec:
   tls:
   - hosts:
     - {{ .Values.workload.domainname }}
-    secretName: {{ .Chart.Name }}-ingress-secret
+    secretName: workload-ingress-secret # shouldn't be changed as this might be used by other services
   rules:
   - host: {{ .Values.workload.domainname }}
     http:
@@ -53,10 +53,3 @@ spec:
             name: {{ .Chart.Name }}-service
             port:
               number: {{ .Values.workload.service.port | default 80 }}
-      - path: /health # exposing the 'healthservice'
-        pathType: Prefix
-        backend:
-          service:
-            name: {{ .Values.healthservice.name | quote }}
-            port:
-              number: {{ .Values.healthservice.port | default 80 }}

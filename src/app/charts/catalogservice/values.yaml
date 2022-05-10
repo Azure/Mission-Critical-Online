@@ -15,7 +15,7 @@ scale: # Horizontal Pod Autoscaler (HPA) configuration
 
 ingress:
   annotations:
-    cert-manager.io/cluster-issuer: "cert-manager-alwayson"
+    cert-manager.io/cluster-issuer: "cert-manager-alwayson" # this will trigger cert-manager to request a certificate
 
 networkPolicy:
   enabled: true # Enable Network Policy (contains a default-deny policy)
@@ -25,7 +25,3 @@ azure:
   frontdoorid: "" # Azure Front Door Header ID (blank = disabled)
   region: "East US 2"
   baseurl: "OVERWRITE.myalwaysonapp.net" # FQDN used by the Azure Front Door endpoint
-
-healthservice:
-  name: "healthservice-service" # name of the healthservice service in k8s
-  port: 80

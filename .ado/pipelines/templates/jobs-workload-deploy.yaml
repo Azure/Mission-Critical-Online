@@ -44,8 +44,11 @@ jobs: # using jobs so they each run in parallel
             echo  "*** Deploy healthservice to $aksClusterName (in $aksClusterResourceGroup) via helm chart"
             helm upgrade --install healthservice-workload src/app/charts/healthservice `
                           --namespace $(workloadNamespace) --create-namespace `
-                          --set containerimage="$fullContainerImageName" `
+                          --set azure.frontdoorid="$frontDoorId" `
                           --set azure.region="$region" `
+                          --set azure.baseurl="$frontDoorFqdn" `
+                          --set containerimage="$fullContainerImageName" `
+                          --set workload.domainname="$fqdn" `
                           ${{ parameters.additionalHelmArguments }}
 
             # Wait for healthservice-deploy k8s deployment to come up

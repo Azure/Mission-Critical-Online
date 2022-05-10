@@ -3,6 +3,7 @@ container:
   pullPolicy: "IfNotPresent" # Container Image Pull Policy. Using IfNotPresent to enable pod starts even if ACR cannot be reached and image was pulled on the node previously
 
 workload:
+  domainname: "OVERWRITE-cluster.eastus2.cloudapp.azure.com" # External Domain Name of the AKS cluster (used for Ingress)
   port: 8080 # Port of the container workload
   service:
     port: 80 # Service Port (not used for Ingress)
@@ -17,4 +18,6 @@ networkPolicy:
   enabled: true # Enable Network Policy
 
 azure:
+  frontdoorid: "" # Azure Front Door Header ID (blank = disabled)
   region: "East US 2"
+  baseurl: "OVERWRITE.myalwaysonapp.net" # FQDN used by the Azure Front Door endpoint

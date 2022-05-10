@@ -2,7 +2,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "3.3.0"
+      version = "3.4.0"
     }
   }
 
@@ -22,11 +22,11 @@ resource "azurerm_resource_group" "deployment" {
 }
 
 resource "azurerm_load_test" "deployment" {
-  name = "${local.prefix}-azloadtest"
+  name                = "${local.prefix}-azloadtest"
   resource_group_name = azurerm_resource_group.deployment.name
-  location = azurerm_resource_group.deployment.location
+  location            = azurerm_resource_group.deployment.location
 
-  tags     = local.default_tags
+  tags = local.default_tags
 }
 
 output "azureLoadTestName" {
@@ -38,5 +38,5 @@ output "azureLoadResourceGroup" {
 }
 
 output "azureLoadTestDataPlaneURI" {
-  value =azurerm_load_test.deployment.dataplane_uri
+  value = azurerm_load_test.deployment.dataplane_uri
 }

@@ -163,7 +163,6 @@ stages:
           arguments:
             -loadTestId "$(loadTestId)" `
             -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
-            -apiVersion "$(azureLoadTestApiVersion)" `
             -testFileName "$(System.DefaultWorkingDirectory)/test-config.csv"            
 
       # start azure load test

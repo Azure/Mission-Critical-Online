@@ -479,8 +479,21 @@ stages:
 
               - template: steps-set-pipeline-variables.yaml # load set-pipeline-variables function
 
-              # TODO - Delete Azure Load Test resource (if still present)
+              # Delete abandoned Load Test resource (if still present)
               # There might be edge cases when load testing artifacts remain and need to be cleaned up
+              - task: AzureCLI@2
+                displayName: 'Cleanup abandoned load testing artifacts (if needed)'
+                retryCountOnTaskFailure: 1
+                inputs:
+                  azureSubscription: $(azureServiceConnection)
+                  scriptType: pscore
+                  scriptLocation: inlineScript
+                  inlineScript: |
+                    echo "*** Delete MALT resources in $(prefix)$(customSuffix)-azloadtest-rg"
+                    az group delete --name "$(prefix)$(customSuffix)-azloadtest-rg" --yes 
+
+                    echo "*** Delete Locust resources in $(prefix)$(customSuffix)-azloadtest-rg"
+                    az group delete --name "$(prefix)$(customSuffix)-loadtest-rg" --yes
 
               # Initialize Terraform for destroy
               - template: steps-terraform-destroy.yaml

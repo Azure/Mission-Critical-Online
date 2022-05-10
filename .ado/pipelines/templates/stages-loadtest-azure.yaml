@@ -176,7 +176,7 @@ stages:
           arguments:
             -loadTestId "$(loadTestId)" `
             -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
-            -testRunName "Load Test run by ADO" `
+            -testRunName "$(get-date -f "yyyy-MM-dd hh:ss") Load Test run triggered by ADO" `
             -testRunDescription "Pipeline executed load test run" `
             -testRunVUsers "$(azureLoadTestVUsers)" `
             -pipeline $true `

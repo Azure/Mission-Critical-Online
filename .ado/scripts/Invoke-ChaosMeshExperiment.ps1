@@ -2,7 +2,7 @@ param(
     $StampLocations, # List of Azure Regions which the env has been deployed to. The first one will be used for the experiments
     $ExperimentName, # Name of the experiment to create and run
     $ExperimentJsonPath, # Path to the JSON file which contains the experiment defintion template
-    $ExperimentDurationSeconds, # Duration of the experiments in seconds
+    $ExperimentDurationSeconds # Duration of the experiments in seconds
 )
 
 $ChaosStudioApiVersion = "2021-09-15-preview" # REST API version for Chaos Studio

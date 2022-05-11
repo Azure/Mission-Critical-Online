@@ -489,22 +489,13 @@ stages:
                   scriptType: pscore
                   scriptLocation: inlineScript
                   inlineScript: |
-                    $maltRg="$(prefix)$(customSuffix)-azloadtest-rg"
-                    $maltRgExists=az group exists --name $maltRg
-                    if ($maltRgExists -ne "false") {
-                      echo "*** Delete MALT resources in $maltRg"
-                      az group delete --name "$maltRg" --yes
+                    $loadtestRg="$(prefix)$(customSuffix)-loadtest-rg"
+                    $loadtestRgExists=az group exists --name $loadtestRg
+                    if ($loadtestRgExists -ne "false") {
+                      echo "*** Delete abandoned load test resources in $loadtestRg"
+                      az group delete --name "$loadtestRg" --yes
                     } else {
-                      echo "*** No MALT resources found in $maltRg"
-                    }
-
-                    $locustRg="$(prefix)$(customSuffix)-loadtest-rg"
-                    $locustRgExists=az group exists --name $locustRg
-                    if ($locustRgExists -ne "false") {
-                      echo "*** Delete Locust resources in $locustRg"
-                      az group delete --name "$locustRg" --yes
-                    } else {
-                      echo "*** No Locust resources found in $locustRg"
+                      echo "*** No load test resources found in $loadtestRg"
                     }
 
               # Initialize Terraform for destroy

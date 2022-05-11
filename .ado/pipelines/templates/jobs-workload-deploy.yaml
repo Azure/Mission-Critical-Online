@@ -135,11 +135,11 @@ jobs: # using jobs so they each run in parallel
             do {
               kubectl rollout status deployment/catalogservice-deploy -n $(workloadNamespace)
 
-              # checking if certificate for CatalogService-ingress-secret was issued
-              if ($(kubectl get certificates/catalogservice-ingress-secret -n $(workloadNamespace) -o 'jsonpath={..status.conditions[?(@.type==\"Ready\")].status}') -ne "True")
+              # checking if certificate for workload-ingress-secret was issued
+              if ($(kubectl get certificates/workload-ingress-secret -n $(workloadNamespace) -o 'jsonpath={..status.conditions[?(@.type==\"Ready\")].status}') -ne "True")
               {
                 $LASTEXITCODE=1
-                echo "certificate for catalogservice-ingress-secret pending.. "
+                echo "certificate for workload-ingress-secret pending.. "
               }
 
               if ($LastExitCode -ne 0) {

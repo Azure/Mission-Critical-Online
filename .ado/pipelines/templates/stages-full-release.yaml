@@ -490,10 +490,10 @@ stages:
                   scriptLocation: inlineScript
                   inlineScript: |
                     echo "*** Delete MALT resources in $(prefix)$(customSuffix)-azloadtest-rg"
-                    az group delete --name "$(prefix)$(customSuffix)-azloadtest-rg" --yes &> /dev/null
+                    az group delete --name "$(prefix)$(customSuffix)-azloadtest-rg" --yes 2> /dev/null
 
                     echo "*** Delete Locust resources in $(prefix)$(customSuffix)-loadtest-rg"
-                    az group delete --name "$(prefix)$(customSuffix)-loadtest-rg" --yes &> /dev/null
+                    az group delete --name "$(prefix)$(customSuffix)-loadtest-rg" --yes 2> /dev/null
 
               # Initialize Terraform for destroy
               - template: steps-terraform-destroy.yaml

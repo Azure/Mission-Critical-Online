@@ -80,10 +80,11 @@ if(-not $statusUrl)
 }
 
 do {
+    echo "*** Waiting for experiment '$ExperimentName' to complete ..."
     # Wait 20sec and poll for status (again)
     Start-Sleep -Seconds 20
     $statusResult = $(az rest --method get --url $statusUrl) | ConvertFrom-Json
-    echo "*** Experiment '$ExperimentName' currently in state $($statusResult.properties.status). Waiting to finish ..."
+    echo "*** Experiment currently in state $($statusResult.properties.status)"
 }
 while (($statusResult.properties.status -ne "Success") -and ($statusResult.properties.status -ne "Failed"))
 

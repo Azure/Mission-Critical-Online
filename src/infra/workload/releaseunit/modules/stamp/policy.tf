@@ -25,6 +25,19 @@ resource "azurerm_resource_group_policy_assignment" "no_privilege_escalation" {
   resource_group_id    = azurerm_resource_group.stamp.id
   policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/1c6e92c9-99f0-4e55-9cf2-0c234dc48f99"
   display_name         = "Kubernetes clusters should not allow container privilege escalation"
+
+  parameters = <<PARAMS
+    {
+      "excludedNamespaces": {
+        "value": [
+          "kube-system",
+          "gatekeeper-system",
+          "chaos-testing",
+          "ingress-nginx"
+        ]
+      }
+    }
+PARAMS
 }
 
 # Azure Policy Add-on for Kubernetes service (AKS) should be installed and enabled on your clusters (BuiltIn)
@@ -43,6 +56,18 @@ resource "azurerm_resource_group_policy_assignment" "no_privileged_containers" {
   resource_group_id    = azurerm_resource_group.stamp.id
   policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/95edb821-ddaf-4404-9732-666045e056b4"
   display_name         = "Kubernetes cluster should not allow privileged containers"
+
+  parameters = <<PARAMS
+    {
+      "excludedNamespaces": {
+        "value": [
+          "kube-system",
+          "gatekeeper-system",
+          "chaos-testing"
+        ]
+      }
+    }
+PARAMS
 }
 
 # Role-Based Access Control (RBAC) should be used on Kubernetes Services (BuiltIn)

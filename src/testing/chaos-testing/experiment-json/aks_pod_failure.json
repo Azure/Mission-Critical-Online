@@ -6,10 +6,10 @@
     "properties": {
       "steps": [
         {
-          "name": "AKS memory stress step 1",
+          "name": "AKS pod failure step 1",
           "branches": [
             {
-              "name": "AKS memory stress branch 1",
+              "name": "AKS pod failure branch 1",
               "actions": [
                 {
                   "type": "continuous",
@@ -18,10 +18,10 @@
                   "parameters": [
                     {
                         "key": "jsonSpec",
-                        "value": "{\"mode\":\"fixed-percent\",\"value\":\"50\",\"selector\":{\"namespaces\":[\"workload\"]},\"stressors\":{\"memory\":{\"workers\":1}}}"
+                        "value": "{\"action\":\"pod-failure\",\"mode\":\"all\",\"selector\":{\"namespaces\":[\"workload\"]}}"
                     }
                   ],
-                  "name": "urn:csci:microsoft:azureKubernetesServiceChaosMesh:stressChaos/2.1"
+                  "name": "urn:csci:microsoft:azureKubernetesServiceChaosMesh:podChaos/2.1"
                 }
               ]
             }

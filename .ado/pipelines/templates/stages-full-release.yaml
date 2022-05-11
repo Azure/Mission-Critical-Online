@@ -489,18 +489,18 @@ stages:
                   scriptType: pscore
                   scriptLocation: inlineScript
                   inlineScript: |
-                    $maltRg=$(prefix)$(customSuffix)-azloadtest-rg
+                    $maltRg="$(prefix)$(customSuffix)-azloadtest-rg"
                     $maltRgExists=az group exists --name $maltRg
-                    if ($maltRgExists) {
+                    if ($maltRgExists -ne "false") {
                       echo "*** Delete MALT resources in $maltRg"
                       az group delete --name "$maltRg" --yes
                     } else {
                       echo "*** No MALT resources found in $maltRg"
                     }
 
-                    $locustRg=$(prefix)$(customSuffix)-loadtest-rg
+                    $locustRg="$(prefix)$(customSuffix)-loadtest-rg"
                     $locustRgExists=az group exists --name $locustRg
-                    if ($locustRgExists) {
+                    if ($locustRgExists -ne "false") {
                       echo "*** Delete Locust resources in $locustRg"
                       az group delete --name "$locustRg" --yes
                     } else {

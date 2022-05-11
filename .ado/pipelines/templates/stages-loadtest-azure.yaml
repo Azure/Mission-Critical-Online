@@ -123,7 +123,7 @@ stages:
 
       # upload a jmx file for the previously created azure load test with an auto-generated testFileId
       - task: AzureCLI@2
-        displayName: 'Upload *.jmx files for Azure Load Test'
+        displayName: 'Upload *.jmx file for Azure Load Test'
         name: 'uploadAzureLoadTestJmx'
         inputs:
           azureSubscription: '$(azureServiceConnection)'

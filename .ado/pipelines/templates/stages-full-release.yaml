@@ -31,7 +31,7 @@ parameters:
 stages:
 
 - stage: deployglobalinfrastructure
-  displayName: 'Deploy Global Infrastructure' # Deploy Global Azure Infrastructure
+  displayName: 'Deploy Global Infrastructure'
   jobs:
 
   - deployment: deployterraformglobalresources
@@ -254,7 +254,7 @@ stages:
   - template: jobs-init-sampledata.yaml
 
 - stage: testingOnlyStampEndpoints # smoke-testing the stamp endpoints
-  displayName: 'Testing Stamp Endpoints'
+  displayName: 'Test Stamp Endpoints'
   dependsOn: importSampleData
   jobs:
   - template: jobs-smoke-testing.yaml
@@ -268,7 +268,7 @@ stages:
       trafficWeightNewBackends: ${{ step }}
 
 - stage: testingGlobalEndpoints # smoke-testing global endpoint only after the switchover has happened
-  displayName: 'Testing Global Endpoint'
+  displayName: 'Test Global Endpoint'
   jobs:
   - template: jobs-smoke-testing.yaml
     parameters:

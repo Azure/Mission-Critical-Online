@@ -133,7 +133,7 @@ stages:
           arguments:
             -loadTestId "$(loadTestId)" `
             -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
-            -testFileName "$(System.DefaultWorkingDirectory)/src/testing/loadtest-azure/scripts/catalogue-test.jmx" `
+            -testFileName "$(System.DefaultWorkingDirectory)/src/testing/loadtest-azure/scripts/catalog-test.jmx" `
             -verbose:$true
 
       # Create config csv for Azure Load Test

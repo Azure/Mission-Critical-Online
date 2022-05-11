@@ -10,7 +10,7 @@ pool:
 parameters:
 
 - name: runChaosTesting
-  displayName: "Run Chaos testing"
+  displayName: "Run chaos testing"
   type: boolean
   default: false
 
@@ -28,7 +28,7 @@ parameters:
   - Locust
 
 - name: destroyEnvironment
-  displayName: "Destroy Environment at the end"
+  displayName: "Destroy environment at the end"
   type: boolean
   default: true
 

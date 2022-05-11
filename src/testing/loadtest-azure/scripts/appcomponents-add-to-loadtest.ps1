@@ -67,7 +67,7 @@ function AppComponent {
 
 # Split Azure ResourceID
 $resource = $resourceId.split("/")
-$resourceType = $resource[6]+"/"+$resource[7]
+$resourceType = $resource[6]+"/"+$resource[7] # combine resource type like Microsoft.ContainerService/managedCluster
 
 $testDataFileName = $loadTestId + ".txt"
 AppComponent -resourceName $resource[8] `

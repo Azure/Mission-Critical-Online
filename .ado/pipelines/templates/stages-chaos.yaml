@@ -91,7 +91,7 @@ stages:
         inputs:
           targetType: 'inline'
           script: |
-                echo "Sleeping for ${{ parameters.startDelay }} seconds while the load test is starting..."
+                echo "Sleeping for ${{ parameters.startDelaySeconds }} seconds while the load test is starting..."
                 sleep ${{ parameters.startDelay }}
 
       - ${{ if eq(parameters.podFailure, 'true') }}:

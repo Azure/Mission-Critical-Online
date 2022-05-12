@@ -51,17 +51,17 @@ variables:
 
 # Microsoft Azure Load Test (MALT) configuration
 - name: 'azureLoadTestEngineInstances'
-  value: 1
+  value: '1'
 - name: 'azureLoadTestVUsers'
-  value: 10
+  value: '10'
 - name: 'azureLoadTestDurationSeconds'
-  value: 660
+  value: '660'
 - name: 'azureLoadTestUserThreads'
-  value: 50
+  value: '50'
 
 # Chaos studio configuration
 - name: 'chaosExperimentDurationSeconds'
-  value: 180
+  value: '180'
 
 # Others
 - name: 'smokeTestRetryCount' # How many times a request in the smoke tests is retried before declared as failed (retries HTTP response codes from 400-599 as well as issues like certificate errors)

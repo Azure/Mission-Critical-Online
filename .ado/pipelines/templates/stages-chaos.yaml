@@ -87,7 +87,7 @@ stages:
 
       # Sleep for the duration of the load test startup; this is a simple attempt to sync the start of both tests.
       - task: Bash@3
-        displayName: 'Sleep for ${{ parameters.startDelay }} seconds'
+        displayName: 'Sleep for ${{ parameters.startDelaySeconds }} seconds'
         inputs:
           targetType: 'inline'
           script: |

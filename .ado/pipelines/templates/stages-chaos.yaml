@@ -45,6 +45,15 @@ stages:
           scriptLocation: inlineScript
           inlineScript: |
 
+            # First we need to check if the Resource Provider was registered
+            $chaosRpStatus = az provider show -n Microsoft.Chaos --query "registrationState" -o tsv
+
+            if($chaosRpStatus -ne "Registered")
+            {
+              # Not registering RP directly here since it will take too long and thus break the synchorization with Load Test
+              throw "*** Resource Provider Microsoft.Chaos not yet registered. Please run 'az provider register -n Microsoft.Chaos' first and then run this task again"
+            }
+
             # load json data from downloaded pipeline artifact json
             $releaseUnitInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputReleaseUnitInfra/*.json | Get-Content | ConvertFrom-JSON
 

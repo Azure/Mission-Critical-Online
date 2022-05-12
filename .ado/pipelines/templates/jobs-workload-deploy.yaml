@@ -251,7 +251,7 @@ jobs: # using jobs so they each run in parallel
 
             echo "*** Storing configuration to $configFilePath"
             # warning: make sure that these variable names are in sync with client code
-            Add-Content -Path $configFilePath -Value "window.API_URL = `"/api`""
+            Add-Content -Path $configFilePath -Value "window.API_URL = `"/catalogservice/api`""
             Add-Content -Path $configFilePath -Value "window.APPLICATIONINSIGHTS_CONNECTION_STRING = `"$appInsightsConnString`""
 
             $versionLabel = "$(riVariant)-$("$(Build.SourceBranch)" -Replace 'refs/heads/', '')-$(Build.BuildId)"

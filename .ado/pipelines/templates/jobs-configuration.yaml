@@ -191,9 +191,9 @@ jobs:
                         --set kvSecrets="{$allSecretNames}"
         }
 
-  - ${{ if eq(parameters.runChaosTesting, 'true') }}:
+  - ${{ if eq(parameters.runChaosTesting, 'true') }}: # If chaos experiments are executed, we need to prepare one stamps AKS cluster by installing Chaos Mesh
     - task: AzureCLI@2
-      displayName: "Install Chaos Mesh $(chaosMeshVersion) on AKS clusters"
+      displayName: "Install Chaos Mesh $(chaosMeshVersion) on AKS cluster"
       retryCountOnTaskFailure: 1
       inputs:
         azureSubscription: $(azureServiceConnection)
@@ -204,35 +204,28 @@ jobs:
           # load json data from downloaded pipeline artifact json
           $releaseUnitInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputReleaseUnitInfra/*.json | Get-Content | ConvertFrom-JSON
 
-          # loop through stamps from pipeline artifact json
-          foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
+          # take only the first stamp to inject faults into
+          $locations = '$(stampLocations)' | ConvertFrom-Json -NoEnumerate # get the stamp locations
+          $stamp = $releaseUnitInfraDeployOutput.stamp_properties.value | Where-Object { $_.location -eq $locations[0] }
 
-            $aksClusterName = $stamp.aks_cluster_name
-            $aksClusterResourceGroup = $stamp.resource_group_name
-            echo "*** Load credentials for AKS Cluster $aksClusterName in $aksClusterResourceGroup"
+          $aksClusterName = $stamp.aks_cluster_name
+          $aksClusterResourceGroup = $stamp.resource_group_name
+          echo "*** Load credentials for AKS Cluster $aksClusterName in $aksClusterResourceGroup"
 
-            # load AKS cluster credentials
-            az aks get-credentials --name $aksClusterName --resource-group $aksClusterResourceGroup --overwrite-existing
+          # load AKS cluster credentials
+          az aks get-credentials --name $aksClusterName --resource-group $aksClusterResourceGroup --overwrite-existing
 
-            $helmOutput = helm list --namespace=$(chaosTestingNamespace) -o json | ConvertFrom-Json
-            if($helmOutput.name.length.equals(0))
-            {
-              echo "*** Chaos mesh does not exist on the cluster yet -- installing now"
+          $chaosTestingNamespace = "chaos-testing"
 
-              echo "*** Add Chaos Mesh Helm repo"
-              # Add Chaos Mesh Helm Repo
-              helm repo add chaos-mesh https://charts.chaos-mesh.org
-              helm repo update
+          echo "*** Installing Chaos Mesh via helm on $aksClusterName"
 
-              # Install Chaos Mesh 
-              helm install chaos-mesh chaos-mesh/chaos-mesh `
-                            --namespace=$(chaosTestingNamespace) --create-namespace `
-                            --version=$(chaosMeshVersion) `
-                            --set chaosDaemon.runtime=containerd `
-                            --set chaosDaemon.socketPath=/run/containerd/containerd.sock
-            }
-            else
-            {
-              echo "*** Chaos mesh already exists on the cluster"
-            }
-          }
+          # Add Chaos Mesh Helm Repo
+          helm repo add chaos-mesh https://charts.chaos-mesh.org
+          helm repo update
+
+          # Install Chaos Mesh
+          helm upgrade --install chaos-mesh chaos-mesh/chaos-mesh `
+                        --namespace=$chaosTestingNamespace --create-namespace `
+                        --version=$(chaosMeshVersion) `
+                        --set chaosDaemon.runtime=containerd `
+                        --set chaosDaemon.socketPath=/run/containerd/containerd.sock

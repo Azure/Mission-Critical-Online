@@ -25,7 +25,7 @@ stages:
   displayName: 'Run loadtest'
   jobs:
   - job: deploylocustterraform
-    displayName: 'Deploy loadtest infrastructure (and run test when in headless mode)'
+    displayName: 'Deploy loadtest infrastructure (and run test when in embedded mode)'
     steps:
     - checkout: self # checkout github repository
     - download: current # download pipeline artifacts
@@ -85,6 +85,7 @@ stages:
         environment:                '$(environment)'
         customAttributes:           '-var targeturl=$(loadTestTargetUrl)
                                     -var queued_by="$(Build.QueuedBy)"
+                                    -var branch="$(sourceBranch)"
                                     -var locust_workers=${{ parameters.loadTestNumberOfWorkerNodes }}
                                     -var locust_runtime="${{ parameters.loadTestDurationInSeconds }}s"
                                     -var locust_spawn_rate=${{ parameters.loadTestUserSpawnRate }}

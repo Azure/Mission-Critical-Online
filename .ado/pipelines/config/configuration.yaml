@@ -5,30 +5,24 @@ variables:
   value: 'foundational-online'
 
 - name: 'terraformVersion'    # Terraform Version
-  value: '1.1.8'
+  value: '1.1.9'
 - name: 'kubernetesVersion'   # kubernetes version used for aks clusters
-  value: '1.22.6'
+  value: '1.23.5'
 - name: 'helmVersion'         # helm package manager version
   value: 'v3.8.2'
 - name: 'ingressNginxVersion' # nginx ingress controller helm chart version
-  value: '4.1.0'
+  value: '4.1.1'
 - name: 'certManagerVersion'  # cert-manager helm chart version
   value: 'v1.8.0'
 - name: 'dotnetSdkVersion'    # dotnet sdk version
   value: '6.0.200'
 - name: 'chaosMeshVersion'    #  chaos-mesh chart version
-  value: '2.1.3'
+  value: '2.2.0'
 - name: 'uiAppNodeVersion'    # nodejs version for the UI app
   value: '16.x'
 
 - name: 'workloadNamespace'   # K8s namespace for workload deployment
   value: 'workload'
-- name: 'chaosTestingNamespace'   # K8s namespace for chaos testing deployment
-  value: 'chaos-testing'
-- name: 'chaosStudioLocation'
-  value: 'uksouth'
-- name: 'chaosStudioApiVersion'
-  value: '2021-08-11-preview'
 
 # Docker image names and paths to the Dockerfiles for the different components
 - name: 'catalogserviceDockerfile'
@@ -49,11 +43,21 @@ variables:
 - name: 'loadTestNumberOfWorkerNodes' # number of worker nodes
   value: 10
 - name: 'loadTestDurationInSeconds' # load test duration
-  value: 300
+  value: 600
 - name: 'loadTestNumberOfUsers' # number of simulated users in the load test
   value: 500
 - name: 'loadTestUserSpawnRate' # load test spawn rate users / per second
   value: 10
+
+# Microsoft Azure Load Test (MALT) configuration
+- name: 'azureLoadTestEngineInstances'
+  value: '1'
+- name: 'azureLoadTestVUsers'
+  value: '10'
+- name: 'azureLoadTestDurationSeconds'
+  value: '300'
+- name: 'azureLoadTestUserThreads'
+  value: '100'
 
 # Others
 - name: 'smokeTestRetryCount' # How many times a request in the smoke tests is retried before declared as failed (retries HTTP response codes from 400-599 as well as issues like certificate errors)

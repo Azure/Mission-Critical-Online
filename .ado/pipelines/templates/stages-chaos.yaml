@@ -9,7 +9,7 @@ parameters:
     type: string
   - name: testDurationSeconds
     default: 0
-  - name: startDelay
+  - name: startDelaySeconds
     default: 300
   - name: podFailure
     type: boolean

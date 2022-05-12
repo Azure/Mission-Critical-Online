@@ -62,7 +62,7 @@ variables:
 # Chaos studio configuration
 - name: 'chaosExperimentDurationSeconds'
   value: 180
-- name: 'chaosStartDelay'
+- name: 'chaosStartDelaySeconds'
   value: 300
 
 # Others

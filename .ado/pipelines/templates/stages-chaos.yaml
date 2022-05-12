@@ -8,7 +8,7 @@ parameters:
   - name: customPrefix
     type: string
   - name: testDurationSeconds
-    default: 0
+    default: 180
   - name: startDelaySeconds
     default: 300
   - name: podFailure

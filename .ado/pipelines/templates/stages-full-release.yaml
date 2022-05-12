@@ -305,7 +305,7 @@ stages:
       parameters:
         stageName: 'deployChaosExperiments'
         customPrefix: '$(prefix)$(customSuffix)'
-        experimentDurationSeconds: '$(chaosExperimentDurationSeconds)'
+        experimentDurationSeconds: '$(chaosExperimentDurationSeconds)' # duration of each experiment
         startDelaySeconds: '$(chaosStartDelaySeconds)'
         podFailure: true # run Chaos Pod Failure experiment
         memoryStress: false # do not run Chaos Memory stress

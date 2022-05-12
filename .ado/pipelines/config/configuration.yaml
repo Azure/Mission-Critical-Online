@@ -62,6 +62,8 @@ variables:
 # Chaos studio configuration
 - name: 'chaosExperimentDurationSeconds'
   value: 180
+- name: 'chaosStartDelay'
+  value: 300
 
 # Others
 - name: 'smokeTestRetryCount' # How many times a request in the smoke tests is retried before declared as failed (retries HTTP response codes from 400-599 as well as issues like certificate errors)

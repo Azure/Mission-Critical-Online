@@ -7,7 +7,7 @@ parameters:
     default: {}
   - name: customPrefix
     type: string
-  - name: testDurationSeconds
+  - name: experimentDurationSeconds
     default: 180
   - name: startDelaySeconds
     default: 300
@@ -115,7 +115,7 @@ stages:
               -ExperimentName "${{ parameters.customPrefix }}-PodFailure"
               -ExperimentJsonPath "$(System.DefaultWorkingDirectory)/src/testing/chaos-testing/experiment-json/aks_pod_failure.json"
               -StampLocations '$(stampLocations)'
-              -ExperimentDurationSeconds "${{ parameters.testDurationSeconds }}"
+              -ExperimentDurationSeconds "${{ parameters.experimentDurationSeconds }}"
 
       - ${{ if eq(parameters.cpuStress, 'true') }}:
         - task: AzureCLI@2
@@ -129,7 +129,7 @@ stages:
               -ExperimentName "${{ parameters.customPrefix }}-CpuStress"
               -ExperimentJsonPath "$(System.DefaultWorkingDirectory)/src/testing/chaos-testing/experiment-json/aks_cpu_stress.json"
               -StampLocations '$(stampLocations)'
-              -ExperimentDurationSeconds "${{ parameters.testDurationSeconds }}"
+              -ExperimentDurationSeconds "${{ parameters.experimentDurationSeconds }}"
 
       - ${{ if eq(parameters.memoryStress, 'true') }}:
         - task: AzureCLI@2
@@ -143,4 +143,4 @@ stages:
               -ExperimentName "${{ parameters.customPrefix }}-MemoryStress"
               -ExperimentJsonPath "$(System.DefaultWorkingDirectory)/src/testing/chaos-testing/experiment-json/aks_memory_stress.json"
               -StampLocations '$(stampLocations)'
-              -ExperimentDurationSeconds "${{ parameters.testDurationSeconds }}"
+              -ExperimentDurationSeconds "${{ parameters.experimentDurationSeconds }}"

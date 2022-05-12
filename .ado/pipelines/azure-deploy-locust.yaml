@@ -39,7 +39,7 @@ variables:
 
 stages:
 
-- template: templates/stages-locust.yaml
+- template: templates/stages-loadtest-locust.yaml
   parameters:
     terraformWorkingDirectory: '$(workingDirectory)'
     customPrefix: '$(prefix)'

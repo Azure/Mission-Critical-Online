@@ -49,7 +49,7 @@ stages:
             if($chaosRpStatus -ne "Registered")
             {
               # Not registering RP directly here since it will take too long and thus break the synchorization with Load Test
-              throw "*** Resource Provider Microsoft.Chaos not yet registered. Please run 'az provider register -n Microsoft.Chaos' first and then run this task again"
+              throw "*** Resource Provider Microsoft.Chaos not yet registered. Please run 'az provider register -n Microsoft.Chaos' first and then run the pipeline again"
             }
 
             # load json data from downloaded pipeline artifact json

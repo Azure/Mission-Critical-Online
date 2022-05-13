@@ -40,6 +40,12 @@ Together with the previous Chaos Mesh component installation, the cluster is now
 
 For this, a Chaos experiment gets created which contains the resource ID of the target as well as the actual fault definition in the Chaos Mesh syntax (see above) - when targeting AKS - and other properties like experiment duration. The different JSON template files for the experiments are located in the [`./experiment-json/`](./experiment-json/) directory. The [pipeline script](/.ado/scripts/Invoke-ChaosMeshExperiment.ps1) fills in the placeholder resource IDs with the actual values, creates the experiment via the ARM REST API and then starts the experiment.
 
+![chaos studio](/docs/media/chaos_studio_overview.png)
+
 The script then polls the experiment status and waits for its completion.
 
+![chaos run](/docs/media/chaos_studio_run.png)
+
 The pipeline executes each configured experiment in sequence (currently: Pod Failure, CPU Stress and Memory Stress). All the while the load test is running against the workload.
+
+![chaos pipeline](/docs/media/chaos_pipeline_stages.png)

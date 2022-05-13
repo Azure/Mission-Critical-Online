@@ -7,8 +7,8 @@ parameters:
     default: {}
   - name: customPrefix
     type: string
-  - name: testDurationSeconds
-    default: 0
+  - name: experimentDurationSeconds
+    default: 180
   - name: startDelaySeconds
     default: 300
   - name: podFailure
@@ -42,6 +42,15 @@ stages:
           scriptType: pscore
           scriptLocation: inlineScript
           inlineScript: |
+
+            # First we need to check if the Resource Provider was registered
+            $chaosRpStatus = az provider show -n Microsoft.Chaos --query "registrationState" -o tsv
+
+            if($chaosRpStatus -ne "Registered")
+            {
+              # Not registering RP directly here since it will take too long and thus break the synchorization with Load Test
+              throw "*** Resource Provider Microsoft.Chaos not yet registered. Current status: $chaosRpStatus Please run 'az provider register -n Microsoft.Chaos' first and then run the pipeline again"
+            }
 
             # load json data from downloaded pipeline artifact json
             $releaseUnitInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputReleaseUnitInfra/*.json | Get-Content | ConvertFrom-JSON
@@ -106,7 +115,7 @@ stages:
               -ExperimentName "${{ parameters.customPrefix }}-PodFailure"
               -ExperimentJsonPath "$(System.DefaultWorkingDirectory)/src/testing/chaos-testing/experiment-json/aks_pod_failure.json"
               -StampLocations '$(stampLocations)'
-              -ExperimentDurationSeconds "${{ parameters.testDurationSeconds }}"
+              -ExperimentDurationSeconds "${{ parameters.experimentDurationSeconds }}"
 
       - ${{ if eq(parameters.cpuStress, 'true') }}:
         - task: AzureCLI@2
@@ -120,7 +129,7 @@ stages:
               -ExperimentName "${{ parameters.customPrefix }}-CpuStress"
               -ExperimentJsonPath "$(System.DefaultWorkingDirectory)/src/testing/chaos-testing/experiment-json/aks_cpu_stress.json"
               -StampLocations '$(stampLocations)'
-              -ExperimentDurationSeconds "${{ parameters.testDurationSeconds }}"
+              -ExperimentDurationSeconds "${{ parameters.experimentDurationSeconds }}"
 
       - ${{ if eq(parameters.memoryStress, 'true') }}:
         - task: AzureCLI@2
@@ -134,4 +143,4 @@ stages:
               -ExperimentName "${{ parameters.customPrefix }}-MemoryStress"
               -ExperimentJsonPath "$(System.DefaultWorkingDirectory)/src/testing/chaos-testing/experiment-json/aks_memory_stress.json"
               -StampLocations '$(stampLocations)'
-              -ExperimentDurationSeconds "${{ parameters.testDurationSeconds }}"
+              -ExperimentDurationSeconds "${{ parameters.experimentDurationSeconds }}"

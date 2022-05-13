@@ -1,5 +1,5 @@
 variable "location" {
-  description = "The Azure Region in which the master and the shared storage account will be provisioned."
+  description = "The Azure Region in which the load test will be provisioned."
   type        = string
   default     = "northeurope"
 }

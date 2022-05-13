@@ -1,6 +1,3 @@
-parameters:
-  additionalHelmArguments:     '--wait'
-
 jobs: # using jobs so they each run in parallel
 
 - job: deploycontainerHealthService
@@ -45,8 +42,7 @@ jobs: # using jobs so they each run in parallel
             helm upgrade --install healthservice-workload src/app/charts/healthservice `
                           --namespace $(workloadNamespace) --create-namespace `
                           --set containerimage="$fullContainerImageName" `
-                          --set azure.region="$region" `
-                          ${{ parameters.additionalHelmArguments }}
+                          --set azure.region="$region"
           }
 
 - job: deploycontainerCatalogService
@@ -110,8 +106,7 @@ jobs: # using jobs so they each run in parallel
                          --set azure.region="$region" `
                          --set azure.baseurl="$(frontdoor_fqdn)" `
                          --set containerimage="$fullContainerImageName" `
-                         --set workload.domainname="$fqdn" `
-                         ${{ parameters.additionalHelmArguments }}
+                         --set workload.domainname="$fqdn"
 
             # Wait for CatalogService-deploy k8s deployment to come up
             $retrycount = 0;
@@ -179,10 +174,11 @@ jobs: # using jobs so they each run in parallel
             # Apply workload BackgroundProcessor helm chart
             echo  "*** Deploy workload BackgroundProcessor to $aksClusterName (in $aksClusterResourceGroup) via helm chart"
             helm upgrade --install workload-backgroundprocessor src/app/charts/backgroundprocessor `
-                         --namespace $(workloadNamespace) --create-namespace --wait `
+                         --namespace $(workloadNamespace) `
+                         --create-namespace `
                          --set containerimage="$fullContainerImageName" `
                          --set azure.region="$region" `
-                         ${{ parameters.additionalHelmArguments }}
+                         --wait
           }
 
 - job: deployuiapp

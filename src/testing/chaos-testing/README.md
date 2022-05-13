@@ -11,8 +11,8 @@ To inject faults into the compute platform, [Chaos Mesh](https://chaos-mesh.org/
 Currently three different experiments are configured as part of the pipeline to demonstrate the process:
 
 - Pod Killer - randomly kills pods from the `workload` namespace. AKS should immediately reschedule those.
-- Pod CPU stress - brings the CPU load on random pods from the `workload` namespace to 100 per cent.
-- Pod Memory stress - increases the memory utilization on random pods from the `workload` namespace to 100 per cent.
+- Pod CPU stress - brings the CPU load on random pods from the `workload` namespace to 100 percent.
+- Pod Memory stress - increases the memory utilization on random pods from the `workload` namespace to 100 percent.
 
 The fault definitions for those can be found in the `./chaos-mesh` directory. More faults are available in the official [Chaos Mesh GitHub repository](https://github.com/chaos-mesh/chaos-mesh/tree/master/examples).
 

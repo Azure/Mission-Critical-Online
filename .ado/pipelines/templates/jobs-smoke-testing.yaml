@@ -29,6 +29,10 @@ jobs:
 
     - download: current # download pipeline artifacts
 
+    - template: steps-parse-terraform-output.yaml
+      parameters:
+        workingDirectory: '$(Pipeline.Workspace)/terraformOutputGlobalInfra'  # Global infra deploy output directory
+
     - task: AzureCLI@2
       displayName: 'Verify global Front Foor state configuration'
       retryCountOnTaskFailure: 1

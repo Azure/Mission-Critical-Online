@@ -61,21 +61,6 @@ jobs: # using jobs so they each run in parallel
                           --set containerimage="$fullContainerImageName" `
                           --set workload.domainname="$fqdn" `
                           ${{ parameters.additionalHelmArguments }}
-
-            # Wait for healthservice-deploy k8s deployment to come up
-            $retrycount = 0;
-            $maxretrycount = 5
-            do {
-              kubectl rollout status deployment/healthservice-deploy -n $(workloadNamespace)
-
-              if ($LastExitCode -ne 0) {
-                $retrycount++;
-                echo "Deployment not ready. Retrying... $retrycount/$maxretrycount";
-                start-sleep $(60*$retrycount) # sleep for <retry> * 60 seconds
-              } else {
-                $retrycount = $maxretrycount
-              }
-            } while ( ($retrycount -lt $maxretrycount) )
           }
 
 - job: deploycontainerCatalogService
@@ -215,21 +200,6 @@ jobs: # using jobs so they each run in parallel
                          --set containerimage="$fullContainerImageName" `
                          --set azure.region="$region" `
                          ${{ parameters.additionalHelmArguments }}
-
-            # Wait for BackgroundProcessor-deploy k8s deployment to come up
-            $retrycount = 0;
-            $maxretrycount = 5
-            do {
-              kubectl rollout status deployment/backgroundprocessor-deploy -n $(workloadNamespace)
-              if ($LastExitCode -ne 0) {
-                $retrycount++;
-                echo "Deployment not ready. Retrying... $retrycount/$maxretrycount";
-                start-sleep $(60*$retrycount) # sleep for <retry> * 60 seconds
-              } else {
-                $retrycount = $maxretrycount
-              }
-            } while ( ($retrycount -lt $maxretrycount) )
-
           }
 
 - job: deployuiapp
@@ -265,7 +235,7 @@ jobs: # using jobs so they each run in parallel
 
             echo "*** Storing configuration to $configFilePath"
             # warning: make sure that these variable names are in sync with client code
-            Add-Content -Path $configFilePath -Value "window.API_URL = `"/api`""
+            Add-Content -Path $configFilePath -Value "window.API_URL = `"/catalogservice/api`""
             Add-Content -Path $configFilePath -Value "window.APPLICATIONINSIGHTS_CONNECTION_STRING = `"$appInsightsConnString`""
 
             $versionLabel = "$(riVariant)-$("$(Build.SourceBranch)" -Replace 'refs/heads/', '')-$(Build.BuildId)"

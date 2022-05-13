@@ -4,7 +4,7 @@ metadata:
   name: burn-memory
   namespace: chaos-testing
 spec:
-  mode: random-max-percent
+  mode: fixed-percent
   value: '50'
   selector:
     namespaces:
@@ -12,6 +12,3 @@ spec:
   stressors:
     memory:
       workers: 1
-  duration: '60s'
-  scheduler:
-    cron: '@every 5m'

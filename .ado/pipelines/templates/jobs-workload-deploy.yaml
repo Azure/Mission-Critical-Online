@@ -58,6 +58,10 @@ jobs: # using jobs so they each run in parallel
 
     - template: steps-buildagent-prerequisites.yaml
 
+    - template: steps-parse-terraform-output.yaml
+      parameters:
+        workingDirectory: '$(Pipeline.Workspace)/terraformOutputGlobalInfra'  # Global infra deploy output directory
+
     - task: AzureCLI@2
       displayName: 'Install workload CatalogService on AKS clusters'
       retryCountOnTaskFailure: 2
@@ -72,13 +76,8 @@ jobs: # using jobs so they each run in parallel
           # load json data from downloaded terraform artifact
           $releaseUnitInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputReleaseUnitInfra/*.json | Get-Content | ConvertFrom-JSON
 
-          $globalInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputGlobalInfra/*.json | Get-Content | ConvertFrom-JSON
-
-          $frontDoorId = $globalInfraDeployOutput.frontdoor_id_header.value
-          echo "*** Retrieved Azure Front Door Header ID $frontDoorId"
-
-          $frontDoorFqdn = $globalInfraDeployOutput.frontdoor_fqdn.value
-          echo "*** Retrieved Azure Front Door FQDN $frontDoorFqdn"
+          echo "*** Retrieved Azure Front Door Header ID $(frontdoor_id_header) from Terraform output"
+          echo "*** Retrieved Azure Front Door FQDN $(frontdoor_fqdn) from Terraform output"
 
           # loop through stamps from pipeline artifact json
           foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
@@ -107,9 +106,9 @@ jobs: # using jobs so they each run in parallel
 
             helm upgrade --install workload-catalogservice src/app/charts/catalogservice `
                          --namespace "$(workloadNamespace)" --create-namespace `
-                         --set azure.frontdoorid="$frontDoorId" `
+                         --set azure.frontdoorid="$(frontdoor_id_header)" `
                          --set azure.region="$region" `
-                         --set azure.baseurl="$frontDoorFqdn" `
+                         --set azure.baseurl="$(frontdoor_fqdn)" `
                          --set containerimage="$fullContainerImageName" `
                          --set workload.domainname="$fqdn" `
                          ${{ parameters.additionalHelmArguments }}
@@ -160,8 +159,6 @@ jobs: # using jobs so they each run in parallel
           # load json data from downloaded terraform artifact
           $releaseUnitInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputReleaseUnitInfra/*.json | Get-Content | ConvertFrom-JSON
 
-          $globalInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputGlobalInfra/*.json | Get-Content | ConvertFrom-JSON
-
           # loop through stamps from pipeline artifact json
           foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
 
@@ -182,7 +179,7 @@ jobs: # using jobs so they each run in parallel
             # Apply workload BackgroundProcessor helm chart
             echo  "*** Deploy workload BackgroundProcessor to $aksClusterName (in $aksClusterResourceGroup) via helm chart"
             helm upgrade --install workload-backgroundprocessor src/app/charts/backgroundprocessor `
-                         --namespace $(workloadNamespace) --create-namespace `
+                         --namespace $(workloadNamespace) --create-namespace --wait `
                          --set containerimage="$fullContainerImageName" `
                          --set azure.region="$region" `
                          ${{ parameters.additionalHelmArguments }}

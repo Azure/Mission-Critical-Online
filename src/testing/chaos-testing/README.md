@@ -24,16 +24,18 @@ When a user selects the optional Chaos experiment execution as part of the E2E d
 1) The integrated Load Test is executed.
 1) In parallel to the Load Test, the [Chaos stage](/.ado/pipelines/templates/stages-chaos.yaml) is executed.
 
-### Chaos stage
+![chaos pipeline](/docs/media/chaos_pipeline_stages.png)
+
+### Run Chaos experiments stage
 
 To enable fault injection on AKS clusters, they need to be enabled as Chaos "targets". This is done by creating child-resources of the clusters through a call to the Azure REST API, for example:
 ```
-PUT https://management.azure.com/subscriptions/.../resourcegroups/.../providers/Microsoft.ContainerService/managedClusters/aoe2e122e-.../providers/Microsoft.Chaos/targets/Microsoft-AzureKubernetesServiceChaosMesh?api-version=2021-08-11-preview
+PUT https://management.azure.com/subscriptions/.../resourcegroups/.../providers/Microsoft.ContainerService/managedClusters/aoe2e122e-.../providers/Microsoft.Chaos/targets/Microsoft-AzureKubernetesServiceChaosMesh?api-version=2021-09-15-preview
 ```
 
 Next, certain Chaos Mesh "capabilities" need to be enabled in a similar fashion, e.g. to enable `PodChaos-1.0`:
 ```
-PUT https://management.azure.com/subscriptions/.../resourcegroups/.../providers/Microsoft.ContainerService/managedClusters/aoe2e122e-.../providers/Microsoft.Chaos/targets/Microsoft-AzureKubernetesServiceChaosMesh/capabilities/PodChaos-1.0?api-version=2021-08-11-preview
+PUT https://management.azure.com/subscriptions/.../resourcegroups/.../providers/Microsoft.ContainerService/managedClusters/aoe2e122e-.../providers/Microsoft.Chaos/targets/Microsoft-AzureKubernetesServiceChaosMesh/capabilities/PodChaos-1.0?api-version=2021-09-15-preview
 ```
 
 Together with the previous Chaos Mesh component installation, the cluster is now ready to be targeted by a Chaos Studio experiment.
@@ -47,5 +49,3 @@ The script then polls the experiment status and waits for its completion.
 ![chaos run](/docs/media/chaos_studio_run.png)
 
 The pipeline executes each configured experiment in sequence (currently: Pod Failure, CPU Stress and Memory Stress). All the while the load test is running against the workload.
-
-![chaos pipeline](/docs/media/chaos_pipeline_stages.png)

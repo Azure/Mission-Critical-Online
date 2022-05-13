@@ -88,5 +88,11 @@ do {
 }
 while (($statusResult.properties.status -ne "Success") -and ($statusResult.properties.status -ne "Failed"))
 
+if ($statusResult.properties.status -eq "Failed")
+{
+    $statusResult.properties
+    throw "*** ERROR - experiment '$ExperimentName' failed"
+}
+
 echo "*** Experiment '$ExperimentName' finished with status: $($statusResult.properties.status)"
 $statusResult

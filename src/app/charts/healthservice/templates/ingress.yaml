@@ -39,7 +39,7 @@ spec:
   - host: {{ .Values.workload.domainname }}
     http:
       paths:
-      - path: /health # exposing the 'healthservice'
+      - path: /healthservice(/|$)(.*) # exposing the 'healthservice'
         pathType: Prefix
         backend:
           service:

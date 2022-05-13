@@ -39,14 +39,7 @@ spec:
   - host: {{ .Values.workload.domainname }}
     http:
       paths:
-      - path: /(api|swagger).*
-        pathType: Prefix
-        backend:
-          service:
-            name: {{ .Chart.Name }}-service
-            port:
-              number: {{ .Values.workload.service.port | default 80 }}
-      - path: /swagger # exposing the swagger endpoint
+      - path: /catalogservice(/|$)(.*)
         pathType: Prefix
         backend:
           service:

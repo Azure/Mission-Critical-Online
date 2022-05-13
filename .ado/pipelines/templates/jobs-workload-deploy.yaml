@@ -40,9 +40,11 @@ jobs: # using jobs so they each run in parallel
             # Apply workload worker helm chart
             echo  "*** Deploy healthservice to $aksClusterName (in $aksClusterResourceGroup) via helm chart"
             helm upgrade --install healthservice-workload src/app/charts/healthservice `
-                          --namespace $(workloadNamespace) --create-namespace `
+                          --namespace $(workloadNamespace) `
+                          --create-namespace `
                           --set containerimage="$fullContainerImageName" `
-                          --set azure.region="$region"
+                          --set azure.region="$region" `
+                          --wait
           }
 
 - job: deploycontainerCatalogService
@@ -101,12 +103,14 @@ jobs: # using jobs so they each run in parallel
             echo "*** Using container image $fullContainerImageName"
 
             helm upgrade --install workload-catalogservice src/app/charts/catalogservice `
-                         --namespace "$(workloadNamespace)" --create-namespace `
+                         --namespace "$(workloadNamespace)" `
+                         --create-namespace `
                          --set azure.frontdoorid="$(frontdoor_id_header)" `
                          --set azure.region="$region" `
                          --set azure.baseurl="$(frontdoor_fqdn)" `
                          --set containerimage="$fullContainerImageName" `
-                         --set workload.domainname="$fqdn"
+                         --set workload.domainname="$fqdn" `
+                         --wait
 
             # Wait for CatalogService-deploy k8s deployment to come up
             $retrycount = 0;

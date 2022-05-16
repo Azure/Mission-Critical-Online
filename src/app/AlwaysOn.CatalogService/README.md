@@ -80,7 +80,7 @@ public void ConfigureServices(IServiceCollection services)
 [ApiController]
 [ApiVersion("1.0")] // controller supports version 1.0
 [ApiVersion("2.0")] // controller supports also version 2.0
-[Route("{version:apiVersion}/[controller]")] // route for updated clients with version: /1.0/game/
+[Route("{version:apiVersion}/[controller]")] // route for updated clients with version: /1.0/catalogitem/
 ```
 
 We are using attributes to declare that this controller supports two versions: 1.0 and 2.0. All action methods will default to 1.0 unless specified otherwise. This is how versioning would be implemented on action methods:

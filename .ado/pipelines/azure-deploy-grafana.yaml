@@ -86,7 +86,7 @@ stages:
       # Get the deployment output from the global resources. We need this for the FDID.
       - template: templates/steps-parse-terraform-output.yaml
         parameters:
-          workingDirectory:           '$(pipeline.workspace)/terraformOutputGlobalInfra'
+          workingDirectory: '$(pipeline.workspace)/terraformOutputGlobalInfra'
 
       # Get the full image name/tags from the artefact created during build
       - template: templates/steps-parse-containerimagename.yaml

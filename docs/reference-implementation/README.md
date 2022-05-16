@@ -66,6 +66,10 @@ As with the Azure Mission-Critical Design Guidelines, the Reference Implementati
 - [ESLZ Alignment](ESLZ-Alignment.md) outlines how Azure Mission-Critical aligns with and compliments the Enterprise Scale Landing Zones.
 - [Troubleshooting](Troubleshooting.md) collects solutions to known issues during development and deployment.
 
+## Optional Additions
+
+- [Adding API Management](Api-Management.md)
+
 ---
 
 [Azure Mission-Critical - Full List of Documentation](/docs/README.md)

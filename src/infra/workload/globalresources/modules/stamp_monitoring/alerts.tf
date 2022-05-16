@@ -1,4 +1,4 @@
-resource "azurerm_monitor_scheduled_query_rules_alert" "game_service_exception_responses" {
+resource "azurerm_monitor_scheduled_query_rules_alert" "catalogservice_exception_responses" {
   name                = "${local.prefix}-${local.location_short}-AppInsights-CatalogServiceExceptionReponses"
   location            = var.location
   resource_group_name = var.resource_group_name

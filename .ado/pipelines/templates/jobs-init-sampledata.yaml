@@ -9,6 +9,10 @@ jobs:
 
     - download: current # download pipeline artifacts
 
+    - template: steps-parse-terraform-output.yaml # parse global configuration settings from terraform deployment output
+      parameters:
+        workingDirectory: '$(Pipeline.Workspace)/terraformOutputGlobalInfra'  # Global infra deploy output directory
+
     - task: PowerShell@2
       displayName: 'Import Sample Data'
       retryCountOnTaskFailure: 1
@@ -16,13 +20,8 @@ jobs:
         targetType: inline
         script: |
 
-          # load json data from downloaded terraform artifact
-          $globalInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputGlobalInfra/*.json | Get-Content | ConvertFrom-JSON
-
+          # import and parse stamp terraform deployment outputs
           $releaseUnitInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputReleaseUnitInfra/*.json | Get-Content | ConvertFrom-JSON
-
-          # Azure Front Door Header ID
-          $frontdoorHeaderId = $globalInfraDeployOutput.frontdoor_id_header.value
 
           $apiKey = $releaseUnitInfraDeployOutput.api_key.value
 
@@ -37,7 +36,7 @@ jobs:
           $testData =  Get-Content -Path "src/app/sampledata.json" | ConvertFrom-JSON
 
           $header = @{
-            "X-Azure-FDID" = "$frontdoorHeaderId"
+            "X-Azure-FDID" = "$(frontdoor_id_header)"
             "X-API-KEY" = "$apiKey"
           }
 

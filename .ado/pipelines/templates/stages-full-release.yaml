@@ -335,6 +335,10 @@ stages:
 
             - template: steps-buildagent-prerequisites.yaml # Install tools like kubectl
 
+            - template: steps-parse-terraform-output.yaml # parse global configuration settings from terraform deployment output
+              parameters:
+                workingDirectory: '$(Pipeline.Workspace)/terraformOutputGlobalInfra'  # Global infra deploy output directory
+
             - ${{ if ne(parameters.environment, 'e2e') }}: # Only in int/prod
               - task: AzureCLI@2
                 displayName: 'Fetch previous release prefix through disabled Front Door backends'
@@ -347,16 +351,11 @@ stages:
                     # We need the az CLI Front Door extension
                     az extension add --name front-door
 
-                    $globalInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputGlobalInfra/*.json | Get-Content | ConvertFrom-JSON
-
-                    $rgName = $globalInfraDeployOutput.global_resource_group_name.value
-                    $fdName = $globalInfraDeployOutput.frontdoor_name.value
-
                     # Fetch disabled backends from the BackendApis pool. We only fetch the first one, assuming it represents all the stamps of the previous release unit
                     $disabledBackendAddress = $(az network front-door backend-pool backend list `
-                                      --front-door-name $fdName `
+                                      --front-door-name $(frontdoor_name) `
                                       --pool-name BackendApis `
-                                      --resource-group $rgName `
+                                      --resource-group $(global_resource_group_name) `
                                       --query "[?enabledState=='Disabled'].{address:address}[0]" -o tsv)
 
                     if($LastExitCode -ne 0)
@@ -400,11 +399,6 @@ stages:
                     # Setting oldReleasePrefix=prefix-customSuffix means that we target the same release unit that was deployed earlier by this very pipeline
                     echo "*** Setting pipeline variable oldReleasePrefix = $(prefix)$(customSuffix)"
                     echo "##vso[task.setvariable variable=oldReleasePrefix]$(prefix)$(customSuffix)"
-
-            - template: steps-parse-terraform-output.yaml
-              parameters:
-                workingDirectory: '$(Pipeline.Workspace)/terraformOutputGlobalInfra'  # Global infra deploy output directory
-
 
             # Delete all deployments in the workload namespace. This will make sure the application is not running anymore before we destroy the infrastructure in the next step.
             # This prevents side effects in the logging in which errors might show up which are only related to the destructions of the infra

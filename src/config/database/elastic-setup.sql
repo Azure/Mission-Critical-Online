@@ -59,7 +59,7 @@ CREATE EXTERNAL TABLE [ao].[CatalogItemsStamp2]
     [Price] DECIMAL(10,2) NOT NULL,
     [LastUpdated] DATETIME NOT NULL,
     [Rating] FLOAT,
-    [Created] DATETIME2(7) NOT NULL
+    [CreationDate] DATETIME2(7) NOT NULL
 )
 WITH
 (
@@ -73,9 +73,8 @@ CREATE EXTERNAL TABLE [ao].[RatingsStamp2]
 (
     [Id] UNIQUEIDENTIFIER,
     [CatalogItemId] UNIQUEIDENTIFIER NOT NULL,
-    [CreationDate] DATETIME NOT NULL,
     [Rating] INT NOT NULL,
-    [Created] DATETIME2(7) NOT NULL
+    [CreationDate] DATETIME2(7) NOT NULL,
 )
 WITH
 (
@@ -91,8 +90,7 @@ CREATE EXTERNAL TABLE [ao].[CommentsStamp2]
     [CatalogItemId] UNIQUEIDENTIFIER NOT NULL,
     [AuthorName] NVARCHAR(50) NOT NULL,
     [Text] NVARCHAR(500) NOT NULL,
-    [CreationDate] DATETIME NOT NULL,
-    [Created] DATETIME2(7) NOT NULL
+    [CreationDate] DATETIME2(7) NOT NULL
 )
 WITH
 (
@@ -131,7 +129,7 @@ CREATE EXTERNAL TABLE [ao].[CatalogItemsStamp3]
     [Price] DECIMAL(10,2) NOT NULL,
     [LastUpdated] DATETIME NOT NULL,
     [Rating] FLOAT,
-    [Created] DATETIME2(7) NOT NULL
+    [CreationDate] DATETIME2(7) NOT NULL
 )
 WITH
 (
@@ -145,9 +143,8 @@ CREATE EXTERNAL TABLE [ao].[RatingsStamp3]
 (
     [Id] UNIQUEIDENTIFIER,
     [CatalogItemId] UNIQUEIDENTIFIER NOT NULL,
-    [CreationDate] DATETIME NOT NULL,
     [Rating] INT NOT NULL,
-    [Created] DATETIME2(7) NOT NULL
+    [CreationDate] DATETIME2(7) NOT NULL
 )
 WITH
 (
@@ -163,8 +160,7 @@ CREATE EXTERNAL TABLE [ao].[CommentsStamp3]
     [CatalogItemId] UNIQUEIDENTIFIER NOT NULL,
     [AuthorName] NVARCHAR(50) NOT NULL,
     [Text] NVARCHAR(500) NOT NULL,
-    [CreationDate] DATETIME NOT NULL,
-    [Created] DATETIME2(7) NOT NULL
+    [CreationDate] DATETIME2(7) NOT NULL
 )
 WITH
 (
@@ -188,7 +184,15 @@ GO
 
 CREATE VIEW [ao].[LatestCatalogItems] AS
     -- https://stackoverflow.com/questions/28722276/sql-select-top-1-for-each-group
-    SELECT TOP 1 WITH TIES [Id], [Name], [Created] FROM (
+    SELECT TOP 1 WITH TIES 
+            [Id],
+            [Name],
+            [Description],
+            [ImageUrl],
+            [Price],
+            [LastUpdated],
+            [Rating],
+            [CreationDate] FROM (
         SELECT * FROM [ao].[CatalogItems]
         UNION ALL
         SELECT * FROM [ao].[CatalogItemsStamp2]
@@ -196,7 +200,24 @@ CREATE VIEW [ao].[LatestCatalogItems] AS
         SELECT * FROM [ao].[CatalogItemsStamp3]
     ) AS u
     ORDER BY
-        ROW_NUMBER() OVER(PARTITION BY Id ORDER BY [Created] DESC);
+        ROW_NUMBER() OVER(PARTITION BY Id ORDER BY [CreationDate] DESC);
+GO
+
+-- There's no update on comments and ratings, so we can keep them simple.
+CREATE VIEW [ao].[AllRatings] AS
+    SELECT * FROM [ao].[Ratings]
+    UNION ALL
+    SELECT * FROM [ao].[RatingsStamp2]
+    UNION ALL
+    SELECT * FROM [ao].[RatingsStamp3]
+GO
+
+CREATE VIEW [ao].[AllComments] AS
+    SELECT * FROM [ao].[Comments]
+    UNION ALL
+    SELECT * FROM [ao].[CommentsStamp2]
+    UNION ALL
+    SELECT * FROM [ao].[CommentsStamp3]
 GO
 
 ---

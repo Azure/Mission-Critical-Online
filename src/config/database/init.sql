@@ -25,7 +25,7 @@ CREATE TABLE [ao].[CatalogItems]
     [Price] DECIMAL(10,2) NOT NULL,
     [LastUpdated] DATETIME NOT NULL,
     [Rating] FLOAT,
-    [Created] DATETIME2(7) DEFAULT (SYSUTCDATETIME()) NOT NULL
+    [CreationDate] DATETIME2(7) DEFAULT (SYSUTCDATETIME()) NOT NULL
 );
 GO
 
@@ -38,10 +38,8 @@ CREATE TABLE [ao].[Ratings]
     --[Id] INT IDENTITY(1, 1) PRIMARY KEY,
     [Id] UNIQUEIDENTIFIER PRIMARY KEY,
     [CatalogItemId] UNIQUEIDENTIFIER NOT NULL,
-    [CreationDate] DATETIME NOT NULL,
     [Rating] INT NOT NULL,
-    [Created] DATETIME2(7) DEFAULT (SYSUTCDATETIME()) NOT NULL
-
+    [CreationDate] DATETIME2(7) DEFAULT (SYSUTCDATETIME()) NOT NULL
 
     --CONSTRAINT [FK_Ratings_CatalogItems_CatalogItemId] FOREIGN KEY ([CatalogItemId]) REFERENCES [ao].[CatalogItems] ([Id]) ON DELETE CASCADE
 );
@@ -58,8 +56,7 @@ CREATE TABLE [ao].[Comments]
     [CatalogItemId] UNIQUEIDENTIFIER NOT NULL,
     [AuthorName] NVARCHAR(50) NOT NULL,
     [Text] NVARCHAR(500) NOT NULL,
-    [CreationDate] DATETIME NOT NULL,
-    [Created] DATETIME2(7) DEFAULT (SYSUTCDATETIME()) NOT NULL -- datetime2 has larger date range, larger precision
+    [CreationDate] DATETIME2(7) DEFAULT (SYSUTCDATETIME()) NOT NULL -- datetime2 has larger date range, larger precision
 
     --CONSTRAINT [FK_Comments_CatalogItems_CatalogItemId] FOREIGN KEY ([CatalogItemId]) REFERENCES [ao].[CatalogItems] ([Id]) ON DELETE CASCADE
 );
@@ -82,22 +79,22 @@ GO
 
 INSERT INTO [ao].[Comments]
 (
- [Id], [CatalogItemId], [AuthorName], [Text], [CreationDate]
+ [Id], [CatalogItemId], [AuthorName], [Text]--, [CreationDate]
 )
 VALUES
-('aac69679-8c0c-470c-85e2-11f893c8a013', 'fbb6593a-9ce4-4f1a-89b4-e1f218a594ef', 'John', 'Awesome bike!', CURRENT_TIMESTAMP),
-('6aef2adf-4e34-42ac-8b95-36afd697867a', 'fbb6593a-9ce4-4f1a-89b4-e1f218a594ef', 'Mary', 'Do not buy, broke immediately.', CURRENT_TIMESTAMP),
-('344e4d4a-e500-4b8c-a038-5b5f628e9e0a', 'fbb6593a-9ce4-4f1a-89b4-e1f218a594ef', 'Tester Testovich', 'Just testing...', CURRENT_TIMESTAMP)
+('aac69679-8c0c-470c-85e2-11f893c8a013', 'fbb6593a-9ce4-4f1a-89b4-e1f218a594ef', 'John', 'Awesome bike!'),
+('6aef2adf-4e34-42ac-8b95-36afd697867a', 'fbb6593a-9ce4-4f1a-89b4-e1f218a594ef', 'Mary', 'Do not buy, broke immediately.'),
+('344e4d4a-e500-4b8c-a038-5b5f628e9e0a', 'fbb6593a-9ce4-4f1a-89b4-e1f218a594ef', 'Tester Testovich', 'Just testing...')
 GO
 
 INSERT INTO [ao].[Ratings]
 (
- [Id], [CatalogItemId], [Rating], [CreationDate]
+ [Id], [CatalogItemId], [Rating]--, [CreationDate]
 )
 VALUES
-('4fca39bd-f93e-4010-99ee-884393e3ffa4', 'fbb6593a-9ce4-4f1a-89b4-e1f218a594ef', 5, CURRENT_TIMESTAMP),
-('ceca2229-b086-406c-8d0b-2fc78a0d6f3b', 'fbb6593a-9ce4-4f1a-89b4-e1f218a594ef', 1, CURRENT_TIMESTAMP),
-('82f6d908-1fdc-4096-be00-8543e891d31b', 'fbb6593a-9ce4-4f1a-89b4-e1f218a594ef', 3, CURRENT_TIMESTAMP)
+('4fca39bd-f93e-4010-99ee-884393e3ffa4', 'fbb6593a-9ce4-4f1a-89b4-e1f218a594ef', 5),
+('ceca2229-b086-406c-8d0b-2fc78a0d6f3b', 'fbb6593a-9ce4-4f1a-89b4-e1f218a594ef', 1),
+('82f6d908-1fdc-4096-be00-8543e891d31b', 'fbb6593a-9ce4-4f1a-89b4-e1f218a594ef', 3)
 GO
 
 --- Final check
@@ -108,9 +105,4 @@ SELECT * FROM [ao].[Comments]
 GO
 
 SELECT * FROM [ao].[Ratings]
-GO
-
--- Test if JOIN works, although the application doesn't use it.
-SELECT [Name], [Ratings].[Rating] FROM [ao].[CatalogItems]
-LEFT JOIN [ao].[Ratings] ON [CatalogItems].CatalogItemId = [Ratings].[CatalogItemId]
 GO

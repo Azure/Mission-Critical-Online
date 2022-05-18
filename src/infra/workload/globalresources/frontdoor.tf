@@ -11,7 +11,7 @@ resource "azurerm_frontdoor" "main" {
   routing_rule {
     name               = "API-rule"
     accepted_protocols = ["Https"]
-    patterns_to_match  = ["/catalogservice/*", "/healthservice/*"]
+    patterns_to_match  = ["/api/*"]
     frontend_endpoints = [(var.custom_fqdn != "" ? local.frontdoor_custom_frontend_name : local.frontdoor_default_frontend_name)]
     forwarding_configuration {
       forwarding_protocol = "HttpsOnly"

@@ -1,0 +1,44 @@
+{
+    "location": "REPLACE-ME-WITH-AZURE-REGION",
+    "identity": {
+      "type": "SystemAssigned"
+    },
+    "properties": {
+      "steps": [
+        {
+          "name": "AKS pod failure step 1",
+          "branches": [
+            {
+              "name": "AKS pod failure branch 1",
+              "actions": [
+                {
+                  "type": "continuous",
+                  "selectorId": "Selector1",
+                  "duration": "PT10M",
+                  "parameters": [
+                    {
+                        "key": "jsonSpec",
+                        "value": "{\"action\":\"pod-failure\",\"mode\":\"all\",\"selector\":{\"namespaces\":[\"workload\"]}}"
+                    }
+                  ],
+                  "name": "urn:csci:microsoft:azureKubernetesServiceChaosMesh:podChaos/2.1"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "selectors": [
+        {
+          "id": "Selector1",
+          "type": "List",
+          "targets": [
+            {
+              "type": "ChaosTarget",
+              "id": "REPLACE-ME/providers/Microsoft.Chaos/targets/Microsoft-AzureKubernetesServiceChaosMesh"
+            }
+          ]
+        }
+      ]
+    }
+  }

@@ -100,7 +100,7 @@ x-server-name: CatalogService-deploy-85d9fc989d-rk6gb
 
 ### Exceptions and error handling
 
-The Game API returns standard HTTP responses on both success and error.
+The CatalogService API returns standard HTTP responses on both success and error.
 
 * **HTTP 200 (OK)** - request was successful and result is available immediately. Typically for GET requests which query for data.
 * **HTTP 202 (Accepted)** - operation was accepted, but the result is not immediately available. This is, for example, being used for sending new comments or ratings. For these, the response contains a `Location` header representing the URL where the new item will be accessible (not applicable for ratings).

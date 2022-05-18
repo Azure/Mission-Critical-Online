@@ -1,6 +1,3 @@
-parameters:
-  additionalHelmArguments:     '--wait'
-
 jobs: # using jobs so they each run in parallel
 
 - job: deploycontainerHealthService
@@ -74,25 +71,11 @@ jobs: # using jobs so they each run in parallel
             echo  "*** Deploy healthservice to $aksClusterName (in $aksClusterResourceGroup) via helm chart"
             helm upgrade --install healthservice-workload "oci://$($workload.chart.name)" `
                           --version $workload.chart.version `
-                          --namespace $(workloadNamespace) --create-namespace `
+                          --namespace $(workloadNamespace) `
+                          --create-namespace `
                           --set containerimage="$fullContainerImageName" `
                           --set azure.region="$region" `
-                          ${{ parameters.additionalHelmArguments }}
-
-            # Wait for healthservice-deploy k8s deployment to come up
-            $retrycount = 0;
-            $maxretrycount = 5
-            do {
-              kubectl rollout status deployment/healthservice-deploy -n $(workloadNamespace)
-
-              if ($LastExitCode -ne 0) {
-                $retrycount++;
-                echo "Deployment not ready. Retrying... $retrycount/$maxretrycount";
-                start-sleep $(60*$retrycount) # sleep for <retry> * 60 seconds
-              } else {
-                $retrycount = $maxretrycount
-              }
-            } while ( ($retrycount -lt $maxretrycount) )
+                          --wait
           }
 
 - job: deploycontainerCatalogService
@@ -103,6 +86,10 @@ jobs: # using jobs so they each run in parallel
     - download: current # download pipeline artifacts
 
     - template: steps-buildagent-prerequisites.yaml
+
+    - template: steps-parse-terraform-output.yaml
+      parameters:
+        workingDirectory: '$(Pipeline.Workspace)/terraformOutputGlobalInfra'  # Global infra deploy output directory
 
     - task: AzureCLI@2
       displayName: 'Install workload CatalogService on AKS clusters'
@@ -118,10 +105,6 @@ jobs: # using jobs so they each run in parallel
 
           # load json data from downloaded terraform artifact
           $releaseUnitInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputReleaseUnitInfra/*.json | Get-Content | ConvertFrom-JSON
-          $globalInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputGlobalInfra/*.json | Get-Content | ConvertFrom-JSON
-
-          $acrName = $globalInfraDeployOutput.acr_name.value # Container Registry Name (from terraform output)
-          $acrUrl = $globalInfraDeployOutput.acr_login_server.value # Container Registry Login Server (from terraform output)
 
           $workloadsFile = "$(System.DefaultWorkingDirectory)/.ado/pipelines/config/workloads.json"
 
@@ -147,13 +130,10 @@ jobs: # using jobs so they each run in parallel
           }
 
           # We can assume that the image was imported into our ACR in an earlier stage of this pipeline
-          $fullContainerImageName = "$acrUrl/$($workload.containerImage.name):$($workload.containerImage.tag)"
+          $fullContainerImageName = "$(acr_login_server)/$($workload.containerImage.name):$($workload.containerImage.tag)"
 
-          $frontDoorId = $globalInfraDeployOutput.frontdoor_id_header.value
-          echo "*** Retrieved Azure Front Door Header ID $frontDoorId"
-
-          $frontDoorFqdn = $globalInfraDeployOutput.frontdoor_fqdn.value
-          echo "*** Retrieved Azure Front Door FQDN $frontDoorFqdn"
+          echo "*** Retrieved Azure Front Door Header ID $(frontdoor_id_header) from Terraform output"
+          echo "*** Retrieved Azure Front Door FQDN $(frontdoor_fqdn) from Terraform output"
 
           # loop through stamps from pipeline artifact json
           foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
@@ -175,16 +155,16 @@ jobs: # using jobs so they each run in parallel
 
             # Apply workload CatalogService helm chart
             echo "*** Installing helm chart $($workload.chart.name) version $($workload.chart.version) with image $fullContainerImageName"
-
             helm upgrade --install workload-catalogservice "oci://$($workload.chart.name)" `
                          --version $workload.chart.version `
-                         --namespace "$(workloadNamespace)" --create-namespace `
-                         --set azure.frontdoorid="$frontDoorId" `
+                         --namespace "$(workloadNamespace)" `
+                         --create-namespace `
+                         --set azure.frontdoorid="$(frontdoor_id_header)" `
                          --set azure.region="$region" `
-                         --set azure.baseurl="$frontDoorFqdn" `
+                         --set azure.baseurl="$(frontdoor_fqdn)" `
                          --set containerimage="$fullContainerImageName" `
                          --set workload.domainname="$fqdn" `
-                         ${{ parameters.additionalHelmArguments }}
+                         --wait
 
             # Wait for CatalogService-deploy k8s deployment to come up
             $retrycount = 0;
@@ -192,7 +172,7 @@ jobs: # using jobs so they each run in parallel
             do {
               kubectl rollout status deployment/catalogservice-deploy -n $(workloadNamespace)
 
-              # checking if certificate for CatalogService-ingress-secret was issued
+              # checking if certificate for catalogservice-ingress-secret was issued
               if ($(kubectl get certificates/catalogservice-ingress-secret -n $(workloadNamespace) -o 'jsonpath={..status.conditions[?(@.type==\"Ready\")].status}') -ne "True")
               {
                 $LASTEXITCODE=1
@@ -232,10 +212,6 @@ jobs: # using jobs so they each run in parallel
 
           # load json data from downloaded terraform artifact
           $releaseUnitInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputReleaseUnitInfra/*.json | Get-Content | ConvertFrom-JSON
-          $globalInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputGlobalInfra/*.json | Get-Content | ConvertFrom-JSON
-
-          $acrName = $globalInfraDeployOutput.acr_name.value # Container Registry Name (from terraform output)
-          $acrUrl = $globalInfraDeployOutput.acr_login_server.value # Container Registry Login Server (from terraform output)
 
           $workloadsFile = "$(System.DefaultWorkingDirectory)/.ado/pipelines/config/workloads.json"
 
@@ -261,7 +237,7 @@ jobs: # using jobs so they each run in parallel
           }
 
           # We can assume that the image was imported into our ACR in an earlier stage of this pipeline
-          $fullContainerImageName = "$acrUrl/$($workload.containerImage.name):$($workload.containerImage.tag)"
+          $fullContainerImageName = "$(acr_login_server)/$($workload.containerImage.name):$($workload.containerImage.tag)"
 
           # loop through stamps from pipeline artifact json
           foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
@@ -279,28 +255,13 @@ jobs: # using jobs so they each run in parallel
 
             # Apply workload BackgroundProcessor helm chart
             echo "*** Installing helm chart $($workload.chart.name) version $($workload.chart.version) with image $fullContainerImageName"
-
             helm upgrade --install workload-backgroundprocessor "oci://$($workload.chart.name)" `
                          --version $workload.chart.version `
-                         --namespace $(workloadNamespace) --create-namespace `
+                         --namespace $(workloadNamespace) `
+                         --create-namespace `
                          --set containerimage="$fullContainerImageName" `
                          --set azure.region="$region" `
-                         ${{ parameters.additionalHelmArguments }}
-
-            # Wait for BackgroundProcessor-deploy k8s deployment to come up
-            $retrycount = 0;
-            $maxretrycount = 5
-            do {
-              kubectl rollout status deployment/backgroundprocessor-deploy -n $(workloadNamespace)
-              if ($LastExitCode -ne 0) {
-                $retrycount++;
-                echo "Deployment not ready. Retrying... $retrycount/$maxretrycount";
-                start-sleep $(60*$retrycount) # sleep for <retry> * 60 seconds
-              } else {
-                $retrycount = $maxretrycount
-              }
-            } while ( ($retrycount -lt $maxretrycount) )
-
+                         --wait
           }
 
 - job: deployuiapp
@@ -336,7 +297,7 @@ jobs: # using jobs so they each run in parallel
 
             echo "*** Storing configuration to $configFilePath"
             # warning: make sure that these variable names are in sync with client code
-            Add-Content -Path $configFilePath -Value "window.API_URL = `"/api`""
+            Add-Content -Path $configFilePath -Value "window.API_URL = `"/catalogservice/api`""
             Add-Content -Path $configFilePath -Value "window.APPLICATIONINSIGHTS_CONNECTION_STRING = `"$appInsightsConnString`""
 
             $versionLabel = "$(riVariant)-$("$(Build.SourceBranch)" -Replace 'refs/heads/', '')-$(Build.BuildId)"

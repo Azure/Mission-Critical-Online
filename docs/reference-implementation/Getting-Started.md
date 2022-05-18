@@ -282,7 +282,7 @@ Then click **Run pipeline**:
 
 ![Run pipeline](/docs/media/devops_e2e_pipeline_header.png 'Run pipeline')
 
-In the popup window, **uncheck** the box **Destroy Environment at the end** and then click **Run**.
+In the popup window, **uncheck** the box **Destroy environment at the end** and then click **Run**.
 
 ![Start pipeline](/docs/media/devops_run_e2e_pipeline.png 'Start E2E pipeline run')
 

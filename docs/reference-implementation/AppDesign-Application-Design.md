@@ -26,7 +26,7 @@ In order to achieve high responsiveness for all operations, Azure Mission-Critic
 
 Read operations are processed directly by the API and immediately return data back to the user.
 
-![List games reaches to database directly](/docs/media/application-design-operations-1.png)
+![List catalog items reaches to database directly](/docs/media/application-design-operations-1.png)
 
 High-scale write operations (e.g. *post rating, post comment*) are processed asynchronously. The API first sends a message with all relevant information (type of action, comment data, etc.) to the message queue and immediately returns `HTTP 202 (Accepted)` with additional `Location` header for the create operation.
 

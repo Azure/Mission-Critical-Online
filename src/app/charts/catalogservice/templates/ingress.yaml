@@ -36,7 +36,7 @@ spec:
   - host: {{ .Values.workload.domainname }}
     http:
       paths:
-      - path: /api/catalogservice(/|$)(.*) # exposing the 'catalogservice'
+      - path: /catalogservice(/|$)(.*) # exposing the 'catalogservice'
         pathType: Prefix
         backend:
           service:

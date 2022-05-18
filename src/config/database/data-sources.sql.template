@@ -1,0 +1,59 @@
+--- Data source - make sure that the database was actually replicated to this server (can take some time)
+CREATE EXTERNAL DATA SOURCE {{EXTERNAL_DATA_SOURCE_NAME}}
+WITH
+(
+    TYPE = RDBMS,
+    LOCATION = '{{SERVER_NAME}}',
+    DATABASE_NAME = '{{DATABASE_NAME}}',
+    CREDENTIAL = CrossDbCred
+)
+GO
+
+CREATE EXTERNAL TABLE [ao].[{{CATALOGITEMS_EXTERNAL_TABLE_NAME}}]
+(
+    [Id] UNIQUEIDENTIFIER,
+    [Name] NVARCHAR(50) NOT NULL,
+    [Description] NVARCHAR(500) NOT NULL,
+    [ImageUrl] NVARCHAR(100) NOT NULL,
+    [Price] DECIMAL(10,2) NOT NULL,
+    [LastUpdated] DATETIME NOT NULL,
+    [Rating] FLOAT
+)
+WITH
+(
+    DATA_SOURCE = {{EXTERNAL_DATA_SOURCE_NAME}},
+    SCHEMA_NAME = 'ao',
+    OBJECT_NAME = 'CatalogItems'
+)
+GO
+
+CREATE EXTERNAL TABLE [ao].[{{RATINGS_EXTERNAL_TABLE_NAME}}]
+(
+    [Id] UNIQUEIDENTIFIER,
+    [CatalogItemId] UNIQUEIDENTIFIER NOT NULL,
+    [CreationDate] DATETIME NOT NULL,
+    [Rating] INT NOT NULL
+)
+WITH
+(
+    DATA_SOURCE = {{EXTERNAL_DATA_SOURCE_NAME}},
+    SCHEMA_NAME = 'ao',
+    OBJECT_NAME = 'Ratings'
+)
+GO
+
+CREATE EXTERNAL TABLE [ao].[{{COMMENTS_EXTERNAL_TABLE_NAME}}]
+(
+    [Id] UNIQUEIDENTIFIER,
+    [CatalogItemId] UNIQUEIDENTIFIER NOT NULL,
+    [AuthorName] NVARCHAR(50) NOT NULL,
+    [Text] NVARCHAR(500) NOT NULL,
+    [CreationDate] DATETIME NOT NULL
+)
+WITH
+(
+    DATA_SOURCE = {{EXTERNAL_DATA_SOURCE_NAME}},
+    SCHEMA_NAME = 'ao',
+    OBJECT_NAME = 'Comments'
+)
+GO

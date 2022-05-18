@@ -8,7 +8,7 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name }}
     helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
 spec:
-  replicas: {{ .Values.replicas | default 3 }}
+  replicas: {{ .Values.workload.replicas | default 3 }}
   selector:
     matchLabels:
       app: {{ .Chart.Name }}

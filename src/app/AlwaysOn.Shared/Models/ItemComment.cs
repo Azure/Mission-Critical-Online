@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace AlwaysOn.Shared.Models
 {
+    [Table("Comments", Schema = "ao")]
+
     public class ItemComment
     {
         public Guid Id { get; set; }
@@ -15,11 +14,11 @@ namespace AlwaysOn.Shared.Models
         public string Text { get; set; }
         public DateTime CreationDate { get; set; }
 
-        /// <summary>
-        /// Time to live in Cosmos DB. In Seconds
-        /// </summary>
-        [JsonPropertyName("ttl")]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public int? TimeToLive { get; set; }
+        [JsonIgnore]
+        [ForeignKey(nameof(CatalogItemId))]
+        public CatalogItem Item { get; set; }
     }
+
+    [Table("AllComments", Schema = "ao")]
+    public class ItemCommentRead : ItemComment { }
 }

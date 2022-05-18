@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -48,7 +49,8 @@ namespace AlwaysOn.CatalogService
 
             services.AddHealthChecks();// Adds a simple liveness probe HTTP endpoint, path mapping happens further below
 
-            services.AddSingleton<IDatabaseService, CosmosDbService>();
+            services.AddDbContext<AoDbContext>(options => options.UseSqlServer(Configuration[SysConfiguration.DatabaseConnectionStringKeyName]));
+            services.AddScoped<IDatabaseService, SqlDatabaseService>();
 
             services.AddSingleton<IMessageProducerService, EventHubProducerService>();
 

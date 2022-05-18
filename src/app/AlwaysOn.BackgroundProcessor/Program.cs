@@ -6,6 +6,7 @@ using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel;
 using Microsoft.ApplicationInsights.WorkerService;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -69,7 +70,8 @@ namespace AlwaysOn.BackgroundProcessor
                     EnableAdaptiveSampling = bool.TryParse(hostContext.Configuration[SysConfiguration.ApplicationInsightsAdaptiveSamplingName], out bool result) ? result : true
                 });
 
-                services.AddSingleton<IDatabaseService, CosmosDbService>();
+                services.AddDbContext<AoDbContext>(options => options.UseSqlServer(hostContext.Configuration[SysConfiguration.DatabaseConnectionStringKeyName]));
+                services.AddScoped<IDatabaseService, SqlDatabaseService>();
 
                 // Health check / k8s liveness probes. Source: https://stackoverflow.com/a/60722982/1537195
                 services.AddHealthChecks();

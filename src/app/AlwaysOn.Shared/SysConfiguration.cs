@@ -12,6 +12,8 @@ namespace AlwaysOn.Shared
         public const string ApplicationInsightsConnStringKeyName = "APPLICATIONINSIGHTS_CONNECTION_STRING";
         public const string ApplicationInsightsAdaptiveSamplingName = "APPLICATIONINSIGHTS_ADAPTIVE_SAMPLING";
 
+        public const string DatabaseConnectionStringKeyName = "DATABASE_CONNECTIONSTRING";
+
         public const string CosmosCatalogItemsContainerName = "catalogItems";
         public const string CosmosItemCommentsContainerName = "itemComments";
         public const string CosmosItemRatingsContainerName = "itemRatings";

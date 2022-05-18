@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace AlwaysOn.Shared.Models
 {
+    [Table("Ratings", Schema = "ao")]
     public class ItemRating
     {
         public Guid Id { get; set; }
@@ -14,11 +16,11 @@ namespace AlwaysOn.Shared.Models
         public int Rating { get; set; }
         public DateTime CreationDate { get; set; }
 
-        /// <summary>
-        /// Time to live in Cosmos DB. In Seconds
-        /// </summary>
-        [JsonPropertyName("ttl")]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public int? TimeToLive { get; set; }
+        [JsonIgnore]
+        [ForeignKey(nameof(CatalogItemId))]
+        public CatalogItem Item { get; set; }
     }
+
+    [Table("AllRatings", Schema = "ao")]
+    public class ItemRatingRead : ItemRating { }
 }

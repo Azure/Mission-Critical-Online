@@ -24,13 +24,18 @@ Azure Mission-Critical integrates [Azure Chaos Studio](https://aka.ms/chaosstudi
 
 The Azure Mission-Critical online reference implementation uses existing testing capabilities and frameworks whenever possible. The subsequent sections contain an overview of the used tools and frameworks.
 
+- [JMeter with Azure Load Test](#jmeter-with-azure-load-test)
 - [Locust](#locust) for load testing
 - [Playwright](#playwright) for UI testing
 - [Azure Chaos Studio](#azure-chaos-studio) for failure injection testing
 
+### JMeter with Azure Load Test
+
+[Azure Load Test](https://docs.microsoft.com/azure/load-testing/overview-what-is-azure-load-testing) is a managed service to execute [Apache JMeter](https://jmeter.apache.org/) load test definitions.
+
 ### Locust
 
-Locust is an open source Load Testing framework. See [locust](./loadtest-locust/README.md) for more details about the implementation and configuration.
+Locust is an open source Load Testing framework written in Python. See [locust](./loadtest-locust/README.md) for more details about the implementation and configuration.
 
 ### Playwright
 

@@ -29,6 +29,10 @@ jobs:
 
     - download: current # download pipeline artifacts
 
+    - template: steps-parse-terraform-output.yaml
+      parameters:
+        workingDirectory: '$(Pipeline.Workspace)/terraformOutputGlobalInfra'  # Global infra deploy output directory
+
     - task: AzureCLI@2
       displayName: 'Verify global Front Foor state configuration'
       retryCountOnTaskFailure: 1
@@ -38,12 +42,8 @@ jobs:
         scriptLocation: inlineScript
         inlineScript: |
 
-          # load json data from downloaded terraform artifact
-          $infraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputGlobalInfra/*.json | Get-Content | ConvertFrom-JSON
-
           # Print Front Door Deployment details for troubleshooting and debugging purposes
-          $frontdoorResourceId = $infraDeployOutput.frontdoor_resource_id.value # Front Door Resource ID
-          $frontdoorResource = $(az resource show --id $frontdoorResourceId `
+          $frontdoorResource = $(az resource show --id $(frontdoor_resource_id) `
                                   --query '{enabledState:properties.enabledState,provisioningState:properties.provisioningState,resourceState:properties.resourceState}')
           $frontdoorState = $frontdoorResource | ConvertFrom-Json
 
@@ -76,25 +76,18 @@ jobs:
         targetType: inline
         script: |
 
-          # load json data from downloaded terraform artifact
-          $infraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputGlobalInfra/*.json | Get-Content | ConvertFrom-JSON
-
-          # Azure Front Door Endpoint URI
-          $frontdoorFqdn = $infraDeployOutput.frontdoor_fqdn.value
-
           # We are using Playwright to browse the UI and capture screenshots
-
           # install Playwright dependencies
           echo "Installing Playwright dependencies..."
           npm install playwright-chromium @playwright/test -y
 
-          $env:TEST_BASEURL = "https://$frontDoorFqdn"
+          $env:TEST_BASEURL = "https://$(frontdoor_fqdn)"
           $env:SCREENSHOT_PATH = "$pwd/screenshots"
           $env:TEST_RUN_ALL_OPTIONAL_STEPS = "true"
 
           $playwrightTestPath = "src/testing/ui-test-playwright"
 
-          echo "*** Running PlayWright tests from $playwrightTestPath against https://$frontDoorFqdn"
+          echo "*** Running PlayWright tests from $playwrightTestPath against https://$(frontdoor_fqdn)"
 
           npx playwright test -c $playwrightTestPath --timeout 60000
 

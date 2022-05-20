@@ -56,8 +56,8 @@ resource "azapi_resource" "container_app" {
       template = {
         containers = [
           {
-            image = "mcr.microsoft.com/containerapps-helloworld:latest"
             name = "helloworld"
+            image = "mcr.microsoft.com/azuredocs/containerapps-helloworld:latest"
           }
         ]
       }

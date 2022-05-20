@@ -22,7 +22,7 @@ resource "azapi_resource" "container_app_environment" {
 }
 
 resource "azapi_resource" "container_app" {
-  name = "${local.prefix}-${local.location_short}-container-helloworld"
+  name = "${local.prefix}-${local.location_short}-ca-hello"
   location = azurerm_resource_group.stamp.location
   identity {
     type = "SystemAssigned"

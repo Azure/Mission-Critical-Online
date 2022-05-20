@@ -11,7 +11,7 @@ module "stamp_addresses" {
   base_cidr_block = var.vnet_address_space
   networks = [for stamp in var.stamps : {
     name     = stamp
-    new_bits = 20 - local.netmask # Each stamp needs at least a /20 sized subnet. So we calculate based on the provided input address space
+    new_bits = 19 - local.netmask # Each stamp needs at least a /20 sized subnet. So we calculate based on the provided input address space
   }]
 }
 

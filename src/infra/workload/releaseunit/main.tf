@@ -4,6 +4,11 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "3.7.0"
     }
+
+    azapi = {
+      source = "azure/azapi"
+      version = "0.2.0"
+    }
   }
 
   backend "azurerm" {}
@@ -17,6 +22,9 @@ provider "azurerm" {
       prevent_deletion_if_contains_resources = false
     }
   }
+}
+
+provider "azapi" {
 }
 
 # Random API key which needs to be identical between all stamps

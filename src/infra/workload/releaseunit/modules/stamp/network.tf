@@ -12,6 +12,14 @@ module "subnet_addrs" {
     {
       name     = "kubernetes"
       new_bits = 22 - local.netmask # For AKS we want a /22 sized subnet. So we calculate based on the provided input address space
+    },
+    {
+      name     = "ca-control"
+      new_bits = 21 - local.netmask # For AKS we want a /22 sized subnet. So we calculate based on the provided input address space
+    },
+    {
+      name     = "ca-runtime"
+      new_bits = 21 - local.netmask # For AKS we want a /22 sized subnet. So we calculate based on the provided input address space
     }
     # More subnets can be added here and terraform will dynamically calculate their CIDR ranges
   ]
@@ -62,6 +70,36 @@ resource "azurerm_subnet" "kubernetes" {
   resource_group_name  = azurerm_resource_group.stamp.name
   virtual_network_name = azurerm_virtual_network.stamp.name
   address_prefixes     = [module.subnet_addrs.network_cidr_blocks["kubernetes"]]
+  service_endpoints = [
+    "Microsoft.Storage",
+    "Microsoft.AzureCosmosDB",
+    "Microsoft.KeyVault",
+    "Microsoft.ContainerRegistry",
+    "Microsoft.EventHub"
+  ]
+}
+
+# Subnet for Kubernetes nodes and pods
+resource "azurerm_subnet" "ca_controlplane" {
+  name                 = "ca-control-snet"
+  resource_group_name  = azurerm_resource_group.stamp.name
+  virtual_network_name = azurerm_virtual_network.stamp.name
+  address_prefixes     = [module.subnet_addrs.network_cidr_blocks["ca-control"]]
+  service_endpoints = [
+    "Microsoft.Storage",
+    "Microsoft.AzureCosmosDB",
+    "Microsoft.KeyVault",
+    "Microsoft.ContainerRegistry",
+    "Microsoft.EventHub"
+  ]
+}
+
+# Subnet for Kubernetes nodes and pods
+resource "azurerm_subnet" "ca_runtime" {
+  name                 = "ca-runtime-snet"
+  resource_group_name  = azurerm_resource_group.stamp.name
+  virtual_network_name = azurerm_virtual_network.stamp.name
+  address_prefixes     = [module.subnet_addrs.network_cidr_blocks["ca-runtime"]]
   service_endpoints = [
     "Microsoft.Storage",
     "Microsoft.AzureCosmosDB",

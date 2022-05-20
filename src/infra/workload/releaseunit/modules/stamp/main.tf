@@ -9,3 +9,17 @@ resource "azurerm_resource_group" "stamp" {
     }
   )
 }
+
+terraform {
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "3.7.0"
+    }
+
+    azapi = {
+      source = "azure/azapi"
+      version = "0.2.0"
+    }
+  }
+}

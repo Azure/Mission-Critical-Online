@@ -15,7 +15,7 @@ variables:
 - name: 'certManagerVersion'  # cert-manager helm chart version
   value: 'v1.8.0'
 - name: 'dotnetSdkVersion'    # dotnet sdk version
-  value: '6.0.200'
+  value: '6.0.300'
 - name: 'chaosMeshVersion'    #  chaos-mesh chart version
   value: '2.2.0'
 - name: 'uiAppNodeVersion'    # nodejs version for the UI app

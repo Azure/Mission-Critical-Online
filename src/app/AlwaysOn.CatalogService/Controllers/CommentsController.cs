@@ -115,7 +115,7 @@ namespace AlwaysOn.CatalogService.Controllers
             // If this comment was sent as test data, set the TTL to a short value
             if (Request.Headers.TryGetValue("X-TEST-DATA", out var testDataHeader) && testDataHeader.FirstOrDefault()?.ToLower() == "true")
             {
-                comment.TimeToLive = 30;
+                //comment.TimeToLive = 30;
             }
 
             try

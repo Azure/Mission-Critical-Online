@@ -97,8 +97,8 @@ namespace AlwaysOn.Shared.Services
                     Id = Guid.NewGuid(),
                     CatalogItemId = Guid.NewGuid(), // Create some random (=non-existing) item id
                     CreationDate = DateTime.UtcNow,
-                    Rating = 1,
-                    TimeToLive = 10 // will be auto-deleted after 10sec
+                    Rating = 1
+                    //TimeToLive = 10 // will be auto-deleted after 10sec
                 };
 
                 await AddNewRatingAsync(testRating);

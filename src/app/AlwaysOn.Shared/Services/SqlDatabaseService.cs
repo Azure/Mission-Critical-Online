@@ -85,18 +85,22 @@ namespace AlwaysOn.Shared.Services
         {
             RatingDto avgRating = null;
             
-            // In Cosmos we do this:
-            //  SELECT AVG(c.rating) as averageRating, count(1) as numberOfVotes FROM c WHERE c.catalogItemId = @itemId
-            // TODO: Is that possible in EF without using raw query?
-
             try {
-                var ratings = await _dbContext.ItemRatingsRead.Where(i => i.CatalogItemId == itemId).ToListAsync();
-
-                avgRating = new RatingDto()
-                {
-                    AverageRating = ratings.Average(r => r.Rating),
-                    NumberOfVotes = ratings.Count
-                };
+                /*
+                The following LINQ translates to SQL like this: 
+                    SELECT AVG(CAST([a].[Rating] AS float)) AS [AverageRating], COUNT(*) AS [NumberOfVotes]
+                    FROM [ao].[AllRatings] AS [a]
+                    WHERE [a].[CatalogItemId] = @__itemId_0
+                    GROUP BY [a].[CatalogItemId]
+                 */
+                avgRating = await _dbContext.ItemRatingsRead
+                    .Where(i => i.CatalogItemId == itemId)
+                    .GroupBy(i => i.CatalogItemId, r => r.Rating)
+                    .Select(x => new RatingDto() {
+                        AverageRating = x.Average(),
+                        NumberOfVotes = x.Count()
+                    })
+                    .FirstOrDefaultAsync();
             }
             catch (Exception e)
             {
@@ -146,18 +150,10 @@ namespace AlwaysOn.Shared.Services
 
         public async Task<bool> IsHealthy(CancellationToken cancellationToken = default)
         {
-            var res = await _dbContext.Database.ExecuteSqlRawAsync("SELECT CURRENT_TIMESTAMP");
-            //TODO: add write context test
+            // TODO: Validate if this check is enough.
+            var res = await _dbContext.Database.CanConnectAsync();
 
-            // Expecting -1 as the number of affected rows, since this query is not working with data.
-            if (res == -1)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return res;
         }
 
         public async Task<IEnumerable<CatalogItem>> ListCatalogItemsAsync(int limit)

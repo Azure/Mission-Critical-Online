@@ -1,0 +1,11 @@
+apiVersion: "v2"
+appVersion: 0.0.1
+name: opentelemetry-collector-appinsights
+description: "OpenTelemetry Collector for AppInsights"
+version: 0.0.1
+sources:
+- https://github.com/Azure/Mission-Critical
+kubeVersion: ">=1.21.0"
+maintainers:
+- name: alwayson
+  email: alwaysonappnet@microsoft.com

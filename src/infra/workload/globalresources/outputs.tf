@@ -46,6 +46,20 @@ output "global_storage_account_name" {
   value = azurerm_storage_account.global.name
 }
 
+# Outputs of monitoring stamps
+output "monitoringstamp_properties" {
+  value = [for instance in module.stamp_monitoring : {
+    appinsights_instrumentation_key = instance.appinsights_instrumentation_key
+    location = instance.location
+  }]
+  sensitive = true
+}
+
+output "appinsights_instrumentation_key" {
+  value = azurerm_application_insights.monitoring.instrumentation_key
+  sensitive = true
+}
+
 output "azure_monitor_action_group_resource_id" {
   value = azurerm_monitor_action_group.main.id
 }

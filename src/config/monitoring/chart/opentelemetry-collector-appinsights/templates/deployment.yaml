@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: otel-collector
+  labels:
+    component: otel-collector
+    app: {{ .Chart.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+spec:
+  replicas: 1  # scale out based on your usage
+  selector:
+    matchLabels:
+      app: opentelemetry
+  template:
+    metadata:
+      labels:
+        app: opentelemetry
+        component: otel-collector
+    spec:
+      containers:
+      - name: otel-collector
+        image: otel/opentelemetry-collector-contrib:0.45.0
+#        command:
+#          - "/otelcontribcol"
+#          - "--config=/conf/otel-collector-config.yaml"
+        resources:
+          limits:
+            cpu: 100m
+            memory: 200Mi
+          requests:
+            cpu: 100m
+            memory: 200Mi
+        ports:
+          - containerPort: 9411 # Default endpoint for Zipkin receiver.
+        volumeMounts:
+          - mountPath: /etc/otelcol-contrib
+            name: otel-collector-config-vol
+          - mountPath: /var/log
+            name: varlog
+            readOnly: true
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 13133
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 13133
+      volumes:
+        - configMap:
+            name: otel-collector-conf
+            items:
+              - key: otel-collector-config
+                path: config.yaml
+          name: otel-collector-config-vol
+        - name: varlog
+          hostPath:
+            path: /var/log

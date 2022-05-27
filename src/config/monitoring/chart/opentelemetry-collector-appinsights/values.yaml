@@ -1,0 +1,5 @@
+azuremonitor:
+  endpoint: "https://dc.services.visualstudio.com/v2/track"
+  instrumentationKey: "notset"
+  maxbatchsize: 1024 # maxbatchsize is the maximum number of items that can be queued before calling to the configured endpoint
+  maxbatchinterval: "10s" # maxbatchinterval is the maximum time to wait before calling the configured endpoint.

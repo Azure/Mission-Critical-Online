@@ -93,7 +93,7 @@ namespace AlwaysOn.CatalogService.Controllers
         }
 
         /// <summary>
-        /// Creates a new ItemComment in the database
+        /// Creates a new ItemRating in the database
         /// </summary>
         /// <param name="itemId"></param>
         /// <param name="ratingDto"></param>
@@ -116,9 +116,10 @@ namespace AlwaysOn.CatalogService.Controllers
             };
             _logger.LogDebug("Received request to create new rating with ratingId={ratingId} for CatalogItemId={CatalogItemId}", rating.Id, rating.CatalogItemId);
 
-            // If this comment was sent as test data, set the TTL to a short value
+            // If this rating was sent as test data, set the TTL to a short value
             if (Request.Headers.TryGetValue("X-TEST-DATA", out var testDataHeader) && testDataHeader.FirstOrDefault()?.ToLower() == "true")
             {
+                // TODO: Update for SQL situation.
                 //rating.TimeToLive = 30;
             }
 

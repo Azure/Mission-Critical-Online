@@ -12,16 +12,8 @@ namespace AlwaysOn.Shared.Services
 {
     public class SqlDatabaseService : IDatabaseService
     {
-        //private readonly AoWriteDbContext _writeDbContext;
-        //private readonly AoReadDbContext _readDbContext;
         private readonly AoDbContext _dbContext;
         
-
-        //public SqlDatabaseService(AoWriteDbContext writeContext, AoReadDbContext readContext = null)
-        //{
-        //    _writeDbContext = writeContext;
-        //    _readDbContext = readContext;
-        //}
 
         public SqlDatabaseService(AoDbContext dbContext)
         {
@@ -30,16 +22,13 @@ namespace AlwaysOn.Shared.Services
 
         public async Task AddNewCatalogItemAsync(CatalogItem catalogItem)
         {
-            //_writeDbContext.CatalogItems.Add(catalogItem);
             _dbContext.CatalogItemsWrite.Add(catalogItem);
 
-            //await _writeDbContext.SaveChangesAsync();
             await _dbContext.SaveChangesAsync();
         }
 
         public async Task AddNewCommentAsync(ItemComment comment)
         {
-            //_writeDbContext.ItemComments.Add(comment);
             _dbContext.ItemCommentsWrite.Add(comment);
 
             await _dbContext.SaveChangesAsync(); // check if the number of results is 1
@@ -47,7 +36,6 @@ namespace AlwaysOn.Shared.Services
 
         public async Task AddNewRatingAsync(ItemRating rating)
         {
-            //_writeDbContext.ItemRatings.Add(rating);
             _dbContext.ItemRatingsWrite.Add(rating);
 
             await _dbContext.SaveChangesAsync();

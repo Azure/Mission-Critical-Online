@@ -5,7 +5,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AlwaysOn.Shared
 {
-    //public class AoDbContext<T> : DbContext where T : DbContext
     public class AoDbContext : DbContext
     {
         public AoDbContext(DbContextOptions options) : base(options) { }
@@ -28,14 +27,4 @@ namespace AlwaysOn.Shared
             //});
         }
     }
-
-    //public class AoWriteDbContext : AoDbContext<AoWriteDbContext>
-    //{
-    //    public AoWriteDbContext(DbContextOptions<AoWriteDbContext> options) : base(options) { }
-    //}
-
-    //public class AoReadDbContext : AoDbContext<AoReadDbContext> 
-    //{
-    //    public AoReadDbContext(DbContextOptions<AoReadDbContext> options) : base(options) { }
-    //}
 }

@@ -53,7 +53,7 @@ namespace AlwaysOn.Shared
         public string GlobalStorageAccountConnectionString => Configuration["GLOBAL_STORAGEACCOUNT_CONNECTIONSTRING"];
 
         public string CosmosEndpointUri => Configuration["COSMOSDB_ENDPOINT"];
-        public string CosmosApiKey => Configuration["COSMOSDB_APIKEY"];
+        public string CosmosKey => Configuration["COSMOSDB_KEY"];
         public string CosmosDBDatabaseName => Configuration["COSMOSDB_DATABASENAME"];
 
         public string FrontendSenderEventHubConnectionString => Configuration["FRONTEND_SENDEREVENTHUBCONNECTIONSTRING"];

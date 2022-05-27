@@ -14,7 +14,7 @@ locals {
     "APPLICATIONINSIGHTS-CONNECTION-STRING"      = data.azurerm_application_insights.stamp.connection_string
     "APPLICATIONINSIGHTS-ADAPTIVE-SAMPLING"      = var.ai_adaptive_sampling,
     "CosmosDb-Endpoint"                          = data.azurerm_cosmosdb_account.global.endpoint
-    "CosmosDb-ApiKey"                            = data.azurerm_cosmosdb_account.global.primary_key
+    "CosmosDb-Key"                            = data.azurerm_cosmosdb_account.global.primary_key
     "CosmosDb-DatabaseName"                      = var.cosmosdb_database_name
     "API-Key"                                    = var.api_key
   }

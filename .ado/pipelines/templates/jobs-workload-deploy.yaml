@@ -8,6 +8,10 @@ jobs: # using jobs so they each run in parallel
 
     - template: steps-buildagent-prerequisites.yaml
 
+    - template: steps-parse-terraform-output.yaml
+      parameters:
+        workingDirectory: '$(Pipeline.Workspace)/terraformOutputGlobalInfra'  # Global infra deploy output directory
+
     - task: AzureCLI@2
       displayName: 'Install workload healthservice on AKS clusters'
       retryCountOnTaskFailure: 2

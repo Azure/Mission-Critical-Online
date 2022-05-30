@@ -18,6 +18,9 @@ networkPolicy:
   enabled: true # Enable Network Policy (contains a default-deny policy)
   egressRange: "0.0.0.0/0" # CIDR range for allowed egress traffic
 
+ingress:
+  annotations: # this can be empty but has to exist
+
 azure:
   frontdoorid: "" # Azure Front Door Header ID
   region: "East US 2"

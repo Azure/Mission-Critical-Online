@@ -17,7 +17,7 @@ metadata:
   {{- if .Values.azure.frontdoorid }}
     # To restric traffic coming only through our Front Door instance, we use a header check on the X-Azure-FDID
     # The value gets injected by the pipeline. Hence, this ID should be treated as a senstive value
-    nginx.ingress.kubernetes.io/enable-modsecurity: "true"
+    #nginx.ingress.kubernetes.io/enable-modsecurity: "true"
     nginx.ingress.kubernetes.io/modsecurity-snippet: |
       SecRuleEngine On
       SecRule &REQUEST_HEADERS:X-Azure-FDID \"@eq 0\"  \"log,deny,id:106,status:403,msg:\'Front Door ID not present\'\"

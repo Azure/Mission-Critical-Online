@@ -64,14 +64,14 @@ jobs: # using jobs so they each run in parallel
               if ($(kubectl get certificates/workload-ingress-secret -n $(workloadNamespace) -o 'jsonpath={..status.conditions[?(@.type==\"Ready\")].status}') -ne "True")
               {
                 $LASTEXITCODE = 1
-                echo "certificate for workload-ingress-secret pending.. "
 
                 $retrycount++;
-                echo "Certificate not ready. Retrying... $retrycount/$maxretrycount";
+                echo "Certificate for workload-ingress-secret not ready. Waiting and retrying... $retrycount/$maxretrycount";
                 Start-Sleep $(60 * $retrycount) # sleep for <retry> * 60 seconds
               }
               else
               {
+                echo "Certificate is ready!"
                 break
               }
             } while ( ($retrycount -lt $maxretrycount) )

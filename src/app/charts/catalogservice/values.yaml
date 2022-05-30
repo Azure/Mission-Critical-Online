@@ -16,9 +16,9 @@ scale: # Horizontal Pod Autoscaler (HPA) configuration
 
 ingress:
   annotations:
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "true" # Server-side HTTPS enforcement through redirect
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "120" # Set timeout to read from the backend pods to 120s. Cosmos DB retries can go up to 60s
-    nginx.ingress.kubernetes.io/use-regex: "true"
+    #nginx.ingress.kubernetes.io/force-ssl-redirect: "true" # Server-side HTTPS enforcement through redirect
+    #nginx.ingress.kubernetes.io/proxy-read-timeout: "120" # Set timeout to read from the backend pods to 120s. Cosmos DB retries can go up to 60s
+    #nginx.ingress.kubernetes.io/use-regex: "true"
     cert-manager.io/cluster-issuer: "cert-manager-alwayson" # this will trigger cert-manager to request a certificate
 
 networkPolicy:

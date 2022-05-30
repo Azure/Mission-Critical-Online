@@ -27,9 +27,6 @@ jobs: # using jobs so they each run in parallel
           $frontDoorId = $globalInfraDeployOutput.frontdoor_id_header.value
           echo "*** Retrieved Azure Front Door Header ID $frontDoorId"
 
-          $frontDoorFqdn = $globalInfraDeployOutput.frontdoor_fqdn.value
-          echo "*** Retrieved Azure Front Door FQDN $frontDoorFqdn"
-
           # loop through stamps from pipeline artifact json
           foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
 

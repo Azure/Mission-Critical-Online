@@ -7,9 +7,8 @@ using System.Text.Json.Serialization;
 namespace AlwaysOn.Shared.Models
 {
     [Table("CatalogItems", Schema = "ao")]
-    public class CatalogItem
+    public class CatalogItem : AoSqlModelBase
     {
-        public Guid Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public string ImageUrl { get; set; }
@@ -17,7 +16,6 @@ namespace AlwaysOn.Shared.Models
         public decimal Price { get; set; }
         public DateTime LastUpdated { get; set; }
         public double? Rating { get; set; }
-        public DateTime CreationDate { get; set; }
 
         // we are not currently fetching these along with the item, so no need to have them empty in the JSON response
         [JsonIgnore]

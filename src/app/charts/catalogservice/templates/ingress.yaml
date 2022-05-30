@@ -11,15 +11,8 @@ metadata:
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "120"   #  Set timeout to read from the backend pods to 120s. Cosmos DB retries can go up to 60s
     nginx.ingress.kubernetes.io/use-regex: "true"
-    # Optionally, we could rewrite taret path to remove the name of the service. However, this might break some things like Location header rewrites for the response
+    # Optionally, we could rewrite taret path to remove the name of the service. However, this might break some things like Location header for the response
     # nginx.ingress.kubernetes.io/rewrite-target: /$2
-
-    # Rewrite for the Location response header. Replaces the internal FQDN of the cluster with the base URL of the environment
-    # Docs: https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/#proxy-redirect
-    # Backend header might look like this: http://adaptedanteater-cluster.northeurope.cloudapp.azure.com/api/1.0/catalogitem/123
-    # Will be rewritte to something like https://aoint-app.alwaysonapp.net/api/1.0/catalogitem/123
-    nginx.ingress.kubernetes.io/proxy-redirect-from: "~^((http|https)://.+?)/(.+)$"
-    nginx.ingress.kubernetes.io/proxy-redirect-to: "https://{{ .Values.azure.baseurl }}/$3"
   {{- if .Values.azure.frontdoorid }}
     # To restric traffic coming only through our Front Door instance, we use a header check on the X-Azure-FDID
     # The value gets injected by the pipeline. Hence, this ID should be treated as a senstive value

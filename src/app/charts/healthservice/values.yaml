@@ -22,5 +22,5 @@ networkPolicy:
   enabled: true # Enable Network Policy
 
 azure:
-  frontdoorid: "" # Azure Front Door Header ID (blank = disabled)
+  frontdoorid: "" # Azure Front Door Header ID
   region: "East US 2"

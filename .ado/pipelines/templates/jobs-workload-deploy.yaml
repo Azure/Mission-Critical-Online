@@ -89,7 +89,6 @@ jobs: # using jobs so they each run in parallel
           $releaseUnitInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputReleaseUnitInfra/*.json | Get-Content | ConvertFrom-JSON
 
           echo "*** Retrieved Azure Front Door Header ID $(frontdoor_id_header) from Terraform output"
-          echo "*** Retrieved Azure Front Door FQDN $(frontdoor_fqdn) from Terraform output"
 
           # loop through stamps from pipeline artifact json
           foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
@@ -121,7 +120,6 @@ jobs: # using jobs so they each run in parallel
                          --create-namespace `
                          --set azure.frontdoorid="$(frontdoor_id_header)" `
                          --set azure.region="$region" `
-                         --set azure.baseurl="$(frontdoor_fqdn)" `
                          --set containerimage="$fullContainerImageName" `
                          --set workload.domainname="$fqdn" `
                          --wait

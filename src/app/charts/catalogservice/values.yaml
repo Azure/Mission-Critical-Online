@@ -16,8 +16,6 @@ scale: # Horizontal Pod Autoscaler (HPA) configuration
 
 ingress:
   annotations:
-    #nginx.ingress.kubernetes.io/force-ssl-redirect: "true" # Server-side HTTPS enforcement through redirect
-    #nginx.ingress.kubernetes.io/proxy-read-timeout: "120" # Set timeout to read from the backend pods to 120s. Cosmos DB retries can go up to 60s
     #nginx.ingress.kubernetes.io/use-regex: "true"
     cert-manager.io/cluster-issuer: "cert-manager-alwayson" # this will trigger cert-manager to request a certificate
 
@@ -28,4 +26,7 @@ networkPolicy:
 azure:
   frontdoorid: "" # Azure Front Door Header ID (blank = disabled)
   region: "East US 2"
-  baseurl: "OVERWRITE.myalwaysonapp.net" # FQDN used by the Azure Front Door endpoint
+
+healthservice:
+  name: "healthservice-service" # name of the healthservice service in k8s
+  port: 80

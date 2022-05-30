@@ -46,6 +46,12 @@ data:
           enabled = false
           # When this is enabled (enabled = true), all kube events including normal events will be collected
 
+       [log_collection_settings.schema]
+          # In the absense of this configmap, default value for containerlog_schema_version is "v1"
+          # Supported values for this setting are "v1","v2"
+          # See documentation for benefits of v2 schema over v1 schema before opting for "v2" schema
+          containerlog_schema_version = "v2"
+
   prometheus-data-collection-settings: |-
     [prometheus_data_collection_settings.cluster]
         # Cluster level scrape endpoint(s). These metrics will be scraped from agent's Replicaset (singleton)

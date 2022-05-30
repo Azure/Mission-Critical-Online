@@ -12,3 +12,10 @@ resource "azurerm_role_assignment" "acrpull_role" {
   role_definition_name = "AcrPull"
   principal_id         = azurerm_kubernetes_cluster.stamp.kubelet_identity.0.object_id
 }
+
+# Permission for container app to pull images from the globally shared ACR
+resource "azurerm_role_assignment" "acrpull_role_containerapp" {
+  scope                = data.azurerm_container_registry.global.id
+  role_definition_name = "AcrPull"
+  principal_id         = azapi_resource.container_app.identity.0.principal_id
+}

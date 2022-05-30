@@ -23,5 +23,5 @@ networkPolicy:
   egressRange: "0.0.0.0/0" # CIDR range for allowed egress traffic
 
 azure:
-  frontdoorid: "" # Azure Front Door Header ID (blank = disabled)
+  frontdoorid: "" # Azure Front Door Header ID
   region: "East US 2"

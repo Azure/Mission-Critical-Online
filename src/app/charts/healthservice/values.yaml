@@ -13,7 +13,7 @@ workload:
 
 ingress:
   annotations:
-    #nginx.ingress.kubernetes.io/use-regex: "true"
+    cert-manager.io/cluster-issuer: "cert-manager-alwayson" # this will trigger cert-manager to request a certificate
 
 # Note! When disabling Network Policy for this helm chart,
 # make sure to disable Network Policy for the CatalogService as well

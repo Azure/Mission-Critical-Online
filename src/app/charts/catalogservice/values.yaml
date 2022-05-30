@@ -14,10 +14,6 @@ scale: # Horizontal Pod Autoscaler (HPA) configuration
   minReplicas: 3 # Min. number of replicas used for HPA
   maxReplicas: 20 # Max. number of replicas used for HPA
 
-ingress:
-  annotations:
-    cert-manager.io/cluster-issuer: "cert-manager-alwayson" # this will trigger cert-manager to request a certificate
-
 networkPolicy:
   enabled: true # Enable Network Policy (contains a default-deny policy)
   egressRange: "0.0.0.0/0" # CIDR range for allowed egress traffic

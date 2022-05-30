@@ -22,11 +22,6 @@ jobs: # using jobs so they each run in parallel
           # load json data from downloaded terraform artifact
           $releaseUnitInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputReleaseUnitInfra/*.json | Get-Content | ConvertFrom-JSON
 
-          $globalInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputGlobalInfra/*.json | Get-Content | ConvertFrom-JSON
-
-          $frontDoorId = $globalInfraDeployOutput.frontdoor_id_header.value
-          echo "*** Retrieved Azure Front Door Header ID $frontDoorId"
-
           # loop through stamps from pipeline artifact json
           foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
 
@@ -48,7 +43,7 @@ jobs: # using jobs so they each run in parallel
             # Apply workload worker helm chart
             echo  "*** Deploy healthservice to $aksClusterName (in $aksClusterResourceGroup) via helm chart"
             helm upgrade --install healthservice-workload src/app/charts/healthservice `
-                          --set azure.frontdoorid="$frontDoorId" `
+                          --set azure.frontdoorid="$(frontdoor_id_header)" `
                           --set azure.region="$region" `
                           --set containerimage="$fullContainerImageName" `
                           --set workload.domainname="$fqdn" `

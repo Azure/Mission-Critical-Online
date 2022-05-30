@@ -42,7 +42,7 @@ resource "azapi_resource" "container_app" {
         },
         registries = [
         {
-          server = azurerm_container_registry.acr.login_server
+          server = data.azurerm_container_registry.global.login_server
           identity = "system"
         }
       ],

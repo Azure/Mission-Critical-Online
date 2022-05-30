@@ -5,6 +5,7 @@ resource "azapi_resource" "container_app_environment" {
   type = "Microsoft.App/managedEnvironments@2022-03-01"
   body = jsonencode({
     properties = {
+        #zoneRedundant = true
         appLogsConfiguration = {
             destination = "log-analytics"
             logAnalyticsConfiguration = {
@@ -13,6 +14,7 @@ resource "azapi_resource" "container_app_environment" {
             }
         }
         vnetConfiguration ={
+          #internal = true
           infrastructureSubnetId = azurerm_subnet.ca_controlplane.id
           runtimeSubnetId = azurerm_subnet.ca_runtime.id
         }
@@ -38,13 +40,12 @@ resource "azapi_resource" "container_app" {
           targetPort = 80
           external = true
         },
-      #   registries = [
-      #   {
-      #     server = azurerm_container_registry.acr.login_server
-      #     username = azurerm_container_registry.acr.admin_username
-      #     passwordSecretRef = "registry-password"
-      #   }
-      # ],
+        registries = [
+        {
+          server = azurerm_container_registry.acr.login_server
+          identity = "system"
+        }
+      ],
       # secrets: [
       #   {
       #     name = "registry-password"

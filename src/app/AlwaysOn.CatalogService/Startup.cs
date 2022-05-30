@@ -142,7 +142,7 @@ namespace AlwaysOn.CatalogService
                         // This is to simplify the reverse-proxy setup in front of the application
                         try
                         {
-                            if (context.Response.Headers.Location.Count == 1)
+                            if (!string.IsNullOrEmpty(context.Response.Headers.Location))
                             {
                                 var locationUrl = new Uri(context.Response.Headers.Location);
                                 context.Response.Headers.Location = locationUrl.PathAndQuery;

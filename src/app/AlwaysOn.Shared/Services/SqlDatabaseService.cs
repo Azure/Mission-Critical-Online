@@ -47,18 +47,42 @@ namespace AlwaysOn.Shared.Services
 
             if (typeof(T) == typeof(CatalogItem))
             {
-                var item = new CatalogItem() { Id = idGuid };
-                _dbContext.Entry(item).State = EntityState.Deleted;
+                //var item = new CatalogItem() { Id = idGuid };
+
+                var deletedItem = new CatalogItem()
+                {
+                    CatalogItemId = idGuid,
+                    Deleted = true
+                };
+
+                _dbContext.CatalogItemsWrite.Add(deletedItem);
+
+                //_dbContext.Entry(item).State = EntityState.Deleted;
             }
             else if (typeof(T) == typeof(ItemComment))
             {
-                var item = new ItemComment() { Id = idGuid };
-                _dbContext.Entry(item).State = EntityState.Deleted;
+                var itemToDelete = await _dbContext.ItemCommentsRead.Where(i => i.CommentId == idGuid).FirstOrDefaultAsync();
+                if (itemToDelete is null)
+                {
+                    // item was not found in the database - log and fail
+                }
+
+                itemToDelete.Id = default;
+                itemToDelete.Deleted = true;
+
+                _dbContext.ItemCommentsWrite.Add(itemToDelete);
+                
+                //_dbContext.Entry(item).State = EntityState.Deleted;
             }
             else if (typeof(T) == typeof(ItemRating))
             {
-                var item = new ItemRating() { Id = idGuid };
-                _dbContext.Entry(item).State = EntityState.Deleted;
+                var deletedItem = new ItemRating() {
+                    RatingId = idGuid,
+                    Deleted = true
+                };
+
+                _dbContext.ItemRatingsWrite.Add(deletedItem);
+                //_dbContext.Entry(item).State = EntityState.Deleted;
             }
             else
             {
@@ -102,7 +126,7 @@ namespace AlwaysOn.Shared.Services
         {
             var res = await _dbContext
                                 .CatalogItemsRead
-                                .FirstOrDefaultAsync(i => i.Id == itemId);
+                                .FirstOrDefaultAsync(i => i.CatalogItemId == itemId);
 
             return res;
         }
@@ -111,7 +135,7 @@ namespace AlwaysOn.Shared.Services
         {
             var res = await _dbContext
                                 .ItemCommentsRead
-                                .FirstOrDefaultAsync(c => c.Id == commentId);
+                                .FirstOrDefaultAsync(c => c.CommentId == commentId);
 
             return res;
         }
@@ -131,7 +155,7 @@ namespace AlwaysOn.Shared.Services
         {
             var res = await _dbContext
                                 .ItemRatingsRead
-                                .FirstOrDefaultAsync(r => r.Id == ratingId);
+                                .FirstOrDefaultAsync(r => r.RatingId == ratingId);
 
             return res; // null == not found
         }

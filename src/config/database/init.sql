@@ -17,8 +17,8 @@ GO
 
 CREATE TABLE [ao].[CatalogItems]
 (
-    --[Id] INT IDENTITY(1, 1) PRIMARY KEY, -- this ID will not be used to query
-    [Id] UNIQUEIDENTIFIER PRIMARY KEY,
+    [Id] INT IDENTITY(1, 1) PRIMARY KEY, -- this ID will not be used to query
+    [CatalogItemId] UNIQUEIDENTIFIER NOT NULL,
     [Name] NVARCHAR(50) NOT NULL,
     [Description] NVARCHAR(500) NOT NULL,
     [ImageUrl] NVARCHAR(100) NOT NULL,
@@ -36,8 +36,8 @@ GO
 
 CREATE TABLE [ao].[Ratings]
 (
-    --[Id] INT IDENTITY(1, 1) PRIMARY KEY,
-    [Id] UNIQUEIDENTIFIER PRIMARY KEY,
+    [Id] INT IDENTITY(1, 1) PRIMARY KEY,
+    [RatingId] UNIQUEIDENTIFIER NOT NULL,
     [CatalogItemId] UNIQUEIDENTIFIER NOT NULL,
     [Rating] INT NOT NULL,
     [CreationDate] DATETIME2(7) DEFAULT (SYSUTCDATETIME()) NOT NULL,
@@ -53,8 +53,8 @@ GO
 
 CREATE TABLE [ao].[Comments]
 (
-    --[Id] INT IDENTITY(1, 1) PRIMARY KEY,
-    [Id] UNIQUEIDENTIFIER PRIMARY KEY,
+    [Id] INT IDENTITY(1, 1) PRIMARY KEY,
+    [CommentId] UNIQUEIDENTIFIER NOT NULL,
     [CatalogItemId] UNIQUEIDENTIFIER NOT NULL,
     [AuthorName] NVARCHAR(50) NOT NULL,
     [Text] NVARCHAR(500) NOT NULL,
@@ -71,7 +71,7 @@ GO
 ---
 INSERT INTO [ao].[CatalogItems]
 (
- [Id], [Name], [Description], [Price], [ImageUrl], [LastUpdated]
+ [CatalogItemId], [Name], [Description], [Price], [ImageUrl], [LastUpdated]
 )
 VALUES
 ('fbb6593a-9ce4-4f1a-89b4-e1f218a594ef', 'City Bike', 'A super cool, blue bicycle.', 999.95, 'https://c.pxhere.com/photos/d8/84/bike_bicycle_basket_street_blue-121797.jpg!d', CURRENT_TIMESTAMP),
@@ -82,7 +82,7 @@ GO
 
 INSERT INTO [ao].[Comments]
 (
- [Id], [CatalogItemId], [AuthorName], [Text]
+ [CommentId], [CatalogItemId], [AuthorName], [Text]
 )
 VALUES
 ('aac69679-8c0c-470c-85e2-11f893c8a013', 'fbb6593a-9ce4-4f1a-89b4-e1f218a594ef', 'John', 'Awesome bike!'),
@@ -92,7 +92,7 @@ GO
 
 INSERT INTO [ao].[Ratings]
 (
- [Id], [CatalogItemId], [Rating]
+ [RatingId], [CatalogItemId], [Rating]
 )
 VALUES
 ('4fca39bd-f93e-4010-99ee-884393e3ffa4', 'fbb6593a-9ce4-4f1a-89b4-e1f218a594ef', 5),

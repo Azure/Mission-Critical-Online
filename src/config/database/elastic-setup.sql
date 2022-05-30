@@ -52,7 +52,8 @@ GO
 --- CatalogItems - external table based on the data source from stamp 2
 CREATE EXTERNAL TABLE [ao].[CatalogItemsStamp2]
 (
-    [Id] UNIQUEIDENTIFIER,
+    [Id] INT NOT NULL,
+    [CatalogItemId] UNIQUEIDENTIFIER NOT NULL,
     [Name] NVARCHAR(50) NOT NULL,
     [Description] NVARCHAR(500) NOT NULL,
     [ImageUrl] NVARCHAR(100) NOT NULL,
@@ -72,7 +73,8 @@ GO
 
 CREATE EXTERNAL TABLE [ao].[RatingsStamp2]
 (
-    [Id] UNIQUEIDENTIFIER,
+    [Id] INT NOT NULL,
+    [RatingId] UNIQUEIDENTIFIER NOT NULL,
     [CatalogItemId] UNIQUEIDENTIFIER NOT NULL,
     [Rating] INT NOT NULL,
     [CreationDate] DATETIME2(7) NOT NULL,
@@ -88,7 +90,8 @@ GO
 
 CREATE EXTERNAL TABLE [ao].[CommentsStamp2]
 (
-    [Id] UNIQUEIDENTIFIER,
+    [Id] INT NOT NULL,
+    [CommentId] UNIQUEIDENTIFIER NOT NULL,
     [CatalogItemId] UNIQUEIDENTIFIER NOT NULL,
     [AuthorName] NVARCHAR(50) NOT NULL,
     [Text] NVARCHAR(500) NOT NULL,
@@ -125,7 +128,8 @@ GO
 --- CatalogItems - external table based on the data source from stamp 3
 CREATE EXTERNAL TABLE [ao].[CatalogItemsStamp3]
 (
-    [Id] UNIQUEIDENTIFIER,
+    [Id] INT NOT NULL,
+    [CatalogItemId] UNIQUEIDENTIFIER NOT NULL,
     [Name] NVARCHAR(50) NOT NULL,
     [Description] NVARCHAR(500) NOT NULL,
     [ImageUrl] NVARCHAR(100) NOT NULL,
@@ -145,7 +149,8 @@ GO
 
 CREATE EXTERNAL TABLE [ao].[RatingsStamp3]
 (
-    [Id] UNIQUEIDENTIFIER,
+    [Id] INT NOT NULL,
+    [RatingId] UNIQUEIDENTIFIER NOT NULL,
     [CatalogItemId] UNIQUEIDENTIFIER NOT NULL,
     [Rating] INT NOT NULL,
     [CreationDate] DATETIME2(7) NOT NULL,
@@ -161,7 +166,8 @@ GO
 
 CREATE EXTERNAL TABLE [ao].[CommentsStamp3]
 (
-    [Id] UNIQUEIDENTIFIER,
+    [Id] INT NOT NULL,
+    [CommentId] UNIQUEIDENTIFIER NOT NULL,
     [CatalogItemId] UNIQUEIDENTIFIER NOT NULL,
     [AuthorName] NVARCHAR(50) NOT NULL,
     [Text] NVARCHAR(500) NOT NULL,
@@ -192,6 +198,7 @@ CREATE VIEW [ao].[LatestCatalogItems] AS
     -- https://stackoverflow.com/questions/28722276/sql-select-top-1-for-each-group
     SELECT TOP 1 WITH TIES 
             [Id],
+            [CatalogItemId],
             [Name],
             [Description],
             [ImageUrl],

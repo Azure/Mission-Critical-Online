@@ -27,10 +27,10 @@ spec:
   - host: {{ .Values.workload.domainname }}
     http:
       paths:
-      - path: /healthservice/ # exposing the 'healthservice'
+      - path: /healthservice/
         pathType: Prefix
         backend:
           service:
             name: {{ .Chart.Name }}-service
             port:
-              number: {{ .Values.workload.port | default 80 }}
+              number: {{ .Values.workload.service.port | default 80 }}

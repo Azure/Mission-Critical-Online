@@ -27,7 +27,7 @@ spec:
   - host: {{ .Values.workload.domainname }}
     http:
       paths:
-      - path: /catalogservice/ # exposing the 'catalogservice'
+      - path: /catalogservice/
         pathType: Prefix
         backend:
           service:

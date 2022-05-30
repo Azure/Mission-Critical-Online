@@ -16,7 +16,6 @@ scale: # Horizontal Pod Autoscaler (HPA) configuration
 
 ingress:
   annotations:
-    #nginx.ingress.kubernetes.io/use-regex: "true"
     cert-manager.io/cluster-issuer: "cert-manager-alwayson" # this will trigger cert-manager to request a certificate
 
 networkPolicy:
@@ -26,7 +25,3 @@ networkPolicy:
 azure:
   frontdoorid: "" # Azure Front Door Header ID (blank = disabled)
   region: "East US 2"
-
-healthservice:
-  name: "healthservice-service" # name of the healthservice service in k8s
-  port: 80

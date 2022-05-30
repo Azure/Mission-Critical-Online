@@ -11,11 +11,6 @@ workload:
     port: 80 # Service Port (not used for Ingress)
     type: "ClusterIP" # Service Type (default ClusterIP)
 
-azure:
-  frontdoorid: "" # Azure Front Door Header ID (blank = disabled)
-  region: "East US 2"
-  baseurl: "OVERWRITE.myalwaysonapp.net" # FQDN used by the Azure Front Door endpoint
-
 ingress:
   annotations:
     #nginx.ingress.kubernetes.io/use-regex: "true"
@@ -25,3 +20,7 @@ ingress:
 # as it contains a default-deny policy.
 networkPolicy:
   enabled: true # Enable Network Policy
+
+azure:
+  frontdoorid: "" # Azure Front Door Header ID (blank = disabled)
+  region: "East US 2"

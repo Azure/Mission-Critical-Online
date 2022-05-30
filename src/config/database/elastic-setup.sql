@@ -59,7 +59,8 @@ CREATE EXTERNAL TABLE [ao].[CatalogItemsStamp2]
     [Price] DECIMAL(10,2) NOT NULL,
     [LastUpdated] DATETIME NOT NULL,
     [Rating] FLOAT,
-    [CreationDate] DATETIME2(7) NOT NULL
+    [CreationDate] DATETIME2(7) NOT NULL,
+    [Deleted] BIT NOT NULL
 )
 WITH
 (
@@ -75,6 +76,7 @@ CREATE EXTERNAL TABLE [ao].[RatingsStamp2]
     [CatalogItemId] UNIQUEIDENTIFIER NOT NULL,
     [Rating] INT NOT NULL,
     [CreationDate] DATETIME2(7) NOT NULL,
+    [Deleted] BIT NOT NULL
 )
 WITH
 (
@@ -90,7 +92,8 @@ CREATE EXTERNAL TABLE [ao].[CommentsStamp2]
     [CatalogItemId] UNIQUEIDENTIFIER NOT NULL,
     [AuthorName] NVARCHAR(50) NOT NULL,
     [Text] NVARCHAR(500) NOT NULL,
-    [CreationDate] DATETIME2(7) NOT NULL
+    [CreationDate] DATETIME2(7) NOT NULL,
+    [Deleted] BIT NOT NULL
 )
 WITH
 (
@@ -129,7 +132,8 @@ CREATE EXTERNAL TABLE [ao].[CatalogItemsStamp3]
     [Price] DECIMAL(10,2) NOT NULL,
     [LastUpdated] DATETIME NOT NULL,
     [Rating] FLOAT,
-    [CreationDate] DATETIME2(7) NOT NULL
+    [CreationDate] DATETIME2(7) NOT NULL,
+    [Deleted] BIT NOT NULL
 )
 WITH
 (
@@ -144,7 +148,8 @@ CREATE EXTERNAL TABLE [ao].[RatingsStamp3]
     [Id] UNIQUEIDENTIFIER,
     [CatalogItemId] UNIQUEIDENTIFIER NOT NULL,
     [Rating] INT NOT NULL,
-    [CreationDate] DATETIME2(7) NOT NULL
+    [CreationDate] DATETIME2(7) NOT NULL,
+    [Deleted] BIT NOT NULL
 )
 WITH
 (
@@ -160,7 +165,8 @@ CREATE EXTERNAL TABLE [ao].[CommentsStamp3]
     [CatalogItemId] UNIQUEIDENTIFIER NOT NULL,
     [AuthorName] NVARCHAR(50) NOT NULL,
     [Text] NVARCHAR(500) NOT NULL,
-    [CreationDate] DATETIME2(7) NOT NULL
+    [CreationDate] DATETIME2(7) NOT NULL,
+    [Deleted] BIT NOT NULL
 )
 WITH
 (
@@ -192,32 +198,34 @@ CREATE VIEW [ao].[LatestCatalogItems] AS
             [Price],
             [LastUpdated],
             [Rating],
-            [CreationDate] FROM (
+            [CreationDate],
+            [Deleted] FROM (
         SELECT * FROM [ao].[CatalogItems]
         UNION ALL
         SELECT * FROM [ao].[CatalogItemsStamp2]
         UNION ALL
         SELECT * FROM [ao].[CatalogItemsStamp3]
     ) AS u
+    WHERE [Deleted] = 0
     ORDER BY
         ROW_NUMBER() OVER(PARTITION BY Id ORDER BY [CreationDate] DESC);
 GO
 
 -- There's no update on comments and ratings, so we can keep them simple.
-CREATE VIEW [ao].[AllRatings] AS
-    SELECT * FROM [ao].[Ratings]
+CREATE VIEW [ao].[AllActiveRatings] AS
+    SELECT * FROM [ao].[Ratings] WHERE [Deleted] = 0
     UNION ALL
-    SELECT * FROM [ao].[RatingsStamp2]
+    SELECT * FROM [ao].[RatingsStamp2] WHERE [Deleted] = 0
     UNION ALL
-    SELECT * FROM [ao].[RatingsStamp3]
+    SELECT * FROM [ao].[RatingsStamp3] WHERE [Deleted] = 0
 GO
 
-CREATE VIEW [ao].[AllComments] AS
-    SELECT * FROM [ao].[Comments]
+CREATE VIEW [ao].[AllActiveComments] AS
+    SELECT * FROM [ao].[Comments] WHERE [Deleted] = 0
     UNION ALL
-    SELECT * FROM [ao].[CommentsStamp2]
+    SELECT * FROM [ao].[CommentsStamp2] WHERE [Deleted] = 0
     UNION ALL
-    SELECT * FROM [ao].[CommentsStamp3]
+    SELECT * FROM [ao].[CommentsStamp3] WHERE [Deleted] = 0
 GO
 
 ---
@@ -226,3 +234,12 @@ GO
 SELECT * FROM [ao].AllCatalogItems
 
 SELECT * FROM [ao].LatestCatalogItems
+
+SELECT * FROM [ao].[AllRatings]
+WHERE CatalogItemId = 'fbb6593a-9ce4-4f1a-89b4-e1f218a594ef'
+
+
+SELECT AVG(CAST([a].[Rating] AS float)) AS [AverageRating], COUNT(*) AS [NumberOfVotes]
+FROM [ao].[AllRatings] AS [a]
+WHERE [a].[CatalogItemId] = 'fbb6593a-9ce4-4f1a-89b4-e1f218a594ef'
+

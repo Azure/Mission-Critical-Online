@@ -50,6 +50,11 @@ GO
 
 -- On all
 DROP VIEW ao.AllCatalogItems;
+DROP VIEW ao.AllRatings;
+DROP VIEW ao.AllComments;
+GO
+
+DROP VIEW ao.LatestCatalogItems
 GO
 
 DROP MASTER KEY;

@@ -25,7 +25,8 @@ CREATE TABLE [ao].[CatalogItems]
     [Price] DECIMAL(10,2) NOT NULL,
     [LastUpdated] DATETIME NOT NULL,
     [Rating] FLOAT,
-    [CreationDate] DATETIME2(7) DEFAULT (SYSUTCDATETIME()) NOT NULL
+    [CreationDate] DATETIME2(7) DEFAULT (SYSUTCDATETIME()) NOT NULL,
+    [Deleted] BIT DEFAULT (0) NOT NULL
 );
 GO
 
@@ -39,7 +40,8 @@ CREATE TABLE [ao].[Ratings]
     [Id] UNIQUEIDENTIFIER PRIMARY KEY,
     [CatalogItemId] UNIQUEIDENTIFIER NOT NULL,
     [Rating] INT NOT NULL,
-    [CreationDate] DATETIME2(7) DEFAULT (SYSUTCDATETIME()) NOT NULL
+    [CreationDate] DATETIME2(7) DEFAULT (SYSUTCDATETIME()) NOT NULL,
+    [Deleted] BIT DEFAULT (0) NOT NULL
 
     --CONSTRAINT [FK_Ratings_CatalogItems_CatalogItemId] FOREIGN KEY ([CatalogItemId]) REFERENCES [ao].[CatalogItems] ([Id]) ON DELETE CASCADE
 );
@@ -56,7 +58,8 @@ CREATE TABLE [ao].[Comments]
     [CatalogItemId] UNIQUEIDENTIFIER NOT NULL,
     [AuthorName] NVARCHAR(50) NOT NULL,
     [Text] NVARCHAR(500) NOT NULL,
-    [CreationDate] DATETIME2(7) DEFAULT (SYSUTCDATETIME()) NOT NULL -- datetime2 has larger date range, larger precision
+    [CreationDate] DATETIME2(7) DEFAULT (SYSUTCDATETIME()) NOT NULL, -- datetime2 has larger date range, larger precision
+    [Deleted] BIT DEFAULT (0) NOT NULL
 
     --CONSTRAINT [FK_Comments_CatalogItems_CatalogItemId] FOREIGN KEY ([CatalogItemId]) REFERENCES [ao].[CatalogItems] ([Id]) ON DELETE CASCADE
 );
@@ -79,7 +82,7 @@ GO
 
 INSERT INTO [ao].[Comments]
 (
- [Id], [CatalogItemId], [AuthorName], [Text]--, [CreationDate]
+ [Id], [CatalogItemId], [AuthorName], [Text]
 )
 VALUES
 ('aac69679-8c0c-470c-85e2-11f893c8a013', 'fbb6593a-9ce4-4f1a-89b4-e1f218a594ef', 'John', 'Awesome bike!'),
@@ -89,7 +92,7 @@ GO
 
 INSERT INTO [ao].[Ratings]
 (
- [Id], [CatalogItemId], [Rating]--, [CreationDate]
+ [Id], [CatalogItemId], [Rating]
 )
 VALUES
 ('4fca39bd-f93e-4010-99ee-884393e3ffa4', 'fbb6593a-9ce4-4f1a-89b4-e1f218a594ef', 5),

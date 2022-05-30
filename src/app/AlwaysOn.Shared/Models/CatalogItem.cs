@@ -9,6 +9,7 @@ namespace AlwaysOn.Shared.Models
     [Table("CatalogItems", Schema = "ao")]
     public class CatalogItem : AoSqlModelBase
     {
+        public Guid CatalogItemId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public string ImageUrl { get; set; }
@@ -18,10 +19,10 @@ namespace AlwaysOn.Shared.Models
         public double? Rating { get; set; }
 
         // we are not currently fetching these along with the item, so no need to have them empty in the JSON response
-        [JsonIgnore]
-        public List<ItemComment>? Comments { get; set; }
-        [JsonIgnore]
-        public List<ItemRating>? Ratings { get; set; }
+        //[JsonIgnore]
+        //public List<ItemComment>? Comments { get; set; }
+        //[JsonIgnore]
+        //public List<ItemRating>? Ratings { get; set; }
     }
 
     [Table("LatestCatalogItems", Schema = "ao")]

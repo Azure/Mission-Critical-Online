@@ -127,7 +127,7 @@ namespace AlwaysOn.CatalogService.Controllers
 
             var newItem = new CatalogItem()
             {
-                Id = itemId,
+                CatalogItemId = itemId,
                 Name = itemDto.Name,
                 LastUpdated = DateTime.UtcNow,
                 Description = itemDto.Description,

@@ -94,7 +94,7 @@ namespace AlwaysOn.Shared.Services
                 // Create a test document to write to cosmos
                 var testRating = new ItemRating()
                 {
-                    Id = Guid.NewGuid(),
+                    RatingId = Guid.NewGuid(),
                     CatalogItemId = Guid.NewGuid(), // Create some random (=non-existing) item id
                     CreationDate = DateTime.UtcNow,
                     Rating = 1

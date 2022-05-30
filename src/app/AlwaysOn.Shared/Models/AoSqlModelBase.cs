@@ -8,7 +8,7 @@ namespace AlwaysOn.Shared.Models
 {
     public class AoSqlModelBase
     {
-        public Guid Id { get; set; }
+        public int Id { get; set; }
 
         public DateTime CreationDate { get; set; }
 

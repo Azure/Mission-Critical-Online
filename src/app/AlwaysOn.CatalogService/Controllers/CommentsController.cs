@@ -104,7 +104,7 @@ namespace AlwaysOn.CatalogService.Controllers
         {
             var comment = new ItemComment()
             {
-                Id = Guid.NewGuid(),
+                CommentId = Guid.NewGuid(),
                 AuthorName = commentDto.AuthorName,
                 Text = commentDto.Text,
                 CreationDate = DateTime.UtcNow,

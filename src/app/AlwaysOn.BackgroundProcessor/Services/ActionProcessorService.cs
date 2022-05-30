@@ -3,6 +3,7 @@ using AlwaysOn.Shared.Interfaces;
 using AlwaysOn.Shared.Models;
 using AlwaysOn.Shared.Models.DataTransfer;
 using Microsoft.ApplicationInsights;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
@@ -14,14 +15,18 @@ namespace AlwaysOn.BackgroundProcessor.Services
     public class ActionProcessorService
     {
         private readonly ILogger<ActionProcessorService> _logger;
-        private readonly IDatabaseService _databaseService;
         private readonly TelemetryClient _telemetryClient;
 
-        public ActionProcessorService(ILogger<ActionProcessorService> logger, IDatabaseService databaseService, TelemetryClient tc)
+        private readonly IServiceProvider _serviceProvider;
+
+
+        public ActionProcessorService(ILogger<ActionProcessorService> logger, TelemetryClient tc, IServiceProvider serviceProvider)
         {
             _logger = logger;
-            _databaseService = databaseService;
             _telemetryClient = tc;
+            // Using scoped services within a singleton as described here:
+            //  https://docs.microsoft.com/en-us/dotnet/core/extensions/scoped-service
+            _serviceProvider = serviceProvider;
         }
 
         /// <summary>
@@ -65,20 +70,25 @@ namespace AlwaysOn.BackgroundProcessor.Services
                 {
                     _logger.LogDebug("Deleting {type} from database. objectId={objectId}", deletionRequest.ObjectType, deletionRequest.ObjectId);
 
-                    switch (deletionRequest.ObjectType)
+                    using (IServiceScope scope = _serviceProvider.CreateScope())
                     {
-                        case (nameof(CatalogItem)):
-                            await _databaseService.DeleteItemAsync<CatalogItem>(deletionRequest.ObjectId, deletionRequest.PartitionId);
-                            break;
-                        case (nameof(ItemComment)):
-                            await _databaseService.DeleteItemAsync<ItemComment>(deletionRequest.ObjectId, deletionRequest.PartitionId);
-                            break;
-                        case (nameof(ItemRating)):
-                            await _databaseService.DeleteItemAsync<ItemRating>(deletionRequest.ObjectId, deletionRequest.PartitionId);
-                            break;
-                        default:
-                            _logger.LogWarning("Unknown type {type} to delete", deletionRequest.ObjectType);
-                            return;
+                        var _databaseService = scope.ServiceProvider.GetRequiredService<IDatabaseService>();
+
+                        switch (deletionRequest.ObjectType)
+                        {
+                            case (nameof(CatalogItem)):
+                                await _databaseService.DeleteItemAsync<CatalogItem>(deletionRequest.ObjectId, deletionRequest.PartitionId);
+                                break;
+                            case (nameof(ItemComment)):
+                                await _databaseService.DeleteItemAsync<ItemComment>(deletionRequest.ObjectId, deletionRequest.PartitionId);
+                                break;
+                            case (nameof(ItemRating)):
+                                await _databaseService.DeleteItemAsync<ItemRating>(deletionRequest.ObjectId, deletionRequest.PartitionId);
+                                break;
+                            default:
+                                _logger.LogWarning("Unknown type {type} to delete", deletionRequest.ObjectType);
+                                return;
+                        }
                     }
 
                     _logger.LogInformation("Successfully deleted {type} from database. objectId={objectId}", deletionRequest.ObjectType, deletionRequest.ObjectId);
@@ -106,7 +116,13 @@ namespace AlwaysOn.BackgroundProcessor.Services
                 try
                 {
                     _logger.LogDebug("Adding new CatalogItem to database. CatalogItemId={CatalogItemId}", item.Id);
-                    await _databaseService.AddNewCatalogItemAsync(item);
+
+                    using (IServiceScope scope = _serviceProvider.CreateScope())
+                    {
+                        var _databaseService = scope.ServiceProvider.GetRequiredService<IDatabaseService>();
+                        await _databaseService.AddNewCatalogItemAsync(item);
+
+                    }
                     _logger.LogInformation("New CatalogItem written to database. CatalogItemId={CatalogItemId}", item.Id);
                 }
                 catch
@@ -132,7 +148,11 @@ namespace AlwaysOn.BackgroundProcessor.Services
                 try
                 {
                     _logger.LogDebug("Adding new ItemComment to database. CommentId={CommentId}", comment.Id);
-                    await _databaseService.AddNewCommentAsync(comment);
+                    using (IServiceScope scope = _serviceProvider.CreateScope())
+                    {
+                        var _databaseService = scope.ServiceProvider.GetRequiredService<IDatabaseService>();
+                        await _databaseService.AddNewCommentAsync(comment);
+                    }
                     _logger.LogInformation("New ItemComment written to database. CommentId={CommentId}", comment.Id);
                 }
                 catch
@@ -158,7 +178,11 @@ namespace AlwaysOn.BackgroundProcessor.Services
                 try
                 {
                     _logger.LogDebug("Adding new ItemRating to database. RatingId={RatingId}", rating.Id);
-                    await _databaseService.AddNewRatingAsync(rating);
+                    using (IServiceScope scope = _serviceProvider.CreateScope())
+                    {
+                        var _databaseService = scope.ServiceProvider.GetRequiredService<IDatabaseService>();
+                        await _databaseService.AddNewRatingAsync(rating);
+                    }
                     _logger.LogInformation("New ItemRating written to database. RatingId={RatingId}", rating.Id);
                 }
                 catch

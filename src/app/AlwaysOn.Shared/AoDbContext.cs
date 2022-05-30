@@ -20,11 +20,11 @@ namespace AlwaysOn.Shared
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            //modelBuilder.Entity<AllCatalogItems>(eb =>
-            //{
-            //    eb.HasNoKey();
-            //    eb.ToView("AllCatalogItems");
-            //});
+            modelBuilder.Entity<ItemCommentRead>(e => 
+            {
+                //e.HasNoKey();
+                e.ToView("AllActiveComments");
+            });
         }
     }
 }

@@ -109,7 +109,7 @@ namespace AlwaysOn.CatalogService.Controllers
 
             var rating = new ItemRating()
             {
-                Id = Guid.NewGuid(),
+                RatingId = Guid.NewGuid(),
                 CreationDate = DateTime.UtcNow,
                 Rating = ratingDto.Rating,
                 CatalogItemId = itemId

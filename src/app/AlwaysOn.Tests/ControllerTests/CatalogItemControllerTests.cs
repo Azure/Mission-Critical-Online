@@ -105,14 +105,14 @@ namespace AlwaysOn.Tests
                 new CatalogItem()
                 {
                     LastUpdated = DateTime.UtcNow,
-                    Id = Guid.NewGuid(),
+                    Id = 1,//Guid.NewGuid(),
                     Description= "First test item",
                     Name = "First Item",
                     Price = 11111.11m
                 },
                 new CatalogItem() {
                     LastUpdated = DateTime.UtcNow.AddDays(-1),
-                    Id = Guid.NewGuid(),
+                    Id = 2,//Guid.NewGuid(),
                     Description= "Second test item",
                     Name = "Second Item",
                     Price = 99.99m

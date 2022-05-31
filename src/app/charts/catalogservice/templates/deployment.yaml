@@ -41,7 +41,7 @@ spec:
           periodSeconds: 10
           timeoutSeconds: 3
         {{- if .Values.resources }}
-          resources: {{ toYaml .Values.resources | nindent 12 }}
+        resources: {{ toYaml .Values.resources | nindent 10 }}
         {{- end }}
         env:
             - name: "AZURE_REGION" # This value only gets calculated at application deployment time so it does not exist in Key Vault as a secret (plus, it is not secret)

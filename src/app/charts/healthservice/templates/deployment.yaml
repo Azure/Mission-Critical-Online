@@ -21,10 +21,9 @@ spec:
       - image: {{ .Values.containerimage }}
         imagePullPolicy: {{ .Values.container.pullPolicy | default "Always" | quote }}
         name: healthservice
-        securityContext:
-          privileged: false # Running a container as privileged gives all capabilities to the container, and it also lifts all the limitations enforced by the device cgroup controller.
-          readOnlyRootFilesystem: true # If a container does not need to write files, it should be run with a read-only filesystem.
-          allowPrivilegeEscalation: false # Controls whether a process can gain more privileges than its parent process.
+        {{- if .Values.containerSecurityContext }}
+        securityContext: {{ toYaml .Values.containerSecurityContext | nindent 10 }}
+        {{- end }}
         ports:
         - containerPort: {{ .Values.workload.port | default 8080 }}
         livenessProbe:
@@ -34,13 +33,9 @@ spec:
           initialDelaySeconds: 5
           periodSeconds: 30
           timeoutSeconds: 3
-        resources:
-          limits:
-            cpu:    "300m"
-            memory: "512Mi"
-          requests:
-            cpu:    "100m"
-            memory: "250Mi"
+        {{- if .Values.resources }}
+          resources: {{ toYaml .Values.resources | nindent 12 }}
+        {{- end }}
         env:
             - name: "AZURE_REGION" # This value only gets calculated at application deployment time so it does not exist in Key Vault as a secret (plus, it is not secret)
               value: {{ .Values.azure.region }}

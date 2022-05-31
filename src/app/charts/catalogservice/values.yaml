@@ -2,6 +2,19 @@ container:
   containerimage: "OVERWRITE.acr.io/alwayson/CatalogService:1234" # Container Image Name
   pullPolicy: "IfNotPresent" # Container Image Pull Policy. Using IfNotPresent to enable pod starts even if ACR cannot be reached and image was pulled on the node previously
 
+resources:
+  limits:
+    cpu: "1"
+    memory: "756Mi"
+  requests:
+    cpu: "1"
+    memory: "512Mi"
+
+containerSecurityContext:
+  privileged: false # Running a container as privileged gives all capabilities to the container, and it also lifts all the limitations enforced by the device cgroup controller.
+  readOnlyRootFilesystem: true # If a container does not need to write files, it should be run with a read-only filesystem.
+  allowPrivilegeEscalation: false # Controls whether a process can gain more privileges than its parent process.
+
 workload:
   domainname: "OVERWRITE-cluster.eastus2.cloudapp.azure.com" # External Domain Name of the AKS cluster (used for Ingress)
   tlsSecret: workload-ingress-secret # k8s secret name for the tls cert - make sure that the name is the same when shared

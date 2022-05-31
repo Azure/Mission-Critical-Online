@@ -1,4 +1,3 @@
-using AlwaysOn.CatalogService.Auth;
 using AlwaysOn.CatalogService.SwaggerHelpers;
 using AlwaysOn.Shared;
 using AlwaysOn.Shared.Interfaces;
@@ -39,7 +38,7 @@ namespace AlwaysOn.CatalogService
             services.AddSingleton<SysConfiguration>();
 
             services.AddSingleton(typeof(ITelemetryChannel),
-                                new ServerTelemetryChannel() { StorageFolder = "/tmp"});
+                                new ServerTelemetryChannel() { StorageFolder = "/tmp" });
             services.AddApplicationInsightsTelemetry(new ApplicationInsightsServiceOptions()
             {
                 ConnectionString = Configuration[SysConfiguration.ApplicationInsightsConnStringKeyName],
@@ -135,12 +134,24 @@ namespace AlwaysOn.CatalogService
 
             app.Use(async (context, next) =>
             {
-                // Add tracing headers to each response
-                // Source: https://khalidabuhakmeh.com/add-headers-to-a-response-in-aspnet-5
                 context.Response.OnStarting(o =>
                 {
                     if (o is HttpContext ctx)
                     {
+                        // In order to get relative location headers (without the host part), we modify any location header here
+                        // This is to simplify the reverse-proxy setup in front of the application
+                        try
+                        {
+                            if (!string.IsNullOrEmpty(context.Response.Headers.Location))
+                            {
+                                var locationUrl = new Uri(context.Response.Headers.Location);
+                                context.Response.Headers.Location = locationUrl.PathAndQuery;
+                            }
+                        }
+                        catch (Exception) { }
+
+                        // Add tracing headers to each response
+                        // Source: https://khalidabuhakmeh.com/add-headers-to-a-response-in-aspnet-5
                         context.Response.Headers.Add("X-Server-Name", Environment.MachineName);
                         context.Response.Headers.Add("X-Server-Location", sysConfig.AzureRegion);
                         context.Response.Headers.Add("X-Correlation-ID", Activity.Current?.RootId);

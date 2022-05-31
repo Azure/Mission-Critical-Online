@@ -47,13 +47,13 @@ jobs: # using jobs so they each run in parallel
             # Apply workload worker helm chart
             echo  "*** Deploy healthservice to $aksClusterName (in $aksClusterResourceGroup) via helm chart"
             helm upgrade --install healthservice-workload src/app/charts/healthservice `
-                          --set azure.frontdoorid="$(frontdoor_id_header)" `
-                          --set azure.region="$region" `
-                          --set containerimage="$fullContainerImageName" `
-                          --set workload.domainname="$fqdn" `
-                          --namespace $(workloadNamespace) `
-                          --create-namespace `
-                          --wait
+                         --namespace $(workloadNamespace) `
+                         --create-namespace `
+                         --set azure.frontdoorid="$(frontdoor_id_header)" `
+                         --set azure.region="$region" `
+                         --set containerimage="$fullContainerImageName" `
+                         --set workload.domainname="$fqdn" `
+                         --wait
 
             # Wait for the certificate to be provisioned
             $retrycount = 0;
@@ -64,14 +64,15 @@ jobs: # using jobs so they each run in parallel
               if ($(kubectl get certificates/workload-ingress-secret -n $(workloadNamespace) -o 'jsonpath={..status.conditions[?(@.type==\"Ready\")].status}') -ne "True")
               {
                 $LASTEXITCODE = 1
-                echo "certificate for workload-ingress-secret pending.. "
 
                 $retrycount++;
-                echo "Certificate not ready. Retrying... $retrycount/$maxretrycount";
-                Start-Sleep $(60 * $retrycount) # sleep for <retry> * 60 seconds
+                $sleepSeconds = 60 * $retrycount
+                echo "Certificate for workload-ingress-secret not ready. Waiting for $sleepSeconds seconds and retrying... $retrycount/$maxretrycount";
+                Start-Sleep $sleepSeconds
               }
               else
               {
+                echo "Certificate is ready!"
                 break
               }
             } while ( ($retrycount -lt $maxretrycount) )

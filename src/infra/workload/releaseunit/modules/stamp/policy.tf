@@ -86,7 +86,8 @@ resource "azurerm_resource_group_policy_assignment" "aks_enforce_resources" {
   resource_group_id    = azurerm_resource_group.stamp.id
   policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/e345eecc-fa47-480f-9e88-67dcc122b164"
   display_name         = "Kubernetes cluster containers CPU and memory resource limits should not exceed the specified limits"
-  
+
+  # parameters for cpuLimit and memoryLimit are mandatory and set to very high values 
   parameters = <<PARAMS
     {
       "excludedNamespaces": {
@@ -95,6 +96,12 @@ resource "azurerm_resource_group_policy_assignment" "aks_enforce_resources" {
           "gatekeeper-system",
           "chaos-testing"
         ]
+      },
+      "cpuLimit": {
+        "value": "8"
+      },
+      "memoryLimit": {
+        "value": "16Gi"
       }
     }
 PARAMS

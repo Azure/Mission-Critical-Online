@@ -45,13 +45,29 @@ let scaleMetrics =
     | extend PercentageAutoscaled = Val / maxReplica * 100
     | project TimeGenerated, Service, Value=toreal(PercentageAutoscaled), currentReplicas=strcat(toint(Val)," / ", maxReplica), MetricName="autoscaled_percentage";
 //
-let podRestartMetrics = 
-    // Count number of pod restarts per service
-    KubePodInventory
+//
+let podRestartMetrics = KubePodInventory
     | where Namespace == "workload"
     | extend Service = extract("(.+)-deploy.", 1, ControllerName)
-    | extend MetricName="pod_restart_count", Value=toreal(PodRestartCount);
-    //| summarize Value=toreal(sum(PodRestartCount)) by TimeGenerated, Service, MetricName="pod_restart_count", bin(TimeGenerated, 1m);
+    | extend MetricName="pod_restart_count", Value=toreal(PodRestartCount)
+    | summarize Value=sum(Value) by TimeGenerated, Service, MetricName
+    | partition by Service
+    (
+        sort by TimeGenerated asc
+        | extend Value = next(Value)-Value
+    )
+    | where isnotempty(Value):
+//
+// let podRestartMetrics = 
+//     // Count number of pod restarts per service
+//     KubePodInventory
+//     | where Namespace == "workload"
+//     | extend Service = extract("(.+)-deploy.", 1, ControllerName)
+//     | extend MetricName="pod_restart_count", Value=toreal(PodRestartCount)
+//     | summarize Value=sum(Value) by TimeGenerated, Service, MetricName
+//     | serialize
+//     | extend Value=Value-prev(Value, 1, 0); // Subtract the previous value from the current value to get the number of restarts
+//     //| summarize Value=toreal(sum(PodRestartCount)) by TimeGenerated, Service, MetricName="pod_restart_count", bin(TimeGenerated, 1m);
 //
 let cpuUtilizationMetrics = 
     Perf

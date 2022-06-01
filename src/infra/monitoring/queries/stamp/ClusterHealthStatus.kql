@@ -56,7 +56,7 @@ let podRestartMetrics = KubePodInventory
         sort by TimeGenerated asc
         | extend Value = next(Value)-Value
     )
-    | where isnotempty(Value):
+    | where isnotempty(Value);
 //
 // let podRestartMetrics = 
 //     // Count number of pod restarts per service

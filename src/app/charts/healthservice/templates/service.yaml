@@ -14,4 +14,4 @@ spec:
     targetPort: {{ .Values.workload.port | default 8080 }}
   selector:
     app: {{ .Chart.Name }}
-  type: {{ .Values.workload.service.type | default "ClusterIP" }} 
+  type: {{ .Values.workload.service.type | default "ClusterIP" }}

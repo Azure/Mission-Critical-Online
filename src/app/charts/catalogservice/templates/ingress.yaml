@@ -8,20 +8,12 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name }}
     helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
   annotations:
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "120"   #  Set timeout to read from the backend pods to 120s. Cosmos DB retries can go up to 60s
-    nginx.ingress.kubernetes.io/use-regex: "true"
-    # Optionally, we could rewrite taret path to remove the name of the service. However, this might break some things like Location header for the response
-    # nginx.ingress.kubernetes.io/rewrite-target: /$2
-  {{- if .Values.azure.frontdoorid }}
     # To restric traffic coming only through our Front Door instance, we use a header check on the X-Azure-FDID
     # The value gets injected by the pipeline. Hence, this ID should be treated as a senstive value
-    nginx.ingress.kubernetes.io/enable-modsecurity: "true"
     nginx.ingress.kubernetes.io/modsecurity-snippet: |
       SecRuleEngine On
       SecRule &REQUEST_HEADERS:X-Azure-FDID \"@eq 0\"  \"log,deny,id:106,status:403,msg:\'Front Door ID not present\'\"
       SecRule REQUEST_HEADERS:X-Azure-FDID \"@rx ^(?!{{ .Values.azure.frontdoorid }}).*$\"  \"log,deny,id:107,status:403,msg:\'Wrong Front Door ID\'\"
-  {{- end }}
   {{- if .Values.ingress.annotations }}
   {{ toYaml .Values.ingress.annotations | nindent 4 }}
   {{- end }}
@@ -30,22 +22,15 @@ spec:
   tls:
   - hosts:
     - {{ .Values.workload.domainname }}
-    secretName: {{ .Chart.Name }}-ingress-secret
+    secretName: {{ .Values.workload.tlsSecret }} # shouldn't be changed as this might be used by other services
   rules:
   - host: {{ .Values.workload.domainname }}
     http:
       paths:
-      - path: /catalogservice(/|$)(.*) # exposing the 'catalogservice'
+      - path: /catalogservice/
         pathType: Prefix
         backend:
           service:
             name: {{ .Chart.Name }}-service
             port:
               number: {{ .Values.workload.service.port | default 80 }}
-      - path: /healthservice(/|$)(.*) # exposing the 'healthservice'
-        pathType: Prefix
-        backend:
-          service:
-            name: {{ .Values.healthservice.name | quote }}
-            port:
-              number: {{ .Values.healthservice.port | default 80 }}

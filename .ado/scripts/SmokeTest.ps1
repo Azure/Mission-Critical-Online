@@ -131,7 +131,7 @@ foreach($target in $targets) {
   $getCommentPath = $responsePostComment.Headers['Location'][0]
 
   # The location header does not contain the host part of the URL so we need to prepend it
-  $getCommentUrl = "$($targetFqdn)$($getCommentPath)"
+  $getCommentUrl = "https://$($targetFqdn)$($getCommentPath)"
 
   Write-Output "*** Call - Get newly created comment ($mode)"
   Invoke-WebRequestWithRetry -Uri $getCommentUrl -Method 'GET' -Headers $header -MaximumRetryCount $smokeTestRetryCount -RetryWaitSeconds $smokeTestRetryWaitSeconds

@@ -128,12 +128,10 @@ foreach($target in $targets) {
   Start-Sleep 10
 
   # The 202-response to POST new comment contains in the 'Location' header the URL under which the new comment will be accessible
-  $getCommentUrl = $responsePostComment.Headers['Location'][0]
+  $getCommentPath = $responsePostComment.Headers['Location'][0]
 
-  if ($mode -eq "stamp") {
-    # The Location header contains the global FQDN of the Front Door entry point. For the the individual cluster, we need to change the URL
-    $getCommentUrl = $getCommentUrl -replace $frontdoorFqdn,$targetFqdn
-  }
+  # The location header does not contain the host part of the URL so we need to prepend it
+  $getCommentUrl = "$($targetFqdn)$($getCommentPath)"
 
   Write-Output "*** Call - Get newly created comment ($mode)"
   Invoke-WebRequestWithRetry -Uri $getCommentUrl -Method 'GET' -Headers $header -MaximumRetryCount $smokeTestRetryCount -RetryWaitSeconds $smokeTestRetryWaitSeconds

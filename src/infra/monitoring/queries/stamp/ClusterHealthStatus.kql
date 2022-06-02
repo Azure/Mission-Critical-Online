@@ -22,7 +22,7 @@ let podCpuLimits = Perf
 | where ObjectName == 'K8SContainer'
 | where CounterName == "cpuLimitNanoCores"
 | extend PodName = extract("^.+/(.+)$", 1, InstanceName)
-| summarize cpuLimit=max(CounterValue) by PodName, bin(TimeGenerated, 1m);
+| summarize cpuLimit=max(CounterValue) by PodName;
 //
 let insightsMetrics = InsightsMetrics
 | project-rename MetricName=Name

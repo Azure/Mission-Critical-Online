@@ -83,4 +83,4 @@ insightsMetrics
 | lookup kind=inner Thresholds on MetricName
 | extend IsYellow = iff(Value > YellowThreshold and Value < RedThreshold, 1, 0)
 | extend IsRed = iff(Value > RedThreshold, 1, 0)
-| extend ComponentName="Cluster"
+| extend ComponentName="AKSCluster"

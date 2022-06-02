@@ -120,7 +120,7 @@ namespace AlwaysOn.Shared.Services
             var success = false;
             try
             {
-                if (typeof(T) == typeof(CatalogItemBase))
+                if (typeof(T) == typeof(CatalogItem))
                 {
                     response = await _catalogItemsContainer.DeleteItemAsync<T>(objectId, new PartitionKey(partitionKey));
                 }
@@ -176,7 +176,7 @@ namespace AlwaysOn.Shared.Services
             }
         }
 
-        public async Task<CatalogItemBase> GetCatalogItemByIdAsync(Guid itemId)
+        public async Task<CatalogItem> GetCatalogItemByIdAsync(Guid itemId)
         {
             string partitionKey = itemId.ToString();
             var startTime = DateTime.UtcNow;
@@ -195,7 +195,7 @@ namespace AlwaysOn.Shared.Services
                 // Item stream operations do not throw exceptions for better performance
                 if (responseMessage.IsSuccessStatusCode)
                 {
-                    var item = await JsonSerializer.DeserializeAsync<CatalogItemBase>(responseMessage.Content, Globals.JsonSerializerOptions);
+                    var item = await JsonSerializer.DeserializeAsync<CatalogItem>(responseMessage.Content, Globals.JsonSerializerOptions);
                     success = true;
                     return item;
                 }
@@ -386,12 +386,12 @@ namespace AlwaysOn.Shared.Services
         /// <param name="item"></param>
         /// <returns></returns>
         /// <exception cref="AlwaysOnDependencyException"></exception>
-        public async Task UpsertCatalogItemAsync(CatalogItemBase item)
+        public async Task UpsertCatalogItemAsync(CatalogItem item)
         {
             string partitionKey = item.Id.ToString();
             var startTime = DateTime.UtcNow;
             var success = false;
-            ItemResponse<CatalogItemBase> response = null;
+            ItemResponse<CatalogItem> response = null;
             CosmosDiagnostics diagnostics = null;
 
             try
@@ -493,10 +493,10 @@ namespace AlwaysOn.Shared.Services
             return results;
         }
 
-        public async Task AddNewCatalogItemAsync(CatalogItemBase item)
+        public async Task AddNewCatalogItemAsync(CatalogItem item)
         {
             var startTime = DateTime.UtcNow;
-            ItemResponse<CatalogItemBase> response = null;
+            ItemResponse<CatalogItem> response = null;
             CosmosDiagnostics diagnostics = null;
             var success = false;
             var conflict = false;
@@ -553,10 +553,10 @@ namespace AlwaysOn.Shared.Services
         /// </summary>
         /// <param name="limit"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<CatalogItemBase>> ListCatalogItemsAsync(int limit)
+        public async Task<IEnumerable<CatalogItem>> ListCatalogItemsAsync(int limit)
         {
-            var queryable = _catalogItemsContainer.GetItemLinqQueryable<CatalogItemBase>(linqSerializerOptions: _cosmosSerializationOptions)
-                .Select(i => new CatalogItemBase() 
+            var queryable = _catalogItemsContainer.GetItemLinqQueryable<CatalogItem>(linqSerializerOptions: _cosmosSerializationOptions)
+                .Select(i => new CatalogItem() 
                 { 
                     Id = i.Id, 
                     Name = i.Name, 
@@ -566,7 +566,7 @@ namespace AlwaysOn.Shared.Services
                 })
                 .OrderBy(i => i.Name)
                 .Take(limit);
-            var result = await ListDocumentsByQueryAsync<CatalogItemBase>(queryable);
+            var result = await ListDocumentsByQueryAsync<CatalogItem>(queryable);
             return result;
         }
 

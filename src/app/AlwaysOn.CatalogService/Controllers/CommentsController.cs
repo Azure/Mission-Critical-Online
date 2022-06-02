@@ -100,7 +100,7 @@ namespace AlwaysOn.CatalogService.Controllers
         /// <returns></returns>
         [HttpPost]
         [ProducesResponseType((int)HttpStatusCode.Accepted)]
-        public async Task<ActionResult<CatalogItemBase>> AddNewItemCommentAsync([FromRoute] Guid itemId, [FromBody] NewCommentDto commentDto)
+        public async Task<ActionResult<CatalogItem>> AddNewItemCommentAsync([FromRoute] Guid itemId, [FromBody] NewCommentDto commentDto)
         {
             var comment = new ItemCommentWrite()
             {

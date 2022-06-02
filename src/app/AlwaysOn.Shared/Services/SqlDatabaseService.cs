@@ -20,7 +20,7 @@ namespace AlwaysOn.Shared.Services
             _dbContext = dbContext;
         }
 
-        public async Task AddNewCatalogItemAsync(CatalogItemBase catalogItem)
+        public async Task AddNewCatalogItemAsync(CatalogItem catalogItem)
         {
             // TODO: Use auto mapper for this.
             var itemToAdd = new CatalogItemWrite()
@@ -148,7 +148,7 @@ namespace AlwaysOn.Shared.Services
             return avgRating;
         }
 
-        public async Task<CatalogItemBase> GetCatalogItemByIdAsync(Guid itemId)
+        public async Task<CatalogItem> GetCatalogItemByIdAsync(Guid itemId)
         {
             var res = await _dbContext
                                 .CatalogItemsRead
@@ -194,7 +194,7 @@ namespace AlwaysOn.Shared.Services
             return res;
         }
 
-        public async Task<IEnumerable<CatalogItemBase>> ListCatalogItemsAsync(int limit)
+        public async Task<IEnumerable<CatalogItem>> ListCatalogItemsAsync(int limit)
         {
             var res = await _dbContext
                                 .CatalogItemsRead
@@ -205,7 +205,7 @@ namespace AlwaysOn.Shared.Services
             return res;
         }
 
-        public async Task UpsertCatalogItemAsync(CatalogItemBase item)
+        public async Task UpsertCatalogItemAsync(CatalogItem item)
         {
             // check if we're tracking this entity and if not, add it
             var existingItem = _dbContext.CatalogItemsRead.Where(i => i.Id == item.Id).FirstOrDefault();

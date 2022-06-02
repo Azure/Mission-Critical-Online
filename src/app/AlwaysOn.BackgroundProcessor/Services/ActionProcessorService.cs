@@ -76,8 +76,8 @@ namespace AlwaysOn.BackgroundProcessor.Services
 
                         switch (deletionRequest.ObjectType)
                         {
-                            case (nameof(CatalogItemBase)):
-                                await _databaseService.DeleteItemAsync<CatalogItemBase>(deletionRequest.ObjectId, deletionRequest.PartitionId);
+                            case (nameof(CatalogItem)):
+                                await _databaseService.DeleteItemAsync<CatalogItem>(deletionRequest.ObjectId, deletionRequest.PartitionId);
                                 break;
                             case (nameof(ItemCommentWrite)):
                                 await _databaseService.DeleteItemAsync<ItemCommentWrite>(deletionRequest.ObjectId, deletionRequest.PartitionId);

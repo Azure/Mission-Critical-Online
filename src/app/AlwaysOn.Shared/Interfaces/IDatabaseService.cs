@@ -16,28 +16,28 @@ namespace AlwaysOn.Shared.Interfaces
         /// </summary>
         /// <param name="itemId"></param>
         /// <returns></returns>
-        Task<CatalogItemBase> GetCatalogItemByIdAsync(Guid itemId);
+        Task<CatalogItem> GetCatalogItemByIdAsync(Guid itemId);
 
         /// <summary>
         /// Writes a new CatalogItem to the database
         /// </summary>
         /// <param name="catalogItem"></param>
         /// <returns></returns>
-        Task AddNewCatalogItemAsync(CatalogItemBase catalogItem);
+        Task AddNewCatalogItemAsync(CatalogItem catalogItem);
 
         /// <summary>
         /// Fetches N number of CatalogItem
         /// </summary>
         /// <param name="limit"></param>
         /// <returns></returns>
-        Task<IEnumerable<CatalogItemBase>> ListCatalogItemsAsync(int limit);
+        Task<IEnumerable<CatalogItem>> ListCatalogItemsAsync(int limit);
 
         /// <summary>
         /// Upserts CatalogItem
         /// </summary>
         /// <param name="item">Full CatalogItem object to be updated</param>
         /// <returns></returns>
-        Task UpsertCatalogItemAsync(CatalogItemBase item);
+        Task UpsertCatalogItemAsync(CatalogItem item);
 
         #endregion
 

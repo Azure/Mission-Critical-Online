@@ -22,7 +22,19 @@ namespace AlwaysOn.Shared.Services
 
         public async Task AddNewCatalogItemAsync(CatalogItemBase catalogItem)
         {
-            _dbContext.CatalogItemsWrite.Add(catalogItem);
+            // TODO: Use auto mapper for this.
+            var itemToAdd = new CatalogItemWrite()
+            {
+                CatalogItemId = catalogItem.CatalogItemId,
+                CreationDate = catalogItem.CreationDate,
+                Description = catalogItem.Description,
+                ImageUrl = catalogItem.ImageUrl,
+                LastUpdated = catalogItem.LastUpdated,
+                Name = catalogItem.Name,
+                Price = catalogItem.Price,
+                Rating = catalogItem.Rating
+            };
+            _dbContext.CatalogItemsWrite.Add(itemToAdd);
 
             await _dbContext.SaveChangesAsync();
         }
@@ -193,17 +205,32 @@ namespace AlwaysOn.Shared.Services
             return res;
         }
 
-        public async Task UpsertCatalogItemAsync(CatalogItemWrite item)
+        public async Task UpsertCatalogItemAsync(CatalogItemBase item)
         {
             // check if we're tracking this entity and if not, add it
             var existingItem = _dbContext.CatalogItemsRead.Where(i => i.Id == item.Id).FirstOrDefault();
+            // TODO: use automapper for this
+            var newItem = new CatalogItemWrite()
+            {
+                CatalogItemId = item.CatalogItemId,
+                CreationDate = item.CreationDate,
+                Description = item.Description,
+                Deleted = item.Deleted,
+                Id = item.Id,
+                ImageUrl = item.ImageUrl,
+                LastUpdated = item.LastUpdated,
+                Name = item.Name,
+                Price = item.Price,
+                Rating = item.Rating
+            };
+            
             if (existingItem == null)
             {
-                _dbContext.CatalogItemsWrite.Add(item);
+                _dbContext.CatalogItemsWrite.Add(newItem);
             }
             else
             {
-                _dbContext.CatalogItemsWrite.Update(item);
+                _dbContext.CatalogItemsWrite.Update(newItem);
             }
 
             await _dbContext.SaveChangesAsync();

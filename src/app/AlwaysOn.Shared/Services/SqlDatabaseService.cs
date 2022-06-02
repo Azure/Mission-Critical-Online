@@ -20,14 +20,14 @@ namespace AlwaysOn.Shared.Services
             _dbContext = dbContext;
         }
 
-        public async Task AddNewCatalogItemAsync(CatalogItem catalogItem)
+        public async Task AddNewCatalogItemAsync(CatalogItemWrite catalogItem)
         {
             _dbContext.CatalogItemsWrite.Add(catalogItem);
 
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task AddNewCommentAsync(ItemComment comment)
+        public async Task AddNewCommentAsync(ItemCommentWrite comment)
         {
             _dbContext.ItemCommentsWrite.Add(comment);
 
@@ -45,11 +45,11 @@ namespace AlwaysOn.Shared.Services
         {
             var idGuid = Guid.Parse(itemId);
 
-            if (typeof(T) == typeof(CatalogItem))
+            if (typeof(T) == typeof(CatalogItemWrite))
             {
                 //var item = new CatalogItem() { Id = idGuid };
 
-                var deletedItem = new CatalogItem()
+                var deletedItem = new CatalogItemWrite()
                 {
                     CatalogItemId = idGuid,
                     Deleted = true
@@ -59,18 +59,25 @@ namespace AlwaysOn.Shared.Services
 
                 //_dbContext.Entry(item).State = EntityState.Deleted;
             }
-            else if (typeof(T) == typeof(ItemComment))
+            else if (typeof(T) == typeof(ItemCommentWrite))
             {
                 var itemToDelete = await _dbContext.ItemCommentsRead.Where(i => i.CommentId == idGuid).FirstOrDefaultAsync();
                 if (itemToDelete is null)
                 {
-                    // item was not found in the database - log and fail
+                    // item was not found in the database - either doesn't exist or has been already deleted
                 }
 
-                itemToDelete.Id = default;
-                itemToDelete.Deleted = true;
+                var deletedItem = new ItemCommentWrite()
+                {
+                    AuthorName = itemToDelete.AuthorName,
+                    CatalogItemId = itemToDelete.CatalogItemId,
+                    CommentId = itemToDelete.CommentId,
+                    CreationDate = DateTime.UtcNow,
+                    Text = itemToDelete.Text,
+                    Deleted = true
+                };
 
-                _dbContext.ItemCommentsWrite.Add(itemToDelete);
+                _dbContext.ItemCommentsWrite.Add(deletedItem);
                 
                 //_dbContext.Entry(item).State = EntityState.Deleted;
             }
@@ -89,7 +96,14 @@ namespace AlwaysOn.Shared.Services
                 //_logger.LogWarning($"Unsupported type {typeof(T).Name} for deletion");
             }
 
-            await _dbContext.SaveChangesAsync();
+            try
+            {
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+
+            }
         }
 
 
@@ -122,7 +136,7 @@ namespace AlwaysOn.Shared.Services
             return avgRating;
         }
 
-        public async Task<CatalogItem> GetCatalogItemByIdAsync(Guid itemId)
+        public async Task<CatalogItemBase> GetCatalogItemByIdAsync(Guid itemId)
         {
             var res = await _dbContext
                                 .CatalogItemsRead
@@ -131,7 +145,7 @@ namespace AlwaysOn.Shared.Services
             return res;
         }
 
-        public async Task<ItemComment> GetCommentByIdAsync(Guid commentId, Guid itemId)
+        public async Task<ItemCommentBase> GetCommentByIdAsync(Guid commentId, Guid itemId)
         {
             var res = await _dbContext
                                 .ItemCommentsRead
@@ -140,7 +154,7 @@ namespace AlwaysOn.Shared.Services
             return res;
         }
 
-        public async Task<IEnumerable<ItemComment>> GetCommentsForCatalogItemAsync(Guid itemId, int limit)
+        public async Task<IEnumerable<ItemCommentBase>> GetCommentsForCatalogItemAsync(Guid itemId, int limit)
         {
             var comments = await _dbContext
                                     .ItemCommentsRead
@@ -168,7 +182,7 @@ namespace AlwaysOn.Shared.Services
             return res;
         }
 
-        public async Task<IEnumerable<CatalogItem>> ListCatalogItemsAsync(int limit)
+        public async Task<IEnumerable<CatalogItemBase>> ListCatalogItemsAsync(int limit)
         {
             var res = await _dbContext
                                 .CatalogItemsRead
@@ -179,7 +193,7 @@ namespace AlwaysOn.Shared.Services
             return res;
         }
 
-        public async Task UpsertCatalogItemAsync(CatalogItem item)
+        public async Task UpsertCatalogItemAsync(CatalogItemWrite item)
         {
             // check if we're tracking this entity and if not, add it
             var existingItem = _dbContext.CatalogItemsRead.Where(i => i.Id == item.Id).FirstOrDefault();

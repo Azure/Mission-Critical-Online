@@ -6,8 +6,7 @@ using System.Text.Json.Serialization;
 
 namespace AlwaysOn.Shared.Models
 {
-    [Table("CatalogItems", Schema = "ao")]
-    public class CatalogItem : AoSqlModelBase
+    public class CatalogItemBase : AoSqlModelBase
     {
         public Guid CatalogItemId { get; set; }
         public string Name { get; set; }
@@ -25,7 +24,10 @@ namespace AlwaysOn.Shared.Models
         //public List<ItemRating>? Ratings { get; set; }
     }
 
-    [Table("LatestCatalogItems", Schema = "ao")]
-    public class CatalogItemRead : CatalogItem { }
+    [Table("CatalogItems", Schema = "ao")]
+    public class CatalogItemWrite : CatalogItemBase { }
+    
+    [Table("LatestActiveCatalogItems", Schema = "ao")]
+    public class CatalogItemRead : CatalogItemBase { }
 
 }

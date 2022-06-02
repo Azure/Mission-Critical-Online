@@ -40,8 +40,8 @@ namespace AlwaysOn.CatalogService.Controllers
         /// <param name="commentId"></param>
         /// <returns></returns>
         [HttpGet("{commentId:guid}", Name = nameof(GetCommentByIdAsync))]
-        [ProducesResponseType(typeof(ItemComment), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult<ItemComment>> GetCommentByIdAsync([FromRoute] Guid itemId, Guid commentId)
+        [ProducesResponseType(typeof(ItemCommentWrite), (int)HttpStatusCode.OK)]
+        public async Task<ActionResult<ItemCommentWrite>> GetCommentByIdAsync([FromRoute] Guid itemId, Guid commentId)
         {
             _logger.LogDebug("Received request to get Comment {commentId}", commentId);
 
@@ -68,8 +68,8 @@ namespace AlwaysOn.CatalogService.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet(Name = nameof(GetCommentsByCatalogItemIdAsync))]
-        [ProducesResponseType(typeof(ItemComment), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult<IEnumerable<ItemComment>>> GetCommentsByCatalogItemIdAsync([FromRoute] Guid itemId, int limit = 10)
+        [ProducesResponseType(typeof(ItemCommentWrite), (int)HttpStatusCode.OK)]
+        public async Task<ActionResult<IEnumerable<ItemCommentWrite>>> GetCommentsByCatalogItemIdAsync([FromRoute] Guid itemId, int limit = 10)
         {
             try
             {
@@ -100,9 +100,9 @@ namespace AlwaysOn.CatalogService.Controllers
         /// <returns></returns>
         [HttpPost]
         [ProducesResponseType((int)HttpStatusCode.Accepted)]
-        public async Task<ActionResult<CatalogItem>> AddNewItemCommentAsync([FromRoute] Guid itemId, [FromBody] NewCommentDto commentDto)
+        public async Task<ActionResult<CatalogItemBase>> AddNewItemCommentAsync([FromRoute] Guid itemId, [FromBody] NewCommentDto commentDto)
         {
-            var comment = new ItemComment()
+            var comment = new ItemCommentWrite()
             {
                 CommentId = Guid.NewGuid(),
                 AuthorName = commentDto.AuthorName,
@@ -153,7 +153,7 @@ namespace AlwaysOn.CatalogService.Controllers
         public async Task<ActionResult> DeleteItemCommentAsync([FromRoute] Guid itemId, Guid commentId)
         {
             _logger.LogDebug("Received request to delete ItemComment={commentId}", commentId);
-            return await CatalogServiceHelpers.DeleteObjectInternal<ItemComment>(_logger, _messageProducerService, commentId, itemId);
+            return await CatalogServiceHelpers.DeleteObjectInternal<ItemCommentWrite>(_logger, _messageProducerService, commentId, itemId);
         }
     }
 }

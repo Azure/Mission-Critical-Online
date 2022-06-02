@@ -10,21 +10,26 @@ namespace AlwaysOn.Shared
         public AoDbContext(DbContextOptions options) : base(options) { }
 
         public DbSet<CatalogItemRead> CatalogItemsRead { get; set; }
-        public DbSet<CatalogItem> CatalogItemsWrite { get; set; }
+        public DbSet<CatalogItemWrite> CatalogItemsWrite { get; set; }
 
         public DbSet<ItemCommentRead> ItemCommentsRead { get; set; }
-        public DbSet<ItemComment> ItemCommentsWrite { get; set; }
+        public DbSet<ItemCommentWrite> ItemCommentsWrite { get; set; }
 
         public DbSet<ItemRatingRead> ItemRatingsRead { get; set; }
         public DbSet<ItemRating> ItemRatingsWrite { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<ItemCommentRead>(e => 
-            {
-                //e.HasNoKey();
-                e.ToView("AllActiveComments");
-            });
+        //    modelBuilder.Entity<ItemCommentRead>(e =>
+        //    {
+        //        //e.HasNoKey();
+        //        e.ToView("AllActiveComments", "ao");
+        //    });
+
+        //    modelBuilder.Entity<ItemCommentWrite>(e =>
+        //    {
+        //        e.ToTable("Comments", "ao");
+        //    });
         }
     }
 }

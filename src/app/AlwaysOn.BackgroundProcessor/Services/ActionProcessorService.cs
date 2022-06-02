@@ -76,11 +76,11 @@ namespace AlwaysOn.BackgroundProcessor.Services
 
                         switch (deletionRequest.ObjectType)
                         {
-                            case (nameof(CatalogItem)):
-                                await _databaseService.DeleteItemAsync<CatalogItem>(deletionRequest.ObjectId, deletionRequest.PartitionId);
+                            case (nameof(CatalogItemBase)):
+                                await _databaseService.DeleteItemAsync<CatalogItemBase>(deletionRequest.ObjectId, deletionRequest.PartitionId);
                                 break;
-                            case (nameof(ItemComment)):
-                                await _databaseService.DeleteItemAsync<ItemComment>(deletionRequest.ObjectId, deletionRequest.PartitionId);
+                            case (nameof(ItemCommentWrite)):
+                                await _databaseService.DeleteItemAsync<ItemCommentWrite>(deletionRequest.ObjectId, deletionRequest.PartitionId);
                                 break;
                             case (nameof(ItemRating)):
                                 await _databaseService.DeleteItemAsync<ItemRating>(deletionRequest.ObjectId, deletionRequest.PartitionId);
@@ -106,7 +106,7 @@ namespace AlwaysOn.BackgroundProcessor.Services
         /// </summary>
         private async Task AddCatalogItemAsync(string dataString)
         {
-            var item = Helpers.JsonDeserialize<CatalogItem>(dataString);
+            var item = Helpers.JsonDeserialize<CatalogItemWrite>(dataString);
             if (item == null)
             {
                 _logger.LogError($"Could not cast data to CatalogItem");
@@ -138,7 +138,7 @@ namespace AlwaysOn.BackgroundProcessor.Services
         /// </summary>
         private async Task AddItemCommentAsync(string dataString)
         {
-            var comment = Helpers.JsonDeserialize<ItemComment>(dataString);
+            var comment = Helpers.JsonDeserialize<ItemCommentWrite>(dataString);
             if (comment == null)
             {
                 _logger.LogError($"Could not cast data to ItemComment");

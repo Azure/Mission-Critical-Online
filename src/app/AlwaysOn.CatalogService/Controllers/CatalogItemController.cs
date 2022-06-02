@@ -46,8 +46,8 @@ namespace AlwaysOn.CatalogService.Controllers
         /// <param name="limit"></param>
         /// <returns></returns>
         [HttpGet(Name = nameof(ListCatalogItemsAsync))]
-        [ProducesResponseType(typeof(IEnumerable<CatalogItem>), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult<IEnumerable<CatalogItem>>> ListCatalogItemsAsync(int limit = 100)
+        [ProducesResponseType(typeof(IEnumerable<CatalogItemBase>), (int)HttpStatusCode.OK)]
+        public async Task<ActionResult<IEnumerable<CatalogItemBase>>> ListCatalogItemsAsync(int limit = 100)
         {
             _logger.LogDebug("Received request to get N={limit} CatalogItems", limit);
             try
@@ -81,8 +81,8 @@ namespace AlwaysOn.CatalogService.Controllers
         /// <param name="itemId"></param>
         /// <returns></returns>
         [HttpGet("{itemId:guid}", Name = nameof(GetCatalogItemByIdAsync))]
-        [ProducesResponseType(typeof(CatalogItem), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult<CatalogItem>> GetCatalogItemByIdAsync(Guid itemId)
+        [ProducesResponseType(typeof(CatalogItemBase), (int)HttpStatusCode.OK)]
+        public async Task<ActionResult<CatalogItemBase>> GetCatalogItemByIdAsync(Guid itemId)
         {
             _logger.LogDebug("Received request to get CatalogItem {CatalogItem}", itemId);
 
@@ -114,9 +114,9 @@ namespace AlwaysOn.CatalogService.Controllers
         /// <param name="itemDto"></param>
         /// <returns></returns>
         [HttpPost]
-        [ProducesResponseType(typeof(CatalogItem), (int)HttpStatusCode.Created)]
+        [ProducesResponseType(typeof(CatalogItemBase), (int)HttpStatusCode.Created)]
         [ApiKey]
-        public async Task<ActionResult<CatalogItem>> CreateNewCatalogItemAsync(CatalogItemDto itemDto)
+        public async Task<ActionResult<CatalogItemBase>> CreateNewCatalogItemAsync(CatalogItemDto itemDto)
         {
             if (string.IsNullOrEmpty(itemDto.Name) || string.IsNullOrEmpty(itemDto.Description) || itemDto.Price == null)
             {
@@ -125,7 +125,7 @@ namespace AlwaysOn.CatalogService.Controllers
 
             var itemId = itemDto.Id ?? Guid.NewGuid();
 
-            var newItem = new CatalogItem()
+            var newItem = new CatalogItemWrite()
             {
                 CatalogItemId = itemId,
                 Name = itemDto.Name,
@@ -146,22 +146,24 @@ namespace AlwaysOn.CatalogService.Controllers
         /// <param name="itemDto"></param>
         /// <returns></returns>
         [HttpPut("{itemId:guid}")]
-        [ProducesResponseType(typeof(CatalogItem), (int)HttpStatusCode.Accepted)]
+        [ProducesResponseType(typeof(CatalogItemBase), (int)HttpStatusCode.Accepted)]
         [ApiKey]
-        public async Task<ActionResult<CatalogItem>> UpdateCatalogItemAsync(Guid itemId, CatalogItemDto itemDto)
+        public async Task<ActionResult<CatalogItemBase>> UpdateCatalogItemAsync(Guid itemId, CatalogItemDto itemDto)
         {
             _logger.LogDebug("Received request to update CatalogItemId={CatalogItemId}", itemId);
 
-            var existingItem = await _databaseService.GetCatalogItemByIdAsync(itemId);
-            if (existingItem == null)
-            {
-                return StatusCode((int)HttpStatusCode.NotFound);
-            }
+            var existingItem = new CatalogItemWrite();
+            
+            //var existingItem = await _databaseService.GetCatalogItemByIdAsync(itemId);
+            //if (existingItem == null)
+            //{
+            //    return StatusCode((int)HttpStatusCode.NotFound);
+            //}
 
-            existingItem.Name = itemDto.Name ?? existingItem.Name;
-            existingItem.Description = itemDto.Description ?? existingItem.Description;
-            existingItem.Price = itemDto.Price ?? existingItem.Price;
-            existingItem.ImageUrl = itemDto.ImageUrl ?? existingItem.ImageUrl;
+            //existingItem.Name = itemDto.Name ?? existingItem.Name;
+            //existingItem.Description = itemDto.Description ?? existingItem.Description;
+            //existingItem.Price = itemDto.Price ?? existingItem.Price;
+            //existingItem.ImageUrl = itemDto.ImageUrl ?? existingItem.ImageUrl;
 
             return await UpsertCatalogItemAsync(itemId, existingItem);
         }
@@ -172,7 +174,7 @@ namespace AlwaysOn.CatalogService.Controllers
         /// <param name="itemId"></param>
         /// <param name="item"></param>
         /// <returns></returns>
-        private async Task<ActionResult<CatalogItem>> UpsertCatalogItemAsync(Guid itemId, CatalogItem item)
+        private async Task<ActionResult<CatalogItemBase>> UpsertCatalogItemAsync(Guid itemId, CatalogItemWrite item)
         {
             try
             {
@@ -237,7 +239,7 @@ namespace AlwaysOn.CatalogService.Controllers
         public async Task<ActionResult> DeleteCatalogItemAsync(Guid itemId)
         {
             _logger.LogDebug("Received request to delete CatalogItem={CatalogItem}", itemId);
-            return await CatalogServiceHelpers.DeleteObjectInternal<CatalogItem>(_logger, _messageProducerService, itemId, itemId);
+            return await CatalogServiceHelpers.DeleteObjectInternal<CatalogItemBase>(_logger, _messageProducerService, itemId, itemId);
         }
     }
 }

@@ -14,28 +14,28 @@ namespace AlwaysOn.Shared.Interfaces
         /// </summary>
         /// <param name="itemId"></param>
         /// <returns></returns>
-        Task<CatalogItem> GetCatalogItemByIdAsync(Guid itemId);
+        Task<CatalogItemBase> GetCatalogItemByIdAsync(Guid itemId);
 
         /// <summary>
         /// Writes a new CatalogItem to the database
         /// </summary>
         /// <param name="catalogItem"></param>
         /// <returns></returns>
-        Task AddNewCatalogItemAsync(CatalogItem catalogItem);
+        Task AddNewCatalogItemAsync(CatalogItemWrite catalogItem);
 
         /// <summary>
         /// Fetches N number of CatalogItem
         /// </summary>
         /// <param name="limit"></param>
         /// <returns></returns>
-        Task<IEnumerable<CatalogItem>> ListCatalogItemsAsync(int limit);
+        Task<IEnumerable<CatalogItemBase>> ListCatalogItemsAsync(int limit);
 
         /// <summary>
         /// Upserts CatalogItem
         /// </summary>
         /// <param name="item">Full CatalogItem object to be updated</param>
         /// <returns></returns>
-        Task UpsertCatalogItemAsync(CatalogItem item);
+        Task UpsertCatalogItemAsync(CatalogItemWrite item);
 
         /// <summary>
         /// Fetches latest comments for a given catalogItem
@@ -43,14 +43,14 @@ namespace AlwaysOn.Shared.Interfaces
         /// <param name="itemId"></param>
         /// <param name="limit"></param>
         /// <returns></returns>
-        Task<IEnumerable<ItemComment>> GetCommentsForCatalogItemAsync(Guid itemId, int limit);
+        Task<IEnumerable<ItemCommentBase>> GetCommentsForCatalogItemAsync(Guid itemId, int limit);
 
         /// <summary>
         /// Writes a new ItemComment to the database
         /// </summary>
         /// <param name="catalogItem"></param>
         /// <returns></returns>
-        Task AddNewCommentAsync(ItemComment comment);
+        Task AddNewCommentAsync(ItemCommentWrite comment);
 
         /// <summary>
         /// Gets a specific ItemRating by its ID and the CatalogItemId
@@ -66,7 +66,7 @@ namespace AlwaysOn.Shared.Interfaces
         /// <param name="ratingId"></param>
         /// <param name="itemId"></param>
         /// <returns></returns>
-        Task<ItemComment> GetCommentByIdAsync(Guid commentId, Guid itemId);
+        Task<ItemCommentBase> GetCommentByIdAsync(Guid commentId, Guid itemId);
 
         /// <summary>
         /// Get the average rating for a given catalogItem

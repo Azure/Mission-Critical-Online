@@ -120,11 +120,11 @@ namespace AlwaysOn.Shared.Services
             var success = false;
             try
             {
-                if (typeof(T) == typeof(CatalogItem))
+                if (typeof(T) == typeof(CatalogItemBase))
                 {
                     response = await _catalogItemsContainer.DeleteItemAsync<T>(objectId, new PartitionKey(partitionKey));
                 }
-                else if (typeof(T) == typeof(ItemComment))
+                else if (typeof(T) == typeof(ItemCommentWrite))
                 {
                     response = await _commentsContainer.DeleteItemAsync<T>(objectId, new PartitionKey(partitionKey));
                 }
@@ -176,7 +176,7 @@ namespace AlwaysOn.Shared.Services
             }
         }
 
-        public async Task<CatalogItem> GetCatalogItemByIdAsync(Guid itemId)
+        public async Task<CatalogItemBase> GetCatalogItemByIdAsync(Guid itemId)
         {
             string partitionKey = itemId.ToString();
             var startTime = DateTime.UtcNow;
@@ -195,7 +195,7 @@ namespace AlwaysOn.Shared.Services
                 // Item stream operations do not throw exceptions for better performance
                 if (responseMessage.IsSuccessStatusCode)
                 {
-                    var item = await JsonSerializer.DeserializeAsync<CatalogItem>(responseMessage.Content, Globals.JsonSerializerOptions);
+                    var item = await JsonSerializer.DeserializeAsync<CatalogItemBase>(responseMessage.Content, Globals.JsonSerializerOptions);
                     success = true;
                     return item;
                 }
@@ -244,7 +244,7 @@ namespace AlwaysOn.Shared.Services
             }
         }
 
-        public async Task<ItemComment> GetCommentByIdAsync(Guid commentId, Guid itemId)
+        public async Task<ItemCommentBase> GetCommentByIdAsync(Guid commentId, Guid itemId)
         {
             string partitionKey = itemId.ToString();
             var startTime = DateTime.UtcNow;
@@ -263,7 +263,7 @@ namespace AlwaysOn.Shared.Services
                 // Item stream operations do not throw exceptions for better performance
                 if (responseMessage.IsSuccessStatusCode)
                 {
-                    var comment = await JsonSerializer.DeserializeAsync<ItemComment>(responseMessage.Content, Globals.JsonSerializerOptions);
+                    var comment = await JsonSerializer.DeserializeAsync<ItemCommentWrite>(responseMessage.Content, Globals.JsonSerializerOptions);
                     success = true;
                     return comment;
                 }
@@ -386,12 +386,12 @@ namespace AlwaysOn.Shared.Services
         /// <param name="item"></param>
         /// <returns></returns>
         /// <exception cref="AlwaysOnDependencyException"></exception>
-        public async Task UpsertCatalogItemAsync(CatalogItem item)
+        public async Task UpsertCatalogItemAsync(CatalogItemWrite item)
         {
             string partitionKey = item.Id.ToString();
             var startTime = DateTime.UtcNow;
             var success = false;
-            ItemResponse<CatalogItem> response = null;
+            ItemResponse<CatalogItemWrite> response = null;
             CosmosDiagnostics diagnostics = null;
 
             try
@@ -493,10 +493,10 @@ namespace AlwaysOn.Shared.Services
             return results;
         }
 
-        public async Task AddNewCatalogItemAsync(CatalogItem item)
+        public async Task AddNewCatalogItemAsync(CatalogItemWrite item)
         {
             var startTime = DateTime.UtcNow;
-            ItemResponse<CatalogItem> response = null;
+            ItemResponse<CatalogItemWrite> response = null;
             CosmosDiagnostics diagnostics = null;
             var success = false;
             var conflict = false;
@@ -553,10 +553,10 @@ namespace AlwaysOn.Shared.Services
         /// </summary>
         /// <param name="limit"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<CatalogItem>> ListCatalogItemsAsync(int limit)
+        public async Task<IEnumerable<CatalogItemBase>> ListCatalogItemsAsync(int limit)
         {
-            var queryable = _catalogItemsContainer.GetItemLinqQueryable<CatalogItem>(linqSerializerOptions: _cosmosSerializationOptions)
-                .Select(i => new CatalogItem() 
+            var queryable = _catalogItemsContainer.GetItemLinqQueryable<CatalogItemBase>(linqSerializerOptions: _cosmosSerializationOptions)
+                .Select(i => new CatalogItemBase() 
                 { 
                     Id = i.Id, 
                     Name = i.Name, 
@@ -566,24 +566,24 @@ namespace AlwaysOn.Shared.Services
                 })
                 .OrderBy(i => i.Name)
                 .Take(limit);
-            var result = await ListDocumentsByQueryAsync<CatalogItem>(queryable);
+            var result = await ListDocumentsByQueryAsync<CatalogItemBase>(queryable);
             return result;
         }
 
-        public async Task<IEnumerable<ItemComment>> GetCommentsForCatalogItemAsync(Guid itemId, int limit)
+        public async Task<IEnumerable<ItemCommentBase>> GetCommentsForCatalogItemAsync(Guid itemId, int limit)
         {
-            var queryable = _commentsContainer.GetItemLinqQueryable<ItemComment>(linqSerializerOptions: _cosmosSerializationOptions)
+            var queryable = _commentsContainer.GetItemLinqQueryable<ItemCommentWrite>(linqSerializerOptions: _cosmosSerializationOptions)
                 .Where(l => l.CatalogItemId == itemId)
                 .OrderByDescending(c => c.CreationDate)
                 .Take(limit);
-            var result = await ListDocumentsByQueryAsync<ItemComment>(queryable);
+            var result = await ListDocumentsByQueryAsync<ItemCommentWrite>(queryable);
             return result;
         }
 
-        public async Task AddNewCommentAsync(ItemComment comment)
+        public async Task AddNewCommentAsync(ItemCommentWrite comment)
         {
             var startTime = DateTime.UtcNow;
-            ItemResponse<ItemComment> response = null;
+            ItemResponse<ItemCommentWrite> response = null;
             CosmosDiagnostics diagnostics = null;
             var success = false;
             var conflict = false;

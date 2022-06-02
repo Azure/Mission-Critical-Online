@@ -50,8 +50,8 @@ GO
 
 -- On all
 DROP VIEW ao.AllCatalogItems;
-DROP VIEW ao.AllRatings;
-DROP VIEW ao.AllComments;
+DROP VIEW ao.AllActiveRatings;
+DROP VIEW ao.AllActiveComments;
 GO
 
 DROP VIEW ao.LatestCatalogItems
@@ -61,4 +61,7 @@ DROP MASTER KEY;
 GO
 
 DROP DATABASE SCOPED CREDENTIAL CrossDbCred;
+GO
+
+DELETE FROM ao.Comments WHERE Deleted = 1
 GO

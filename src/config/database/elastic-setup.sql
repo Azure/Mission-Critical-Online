@@ -194,28 +194,60 @@ CREATE VIEW [ao].[AllCatalogItems] AS
     SELECT * FROM [ao].[CatalogItemsStamp3]
 GO
 
-CREATE VIEW [ao].[LatestCatalogItems] AS
+CREATE VIEW [ao].[LatestActiveCatalogItems] AS
+(
+    SELECT * FROM
+    (
+        -- https://stackoverflow.com/questions/28722276/sql-select-top-1-for-each-group
+        SELECT TOP 1 WITH TIES 
+                [Id],
+                [CatalogItemId],
+                [Name],
+                [Description],
+                [ImageUrl],
+                [Price],
+                [LastUpdated],
+                [Rating],
+                [CreationDate],
+                [Deleted] FROM (
+            SELECT * FROM [ao].[CatalogItems]
+            UNION ALL
+            SELECT * FROM [ao].[CatalogItemsStamp2]
+            UNION ALL
+            SELECT * FROM [ao].[CatalogItemsStamp3]
+        ) AS u
+        ORDER BY
+            ROW_NUMBER() OVER(PARTITION BY Id ORDER BY [CreationDate] DESC)
+    ) as c
+    WHERE Deleted = 0
+)
+GO
+
+
+CREATE VIEW [ao].[LatestActiveComments] AS
+(
+    SELECT * FROM (
     -- https://stackoverflow.com/questions/28722276/sql-select-top-1-for-each-group
-    SELECT TOP 1 WITH TIES 
-            [Id],
-            [CatalogItemId],
-            [Name],
-            [Description],
-            [ImageUrl],
-            [Price],
-            [LastUpdated],
-            [Rating],
-            [CreationDate],
-            [Deleted] FROM (
-        SELECT * FROM [ao].[CatalogItems]
-        UNION ALL
-        SELECT * FROM [ao].[CatalogItemsStamp2]
-        UNION ALL
-        SELECT * FROM [ao].[CatalogItemsStamp3]
-    ) AS u
-    WHERE [Deleted] = 0
-    ORDER BY
-        ROW_NUMBER() OVER(PARTITION BY Id ORDER BY [CreationDate] DESC);
+        SELECT TOP 1 WITH TIES 
+                [Id],
+                [CommentId],
+                [CatalogItemId],
+                [AuthorName],
+                [Text],
+                [CreationDate],
+                [Deleted] FROM (
+            SELECT * FROM [ao].[Comments]
+            UNION ALL
+            SELECT * FROM [ao].[CommentsStamp2]
+            UNION ALL
+            SELECT * FROM [ao].[CommentsStamp3]
+        ) AS u
+        ORDER BY
+            ROW_NUMBER() OVER(PARTITION BY CommentId ORDER BY [CreationDate] DESC)  
+    )
+    AS c
+    WHERE Deleted = 0
+)  
 GO
 
 -- There's no update on comments and ratings, so we can keep them simple.
@@ -241,12 +273,16 @@ GO
 SELECT * FROM [ao].AllCatalogItems
 
 SELECT * FROM [ao].LatestCatalogItems
+SELECT * FROM [ao].LatestActiveComments
 
-SELECT * FROM [ao].[AllRatings]
+SELECT * FROM [ao].[AllActiveRatings]
 WHERE CatalogItemId = 'fbb6593a-9ce4-4f1a-89b4-e1f218a594ef'
+
+SELECT * FROM ao.AllActiveComments
 
 
 SELECT AVG(CAST([a].[Rating] AS float)) AS [AverageRating], COUNT(*) AS [NumberOfVotes]
 FROM [ao].[AllRatings] AS [a]
 WHERE [a].[CatalogItemId] = 'fbb6593a-9ce4-4f1a-89b4-e1f218a594ef'
 
+SELECT * FROM ao.Comments

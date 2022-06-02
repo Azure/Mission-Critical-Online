@@ -37,7 +37,7 @@ namespace AlwaysOn.Tests
             var result = await controller.ListCatalogItemsAsync();
 
             // Assert
-            Assert.IsInstanceOf<ActionResult<IEnumerable<CatalogItem>>>(result); // expecting list of CatalogItems
+            Assert.IsInstanceOf<ActionResult<IEnumerable<CatalogItemBase>>>(result); // expecting list of CatalogItems
             Assert.IsInstanceOf<OkObjectResult>(result.Result); // expecting HTTP 200 result
         }
 
@@ -85,9 +85,9 @@ namespace AlwaysOn.Tests
             var mockDatabase = new Mock<IDatabaseService>();
 
             mockDatabase.Setup(db => db.GetCatalogItemByIdAsync(itemId))
-                        .ReturnsAsync((CatalogItem)null);
+                        .ReturnsAsync((CatalogItemBase)null);
 
-            mockDatabase.Setup(db => db.DeleteItemAsync<CatalogItem>(itemId.ToString(), itemId.ToString()));
+            mockDatabase.Setup(db => db.DeleteItemAsync<CatalogItemBase>(itemId.ToString(), itemId.ToString()));
 
             var controller = new CatalogItemController(mockLogger, mockDatabase.Object, null, null);
 
@@ -98,11 +98,11 @@ namespace AlwaysOn.Tests
             Assert.IsInstanceOf<ObjectResult>(result);
         }
 
-        private List<CatalogItem> GetTestCatalogItems()
+        private List<CatalogItemBase> GetTestCatalogItems()
         {
-            return new List<CatalogItem>()
+            return new List<CatalogItemBase>()
             {
-                new CatalogItem()
+                new CatalogItemBase()
                 {
                     LastUpdated = DateTime.UtcNow,
                     Id = 1,//Guid.NewGuid(),
@@ -110,7 +110,7 @@ namespace AlwaysOn.Tests
                     Name = "First Item",
                     Price = 11111.11m
                 },
-                new CatalogItem() {
+                new CatalogItemBase() {
                     LastUpdated = DateTime.UtcNow.AddDays(-1),
                     Id = 2,//Guid.NewGuid(),
                     Description= "Second test item",

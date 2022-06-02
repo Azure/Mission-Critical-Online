@@ -9,6 +9,8 @@ namespace AlwaysOn.Shared.Interfaces
 {
     public interface IDatabaseService
     {
+        #region CatalogItem
+
         /// <summary>
         /// Get a specific catalogItem by its ID
         /// </summary>
@@ -21,7 +23,7 @@ namespace AlwaysOn.Shared.Interfaces
         /// </summary>
         /// <param name="catalogItem"></param>
         /// <returns></returns>
-        Task AddNewCatalogItemAsync(CatalogItemWrite catalogItem);
+        Task AddNewCatalogItemAsync(CatalogItemBase catalogItem);
 
         /// <summary>
         /// Fetches N number of CatalogItem
@@ -35,7 +37,11 @@ namespace AlwaysOn.Shared.Interfaces
         /// </summary>
         /// <param name="item">Full CatalogItem object to be updated</param>
         /// <returns></returns>
-        Task UpsertCatalogItemAsync(CatalogItemWrite item);
+        Task UpsertCatalogItemAsync(CatalogItemBase item);
+
+        #endregion
+
+        #region Comment
 
         /// <summary>
         /// Fetches latest comments for a given catalogItem
@@ -53,20 +59,24 @@ namespace AlwaysOn.Shared.Interfaces
         Task AddNewCommentAsync(ItemCommentWrite comment);
 
         /// <summary>
-        /// Gets a specific ItemRating by its ID and the CatalogItemId
-        /// </summary>
-        /// <param name="ratingId"></param>
-        /// <param name="itemId"></param>
-        /// <returns></returns>
-        Task<ItemRating> GetRatingByIdAsync(Guid ratingId, Guid itemId);
-
-        /// <summary>
         /// Gets a specific ItemComment by its ID and the CatalogItemId
         /// </summary>
         /// <param name="ratingId"></param>
         /// <param name="itemId"></param>
         /// <returns></returns>
         Task<ItemCommentBase> GetCommentByIdAsync(Guid commentId, Guid itemId);
+
+        #endregion
+
+        #region Rating
+
+        /// <summary>
+        /// Gets a specific ItemRating by its ID and the CatalogItemId
+        /// </summary>
+        /// <param name="ratingId"></param>
+        /// <param name="itemId"></param>
+        /// <returns></returns>
+        Task<ItemRating> GetRatingByIdAsync(Guid ratingId, Guid itemId);
 
         /// <summary>
         /// Get the average rating for a given catalogItem
@@ -81,6 +91,8 @@ namespace AlwaysOn.Shared.Interfaces
         /// <param name="rating"></param>
         /// <returns></returns>
         Task AddNewRatingAsync(ItemRating rating);
+
+        #endregion
 
         /// <summary>
         /// Deletes a given object from the database by ID

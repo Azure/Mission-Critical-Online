@@ -20,7 +20,7 @@ namespace AlwaysOn.Shared.Services
             _dbContext = dbContext;
         }
 
-        public async Task AddNewCatalogItemAsync(CatalogItemWrite catalogItem)
+        public async Task AddNewCatalogItemAsync(CatalogItemBase catalogItem)
         {
             _dbContext.CatalogItemsWrite.Add(catalogItem);
 

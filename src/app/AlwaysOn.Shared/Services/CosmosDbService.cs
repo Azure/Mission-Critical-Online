@@ -386,7 +386,7 @@ namespace AlwaysOn.Shared.Services
         /// <param name="item"></param>
         /// <returns></returns>
         /// <exception cref="AlwaysOnDependencyException"></exception>
-        public async Task UpsertCatalogItemAsync(CatalogItemWrite item)
+        public async Task UpsertCatalogItemAsync(CatalogItemBase item)
         {
             string partitionKey = item.Id.ToString();
             var startTime = DateTime.UtcNow;
@@ -493,7 +493,7 @@ namespace AlwaysOn.Shared.Services
             return results;
         }
 
-        public async Task AddNewCatalogItemAsync(CatalogItemWrite item)
+        public async Task AddNewCatalogItemAsync(CatalogItemBase item)
         {
             var startTime = DateTime.UtcNow;
             ItemResponse<CatalogItemWrite> response = null;

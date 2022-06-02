@@ -6,6 +6,12 @@ using System.Text.Json.Serialization;
 
 namespace AlwaysOn.Shared.Models
 {
+    //
+    // Base class has to be defined without the [Table] attribute.
+    // Entity Framework follows class inheritance -> 
+    //  If CatalogItem would be tied to the [CatalogItems] table and CatalogItemRead to the [LatestActiveCatalogItems] view and derived from CatalogItem,
+    //  it would combine both the db table and the db view in the query.
+    //
     public class CatalogItem : AoSqlModelBase
     {
         public Guid CatalogItemId { get; set; }
@@ -16,17 +22,13 @@ namespace AlwaysOn.Shared.Models
         public decimal Price { get; set; }
         public DateTime LastUpdated { get; set; }
         public double? Rating { get; set; }
-
-        // we are not currently fetching these along with the item, so no need to have them empty in the JSON response
-        //[JsonIgnore]
-        //public List<ItemComment>? Comments { get; set; }
-        //[JsonIgnore]
-        //public List<ItemRating>? Ratings { get; set; }
     }
 
+    // This is an actual database table.
     [Table("CatalogItems", Schema = "ao")]
     public class CatalogItemWrite : CatalogItem { }
     
+    // This is a database view.
     [Table("LatestActiveCatalogItems", Schema = "ao")]
     public class CatalogItemRead : CatalogItem { }
 

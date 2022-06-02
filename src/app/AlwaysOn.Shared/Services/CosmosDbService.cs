@@ -391,7 +391,7 @@ namespace AlwaysOn.Shared.Services
             string partitionKey = item.Id.ToString();
             var startTime = DateTime.UtcNow;
             var success = false;
-            ItemResponse<CatalogItemWrite> response = null;
+            ItemResponse<CatalogItemBase> response = null;
             CosmosDiagnostics diagnostics = null;
 
             try
@@ -496,7 +496,7 @@ namespace AlwaysOn.Shared.Services
         public async Task AddNewCatalogItemAsync(CatalogItemBase item)
         {
             var startTime = DateTime.UtcNow;
-            ItemResponse<CatalogItemWrite> response = null;
+            ItemResponse<CatalogItemBase> response = null;
             CosmosDiagnostics diagnostics = null;
             var success = false;
             var conflict = false;

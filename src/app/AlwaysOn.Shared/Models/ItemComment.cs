@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace AlwaysOn.Shared.Models
 {
-    public class ItemCommentBase : AoSqlModelBase
+    public class ItemComment : AoSqlModelBase
     {
         public Guid CommentId { get; set; }
         public Guid CatalogItemId { get; set; }
@@ -17,16 +17,10 @@ namespace AlwaysOn.Shared.Models
     }
 
     [Table("Comments", Schema = "ao")]
-    public class ItemCommentWrite : ItemCommentBase
-    {
+    public class ItemCommentWrite : ItemComment { }
 
-    }
 
-    
     [Table("LatestActiveComments", Schema = "ao")]
 
-    public class ItemCommentRead : ItemCommentBase 
-    {
-      
-    }
+    public class ItemCommentRead : ItemComment { }
 }

@@ -49,7 +49,7 @@ namespace AlwaysOn.Shared.Interfaces
         /// <param name="itemId"></param>
         /// <param name="limit"></param>
         /// <returns></returns>
-        Task<IEnumerable<ItemCommentBase>> GetCommentsForCatalogItemAsync(Guid itemId, int limit);
+        Task<IEnumerable<ItemComment>> GetCommentsForCatalogItemAsync(Guid itemId, int limit);
 
         /// <summary>
         /// Writes a new ItemComment to the database
@@ -64,7 +64,7 @@ namespace AlwaysOn.Shared.Interfaces
         /// <param name="ratingId"></param>
         /// <param name="itemId"></param>
         /// <returns></returns>
-        Task<ItemCommentBase> GetCommentByIdAsync(Guid commentId, Guid itemId);
+        Task<ItemComment> GetCommentByIdAsync(Guid commentId, Guid itemId);
 
         #endregion
 

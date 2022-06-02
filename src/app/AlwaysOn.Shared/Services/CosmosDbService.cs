@@ -244,7 +244,7 @@ namespace AlwaysOn.Shared.Services
             }
         }
 
-        public async Task<ItemCommentBase> GetCommentByIdAsync(Guid commentId, Guid itemId)
+        public async Task<ItemComment> GetCommentByIdAsync(Guid commentId, Guid itemId)
         {
             string partitionKey = itemId.ToString();
             var startTime = DateTime.UtcNow;
@@ -570,7 +570,7 @@ namespace AlwaysOn.Shared.Services
             return result;
         }
 
-        public async Task<IEnumerable<ItemCommentBase>> GetCommentsForCatalogItemAsync(Guid itemId, int limit)
+        public async Task<IEnumerable<ItemComment>> GetCommentsForCatalogItemAsync(Guid itemId, int limit)
         {
             var queryable = _commentsContainer.GetItemLinqQueryable<ItemCommentWrite>(linqSerializerOptions: _cosmosSerializationOptions)
                 .Where(l => l.CatalogItemId == itemId)

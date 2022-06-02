@@ -157,7 +157,7 @@ namespace AlwaysOn.Shared.Services
             return res;
         }
 
-        public async Task<ItemCommentBase> GetCommentByIdAsync(Guid commentId, Guid itemId)
+        public async Task<ItemComment> GetCommentByIdAsync(Guid commentId, Guid itemId)
         {
             var res = await _dbContext
                                 .ItemCommentsRead
@@ -166,7 +166,7 @@ namespace AlwaysOn.Shared.Services
             return res;
         }
 
-        public async Task<IEnumerable<ItemCommentBase>> GetCommentsForCatalogItemAsync(Guid itemId, int limit)
+        public async Task<IEnumerable<ItemComment>> GetCommentsForCatalogItemAsync(Guid itemId, int limit)
         {
             var comments = await _dbContext
                                     .ItemCommentsRead

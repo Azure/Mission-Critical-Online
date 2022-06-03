@@ -44,21 +44,31 @@ namespace AlwaysOn.Shared.Services
 
         public async Task DeleteItemAsync<T>(string itemId, string partitionKey = null)
         {
+            //
+            // This method uses two approaches to deletion:
+            //  1. Create empty CatalogItemWrite, which contains only the bare minimum (CatalogItemId, Deleted and CreationDate) - store that in the database.
+            //      - This works with the assumption that the provided ID was already validated by the caller (which it was in this case).
+            //  2. Fetch the ItemComment which should be deleted first, then store it in the database with updated Deleted and CreationDate fields.
+            //      - This SQL query might be unnecessary.
+            //      - Also we're storing data which is not needed anymore, because the item was deleted.
+
             var idGuid = Guid.Parse(itemId);
 
-            if (typeof(T) == typeof(CatalogItemWrite))
+            if (typeof(T) == typeof(CatalogItem))
             {
-                //var item = new CatalogItem() { Id = idGuid };
-
                 var deletedItem = new CatalogItemWrite()
                 {
                     CatalogItemId = idGuid,
-                    Deleted = true
+                    Deleted = true,
+                    CreationDate = DateTime.UtcNow,
+                    Description = String.Empty,
+                    Name = String.Empty,
+                    ImageUrl = String.Empty,
+                    Price = 0,
+                    LastUpdated = DateTime.UtcNow,
                 };
 
                 _dbContext.CatalogItemsWrite.Add(deletedItem);
-
-                //_dbContext.Entry(item).State = EntityState.Deleted;
             }
             else if (typeof(T) == typeof(ItemCommentWrite))
             {
@@ -66,6 +76,7 @@ namespace AlwaysOn.Shared.Services
                 if (itemToDelete is null)
                 {
                     // item was not found in the database - either doesn't exist or has been already deleted
+                    // TODO: handle properly
                     return;
                 }
 
@@ -74,8 +85,6 @@ namespace AlwaysOn.Shared.Services
                 deletedItem.Deleted = true;
                 
                 _dbContext.ItemCommentsWrite.Add(deletedItem);
-                
-                //_dbContext.Entry(item).State = EntityState.Deleted;
             }
             else if (typeof(T) == typeof(ItemRating))
             {

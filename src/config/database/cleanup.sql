@@ -52,9 +52,9 @@ GO
 DROP VIEW ao.AllCatalogItems;
 DROP VIEW ao.AllActiveRatings;
 DROP VIEW ao.AllActiveComments;
-GO
 
-DROP VIEW ao.LatestCatalogItems
+DROP VIEW ao.LatestActiveCatalogItems;
+DROP VIEW ao.LatestActiveComments;
 GO
 
 DROP MASTER KEY;

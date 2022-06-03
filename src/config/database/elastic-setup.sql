@@ -217,7 +217,7 @@ CREATE VIEW [ao].[LatestActiveCatalogItems] AS
             SELECT * FROM [ao].[CatalogItemsStamp3]
         ) AS u
         ORDER BY
-            ROW_NUMBER() OVER(PARTITION BY Id ORDER BY [CreationDate] DESC)
+            ROW_NUMBER() OVER(PARTITION BY CatalogItemId ORDER BY [CreationDate] DESC)
     ) as c
     WHERE Deleted = 0
 )
@@ -272,13 +272,11 @@ GO
 ---
 SELECT * FROM [ao].AllCatalogItems
 
-SELECT * FROM [ao].LatestCatalogItems
+SELECT * FROM [ao].LatestActiveCatalogItems
 SELECT * FROM [ao].LatestActiveComments
 
 SELECT * FROM [ao].[AllActiveRatings]
 WHERE CatalogItemId = 'fbb6593a-9ce4-4f1a-89b4-e1f218a594ef'
-
-SELECT * FROM ao.AllActiveComments
 
 
 SELECT AVG(CAST([a].[Rating] AS float)) AS [AverageRating], COUNT(*) AS [NumberOfVotes]

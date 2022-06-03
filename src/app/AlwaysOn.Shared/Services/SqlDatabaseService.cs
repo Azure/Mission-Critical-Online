@@ -18,7 +18,19 @@ namespace AlwaysOn.Shared.Services
 
 
         public SqlDatabaseService(AoDbContext dbContext, IMapper mapper) => (_dbContext, _mapper) = (dbContext, mapper);
-        
+
+
+        #region CatalogItem
+
+        public async Task<CatalogItem> GetCatalogItemByIdAsync(Guid itemId)
+        {
+            var res = await _dbContext
+                                .CatalogItemsRead
+                                .FirstOrDefaultAsync(i => i.CatalogItemId == itemId);
+
+            return res;
+        }
+
         public async Task AddNewCatalogItemAsync(CatalogItem catalogItem)
         {
             var itemToAdd = _mapper.Map<CatalogItemWrite>(catalogItem);
@@ -28,11 +40,103 @@ namespace AlwaysOn.Shared.Services
             await _dbContext.SaveChangesAsync();
         }
 
+        public async Task<IEnumerable<CatalogItem>> ListCatalogItemsAsync(int limit)
+        {
+            var res = await _dbContext
+                                .CatalogItemsRead
+                                .OrderBy(i => i.Name)
+                                .Take(limit)
+                                .ToListAsync();
+
+            return res;
+        }
+
+        /// <summary>
+        /// Handle both updates and inserts of new items. Since the database is append-only, this method will always create a new entry in the database.
+        /// </summary>
+        public async Task UpsertCatalogItemAsync(CatalogItem item)
+        {
+            var newItem = _mapper.Map<CatalogItemWrite>(item);
+            newItem.CreationDate = DateTime.UtcNow; // this item will be the newest version of any other potential versions
+
+            _dbContext.CatalogItemsWrite.Add(newItem);
+
+            await _dbContext.SaveChangesAsync();
+        }
+
+        #endregion
+
+        #region ItemComment
+
+        public async Task<ItemComment> GetCommentByIdAsync(Guid commentId, Guid itemId)
+        {
+            var res = await _dbContext
+                                .ItemCommentsRead
+                                .FirstOrDefaultAsync(c => c.CommentId == commentId);
+
+            return res;
+        }
+
+        public async Task<IEnumerable<ItemComment>> GetCommentsForCatalogItemAsync(Guid itemId, int limit)
+        {
+            var comments = await _dbContext
+                                    .ItemCommentsRead
+                                    .Where(i => i.CatalogItemId == itemId)
+                                    .Take(limit)
+                                    .ToListAsync();
+
+            return comments;
+        }
+
         public async Task AddNewCommentAsync(ItemCommentWrite comment)
         {
             _dbContext.ItemCommentsWrite.Add(comment);
 
             await _dbContext.SaveChangesAsync(); // check if the number of results is 1
+        }
+
+        #endregion
+
+        #region ItemRating
+
+        public async Task<ItemRating> GetRatingByIdAsync(Guid ratingId, Guid itemId)
+        {
+            var res = await _dbContext
+                                .ItemRatingsRead
+                                .FirstOrDefaultAsync(r => r.RatingId == ratingId);
+
+            return res; // null == not found
+        }
+
+        public async Task<RatingDto> GetAverageRatingForCatalogItemAsync(Guid itemId)
+        {
+            RatingDto avgRating = null;
+
+            try
+            {
+                /*
+                The following LINQ translates to SQL like this: 
+                    SELECT AVG(CAST([a].[Rating] AS float)) AS [AverageRating], COUNT(*) AS [NumberOfVotes]
+                    FROM [ao].[AllRatings] AS [a]
+                    WHERE [a].[CatalogItemId] = @__itemId_0
+                    GROUP BY [a].[CatalogItemId]
+                 */
+                avgRating = await _dbContext.ItemRatingsRead
+                    .Where(i => i.CatalogItemId == itemId)
+                    .GroupBy(i => i.CatalogItemId, r => r.Rating)
+                    .Select(x => new RatingDto()
+                    {
+                        AverageRating = x.Average(),
+                        NumberOfVotes = x.Count()
+                    })
+                    .FirstOrDefaultAsync();
+            }
+            catch (Exception e)
+            {
+
+            }
+
+            return avgRating;
         }
 
         public async Task AddNewRatingAsync(ItemRating rating)
@@ -43,6 +147,8 @@ namespace AlwaysOn.Shared.Services
 
             await _dbContext.SaveChangesAsync();
         }
+
+        #endregion
 
         public async Task DeleteItemAsync<T>(string itemId, string partitionKey = null)
         {
@@ -113,74 +219,6 @@ namespace AlwaysOn.Shared.Services
             }
         }
 
-
-        public async Task<RatingDto> GetAverageRatingForCatalogItemAsync(Guid itemId)
-        {
-            RatingDto avgRating = null;
-            
-            try {
-                /*
-                The following LINQ translates to SQL like this: 
-                    SELECT AVG(CAST([a].[Rating] AS float)) AS [AverageRating], COUNT(*) AS [NumberOfVotes]
-                    FROM [ao].[AllRatings] AS [a]
-                    WHERE [a].[CatalogItemId] = @__itemId_0
-                    GROUP BY [a].[CatalogItemId]
-                 */
-                avgRating = await _dbContext.ItemRatingsRead
-                    .Where(i => i.CatalogItemId == itemId)
-                    .GroupBy(i => i.CatalogItemId, r => r.Rating)
-                    .Select(x => new RatingDto() {
-                        AverageRating = x.Average(),
-                        NumberOfVotes = x.Count()
-                    })
-                    .FirstOrDefaultAsync();
-            }
-            catch (Exception e)
-            {
-
-            }
-
-            return avgRating;
-        }
-
-        public async Task<CatalogItem> GetCatalogItemByIdAsync(Guid itemId)
-        {
-            var res = await _dbContext
-                                .CatalogItemsRead
-                                .FirstOrDefaultAsync(i => i.CatalogItemId == itemId);
-
-            return res;
-        }
-
-        public async Task<ItemComment> GetCommentByIdAsync(Guid commentId, Guid itemId)
-        {
-            var res = await _dbContext
-                                .ItemCommentsRead
-                                .FirstOrDefaultAsync(c => c.CommentId == commentId);
-
-            return res;
-        }
-
-        public async Task<IEnumerable<ItemComment>> GetCommentsForCatalogItemAsync(Guid itemId, int limit)
-        {
-            var comments = await _dbContext
-                                    .ItemCommentsRead
-                                    .Where(i => i.CatalogItemId == itemId)
-                                    .Take(limit)
-                                    .ToListAsync();
-
-            return comments;
-        }
-
-        public async Task<ItemRating> GetRatingByIdAsync(Guid ratingId, Guid itemId)
-        {
-            var res = await _dbContext
-                                .ItemRatingsRead
-                                .FirstOrDefaultAsync(r => r.RatingId == ratingId);
-
-            return res; // null == not found
-        }
-
         public async Task<bool> IsHealthy(CancellationToken cancellationToken = default)
         {
             // TODO: Validate if this check is enough.
@@ -188,29 +226,6 @@ namespace AlwaysOn.Shared.Services
 
             return res;
         }
-
-        public async Task<IEnumerable<CatalogItem>> ListCatalogItemsAsync(int limit)
-        {
-            var res = await _dbContext
-                                .CatalogItemsRead
-                                .OrderBy(i => i.Name)
-                                .Take(limit)
-                                .ToListAsync();
-
-            return res;
-        }
-
-        /// <summary>
-        /// Handle both updates and inserts of new items. Since the database is append-only, this method will always create a new entry in the database.
-        /// </summary>
-        public async Task UpsertCatalogItemAsync(CatalogItem item)
-        {
-            var newItem = _mapper.Map<CatalogItemWrite>(item);
-            newItem.CreationDate = DateTime.UtcNow; // this item will be the newest version of any other potential versions
-            
-            _dbContext.CatalogItemsWrite.Add(newItem);
-            
-            await _dbContext.SaveChangesAsync();
-        }
+        
     }
 }

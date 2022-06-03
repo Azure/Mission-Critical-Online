@@ -250,21 +250,29 @@ CREATE VIEW [ao].[LatestActiveComments] AS
 )  
 GO
 
--- There's no update on comments and ratings, so we can keep them simple.
-CREATE VIEW [ao].[AllActiveRatings] AS
-    SELECT * FROM [ao].[Ratings] WHERE [Deleted] = 0
-    UNION ALL
-    SELECT * FROM [ao].[RatingsStamp2] WHERE [Deleted] = 0
-    UNION ALL
-    SELECT * FROM [ao].[RatingsStamp3] WHERE [Deleted] = 0
-GO
-
-CREATE VIEW [ao].[AllActiveComments] AS
-    SELECT * FROM [ao].[Comments] WHERE [Deleted] = 0
-    UNION ALL
-    SELECT * FROM [ao].[CommentsStamp2] WHERE [Deleted] = 0
-    UNION ALL
-    SELECT * FROM [ao].[CommentsStamp3] WHERE [Deleted] = 0
+CREATE VIEW [ao].[LatestActiveRatings] AS
+(
+    SELECT * FROM (
+    -- https://stackoverflow.com/questions/28722276/sql-select-top-1-for-each-group
+        SELECT TOP 1 WITH TIES 
+                [Id],
+                [RatingId],
+                [CatalogItemId],
+                [Rating],
+                [CreationDate],
+                [Deleted] FROM (
+            SELECT * FROM [ao].[Ratings]
+            UNION ALL
+            SELECT * FROM [ao].[RatingsStamp2]
+            UNION ALL
+            SELECT * FROM [ao].[RatingsStamp3]
+        ) AS u
+        ORDER BY
+            ROW_NUMBER() OVER(PARTITION BY RatingId ORDER BY [CreationDate] DESC)  
+    )
+    AS c
+    WHERE Deleted = 0
+)  
 GO
 
 ---
@@ -284,3 +292,4 @@ FROM [ao].[AllRatings] AS [a]
 WHERE [a].[CatalogItemId] = 'fbb6593a-9ce4-4f1a-89b4-e1f218a594ef'
 
 SELECT * FROM ao.Comments
+SELECT * FROM ao.CatalogItems

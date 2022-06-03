@@ -17,7 +17,10 @@ namespace AlwaysOn.Shared.Models.Mapping
             
             CreateMap<ItemComment, ItemCommentWrite>()
                 .ForMember(dest => dest.Id, opt => opt.Condition(src => (src.Id == 0)));
-            
+
+            CreateMap<ItemRating, ItemRatingWrite>()
+                .ForMember(dest => dest.Id, opt => opt.Condition(src => (src.Id == 0)));
+
             // Alternatively, this can be used to disable Id mapping globally.
             //ShouldMapProperty = p => p.Name != "Id";
         }

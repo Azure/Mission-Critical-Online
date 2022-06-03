@@ -37,7 +37,9 @@ namespace AlwaysOn.Shared.Services
 
         public async Task AddNewRatingAsync(ItemRating rating)
         {
-            _dbContext.ItemRatingsWrite.Add(rating);
+            var itemToAdd = _mapper.Map<ItemRatingWrite>(rating);
+
+            _dbContext.ItemRatingsWrite.Add(itemToAdd);
 
             await _dbContext.SaveChangesAsync();
         }
@@ -88,7 +90,7 @@ namespace AlwaysOn.Shared.Services
             }
             else if (typeof(T) == typeof(ItemRating))
             {
-                var deletedItem = new ItemRating() {
+                var deletedItem = new ItemRatingWrite() {
                     RatingId = idGuid,
                     Deleted = true
                 };

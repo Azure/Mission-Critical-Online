@@ -40,8 +40,8 @@ namespace AlwaysOn.CatalogService.Controllers
         /// <param name="ratingId"></param>
         /// <returns></returns>
         [HttpGet("{ratingId:guid}", Name = nameof(GetRatingByIdAsync))]
-        [ProducesResponseType(typeof(ItemRating), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult<ItemRating>> GetRatingByIdAsync([FromRoute] Guid itemId, Guid ratingId)
+        [ProducesResponseType(typeof(ItemRatingWrite), (int)HttpStatusCode.OK)]
+        public async Task<ActionResult<ItemRatingWrite>> GetRatingByIdAsync([FromRoute] Guid itemId, Guid ratingId)
         {
             _logger.LogDebug("Received request to get reating {ratingId}", ratingId);
 
@@ -107,7 +107,7 @@ namespace AlwaysOn.CatalogService.Controllers
                 return BadRequest("Rating value must be between 1 and 5");
             }
 
-            var rating = new ItemRating()
+            var rating = new ItemRatingWrite()
             {
                 RatingId = Guid.NewGuid(),
                 CreationDate = DateTime.UtcNow,
@@ -157,7 +157,7 @@ namespace AlwaysOn.CatalogService.Controllers
         public async Task<ActionResult> DeleteItemRatingAsync([FromRoute] Guid itemId, Guid ratingId)
         {
             _logger.LogDebug("Received request to delete ItemRating={ratingId}", ratingId);
-            return await CatalogServiceHelpers.DeleteObjectInternal<ItemRating>(_logger, _messageProducerService, ratingId, itemId);
+            return await CatalogServiceHelpers.DeleteObjectInternal<ItemRatingWrite>(_logger, _messageProducerService, ratingId, itemId);
         }
     }
 }

@@ -82,8 +82,8 @@ namespace AlwaysOn.BackgroundProcessor.Services
                             case (nameof(ItemCommentWrite)):
                                 await _databaseService.DeleteItemAsync<ItemCommentWrite>(deletionRequest.ObjectId, deletionRequest.PartitionId);
                                 break;
-                            case (nameof(ItemRating)):
-                                await _databaseService.DeleteItemAsync<ItemRating>(deletionRequest.ObjectId, deletionRequest.PartitionId);
+                            case (nameof(ItemRatingWrite)):
+                                await _databaseService.DeleteItemAsync<ItemRatingWrite>(deletionRequest.ObjectId, deletionRequest.PartitionId);
                                 break;
                             default:
                                 _logger.LogWarning("Unknown type {type} to delete", deletionRequest.ObjectType);
@@ -168,7 +168,7 @@ namespace AlwaysOn.BackgroundProcessor.Services
         /// </summary>
         private async Task AddItemRatingAsync(string dataString)
         {
-            var rating = Helpers.JsonDeserialize<ItemRating>(dataString);
+            var rating = Helpers.JsonDeserialize<ItemRatingWrite>(dataString);
             if (rating == null)
             {
                 _logger.LogError($"Could not cast data to ItemComment");

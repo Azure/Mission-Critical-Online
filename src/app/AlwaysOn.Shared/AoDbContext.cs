@@ -16,7 +16,7 @@ namespace AlwaysOn.Shared
         public DbSet<ItemCommentWrite> ItemCommentsWrite { get; set; }
 
         public DbSet<ItemRatingRead> ItemRatingsRead { get; set; }
-        public DbSet<ItemRating> ItemRatingsWrite { get; set; }
+        public DbSet<ItemRatingWrite> ItemRatingsWrite { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

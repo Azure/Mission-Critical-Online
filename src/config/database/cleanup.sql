@@ -55,6 +55,7 @@ DROP VIEW ao.AllActiveComments;
 
 DROP VIEW ao.LatestActiveCatalogItems;
 DROP VIEW ao.LatestActiveComments;
+DROP VIEW ao.LatestActiveRatings;
 GO
 
 DROP MASTER KEY;

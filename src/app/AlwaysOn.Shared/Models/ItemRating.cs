@@ -8,18 +8,17 @@ using System.Threading.Tasks;
 
 namespace AlwaysOn.Shared.Models
 {
-    [Table("Ratings", Schema = "ao")]
     public class ItemRating : AoSqlModelBase
     {
         public Guid RatingId { get; set; }
         public Guid CatalogItemId { get; set; }
         public int Rating { get; set; }
-
-        //[JsonIgnore]
-        //[ForeignKey(nameof(CatalogItemId))]
-        //public CatalogItem Item { get; set; }
     }
 
-    [Table("AllActiveRatings", Schema = "ao")]
+    [Table("Ratings", Schema = "ao")]
+    public class ItemRatingWrite : ItemRating { }
+
+
+    [Table("LatestActiveRatings", Schema = "ao")]
     public class ItemRatingRead : ItemRating { }
 }

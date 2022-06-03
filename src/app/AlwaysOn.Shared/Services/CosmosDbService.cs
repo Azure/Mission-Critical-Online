@@ -124,7 +124,7 @@ namespace AlwaysOn.Shared.Services
                 {
                     response = await _catalogItemsContainer.DeleteItemAsync<T>(objectId, new PartitionKey(partitionKey));
                 }
-                else if (typeof(T) == typeof(ItemCommentWrite))
+                else if (typeof(T) == typeof(ItemComment))
                 {
                     response = await _commentsContainer.DeleteItemAsync<T>(objectId, new PartitionKey(partitionKey));
                 }

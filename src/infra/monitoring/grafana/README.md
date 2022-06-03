@@ -47,7 +47,7 @@ The health model panel depends on a Log Analytics query result that contains the
 As an example, the query we use in the reference implementation is:
 
 ```kql
-WebsiteHealthScore
+StampHealthScore
 | union AddCommentUserFlowHealthScore
 | union ListCatalogItemsUserFlowHealthScore
 | union ShowStaticContentUserFlowHealthScore
@@ -64,7 +64,7 @@ This gives the following result, which is the input for the health model panel:
 
 | ComponentName            | HealthScore         | Dependencies                        |
 | :----------------        | :----------         | :---------------------------------- |
-| Website                  | 1                   | ListCatalogItemsUserFlow,AddCommentUserFlow |
+| Stamp                  | 1                   | ListCatalogItemsUserFlow,AddCommentUserFlow |
 | ListCatalogItemsUserFlow | 1                   | CatalogService,KeyVault               |
 | AddCommentUserFlow       | 1                   | EventHub,BackgroundProcessor,KeyVault       |
 | CatalogService           | 1                   | Cluster                             |

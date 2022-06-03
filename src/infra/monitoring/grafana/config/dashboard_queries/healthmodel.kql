@@ -1,4 +1,4 @@
-WebsiteHealthScore
+StampHealthScore
 | union AddCommentUserFlowHealthScore
 | union ListCatalogItemsUserFlowHealthScore
 | union ShowStaticContentUserFlowHealthScore

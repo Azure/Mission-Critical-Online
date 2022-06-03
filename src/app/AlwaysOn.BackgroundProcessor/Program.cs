@@ -1,7 +1,9 @@
 using AlwaysOn.BackgroundProcessor.Services;
 using AlwaysOn.Shared;
 using AlwaysOn.Shared.Interfaces;
+using AlwaysOn.Shared.Models.Mapping;
 using AlwaysOn.Shared.Services;
+using AutoMapper;
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel;
@@ -84,6 +86,13 @@ namespace AlwaysOn.BackgroundProcessor
 
                 // This is where Redis could be plugged in (or other cache)
                 services.AddDistributedMemoryCache();
+
+                // Add AutoMapper with mapping configuration for our entities.
+                var mapperConfig = new MapperConfiguration(config => 
+                { 
+                    config.AddProfile<MappingProfile>(); 
+                });
+                services.AddSingleton<IMapper>(mapperConfig.CreateMapper());
 
                 services.AddSingleton<ActionProcessorService>();
 

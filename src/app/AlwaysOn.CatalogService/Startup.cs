@@ -1,8 +1,9 @@
-using AlwaysOn.CatalogService.Auth;
 using AlwaysOn.CatalogService.SwaggerHelpers;
 using AlwaysOn.Shared;
 using AlwaysOn.Shared.Interfaces;
+using AlwaysOn.Shared.Models.Mapping;
 using AlwaysOn.Shared.Services;
+using AutoMapper;
 using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.Extensibility;
@@ -86,6 +87,12 @@ namespace AlwaysOn.CatalogService
                 o.AssumeDefaultVersionWhenUnspecified = true;
                 o.DefaultApiVersion = new ApiVersion(CatalogServiceHelpers.DefaultApiVersionMajor, CatalogServiceHelpers.DefaultApiVersionMinor);
             });
+
+            var mapperConfig = new MapperConfiguration(config =>
+            {
+                config.AddProfile<MappingProfile>();
+            });
+            services.AddSingleton<IMapper>(mapperConfig.CreateMapper());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

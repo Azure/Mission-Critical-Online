@@ -1,6 +1,7 @@
 ﻿using AlwaysOn.Shared.Interfaces;
 using AlwaysOn.Shared.Models;
 using AlwaysOn.Shared.Models.DataTransfer;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -13,27 +14,15 @@ namespace AlwaysOn.Shared.Services
     public class SqlDatabaseService : IDatabaseService
     {
         private readonly AoDbContext _dbContext;
+        private IMapper _mapper;
+
+
+        public SqlDatabaseService(AoDbContext dbContext, IMapper mapper) => (_dbContext, _mapper) = (dbContext, mapper);
         
-
-        public SqlDatabaseService(AoDbContext dbContext)
-        {
-            _dbContext = dbContext;
-        }
-
         public async Task AddNewCatalogItemAsync(CatalogItem catalogItem)
         {
-            // TODO: Use auto mapper for this.
-            var itemToAdd = new CatalogItemWrite()
-            {
-                CatalogItemId = catalogItem.CatalogItemId,
-                CreationDate = catalogItem.CreationDate,
-                Description = catalogItem.Description,
-                ImageUrl = catalogItem.ImageUrl,
-                LastUpdated = catalogItem.LastUpdated,
-                Name = catalogItem.Name,
-                Price = catalogItem.Price,
-                Rating = catalogItem.Rating
-            };
+            var itemToAdd = _mapper.Map<CatalogItemWrite>(catalogItem);
+            
             _dbContext.CatalogItemsWrite.Add(itemToAdd);
 
             await _dbContext.SaveChangesAsync();
@@ -77,18 +66,13 @@ namespace AlwaysOn.Shared.Services
                 if (itemToDelete is null)
                 {
                     // item was not found in the database - either doesn't exist or has been already deleted
+                    return;
                 }
 
-                var deletedItem = new ItemCommentWrite()
-                {
-                    AuthorName = itemToDelete.AuthorName,
-                    CatalogItemId = itemToDelete.CatalogItemId,
-                    CommentId = itemToDelete.CommentId,
-                    CreationDate = DateTime.UtcNow,
-                    Text = itemToDelete.Text,
-                    Deleted = true
-                };
-
+                var deletedItem = _mapper.Map<ItemCommentWrite>(itemToDelete);
+                deletedItem.CreationDate = DateTime.UtcNow;
+                deletedItem.Deleted = true;
+                
                 _dbContext.ItemCommentsWrite.Add(deletedItem);
                 
                 //_dbContext.Entry(item).State = EntityState.Deleted;
@@ -209,20 +193,7 @@ namespace AlwaysOn.Shared.Services
         {
             // check if we're tracking this entity and if not, add it
             var existingItem = _dbContext.CatalogItemsRead.Where(i => i.Id == item.Id).FirstOrDefault();
-            // TODO: use automapper for this
-            var newItem = new CatalogItemWrite()
-            {
-                CatalogItemId = item.CatalogItemId,
-                CreationDate = item.CreationDate,
-                Description = item.Description,
-                Deleted = item.Deleted,
-                Id = item.Id,
-                ImageUrl = item.ImageUrl,
-                LastUpdated = item.LastUpdated,
-                Name = item.Name,
-                Price = item.Price,
-                Rating = item.Rating
-            };
+            var newItem = _mapper.Map<CatalogItemWrite>(existingItem);
             
             if (existingItem == null)
             {

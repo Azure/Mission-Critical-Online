@@ -24,11 +24,15 @@ namespace AlwaysOn.Shared.Models
         public double? Rating { get; set; }
     }
 
-    // This is an actual database table.
+    /// <summary>
+    /// Variant of <c>CatalogItem</c> used to write into the database. This represents the actual database table.
+    /// </summary>
     [Table("CatalogItems", Schema = "ao")]
     public class CatalogItemWrite : CatalogItem { }
-    
-    // This is a database view.
+
+    /// <summary>
+    /// Variant of <c>CatalogItem</c> used to read from the database. This represents a database view.
+    /// </summary>
     [Table("LatestActiveCatalogItems", Schema = "ao")]
     public class CatalogItemRead : CatalogItem { }
 

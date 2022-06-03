@@ -189,21 +189,16 @@ namespace AlwaysOn.Shared.Services
             return res;
         }
 
+        /// <summary>
+        /// Handle both updates and inserts of new items. Since the database is append-only, this method will always create a new entry in the database.
+        /// </summary>
         public async Task UpsertCatalogItemAsync(CatalogItem item)
         {
-            // check if we're tracking this entity and if not, add it
-            var existingItem = _dbContext.CatalogItemsRead.Where(i => i.Id == item.Id).FirstOrDefault();
-            var newItem = _mapper.Map<CatalogItemWrite>(existingItem);
+            var newItem = _mapper.Map<CatalogItemWrite>(item);
+            newItem.CreationDate = DateTime.UtcNow; // this item will be the newest version of any other potential versions
             
-            if (existingItem == null)
-            {
-                _dbContext.CatalogItemsWrite.Add(newItem);
-            }
-            else
-            {
-                _dbContext.CatalogItemsWrite.Update(newItem);
-            }
-
+            _dbContext.CatalogItemsWrite.Add(newItem);
+            
             await _dbContext.SaveChangesAsync();
         }
     }

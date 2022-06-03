@@ -111,8 +111,6 @@ namespace AlwaysOn.CatalogService.Controllers
         /// <summary>
         /// Creates a CatalogItem in the database
         /// </summary>
-        /// <param name="itemDto"></param>
-        /// <returns></returns>
         [HttpPost]
         [ProducesResponseType(typeof(CatalogItem), (int)HttpStatusCode.Created)]
         [ApiKey]
@@ -120,12 +118,12 @@ namespace AlwaysOn.CatalogService.Controllers
         {
             if (string.IsNullOrEmpty(itemDto.Name) || string.IsNullOrEmpty(itemDto.Description) || itemDto.Price == null)
             {
-                return BadRequest("Missing required fields");
+                return BadRequest("Missing required fields.");
             }
 
             var itemId = itemDto.Id ?? Guid.NewGuid();
 
-            var newItem = new CatalogItemWrite()
+            var newItem = new CatalogItem()
             {
                 CatalogItemId = itemId,
                 Name = itemDto.Name,
@@ -140,11 +138,8 @@ namespace AlwaysOn.CatalogService.Controllers
         }
 
         /// <summary>
-        /// Updates a CatalogItem in the database
+        /// Updates a CatalogItem in the database - i.e. creates a new item with updated fields and current CreatedDate.
         /// </summary>
-        /// <param name="itemId"></param>
-        /// <param name="itemDto"></param>
-        /// <returns></returns>
         [HttpPut("{itemId:guid}")]
         [ProducesResponseType(typeof(CatalogItem), (int)HttpStatusCode.Accepted)]
         [ApiKey]
@@ -152,20 +147,24 @@ namespace AlwaysOn.CatalogService.Controllers
         {
             _logger.LogDebug("Received request to update CatalogItemId={CatalogItemId}", itemId);
 
-            var existingItem = new CatalogItemWrite();
-            
-            //var existingItem = await _databaseService.GetCatalogItemByIdAsync(itemId);
-            //if (existingItem == null)
-            //{
-            //    return StatusCode((int)HttpStatusCode.NotFound);
-            //}
+            var existingItem = await _databaseService.GetCatalogItemByIdAsync(itemId);
+            if (existingItem == null)
+            {
+                return StatusCode((int)HttpStatusCode.NotFound);
+            }
 
-            //existingItem.Name = itemDto.Name ?? existingItem.Name;
-            //existingItem.Description = itemDto.Description ?? existingItem.Description;
-            //existingItem.Price = itemDto.Price ?? existingItem.Price;
-            //existingItem.ImageUrl = itemDto.ImageUrl ?? existingItem.ImageUrl;
+            // This has to be a new object, otherwise Entity Framework will try to update the read-only version.
+            var updatedItem = new CatalogItem()
+            {
+                CatalogItemId = existingItem.CatalogItemId,
+                Name = itemDto.Name ?? existingItem.Name,
+                Description = itemDto.Description ?? existingItem.Description,
+                Price = itemDto.Price ?? existingItem.Price,
+                ImageUrl = itemDto.ImageUrl ?? existingItem.ImageUrl,
+                LastUpdated = existingItem.LastUpdated,
+            };
 
-            return await UpsertCatalogItemAsync(itemId, existingItem);
+            return await UpsertCatalogItemAsync(itemId, updatedItem);
         }
 
         /// <summary>
@@ -174,7 +173,7 @@ namespace AlwaysOn.CatalogService.Controllers
         /// <param name="itemId"></param>
         /// <param name="item"></param>
         /// <returns></returns>
-        private async Task<ActionResult<CatalogItem>> UpsertCatalogItemAsync(Guid itemId, CatalogItemWrite item)
+        private async Task<ActionResult<CatalogItem>> UpsertCatalogItemAsync(Guid itemId, CatalogItem item)
         {
             try
             {
@@ -225,7 +224,7 @@ namespace AlwaysOn.CatalogService.Controllers
                 return StatusCode((int)HttpStatusCode.InternalServerError, $"Error in processing. Correlation ID: {Activity.Current?.RootId}");
             }
 
-            return CreatedAtRoute(nameof(GetCatalogItemByIdAsync), new { itemId = item.Id }, item);
+            return CreatedAtRoute(nameof(GetCatalogItemByIdAsync), new { itemId = item.CatalogItemId }, item);
         }
 
         /// <summary>

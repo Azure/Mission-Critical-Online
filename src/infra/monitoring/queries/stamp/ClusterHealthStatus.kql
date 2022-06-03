@@ -1,6 +1,9 @@
-// Return the health status of the cluster. 
+// Return the health status of the cluster.
+let _maxAge = 2d; // Only include data from the last two days
+let _timespanStart = ago(_maxAge); // Start time for the timespan
+// Examining timeframe from series start to now-2m (ingestion delay)
+let _timespanEnd = now(-2m); // there is some ingestion lag, so we account for this by stripping the last 2m
 let _ResourceType = "CONTAINERSERVICE/MANAGEDCLUSTERS"; // Azure resource type to filter on
-let _timespanStart = ago(1d); // Start time for the timespan
 let Thresholds=datatable(MetricName: string, YellowThreshold: double, RedThreshold: double) [
     // Network errors in:
     "err_in", 0, 5,
@@ -21,22 +24,26 @@ let Thresholds=datatable(MetricName: string, YellowThreshold: double, RedThresho
 let podCpuLimits = Perf
 | where ObjectName == 'K8SContainer'
 | where CounterName == "cpuLimitNanoCores"
-| extend PodName = extract("^.+/(.+)$", 1, InstanceName)
-| summarize cpuLimit=max(CounterValue) by PodName;
+| where TimeGenerated > _timespanStart
+| extend ServiceName = extract("^.+/(.+)$", 1, InstanceName)
+| summarize cpuLimit=max(CounterValue) by ServiceName;
 //
 let insightsMetrics = InsightsMetrics
+| where TimeGenerated > _timespanStart
 | project-rename MetricName=Name
 | extend NodeName = extract("([a-z0-9-]*)(-)([a-z0-9]*)$", 3, Computer) // Add a column for the name of the cluster node
 | project TimeGenerated, NodeName, MetricName, Value=toreal(Val)
 | union (
     AzureMetrics
+    | where TimeGenerated > _timespanStart
     | where extract("(PROVIDERS/MICROSOFT.)([A-Z]*/[A-Z]*)", 2, ResourceId) == _ResourceType
     | project TimeGenerated, MetricName, Value=toreal(Average)
     );
 //
-let scaleMetrics = 
+let scaleMetrics =
     // Query HPA auto scaling to see if we are getting close to the max scale out settings
     InsightsMetrics
+    | where TimeGenerated > _timespanStart
     | where Name == "kube_hpa_status_current_replicas"
     | extend TagsDynamic = parse_json(Tags)
     | extend Service = extract("(.+)-autoscaler", 1, tostring(TagsDynamic['hpa']))
@@ -46,6 +53,7 @@ let scaleMetrics =
     | project TimeGenerated, Service, Value=toreal(PercentageAutoscaled), currentReplicas=strcat(toint(Val)," / ", maxReplica), MetricName="autoscaled_percentage";
 //
 let podRestartMetrics = KubePodInventory
+    | where TimeGenerated > _timespanStart
     // Count number of pod restarts per service
     | where Namespace == "workload"
     | extend Service = extract("(.+)-deploy.", 1, ControllerName)
@@ -58,26 +66,22 @@ let podRestartMetrics = KubePodInventory
     )
     | where isnotempty(Value);
 //
-let cpuUtilizationMetrics = 
+let cpuUtilizationMetrics =
     Perf
+    | where TimeGenerated > _timespanStart
     | where ObjectName == 'K8SContainer'
     | where InstanceName endswith "catalogservice" or InstanceName endswith "backgroundprocessor"
     | extend Service= extract("^.+/(.+)$", 1, InstanceName)
-    | where CounterName == "cpuUsageNanoCores" //or CounterName == "cpuLimitNanoCores"
-    //| summarize Value=avg(CounterValue) by bin(TimeGenerated, 1m), Service
-    | lookup kind = inner podCpuLimits on $left.Service == $right.PodName
+    | where CounterName == "cpuUsageNanoCores"
+    | lookup kind = inner podCpuLimits on $left.Service == $right.ServiceName
     | extend Value=toreal(CounterValue / cpuLimit * 100), MetricName="pod_avg_cpu_utilization"
     | project-away cpuLimit;
 //
-// Examining timeframe from series start to now-2m (ingestion delay)
-let timespanStart = _timespanStart; // todatetime(format_datetime( todatetime(toscalar(AzureMetrics | summarize min(TimeGenerated))), 'yyyy-MM-dd HH:ss'));
-let timespanEnd = now(-2m); // there is some ingestion lag, so we account for this by stripping the last 2m
-//
-insightsMetrics 
-| union scaleMetrics 
-| union podRestartMetrics 
+insightsMetrics
+| union scaleMetrics
+| union podRestartMetrics
 | union cpuUtilizationMetrics
-| make-series Value=max(Value) default=0 on TimeGenerated from timespanStart to timespanEnd step 1m by MetricName
+| make-series Value=max(Value) default=0 on TimeGenerated from _timespanStart to _timespanEnd step 1m by MetricName
 | mv-expand TimeGenerated, Value
 | extend TimeGenerated = todatetime(TimeGenerated), Value=toreal(Value)
 | lookup kind=inner Thresholds on MetricName

@@ -2,7 +2,7 @@ PublicBlobStorageHealthStatus
 | union KeyvaultHealthStatus
 | union CatalogServiceHealthStatus
 | union BackgroundProcessorHealthStatus
-| union ClusterHealthStatus
+| union AksClusterHealthStatus
 | union CheckpointStorageHealthStatus
 | union EventHubHealthStatus
 | where $__timeFilter(TimeGenerated)

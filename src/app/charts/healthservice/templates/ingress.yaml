@@ -21,7 +21,7 @@ spec:
   - host: {{ .Values.workload.domainname | quote }}
     http:
       paths:
-      - path: /healthservice/
+      - path: /healthservice/ # The path prefix MUST NOT overlap with any other ingress definition of another exposed service
         pathType: Prefix
         backend:
           service:

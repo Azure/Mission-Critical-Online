@@ -1,6 +1,7 @@
 jobs: # using jobs so they each run in parallel
 
 - job: deploycontainerHealthService
+  timeoutInMinutes: 120 # extend the default timeout of 60min since getting a certificate from Lets Encrypt sometimes takes a while
   displayName: 'Deploy HealthService workload'
   steps:
 
@@ -57,7 +58,8 @@ jobs: # using jobs so they each run in parallel
 
             # Wait for the ingress certificate to be provisioned by cert-manager
             $retrycount = 0;
-            $maxretrycount = 5
+            $maxretrycount = 30
+            $sleepSeconds = 60
             do {
 
               $certificateName = "workload-ingress-secret"
@@ -65,19 +67,24 @@ jobs: # using jobs so they each run in parallel
               # checking if certificate for workload-ingress-secret was issued
               if ($(kubectl get certificates $certificateName -n $(workloadNamespace) -o 'jsonpath={..status.conditions[?(@.type==\"Ready\")].status}') -ne "True")
               {
-                $LASTEXITCODE = 1
+                $certReady = $false
 
                 $retrycount++
-                $sleepSeconds = 60 * $retrycount
                 echo "Certificate for $certificateName not ready. Waiting for $sleepSeconds seconds and retrying... $retrycount/$maxretrycount";
                 Start-Sleep $sleepSeconds
               }
               else
               {
                 echo "Certificate $certificateName is ready!"
+                $certReady = $true
                 break
               }
             } while ( $retrycount -lt $maxretrycount )
+
+            if(-not $certReady)
+            {
+              throw "*** Error - Certificate $certificateName was not provisioned in time"
+            }
           }
 
 - job: deploycontainerCatalogService

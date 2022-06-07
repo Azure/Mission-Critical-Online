@@ -8,6 +8,6 @@ StampHealthScore
 | union EventHubHealthScore
 | union CheckpointStorageHealthScore
 | union BackgroundProcessorHealthScore
-| union ClusterHealthScore
+| union AksClusterHealthScore
 | summarize arg_max(TimeGenerated, *) by ComponentName,Dependencies
 | project-away TimeGenerated

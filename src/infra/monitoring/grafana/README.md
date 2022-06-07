@@ -57,7 +57,7 @@ StampHealthScore
 | union CheckpointStorageHealthScore
 | union EventHubHealthScore
 | union BackgroundProcessorHealthScore
-| union ClusterHealthScore
+| union AksClusterHealthScore
 ```
 
 This gives the following result, which is the input for the health model panel:

@@ -1,9 +1,8 @@
-// Return the health status of the cluster.
+// Return the health status of the AKS cluster.
 let _maxAge = 2d; // Only include data from the last two days
 let _timespanStart = ago(_maxAge); // Start time for the timespan
 // Examining timeframe from series start to now-2m (ingestion delay)
 let _timespanEnd = now(-2m); // there is some ingestion lag, so we account for this by stripping the last 2m
-let _ResourceType = "CONTAINERSERVICE/MANAGEDCLUSTERS"; // Azure resource type to filter on
 let Thresholds=datatable(MetricName: string, YellowThreshold: double, RedThreshold: double) [
     // Network errors in:
     "err_in", 0, 5,
@@ -28,7 +27,8 @@ let podCpuLimits = Perf
 | extend ServiceName = extract("^.+/(.+)$", 1, InstanceName)
 | summarize cpuLimit=max(CounterValue) by ServiceName;
 //
-let insightsMetrics = InsightsMetrics
+// Join InsightsMetrics for AKS with AzureMetrics table
+let joinedMetrics = InsightsMetrics
 | where TimeGenerated > _timespanStart
 | project-rename MetricName=Name
 | extend NodeName = extract("([a-z0-9-]*)(-)([a-z0-9]*)$", 3, Computer) // Add a column for the name of the cluster node
@@ -36,7 +36,7 @@ let insightsMetrics = InsightsMetrics
 | union (
     AzureMetrics
     | where TimeGenerated > _timespanStart
-    | where extract("(PROVIDERS/MICROSOFT.)([A-Z]*/[A-Z]*)", 2, ResourceId) == _ResourceType
+    | where ResourceProvider == "MICROSOFT.CONTAINERSERVICE"
     | project TimeGenerated, MetricName, Value=toreal(Average)
     );
 //
@@ -53,8 +53,8 @@ let scaleMetrics =
     | project TimeGenerated, Service, Value=toreal(PercentageAutoscaled), currentReplicas=strcat(toint(Val)," / ", maxReplica), MetricName="autoscaled_percentage";
 //
 let podRestartMetrics = KubePodInventory
-    | where TimeGenerated > _timespanStart
     // Count number of pod restarts per service
+    | where TimeGenerated > _timespanStart
     | where Namespace == "workload"
     | extend Service = extract("(.+)-deploy.", 1, ControllerName)
     | extend MetricName="pod_restart_count", Value=toreal(PodRestartCount)
@@ -77,7 +77,7 @@ let cpuUtilizationMetrics =
     | extend Value=toreal(CounterValue / cpuLimit * 100), MetricName="pod_avg_cpu_utilization"
     | project-away cpuLimit;
 //
-insightsMetrics
+joinedMetrics
 | union scaleMetrics
 | union podRestartMetrics
 | union cpuUtilizationMetrics

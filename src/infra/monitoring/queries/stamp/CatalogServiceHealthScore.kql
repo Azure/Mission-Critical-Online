@@ -1,5 +1,5 @@
 CatalogServiceHealthStatus()
-| union ClusterHealthStatus()
+| union AksClusterHealthStatus()
 | union KeyvaultHealthStatus()
 | union EventHubHealthStatus()
 | where TimeGenerated < ago(2m)

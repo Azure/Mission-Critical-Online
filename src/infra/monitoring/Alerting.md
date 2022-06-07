@@ -55,7 +55,7 @@ Alerts based on the data stored in a Log Analytics workspace can be created usin
 #### Valuable alerts
 
 - Percentage of 5xx responses / failed requests exceeding a threshold
-- The result of the ClusterHealthScore() function dropping below 1
+- The result of the AksClusterHealthScore() function dropping below 1
 - Spike in entries in the Exception table (not all errors are correlated to incoming requests so they won't be covered by the previous alert, for instance exceptions in the BackgroundProcessor)
 
 #### Percentage of 5xx responses / failed requests exceeding a threshold

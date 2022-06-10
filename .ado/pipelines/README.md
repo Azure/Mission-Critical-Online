@@ -91,10 +91,10 @@ All pipelines are using Azure DevOps service connections to connect to Microsoft
 
 As part of the pipelines, basic Smoke Tests against the APIs are executed:
 
-- GET call to the HealthService `/health/stamp` API. Expected result: HTTP 200
-- GET call the CatalogService `/api/1.0/catalogitem` API to retrieve a list of existing items. Expected result: HTTP 200
-- POST call to the CatalogService `/api/1.0/catalogitem/{itemId}/comments` API to create a new comment for an existing item. Expected result: HTTP 202
-- GET call to the CatalogService `/api/1.0/catalogitem/{itemId}/comments/{commentId}` API to retrieve the previously created comment. Expected result: HTTP 200
+- GET call to the HealthService `/healthservice/health/stamp` API. Expected result: HTTP 200
+- GET call the CatalogService `/catalogservice/api/1.0/catalogitem` API to retrieve a list of existing items. Expected result: HTTP 200
+- POST call to the CatalogService `/catalogservice/api/1.0/catalogitem/{itemId}/comments` API to create a new comment for an existing item. Expected result: HTTP 202
+- GET call to the CatalogService `/catalogservice/api/1.0/catalogitem/{itemId}/comments/{commentId}` API to retrieve the previously created comment. Expected result: HTTP 200
 
 The calls are first executed against the individual stamps to test the availability of each regional deployment and afterwards against the global Front Door endpoint, which distributes the requests to the different stamps.
 

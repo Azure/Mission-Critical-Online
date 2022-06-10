@@ -8,7 +8,7 @@
         {
           "start": "00:00:00",
           "end": "03:00:00",
-          "numberOfUsers": 0,
+          "numberOfUsers": 15,
           "transitionTimeMinutes": 40
         },
         {

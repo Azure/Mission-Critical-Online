@@ -11,6 +11,10 @@ jobs:
 
   - download: current # download pipeline artifacts
 
+  - template: steps-parse-terraform-output.yaml # parse global configuration settings from terraform deployment output
+    parameters:
+      workingDirectory: '$(Pipeline.Workspace)/terraformOutputGlobalInfra'  # Global infra deploy output directory
+
   - task: AzureCLI@2
     displayName: 'Docker build and push ${{ parameters.containerImageName }}'
     retryCountOnTaskFailure: 1
@@ -19,13 +23,8 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        # load json data from downloaded terraform artifact
-        $infraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputGlobalInfra/*.json | Get-Content | ConvertFrom-JSON
 
-        $acrName = $infraDeployOutput.acr_name.value # Container Registry Name (from terraform output)
-        $acrUrl = $infraDeployOutput.acr_login_server.value # Container Registry Login Server (from terraform output)
-
-        echo "*** Retrieved Azure Container Registry Login Server $acrUrl (from terraformOutputGlobalInfra)"
+        echo "*** Retrieved Azure Container Registry Login Server $(acr_login_server) from Terraform deployment output"
 
         echo "*** DEBUG: Build.SourceBranch: $(Build.SourceBranch)"
         $sourceBranch = $("$(Build.SourceBranch)" -replace "refs/heads/", "")
@@ -35,7 +34,7 @@ jobs:
         $containerImageTag = "$containerImageTagBranch-$(Build.BuildId)" # the tag gets created from the branch name plus Build Id. E.g.: "main-1234"
         echo "*** DEBUG: Image tag: $containerImageTag"
 
-        $imageNameBase = "$acrUrl/${{ parameters.containerImageName }}"
+        $imageNameBase = "$(acr_login_server)/${{ parameters.containerImageName }}"
         $imageNameTagSpecific = "$($imageNameBase):$($containerImageTag)"
         $imageNameTagLatest = "$($imageNameBase):latest" # Additionally we also tag this image with latest
         echo "*** DEBUG: Container Image Name: $imageName"
@@ -44,10 +43,10 @@ jobs:
         cd ${{ parameters.workingDirectory }}
 
         # Login to ACR so we can later push to it
-        az acr login -n $acrName
+        az acr login -n $(acr_name)
 
         if ($LastExitCode -ne 0) {
-          throw "*** Error - could not log in to ACR $acrName"
+          throw "*** Error - could not log in to ACR $(acr_name)"
         }
 
         echo "*** Starting to build image $imageNameTagSpecific locally"
@@ -55,15 +54,15 @@ jobs:
                      -t $imageNameTagLatest `
                     --file ${{ parameters.containerImageDockerfile }} .
 
-        echo "*** Pushing image $imageNameTagSpecific to ACR $acrName"
+        echo "*** Pushing image $imageNameTagSpecific to ACR $(acr_name)"
         docker push $imageNameTagSpecific
 
-        echo "*** Pushing image $imageNameTagLatest to ACR $acrName"
+        echo "*** Pushing image $imageNameTagLatest to ACR $(acr_name)"
         docker push $imageNameTagLatest
 
         ###### As an alternative to building locally on the build agent, we could also build in the ACR itself. But often the build agent is faster
-        #echo "*** Starting image $imageNameTagSpecific build on ACR $acrUrl"
-        #az acr build --image $imageNameTagSpecific --image $imageNameTagLatest --registry $acrUrl `
+        #echo "*** Starting image $imageNameTagSpecific build on ACR $(acr_login_server)"
+        #az acr build --image $imageNameTagSpecific --image $imageNameTagLatest --registry $(acr_login_server)`
         #            --file ${{ parameters.containerImageDockerfile }} .
 
         # Write image name to file so we can publish it

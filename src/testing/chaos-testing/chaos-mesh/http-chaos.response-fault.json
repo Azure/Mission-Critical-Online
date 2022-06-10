@@ -1,0 +1,1 @@
+{"mode":"one","selector":{"namespaces":["workload"],"labelSelectors":{"app":"catalogservice"}},"target":"Response","port":8080,"method":"GET","path":"/api/*","abort":false,"replace":{"code":500}}

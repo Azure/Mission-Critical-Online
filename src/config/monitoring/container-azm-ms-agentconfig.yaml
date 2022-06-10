@@ -1,4 +1,4 @@
-# ConfigMap template source: 
+# ConfigMap template source:
 # https://raw.githubusercontent.com/microsoft/Docker-Provider/ci_prod/kubernetes/container-azm-ms-agentconfig.yaml
 kind: ConfigMap
 apiVersion: v1
@@ -14,18 +14,22 @@ data:
     [log_collection_settings]
        [log_collection_settings.stdout]
           enabled = false
+
           # exclude_namespaces setting holds good only if enabled is set to true
           # kube-system log collection is disabled by default in the absence of 'log_collection_settings.stdout' setting. If you want to enable kube-system, remove it from the following setting.
           # If you want to continue to disable kube-system log collection keep this namespace in the following setting and add any other namespace you want to disable log collection to the array.
           # In the absense of this configmap, default value for exclude_namespaces = ["kube-system"]
+
           exclude_namespaces = ["kube-system"]
 
        [log_collection_settings.stderr]
-          enabled = false
+          enabled = true
+
           # exclude_namespaces setting holds good only if enabled is set to true
           # kube-system log collection is disabled by default in the absence of 'log_collection_settings.stderr' setting. If you want to enable kube-system, remove it from the following setting.
           # If you want to continue to disable kube-system log collection keep this namespace in the following setting and add any other namespace you want to disable log collection to the array.
           # In the absense of this cofigmap, default value for exclude_namespaces = ["kube-system"]
+
           exclude_namespaces = ["kube-system"]
 
        [log_collection_settings.env_var]
@@ -35,12 +39,18 @@ data:
           # In the absense of this configmap, default value for enrich_container_logs is false
           enabled = false
           # When this is enabled (enabled = true), every container log entry (both stdout & stderr) will be enriched with container Name & container Image
-       
+
        [log_collection_settings.collect_all_kube_events]
           # In the absense of this configmap, default value for collect_all_kube_events is false
           # When the setting is set to false, only the kube events with !normal event type will be collected
           enabled = false
           # When this is enabled (enabled = true), all kube events including normal events will be collected
+
+       [log_collection_settings.schema]
+          # In the absense of this configmap, default value for containerlog_schema_version is "v1"
+          # Supported values for this setting are "v1","v2"
+          # See documentation for benefits of v2 schema over v1 schema before opting for "v2" schema
+          containerlog_schema_version = "v2"
 
   prometheus-data-collection-settings: |-
     [prometheus_data_collection_settings.cluster]

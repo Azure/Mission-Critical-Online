@@ -1,5 +1,7 @@
 // This looks at the state of the storage account that is used for the checkpoint data from Event Hub
-//
+let _maxAge = 2d; // Only include data from the last two days
+let _timespanStart = ago(_maxAge); // Start time for the timespan
+let _timespanEnd = now(-2m); // there is some ingestion lag, so we account for this by stripping the last 2m
 let Thresholds=datatable(MetricName: string, YellowThreshold: double, RedThreshold: double) [
     // Average Latency in milliseconds
     "averageLatency", 100, 200,
@@ -9,6 +11,7 @@ let Thresholds=datatable(MetricName: string, YellowThreshold: double, RedThresho
 //
 // First we count storage errors as reported in the StorageBlobLogs table
 let storageErrors= StorageBlobLogs
+| where TimeGenerated > _timespanStart
 | where AccountName endswith "prist"
 | where StatusText != "Success"
 | summarize Value=count() by AccountName,bin(TimeGenerated, 1m)
@@ -16,22 +19,19 @@ let storageErrors= StorageBlobLogs
 //
 // Now we join the storage errors with the metrics table from which we query the average success latency for storage requests
 let avgLatency = AzureMetrics
-| where TimeGenerated > ago(2d)
+| where TimeGenerated > _timespanStart
 | where ResourceProvider == "MICROSOFT.STORAGE"
 | where ResourceId endswith "PRIST/BLOBSERVICES/DEFAULT" // We are only interested in this specific storage account
 | where MetricName == "SuccessE2ELatency"
 | extend Value=Average, MetricName='averageLatency';
 //
-let timespanStart= todatetime(format_datetime( todatetime(toscalar(avgLatency| summarize min(TimeGenerated))), 'yyyy-MM-dd HH:ss'));
-let timespanEnd = now(-2m); // there is some ingestion lag, so we account for this by stripping the last 2m
-//
 let storageErrorSeries = storageErrors // This series defaults to 0
-| make-series Value=sum(Value) default=0 on TimeGenerated from timespanStart to timespanEnd step 1m by MetricName
+| make-series Value=sum(Value) default=0 on TimeGenerated from _timespanStart to _timespanEnd step 1m by MetricName
 | mv-expand TimeGenerated, Value
 | extend TimeGenerated = todatetime(TimeGenerated), Value=toreal(Value);
 //
 let avgLatencySeries = avgLatency // This series defaults to the last known value
-| make-series Value=sum(Value) default=double(null) on TimeGenerated from timespanStart to timespanEnd step 1m by MetricName
+| make-series Value=sum(Value) default=double(null) on TimeGenerated from _timespanStart to _timespanEnd step 1m by MetricName
 | extend Value = series_fill_forward(Value) // Use the last value for any missing points
 | mv-expand TimeGenerated, Value
 | extend TimeGenerated = todatetime(TimeGenerated), Value=toreal(Value);

@@ -1,0 +1,245 @@
+parameters:
+ - name: terraformWorkingDirectory
+   type: string
+   default: ''
+
+ - name: customPrefix
+   type: string
+
+ - name: embeddedLoadTest
+   type: boolean
+   default: false
+
+ - name: destroyInfra
+   type: boolean
+   default: true
+
+ - name: loadTestTargetFQDN
+   type: string
+   default: ''
+
+stages:
+
+- stage: deployazloadtest
+  displayName: 'Run Azure Load Test'
+  jobs:
+  - job: deployazloadtest
+    displayName: 'Run Azure Load Testing'
+    steps:
+    - checkout: self # checkout github repository
+    - download: current # download pipeline artifacts
+
+    - template: steps-set-pipeline-variables.yaml # load set-pipeline-variables function
+
+    - template: steps-terraform-init.yaml
+      parameters:
+        terraformStorageAccountName:       '$(terraformStorageAccount)'
+        terraformStorageResourceGroupName: '$(terraformResourceGroup)'
+        terraformStateFilename:            'terraform-azurelt-${{ parameters.customPrefix }}.state'
+        terraformWorkingDirectory:         '${{ parameters.terraformWorkingDirectory }}'
+
+    # Deploy the locust infrastructure. If running in headless mode, the test will automatically start once the infra is provisioned.
+    - template: steps-terraform-apply.yaml
+      parameters:
+        terraformWorkingDirectory: '${{ parameters.terraformWorkingDirectory }}'
+        customPrefix:              '${{ parameters.customPrefix }}'
+        environment:               '$(environment)'
+        customAttributes:          '-var queued_by="$(Build.QueuedBy)"
+                                    -var branch="$(sourceBranch)"'
+
+    # Parsing the Terraform output for the MALT service deployment
+    - template: steps-parse-terraform-output.yaml
+      parameters:
+        workingDirectory: '${{ parameters.terraformWorkingDirectory }}'
+        displayName: 'Parse MALT deployment outputs'
+
+    # Global Terraform output is only parsed when running in embedded mode
+    - ${{ if eq(parameters.embeddedLoadTest, 'true') }}:
+
+      # Parsing the Terraform output for the global infrastructure deployment to extract data like the Azure Front Door FQDN
+      - template: steps-parse-terraform-output.yaml
+        parameters:
+          workingDirectory: '$(Pipeline.Workspace)/terraformOutputGlobalInfra'  # Global infra deploy output directory
+          displayName: 'Parse global infrastructure deployment outputs'
+
+      # Set loadTestTargetFQDN to the Azure Front Door FQDN (when load test is embedded)
+      - script: |
+          echo "*** Setting loadTestTargetFQDN to $(frontdoor_fqdn)"
+          echo "##vso[task.setvariable variable=azureLoadTestTargetFQDN]$(frontdoor_fqdn)"
+        displayName: 'Set Loadtest targetUrl to Azure Front Door'
+
+    # Set loadTestTargetFQDN to the FQDN specified in the pipeline parameters
+    - ${{ if ne(parameters.embeddedLoadTest, 'true') }}:
+
+      - script: |
+          echo "*** Setting loadTestTargetFQDN to ${{ parameters.loadTestTargetFQDN }}"
+          echo "##vso[task.setvariable variable=azureLoadTestTargetFQDN]${{ parameters.loadTestTargetFQDN }}"
+        displayName: 'Set Loadtest targetUrl to ${{ parameters.loadTestTargetFQDN }}'
+
+    # create a new azure load test with an auto-generated loadTestId
+    - task: AzureCLI@2
+      displayName: 'Create a new Azure Load Test'
+      name: 'createAzureLoadTest'
+      inputs:
+        azureSubscription: '$(azureServiceConnection)'
+        scriptType: pscore
+        scriptLocation: 'scriptPath'
+        scriptPath: '$(System.DefaultWorkingDirectory)/src/testing/loadtest-azure/scripts/loadtest-create.ps1'
+        arguments:
+          -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
+          -loadTestDisplayName "$(get-date -f "yyyy-MM-dd hh:ss") load test for build $(Build.BuildId)" `
+          -loadTestDescription "Pipeline-embedded load test for $(Build.BuildId) ($(get-date -f "dd/MM/yyyy hh:ss"))" `
+          -loadTestTargetUrl "$(azureLoadTestTargetFQDN)" `
+          -loadTestUserThreads "$(azureLoadTestUserThreads)" `
+          -loadTestDurationSeconds "$(azureLoadTestDurationSeconds)" `
+          -engineInstances "$(azureLoadTestEngineInstances)" `
+          -pipeline $true `
+          -verbose:$true
+
+    # All of the next tasks are only applicable in embedded mode
+    - ${{ if eq(parameters.embeddedLoadTest, 'true') }}:
+
+      # This step adds additional App Components to the Load Test dashboard
+      - task: AzureCLI@2
+        displayName: 'Add AppComponents to Load Test'
+        name: 'addAppComponentsToLoadTest'
+        inputs:
+          azureSubscription: '$(azureServiceConnection)'
+          workingDirectory: '$(System.DefaultWorkingDirectory)'
+          scriptType: pscore
+          scriptLocation: inlineScript
+          inlineScript: |
+            $releaseUnitInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputReleaseUnitInfra/*.json | Get-Content | ConvertFrom-JSON
+
+            # loop through stamps from pipeline artifact json
+            foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
+              ./src/testing/loadtest-azure/scripts/appcomponents-add-to-loadtest.ps1 `
+                -loadTestId "$(loadTestId)" `
+                -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
+                -resourceId "$($stamp.aks_cluster_id)"
+
+              echo "*** Adding $($stamp.aks_cluster_id)"
+            }
+
+      # upload a jmx file for the previously created azure load test with an auto-generated testFileId
+      - task: AzureCLI@2
+        displayName: 'Upload *.jmx file for Azure Load Test'
+        name: 'uploadAzureLoadTestJmx'
+        inputs:
+          azureSubscription: '$(azureServiceConnection)'
+          scriptType: pscore
+          scriptLocation: 'scriptPath'
+          scriptPath: '$(System.DefaultWorkingDirectory)/src/testing/loadtest-azure/scripts/file-upload-to-loadtest.ps1'
+          arguments:
+            -loadTestId "$(loadTestId)" `
+            -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
+            -testFileName "$(System.DefaultWorkingDirectory)/src/testing/loadtest-azure/scripts/catalog-test.jmx" `
+            -verbose:$true
+
+      # Create config csv for Azure Load Test
+      - task: PowerShell@2
+        displayName: 'Create config *.csv file'
+        name: 'createAzureLoadTestConfigCsv'
+        enabled: false # currently not used / vars handed over via env vars and parameters
+        inputs:
+          targetType: inline
+          script: |
+            $config = @(
+              [pscustomobject]@{
+              url = "$(frontdoor_fqdn)"
+            })
+            $config | export-csv "$(System.DefaultWorkingDirectory)/test-config.csv"  -NoTypeInformation
+
+      # upload a loadtest config file from previous task
+      - task: AzureCLI@2
+        displayName: 'Upload auto-generated load test config file for Azure Load Test'
+        name: 'uploadAzureLoadTestConfig'
+        enabled: false # currently not used / vars handed over via env vars and parameters
+        inputs:
+          azureSubscription: '$(azureServiceConnection)'
+          scriptType: pscore
+          scriptLocation: 'scriptPath'
+          scriptPath: '$(System.DefaultWorkingDirectory)/src/testing/loadtest-azure/scripts/file-upload-to-loadtest.ps1'
+          arguments:
+            -loadTestId "$(loadTestId)" `
+            -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
+            -testFileName "$(System.DefaultWorkingDirectory)/test-config.csv"
+
+      # start azure load test
+      - task: AzureCLI@2
+        displayName: 'Run Azure Load Test'
+        inputs:
+          azureSubscription: '$(azureServiceConnection)'
+          scriptType: pscore
+          scriptLocation: 'scriptPath'
+          scriptPath: '$(System.DefaultWorkingDirectory)/src/testing/loadtest-azure/scripts/loadtest-run.ps1'
+          arguments:
+            -loadTestId "$(loadTestId)" `
+            -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
+            -testRunName "$(get-date -f "yyyy-MM-dd hh:ss") Load Test run triggered by ADO" `
+            -testRunDescription "Pipeline executed load test run" `
+            -testRunVUsers "$(azureLoadTestVUsers)" `
+            -pipeline $true `
+            -verbose:$true
+
+      # get load test status and wait till it's done
+      - task: AzureCLI@2
+        displayName: 'Wait for load test to be finished'
+        inputs:
+          azureSubscription: $(azureServiceConnection)
+          scriptType: pscore
+          scriptLocation: inlineScript
+          inlineScript: |
+
+            do {
+              echo "*** Waiting additional 90 seconds for the load test run to complete.."
+              start-sleep -seconds 90
+              $result = $(System.DefaultWorkingDirectory)/src/testing/loadtest-azure/scripts/loadtest-get-run.ps1 `
+                          -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
+                          -testRunId "$(testRunId)"
+              $testRunStatus = ($result).status
+              echo "*** Test Run $(testRunId) is in status $testRunStatus"
+              if ($result.status -eq "DONE") {
+                echo $result
+                $resultUrl = ($result).testArtifacts.outputArtifacts.resultUrl.url
+                $logsUrl = ($result).testArtifacts.outputArtifacts.logsUrl.url
+                New-Item -Path results -ItemType "directory"
+                echo "*** Download resultsUrl"
+                Invoke-WebRequest $resultUrl -OutFile "results/results.zip"
+                echo "*** Download logsUrl"
+                Invoke-WebRequest $logsUrl -OutFile "results/logs.zip"
+              }
+              # todo - timeout?
+            } while ($result.status -ne "DONE")
+
+      - script: |
+          wget https://raw.githubusercontent.com/Azure-Samples/jmeter-aci-terraform/main/scripts/jtl_junit_converter.py -O $(System.DefaultWorkingDirectory)/junit-onverter.py
+          unzip results/results.zip -d results
+          JMETER_RESULTS=results/testreport.csv
+          JUNIT_RESULTS=output.xml
+          python3 junit-onverter.py $JMETER_RESULTS $JUNIT_RESULTS
+        displayName: 'RESULTS: Convert JMeter Results to JUnit Format'
+
+      - task: PublishTestResults@2
+        inputs:
+          testResultsFormat: 'JUnit'
+          testResultsFiles: 'output.xml'
+          failTaskOnFailedTests: false
+        displayName: 'RESULTS: Publish Load Testing Results'
+
+      # publish load test results as pipeline artifacts in azure devops
+      - task: PublishBuildArtifacts@1
+        inputs:
+          artifactName: 'loadtest'
+          pathToPublish: '$(System.DefaultWorkingDirectory)/results'
+
+    # All of the next tasks are only applicable in headless mode
+    - ${{ if eq(parameters.destroyInfra, 'true') }}:
+      # Destroy Azure Load test infrastructure at the end
+      - template: steps-terraform-destroy.yaml
+        parameters:
+          terraformStorageAccountName:       '$(terraformStorageAccount)'
+          terraformStorageResourceGroupName: '$(terraformResourceGroup)'
+          terraformStateFilename:     'terraform-azurelt-${{ parameters.customPrefix }}.state'
+          terraformWorkingDirectory:  '${{ parameters.terraformWorkingDirectory }}'
+          customAttributes:           '-var prefix="${{ parameters.customPrefix }}"'

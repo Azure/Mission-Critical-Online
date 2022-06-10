@@ -5,7 +5,7 @@ description: "healthservice api"
 version: 0.0.7
 sources:
 - https://github.com/Azure/Mission-Critical
-kubeVersion: ">=1.21.0"
+kubeVersion: ">=1.23.0"
 maintainers:
 - name: alwayson
   email: alwaysonappnet@microsoft.com

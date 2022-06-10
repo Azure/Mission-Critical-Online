@@ -15,7 +15,7 @@ This repository contains the reference implementation for an Mission-Critical "o
 - [Reference Implementation Solution Guide](./docs/reference-implementation/README.md) - Everything required to understand and build a copy of the reference implementation
 - [Reference Implementation Build Artifacts](./src/infra/README.md) - Contains the Infrastructure-as-Code artifacts, CI/CD pipelines, and application code required to deploy the pre-configured reference solution
 
-![Architecture overview](/docs/media/mission-critical-architecture-online.png)
+![Architecture overview](/docs/media/mission-critical-architecture-online.svg)
 
 ## Azure Mission-Critical overview and design guidelines
 

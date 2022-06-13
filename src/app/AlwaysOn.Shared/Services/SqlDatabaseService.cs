@@ -16,9 +16,7 @@ namespace AlwaysOn.Shared.Services
         private readonly AoDbContext _dbContext;
         private IMapper _mapper;
 
-
         public SqlDatabaseService(AoDbContext dbContext, IMapper mapper) => (_dbContext, _mapper) = (dbContext, mapper);
-
 
         #region CatalogItem
 
@@ -33,11 +31,7 @@ namespace AlwaysOn.Shared.Services
 
         public async Task AddNewCatalogItemAsync(CatalogItem catalogItem)
         {
-            var itemToAdd = _mapper.Map<CatalogItemWrite>(catalogItem);
-            
-            _dbContext.CatalogItemsWrite.Add(itemToAdd);
-
-            await _dbContext.SaveChangesAsync();
+            await UpsertCatalogItemAsync(catalogItem);
         }
 
         public async Task<IEnumerable<CatalogItem>> ListCatalogItemsAsync(int limit)
@@ -169,9 +163,9 @@ namespace AlwaysOn.Shared.Services
                     CatalogItemId = idGuid,
                     Deleted = true,
                     CreationDate = DateTime.UtcNow,
-                    Description = String.Empty,
-                    Name = String.Empty,
-                    ImageUrl = String.Empty,
+                    Description = string.Empty,
+                    Name = string.Empty,
+                    ImageUrl = string.Empty,
                     Price = 0,
                     LastUpdated = DateTime.UtcNow,
                 };
@@ -196,13 +190,19 @@ namespace AlwaysOn.Shared.Services
             }
             else if (typeof(T) == typeof(ItemRating))
             {
-                var deletedItem = new ItemRatingWrite() {
-                    RatingId = idGuid,
-                    Deleted = true
-                };
+                var itemToDelete = await _dbContext.ItemRatingsRead.Where(i => i.RatingId == idGuid).FirstOrDefaultAsync();
+                if (itemToDelete is null)
+                {
+                    // item was not found in the database - either doesn't exist or has been already deleted
+                    // TODO: handle properly
+                    return;
+                }
+
+                var deletedItem = _mapper.Map<ItemRatingWrite>(itemToDelete);
+                deletedItem.CreationDate = DateTime.UtcNow;
+                deletedItem.Deleted = true;
 
                 _dbContext.ItemRatingsWrite.Add(deletedItem);
-                //_dbContext.Entry(item).State = EntityState.Deleted;
             }
             else
             {

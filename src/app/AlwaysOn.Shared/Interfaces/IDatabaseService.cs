@@ -56,7 +56,7 @@ namespace AlwaysOn.Shared.Interfaces
         /// </summary>
         /// <param name="catalogItem"></param>
         /// <returns></returns>
-        Task AddNewCommentAsync(ItemCommentWrite comment);
+        Task AddNewCommentAsync(ItemComment comment);
 
         /// <summary>
         /// Gets a specific ItemComment by its ID and the CatalogItemId

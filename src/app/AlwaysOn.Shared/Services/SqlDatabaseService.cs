@@ -82,11 +82,13 @@ namespace AlwaysOn.Shared.Services
             return comments;
         }
 
-        public async Task AddNewCommentAsync(ItemCommentWrite comment)
+        public async Task AddNewCommentAsync(ItemComment comment)
         {
-            _dbContext.ItemCommentsWrite.Add(comment);
+            var itemToAdd = _mapper.Map<ItemCommentWrite>(comment);
 
-            await _dbContext.SaveChangesAsync(); // check if the number of results is 1
+            _dbContext.ItemCommentsWrite.Add(itemToAdd);
+
+            await _dbContext.SaveChangesAsync();
         }
 
         #endregion
@@ -153,7 +155,6 @@ namespace AlwaysOn.Shared.Services
             //  2. Fetch the ItemComment which should be deleted first, then store it in the database with updated Deleted and CreationDate fields.
             //      - This SQL query might be unnecessary.
             //      - Also we're storing data which is not needed anymore, because the item was deleted.
-
             var idGuid = Guid.Parse(itemId);
 
             if (typeof(T) == typeof(CatalogItem))

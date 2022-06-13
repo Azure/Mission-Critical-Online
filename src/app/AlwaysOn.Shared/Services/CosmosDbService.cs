@@ -580,10 +580,10 @@ namespace AlwaysOn.Shared.Services
             return result;
         }
 
-        public async Task AddNewCommentAsync(ItemCommentWrite comment)
+        public async Task AddNewCommentAsync(ItemComment comment)
         {
             var startTime = DateTime.UtcNow;
-            ItemResponse<ItemCommentWrite> response = null;
+            ItemResponse<ItemComment> response = null;
             CosmosDiagnostics diagnostics = null;
             var success = false;
             var conflict = false;

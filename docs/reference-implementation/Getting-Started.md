@@ -83,7 +83,7 @@ Azure DevOps Repos would allow us to import the Azure Mission-Critical reference
 
 Sign into GitHub and go to the root of the Azure Mission-Critical reference implementation repository on GitHub and click on "Use this template" in the top right corner':
 
-![Use GitHub Repo template](/docs/media/AlwaysOnGettingStarted2Fork.png)
+![Use GitHub Repo template](/docs/media/GettingStarted-template.png)
 
 This will let you create a repository in your own account or organization. This is needed to allow you to make modification to our code within your own repository.
 

@@ -26,6 +26,8 @@ resource "azurerm_virtual_network" "stamp" {
 
   # For production workloads we recommend to enable DDoS protection Standard plan when exposing your AKS ingress on public IPs
   # You can link this to an existing DDoS protection plan or create a new one
+  # To enable this, fetch your shared ddos plan resource id and add it as a variable to the terraform definition
+  #
   # ddos_protection_plan {
   #   id     = var.ddos_protection_plan_id
   #   enable = true

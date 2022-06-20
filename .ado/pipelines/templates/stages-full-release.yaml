@@ -369,12 +369,12 @@ stages:
                     {
                       echo "*** Found disabled backend $disabledBackendAddress"
 
-                      # Lookup the Public IP resource for this FQDN and fetch the Prefix tag from it
-                      $prefix = az network public-ip list --query "[?dnsSettings.fqdn == '$disabledBackendAddress'].{prefix:tags.Prefix}" -o tsv
+                      # Lookup the APIM resource for this FQDN and fetch the Prefix tag from it
+                      $prefix = az apim list --query "[?gatewayUrl == 'https://$disabledBackendAddress'].{prefix:tags.Prefix}" -o tsv
 
                       if(-not $prefix)
                       {
-                        throw "*** No Public IP found (or not Prefix tag) for FQDN $disabledBackendAddress"
+                        throw "*** No APIM found (or not Prefix tag) for FQDN $disabledBackendAddress"
                       }
 
                       echo "*** Found prefix tag $prefix"

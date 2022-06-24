@@ -21,8 +21,8 @@ This repository contains the reference implementation for an Mission-Critical "o
 
 The following articles provides more information about Azure Mission-Critical design guidelines and design areas located in the [Azure Mission-Critical GitHub](https://github.com/Azure/Mission-Critical) repo:
 
-- [Introduction - What is Azure Mission-Critical?](https://github.com/Azure/Mission-Critical/blob/main/docs/Introduction.md) (➡️ `Azure/Mission-Critical`) - Detailed introduction into Mission-Critical, the problem it is intended to solve and the value it can provide.
-- [Design Areas](https://github.com/Azure/Mission-Critical/blob/main/docs/Design-Areas.md) (➡️ `Azure/Mission-Critical`) - Prescriptive guidance aligned to 8 critical design areas guides users to design and build an Mission-Critical application, outlining a recommended decision process.
+- [Introduction - What is Azure Mission-Critical?](https://docs.microsoft.com/azure/architecture/framework/mission-critical/mission-critical-overview) (➡️ `Azure/Mission-Critical`) - Detailed introduction into Mission-Critical, the problem it is intended to solve and the value it can provide.
+- [Design Areas](https://docs.microsoft.com/azure/architecture/framework/mission-critical/mission-critical-architecture-pattern#design-areas) (➡️ `Azure/Mission-Critical`) - Prescriptive guidance aligned to 8 critical design areas guides users to design and build an Mission-Critical application, outlining a recommended decision process.
 
 ## Helpful Information
 

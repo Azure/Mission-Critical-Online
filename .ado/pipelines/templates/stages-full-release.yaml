@@ -199,39 +199,23 @@ stages:
     parameters:
       runChaosTesting: ${{ parameters.runChaosTesting }}
 
-- stage: testcode
-  displayName: 'Test Application Code'
-  dependsOn: [] # can run in parallel to the global infra deployment at the very start
-  jobs:
-  - template: jobs-code-tests.yaml
-    parameters:
-      jobName:          'CodeTests'
-      workingDirectory: 'src/app'
+# - stage: testcode
+#   displayName: 'Test Application Code'
+#   dependsOn: [] # can run in parallel to the global infra deployment at the very start
+#   jobs:
+#   - template: jobs-code-tests.yaml
+#     parameters:
+#       jobName:          'CodeTests'
+#       workingDirectory: 'src/app'
 
 - stage: buildapplication
   displayName: 'Build Application Code'
   dependsOn:
-   - testcode
+#   - testcode
    - deployglobalinfrastructure # requires the global infra to be deployed which contains the Container Registry
   jobs: # using jobs so they each runs in parallel
 
-  - template: jobs-container-build.yaml
-    parameters:
-      jobName:                  'catalogservice' # unique pipeline job name
-      containerImageName:       '$(catalogserviceImageName)'  # container image name for CatalogService
-      containerImageDockerFile: '$(catalogserviceDockerfile)' # dockerfile used to build the CatalogService
-
-  - template: jobs-container-build.yaml
-    parameters:
-      jobName:                  'backgroundprocessor' # unique pipeline job name
-      containerImageName:       '$(backgroundprocessorImageName)'   # container image name for BackgroundProcessor
-      containerImageDockerFile: '$(backgroundprocessorDockerfile)'  # dockerfile used to build the BackgroundProcessor
-
-  - template: jobs-container-build.yaml
-    parameters:
-      jobName:                  'healthservice' # unique pipeline job name
-      containerImageName:       '$(healthserviceImageName)'  # container image name for healthservice
-      containerImageDockerFile: '$(healthserviceDockerfile)' # dockerfile used to build the healthservice
+  - template: jobs-container-import.yaml
 
   - template: jobs-ui-app-build.yaml
     parameters:
@@ -242,7 +226,7 @@ stages:
   displayName: 'Deploy Workload'
   dependsOn:
   - deployconfiguration
-  - testcode
+#  - testcode
   - buildapplication
   jobs:
   - template: jobs-workload-deploy.yaml

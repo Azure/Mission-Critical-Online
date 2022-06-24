@@ -1,0 +1,53 @@
+jobs:
+- job: 'importcontainerimages'
+  displayName: 'Import container images'
+  steps:
+
+  - download: current # download pipeline artifacts
+
+  - task: AzureCLI@2
+    displayName: 'Container images import'
+    retryCountOnTaskFailure: 1
+    inputs:
+      azureSubscription: $(azureServiceConnection)
+      scriptType: pscore
+      scriptLocation: inlineScript
+      inlineScript: |
+        # load json data from downloaded terraform artifact
+        $infraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputGlobalInfra/*.json | Get-Content | ConvertFrom-JSON
+
+        $acrName = $infraDeployOutput.acr_name.value # Container Registry Name (from terraform output)
+        $acrUrl = $infraDeployOutput.acr_login_server.value # Container Registry Login Server (from terraform output)
+
+        echo "*** Retrieved Azure Container Registry Login Server $acrUrl (from terraformOutputGlobalInfra)"
+
+        $workloadsFile = "$(System.DefaultWorkingDirectory)/.ado/pipelines/config/workloads.json"
+
+        if(-not (Test-Path $workloadsFile))
+        {
+          throw "*** Container workload file not found at $workloadsFile"
+        }
+
+        $workloads = Get-Content $workloadsFile | ConvertFrom-JSON
+
+        # Iterate through all the containerImages of each workload and import them into our ACR
+        foreach($containerImage in $workloads.PSObject.Properties.value.containerImage)
+        {
+          $fullImageName = ""
+          # If "registry" is empty, this means dockerhub, then we can ommit the registry and the /
+          if($containerImage.registry)
+          {
+            $fullImageName += "$($containerImage.registry)/"
+          }
+
+          $fullImageName += "$($containerImage.name):$($containerImage.tag)"
+
+          echo "*** Importing image $fullImageName"
+
+          # If those images reside in an ACR, we assume our service principal has pull permissions
+          az acr import -n $acrName --source $fullImageName --force --verbose
+
+          if ($LastExitCode -ne 0) {
+              throw "*** Error - could not import image $containerImage"
+          }
+        }

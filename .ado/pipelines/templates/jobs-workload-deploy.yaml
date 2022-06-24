@@ -22,10 +22,41 @@ jobs: # using jobs so they each run in parallel
         scriptLocation: inlineScript
         inlineScript: |
 
-          helm lint src/app/charts/healthservice # lint helm chart
+          # Must match the workload name in the workloads JSON file
+          $workloadName = "healthservice"
 
           # load json data from downloaded terraform artifact
           $releaseUnitInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputReleaseUnitInfra/*.json | Get-Content | ConvertFrom-JSON
+          $globalInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputGlobalInfra/*.json | Get-Content | ConvertFrom-JSON
+
+          $acrName = $globalInfraDeployOutput.acr_name.value # Container Registry Name (from terraform output)
+          $acrUrl = $globalInfraDeployOutput.acr_login_server.value # Container Registry Login Server (from terraform output)
+
+          $workloadsFile = "$(System.DefaultWorkingDirectory)/.ado/pipelines/config/workloads.json"
+
+          if(-not (Test-Path $workloadsFile))
+          {
+            throw "*** Container workload file not found at $workloadsFile"
+          }
+
+          $workloads = Get-Content $workloadsFile | ConvertFrom-JSON
+          $workload = $workloads.$workloadName
+
+          if(-not $workload)
+          {
+            throw "*** Workload '$workloadName' not found in $workloadsFile"
+          }
+
+          $chartRegistry,$chartName = $workload.chart.name -split "/",2
+
+          # if the helm chart is hosted on ACR, we need to log in first
+          if($chartRegistry.EndsWith(".azurecr.io"))
+          {
+            az acr login -n $chartRegistry
+          }
+
+          # We can assume that the image was imported into our ACR in an earlier stage of this pipeline
+          $fullContainerImageName = "$acrUrl/$($workload.containerImage.name):$($workload.containerImage.tag)"
 
           # loop through stamps from pipeline artifact json
           foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
@@ -39,20 +70,18 @@ jobs: # using jobs so they each run in parallel
             echo "*** Load credentials for AKS Cluster $aksClusterName in $aksClusterResourceGroup"
             az aks get-credentials --name $aksClusterName --resource-group $aksClusterResourceGroup --overwrite-existing
 
-            $fullContainerImageName = Get-Content -Path "$(Pipeline.Workspace)/healthservice-containerImageName/healthservice.txt"
-            echo "*** Retrieved container image name from artifact - $fullContainerImageName"
+            echo "*** Installing helm chart $($workload.chart.name) version $($workload.chart.version) with image $fullContainerImageName"
 
             $fqdn = $stamp.aks_cluster_ingress_fqdn
             echo "*** Retrieved Ingress Controller FQDN $fqdn for AKS cluster $aksClusterName"
 
             # Apply workload worker helm chart
             echo  "*** Deploy healthservice to $aksClusterName (in $aksClusterResourceGroup) via helm chart"
-            helm upgrade --install healthservice-workload src/app/charts/healthservice `
-                         --namespace $(workloadNamespace) `
-                         --create-namespace `
-                         --set azure.frontdoorid="$(frontdoor_id_header)" `
-                         --set azure.region="$region" `
+            helm upgrade --install healthservice-workload "oci://$($workload.chart.name)" `
+                         --version $workload.chart.version `
+                         --namespace $(workloadNamespace) --create-namespace `
                          --set containerimage="$fullContainerImageName" `
+                         --set azure.region="$region" `
                          --set workload.domainname="$fqdn" `
                          --wait
 
@@ -109,10 +138,40 @@ jobs: # using jobs so they each run in parallel
         scriptLocation: inlineScript
         inlineScript: |
 
-          helm lint src/app/charts/catalogservice # lint helm chart
+          # Must match the workload name in the workloads JSON file
+          $workloadName = "catalogservice"
 
           # load json data from downloaded terraform artifact
           $releaseUnitInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputReleaseUnitInfra/*.json | Get-Content | ConvertFrom-JSON
+
+          $workloadsFile = "$(System.DefaultWorkingDirectory)/.ado/pipelines/config/workloads.json"
+
+          if(-not (Test-Path $workloadsFile))
+          {
+            throw "*** Container workload file not found at $workloadsFile"
+          }
+
+          $workloads = Get-Content $workloadsFile | ConvertFrom-JSON
+          $workload = $workloads.$workloadName
+
+          if(-not $workload)
+          {
+            throw "*** Workload '$workloadName' not found in $workloadsFile"
+          }
+
+          $chartRegistry,$chartName = $workload.chart.name -split "/",2
+
+          # if the helm chart is hosted on ACR, we need to log in first
+          if($chartRegistry.EndsWith(".azurecr.io"))
+          {
+            az acr login -n $chartRegistry
+          }
+
+          # We can assume that the image was imported into our ACR in an earlier stage of this pipeline
+          $fullContainerImageName = "$(acr_login_server)/$($workload.containerImage.name):$($workload.containerImage.tag)"
+
+          echo "*** Retrieved Azure Front Door Header ID $(frontdoor_id_header) from Terraform output"
+          echo "*** Retrieved Azure Front Door FQDN $(frontdoor_fqdn) from Terraform output"
 
           # loop through stamps from pipeline artifact json
           foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
@@ -131,14 +190,10 @@ jobs: # using jobs so they each run in parallel
             $fqdn = $stamp.aks_cluster_ingress_fqdn
             echo "*** Retrieved Ingress Controller FQDN $fqdn for AKS cluster $aksClusterName"
 
-            $fullContainerImageName = Get-Content -Path "$(Pipeline.Workspace)/catalogservice-containerImageName/catalogservice.txt"
-            echo "*** Retrieved full container image name from artifact - $fullContainerImageName"
-
             # Apply workload CatalogService helm chart
-            echo "*** Deploy workload CatalogService to $aksClusterName (in $aksClusterResourceGroup) via helm chart"
-            echo "*** Using container image $fullContainerImageName"
-
-            helm upgrade --install workload-catalogservice src/app/charts/catalogservice `
+            echo "*** Installing helm chart $($workload.chart.name) version $($workload.chart.version) with image $fullContainerImageName"
+            helm upgrade --install workload-catalogservice "oci://$($workload.chart.name)" `
+                         --version $workload.chart.version `
                          --namespace "$(workloadNamespace)" `
                          --create-namespace `
                          --set azure.frontdoorid="$(frontdoor_id_header)" `
@@ -166,10 +221,37 @@ jobs: # using jobs so they each run in parallel
         scriptLocation: inlineScript
         inlineScript: |
 
-          helm lint src/app/charts/backgroundprocessor # lint helm chart
+          # Must match the workload name in the workloads JSON file
+          $workloadName = "backgroundprocessor"
 
           # load json data from downloaded terraform artifact
           $releaseUnitInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputReleaseUnitInfra/*.json | Get-Content | ConvertFrom-JSON
+
+          $workloadsFile = "$(System.DefaultWorkingDirectory)/.ado/pipelines/config/workloads.json"
+
+          if(-not (Test-Path $workloadsFile))
+          {
+            throw "*** Container workload file not found at $workloadsFile"
+          }
+
+          $workloads = Get-Content $workloadsFile | ConvertFrom-JSON
+          $workload = $workloads.$workloadName
+
+          if(-not $workload)
+          {
+            throw "*** Workload '$workloadName' not found in $workloadsFile"
+          }
+
+          $chartRegistry,$chartName = $workload.chart.name -split "/",2
+
+          # if the helm chart is hosted on ACR, we need to log in first
+          if($chartRegistry.EndsWith(".azurecr.io"))
+          {
+            az acr login -n $chartRegistry
+          }
+
+          # We can assume that the image was imported into our ACR in an earlier stage of this pipeline
+          $fullContainerImageName = "$(acr_login_server)/$($workload.containerImage.name):$($workload.containerImage.tag)"
 
           # loop through stamps from pipeline artifact json
           foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
@@ -185,12 +267,10 @@ jobs: # using jobs so they each run in parallel
             echo "*** Load credentials for AKS Cluster $aksClusterName in $aksClusterResourceGroup"
             az aks get-credentials --name $aksClusterName --resource-group $aksClusterResourceGroup --overwrite-existing
 
-            $fullContainerImageName = Get-Content -Path "$(Pipeline.Workspace)/backgroundprocessor-containerImageName/backgroundprocessor.txt"
-            echo "*** Retrieved full container image name from artifact - $fullContainerImageName"
-
             # Apply workload BackgroundProcessor helm chart
-            echo  "*** Deploy workload BackgroundProcessor to $aksClusterName (in $aksClusterResourceGroup) via helm chart"
-            helm upgrade --install workload-backgroundprocessor src/app/charts/backgroundprocessor `
+            echo "*** Installing helm chart $($workload.chart.name) version $($workload.chart.version) with image $fullContainerImageName"
+            helm upgrade --install workload-backgroundprocessor "oci://$($workload.chart.name)" `
+                         --version $workload.chart.version `
                          --namespace $(workloadNamespace) `
                          --create-namespace `
                          --set containerimage="$fullContainerImageName" `

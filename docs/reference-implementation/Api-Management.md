@@ -2,7 +2,7 @@
 
 A common scenario, which is not covered by the main reference implementation, is to include an API Management service in the architecture. It is not included in the main branch as it is considered an optional service and not essentially required in many cases.
 
-Therefore there is a [separate branch](https://github.com/Azure/Mission-Critical-Online/tree/feature/api-management) which includes Azure API Management (APIM) and all the required changes to properly embed this in the reference implementation. This article walks through the various required changes.
+Therefore there is a [separate branch](https://github.com/Azure/Mission-Critical-Online/tree/examples/api-management) which includes Azure API Management (APIM) and all the required changes to properly embed this in the reference implementation. This article walks through the various required changes.
 
 ## Architecture overview
 
@@ -25,7 +25,7 @@ It is important to note that API Management is used as a regional resource, i.e.
 
 ## Detailed changes
 
-**Note:** The following changes are not included in the main branch, the links refer to the files in the [`feature/api-management` branch](https://github.com/Azure/Mission-Critical-Online/tree/feature/api-management).
+**Note:** The following changes are not included in the main branch, the links refer to the files in the [`examples/api-management` branch](https://github.com/Azure/Mission-Critical-Online/tree/examples/api-management).
 
 ### Add a subnet to host API Management and Network Security Group
 
@@ -68,7 +68,7 @@ To point the Front Door backend to the new APIM service, we only need to change 
 
 ### Change cert-manager to not use HTTP-01 issuer
 
-In the main reference implementation we use the ACME HTTP-01 issuer of Let's Encrypt to procure SSL certificates for the ingress. This is not possible in the new API Management service, so we need to change the issuer to use the DNS-01 issuer. However, this requires the use of custom domain names on the internal load balancer of AKS. The Terraform templates and pipelines in the `feature/api-management` branch are fully prepared for that. However, the use of custom domain names might not be feasible in every deployment. Therefore, the cert-manager issuer is configured to fall back to the self-signed issuer method in case no custom domain name is provided. In this case, also the backend setting of APIM will disable any certificate validation.
+In the main reference implementation we use the ACME HTTP-01 issuer of Let's Encrypt to procure SSL certificates for the ingress. This is not possible in the new API Management service, so we need to change the issuer to use the DNS-01 issuer. However, this requires the use of custom domain names on the internal load balancer of AKS. The Terraform templates and pipelines in the `examples/api-management` branch are fully prepared for that. However, the use of custom domain names might not be feasible in every deployment. Therefore, the cert-manager issuer is configured to fall back to the self-signed issuer method in case no custom domain name is provided. In this case, also the backend setting of APIM will disable any certificate validation.
 
 ---
 

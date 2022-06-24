@@ -59,7 +59,7 @@ resource "azurerm_frontdoor" "main" {
 
   backend_pool_load_balancing {
     name                            = "LoadBalancingSettings"
-    additional_latency_milliseconds = 500 # This number should be in 10s of ms to make sure that stamps in the same regions are treated as equal. We are right now using a high value to ensure load levelling between regions as well.
+    additional_latency_milliseconds = 1000 # This number should be in 10s of ms to make sure that stamps in the same regions are treated as equal. We are right now using a high value to ensure load levelling between regions as well.
   }
 
   backend_pool_health_probe {

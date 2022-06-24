@@ -1,0 +1,48 @@
+name: '[${{ parameters.environment }}] $(BuildDefinitionName).$(DayOfYear)$(Rev:.r)'
+
+trigger: none
+
+pr: none
+
+pool:
+  vmImage: 'ubuntu-20.04'
+
+parameters:
+- name: environment
+  displayName: 'Environment (Subscriptions)'
+  type: string
+  default: 'int'
+  values:
+  - int
+
+- name: loadTestTargetFQDN
+  displayName: 'Load test target FQDN'
+  type: string
+  default: 'www.int.shop.mission-critical.app'
+
+- name: destroyInfra # option to unselect destroy infrastructure
+  displayName: "Destroy infrastructure"
+  type: boolean
+  default: false
+
+variables:
+- template: config/configuration.yaml # contains version numbers and global configuration settings
+- name:  'workingDirectory' # Terraform working directory (containing the azure load test infra definition)
+  value: 'src/testing/loadtest-azure/infra'
+- name:  'environment' # set the environment name as variable
+  value: '${{ parameters.environment }}'
+- name:  'azureServiceConnection' # environment specific service connection
+  value: 'alwayson-${{ parameters.environment }}-serviceconnection'
+
+- template: config/variables-values-${{ parameters.environment }}.yaml # contains environment-specific values (non-secret)
+
+stages:
+
+- template: templates/stages-loadtest-azure.yaml
+  parameters:
+    terraformWorkingDirectory: '$(workingDirectory)'
+    customPrefix: '$(prefix)'
+    embeddedLoadTest: false # embedded is only used in e2e, the standalone pipeline is not automatically executing the load test
+    destroyInfra: ${{ parameters.destroyInfra }} # whether to destroy the infra at the end or not
+    loadTestTargetFQDN: '${{ parameters.loadTestTargetFQDN }}'
+

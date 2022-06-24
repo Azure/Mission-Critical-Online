@@ -1,15 +1,17 @@
-parameters:
-  additionalHelmArguments:     '--wait'
-
 jobs: # using jobs so they each run in parallel
 
 - job: deploycontainerHealthService
+  timeoutInMinutes: 120 # extend the default timeout of 60min since getting a certificate from Lets Encrypt sometimes takes a while
   displayName: 'Deploy HealthService workload'
   steps:
 
     - download: current # download pipeline artifacts
 
     - template: steps-buildagent-prerequisites.yaml
+
+    - template: steps-parse-terraform-output.yaml
+      parameters:
+        workingDirectory: '$(Pipeline.Workspace)/terraformOutputGlobalInfra'  # Global infra deploy output directory
 
     - task: AzureCLI@2
       displayName: 'Install workload healthservice on AKS clusters'
@@ -63,36 +65,55 @@ jobs: # using jobs so they each run in parallel
             $aksClusterResourceGroup = $stamp.resource_group_name
 
             $region = $(az eventhubs namespace list --resource-group $aksClusterResourceGroup --query "[0].location" --output tsv)
-            echo "*** Use Azure Region $region from Event Hub namespace."
+            echo "*** Use Azure Region $region from Event Hub namespace"
 
             echo "*** Load credentials for AKS Cluster $aksClusterName in $aksClusterResourceGroup"
             az aks get-credentials --name $aksClusterName --resource-group $aksClusterResourceGroup --overwrite-existing
 
             echo "*** Installing helm chart $($workload.chart.name) version $($workload.chart.version) with image $fullContainerImageName"
 
+            $fqdn = $stamp.aks_cluster_ingress_fqdn
+            echo "*** Retrieved Ingress Controller FQDN $fqdn for AKS cluster $aksClusterName"
+
             # Apply workload worker helm chart
             echo  "*** Deploy healthservice to $aksClusterName (in $aksClusterResourceGroup) via helm chart"
             helm upgrade --install healthservice-workload "oci://$($workload.chart.name)" `
-                          --version $workload.chart.version `
-                          --namespace $(workloadNamespace) --create-namespace `
-                          --set containerimage="$fullContainerImageName" `
-                          --set azure.region="$region" `
-                          ${{ parameters.additionalHelmArguments }}
+                         --version $workload.chart.version `
+                         --namespace $(workloadNamespace) --create-namespace `
+                         --set containerimage="$fullContainerImageName" `
+                         --set azure.region="$region" `
+                         --set workload.domainname="$fqdn" `
+                         --wait
 
-            # Wait for healthservice-deploy k8s deployment to come up
+            # Wait for the ingress certificate to be provisioned by cert-manager
             $retrycount = 0;
-            $maxretrycount = 5
+            $maxretrycount = 30
+            $sleepSeconds = 60
             do {
-              kubectl rollout status deployment/healthservice-deploy -n $(workloadNamespace)
 
-              if ($LastExitCode -ne 0) {
-                $retrycount++;
-                echo "Deployment not ready. Retrying... $retrycount/$maxretrycount";
-                start-sleep $(60*$retrycount) # sleep for <retry> * 60 seconds
-              } else {
-                $retrycount = $maxretrycount
+              $certificateName = "workload-ingress-secret"
+
+              # checking if certificate for workload-ingress-secret was issued
+              if ($(kubectl get certificates $certificateName -n $(workloadNamespace) -o 'jsonpath={..status.conditions[?(@.type==\"Ready\")].status}') -ne "True")
+              {
+                $certReady = $false
+
+                $retrycount++
+                echo "Certificate for $certificateName not ready. Waiting for $sleepSeconds seconds and retrying... $retrycount/$maxretrycount";
+                Start-Sleep $sleepSeconds
               }
-            } while ( ($retrycount -lt $maxretrycount) )
+              else
+              {
+                echo "Certificate $certificateName is ready!"
+                $certReady = $true
+                break
+              }
+            } while ( $retrycount -lt $maxretrycount )
+
+            if(-not $certReady)
+            {
+              throw "*** Error - Certificate $certificateName was not provisioned in time"
+            }
           }
 
 - job: deploycontainerCatalogService
@@ -103,6 +124,10 @@ jobs: # using jobs so they each run in parallel
     - download: current # download pipeline artifacts
 
     - template: steps-buildagent-prerequisites.yaml
+
+    - template: steps-parse-terraform-output.yaml
+      parameters:
+        workingDirectory: '$(Pipeline.Workspace)/terraformOutputGlobalInfra'  # Global infra deploy output directory
 
     - task: AzureCLI@2
       displayName: 'Install workload CatalogService on AKS clusters'
@@ -161,10 +186,9 @@ jobs: # using jobs so they each run in parallel
             $aksClusterName = $stamp.aks_cluster_name
             $aksClusterResourceGroup = $stamp.resource_group_name
 
-            # We are using the Region of the EH namespace as a workaround since this has the right format for the Cosmos SDK ("East US 2" instead of "eastus2") 
-
+            # We are using the Region of the EH namespace as a workaround since this has the right format for the Cosmos SDK ("East US 2" instead of "eastus2")
             $region = $(az eventhubs namespace list --resource-group $aksClusterResourceGroup --query "[0].location" --output tsv)
-            echo "*** Use Azure Region $region from Event Hub namespace."
+            echo "*** Use Azure Region $region from Event Hub namespace"
 
             # load AKS cluster credentials
             echo "*** Load credentials for AKS Cluster $aksClusterName in $aksClusterResourceGroup"
@@ -181,32 +205,9 @@ jobs: # using jobs so they each run in parallel
                          --namespace "$(workloadNamespace)" --create-namespace `
                          --set azure.frontdoorid="$frontDoorId" `
                          --set azure.region="$region" `
-                         --set azure.baseurl="$frontDoorFqdn" `
                          --set containerimage="$fullContainerImageName" `
                          --set workload.domainname="$fqdn" `
-                         ${{ parameters.additionalHelmArguments }}
-
-            # Wait for CatalogService-deploy k8s deployment to come up
-            $retrycount = 0;
-            $maxretrycount = 5
-            do {
-              kubectl rollout status deployment/catalogservice-deploy -n $(workloadNamespace)
-
-              # checking if certificate for CatalogService-ingress-secret was issued
-              if ($(kubectl get certificates/catalogservice-ingress-secret -n $(workloadNamespace) -o 'jsonpath={..status.conditions[?(@.type==\"Ready\")].status}') -ne "True")
-              {
-                $LASTEXITCODE=1
-                echo "certificate for catalogservice-ingress-secret pending.. "
-              }
-
-              if ($LastExitCode -ne 0) {
-                $retrycount++;
-                echo "Deployment not ready. Retrying... $retrycount/$maxretrycount";
-                start-sleep $(60*$retrycount) # sleep for <retry> * 60 seconds
-              } else {
-                $retrycount = $maxretrycount
-              }
-            } while ( ($retrycount -lt $maxretrycount) )
+                         --wait
           }
 
 - job: deploycontainerBackgroundProcessor
@@ -271,7 +272,7 @@ jobs: # using jobs so they each run in parallel
 
             # We are using the Region of the EH namespace as a workaround since this has the right format for the Cosmos SDK ("East US 2" instead of "eastus2")
             $region = $(az eventhubs namespace list --resource-group $aksClusterResourceGroup --query "[0].location" --output tsv)
-            echo "*** Use Azure Region $region from Event Hub namespace."
+            echo "*** Use Azure Region $region from Event Hub namespace"
 
             # Load AKS / K8s cluster credentials via az aks get-credentials (using IAM permissions)
             echo "*** Load credentials for AKS Cluster $aksClusterName in $aksClusterResourceGroup"
@@ -285,22 +286,7 @@ jobs: # using jobs so they each run in parallel
                          --namespace $(workloadNamespace) --create-namespace `
                          --set containerimage="$fullContainerImageName" `
                          --set azure.region="$region" `
-                         ${{ parameters.additionalHelmArguments }}
-
-            # Wait for BackgroundProcessor-deploy k8s deployment to come up
-            $retrycount = 0;
-            $maxretrycount = 5
-            do {
-              kubectl rollout status deployment/backgroundprocessor-deploy -n $(workloadNamespace)
-              if ($LastExitCode -ne 0) {
-                $retrycount++;
-                echo "Deployment not ready. Retrying... $retrycount/$maxretrycount";
-                start-sleep $(60*$retrycount) # sleep for <retry> * 60 seconds
-              } else {
-                $retrycount = $maxretrycount
-              }
-            } while ( ($retrycount -lt $maxretrycount) )
-
+                         --wait
           }
 
 - job: deployuiapp
@@ -336,7 +322,7 @@ jobs: # using jobs so they each run in parallel
 
             echo "*** Storing configuration to $configFilePath"
             # warning: make sure that these variable names are in sync with client code
-            Add-Content -Path $configFilePath -Value "window.API_URL = `"/api`""
+            Add-Content -Path $configFilePath -Value "window.API_URL = `"/catalogservice/api`""
             Add-Content -Path $configFilePath -Value "window.APPLICATIONINSIGHTS_CONNECTION_STRING = `"$appInsightsConnString`""
 
             $versionLabel = "$(riVariant)-$("$(Build.SourceBranch)" -Replace 'refs/heads/', '')-$(Build.BuildId)"

@@ -94,14 +94,14 @@ foreach($target in $targets) {
 
   # test health endpoints for stamps only
   if ($mode -eq "stamp") {
-    $stampHealthUrl = "https://$targetFqdn/health/stamp"
+    $stampHealthUrl = "https://$targetFqdn/healthservice/health/stamp"
     Write-Output "*** Call - Stamp Health ($mode)"
 
     # custom retry loop to handle the situation when the SSL certificate is not valid yet and Invoke-WebRequest throws an exception
     Invoke-WebRequestWithRetry -Uri $stampHealthUrl -Method 'GET' -Headers $header -MaximumRetryCount $smokeTestRetryCount -RetryWaitSeconds $smokeTestRetryWaitSeconds
   }
 
-  $listCatalogUrl = "https://$targetFqdn/api/1.0/catalogitem"
+  $listCatalogUrl = "https://$targetFqdn/catalogservice/api/1.0/catalogitem"
   Write-Output "*** Call - List Catalog ($mode)"
   $responseListCatalog = Invoke-WebRequestWithRetry -Uri $listCatalogUrl -Method 'get' -Headers $header -MaximumRetryCount $smokeTestRetryCount -RetryWaitSeconds $smokeTestRetryWaitSeconds
   $responseListCatalog
@@ -114,11 +114,11 @@ foreach($target in $targets) {
 
   $randomItem = Get-Random $allItems
 
-  $itemUrl = "https://$targetFqdn/api/1.0/catalogitem/$($randomItem.id)"
+  $itemUrl = "https://$targetFqdn/catalogservice/api/1.0/catalogitem/$($randomItem.id)"
   Write-Output "*** Call - Get get item ($($randomItem.id)) ($mode)"
   Invoke-WebRequestWithRetry -Uri $itemUrl -Method 'GET' -Headers $header -MaximumRetryCount $smokeTestRetryCount -RetryWaitSeconds $smokeTestRetryWaitSeconds
 
-  $postCommentUrl = "https://$targetFqdn/api/1.0/catalogitem/$($randomItem.id)/comments"
+  $postCommentUrl = "https://$targetFqdn/catalogservice/api/1.0/catalogitem/$($randomItem.id)/comments"
   Write-Output "*** Call - Post new comment to item $($randomItem.id) ($mode)"
 
   $responsePostComment = Invoke-WebRequestWithRetry -Uri $postCommentUrl -Method 'POST' -Headers $header -Body $post_comment_body -MaximumRetryCount $smokeTestRetryCount -RetryWaitSeconds $smokeTestRetryWaitSeconds -ExpectedResponseCode 202
@@ -128,12 +128,10 @@ foreach($target in $targets) {
   Start-Sleep 10
 
   # The 202-response to POST new comment contains in the 'Location' header the URL under which the new comment will be accessible
-  $getCommentUrl = $responsePostComment.Headers['Location'][0]
+  $getCommentPath = $responsePostComment.Headers['Location'][0]
 
-  if ($mode -eq "stamp") {
-    # The Location header contains the global FQDN of the Front Door entry point. For the the individual cluster, we need to change the URL
-    $getCommentUrl = $getCommentUrl -replace $frontdoorFqdn,$targetFqdn
-  }
+  # The location header does not contain the host part of the URL so we need to prepend it
+  $getCommentUrl = "https://$($targetFqdn)$($getCommentPath)"
 
   Write-Output "*** Call - Get newly created comment ($mode)"
   Invoke-WebRequestWithRetry -Uri $getCommentUrl -Method 'GET' -Headers $header -MaximumRetryCount $smokeTestRetryCount -RetryWaitSeconds $smokeTestRetryWaitSeconds

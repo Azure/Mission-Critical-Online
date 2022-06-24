@@ -13,7 +13,7 @@ stages:
   displayName: 'Direct ${{ parameters.trafficWeightNewBackends }} percent of traffic to new release unit'
   jobs:
   - deployment: 'configurefrontdoor${{ parameters.trafficWeightNewBackends }}Job' # Using a deployment job so that we can have manual approves, which are configured on the environment specificed below
-    displayName: 'Direct ${{ parameters.trafficWeightNewBackends }} per cent of traffic to new release unit'
+    displayName: 'Direct ${{ parameters.trafficWeightNewBackends }} percent of traffic to new release unit'
     environment: '$(environment)'
     strategy:
       runOnce:

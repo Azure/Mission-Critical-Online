@@ -1,10 +1,10 @@
 BackgroundProcessorHealthStatus()
-| union ClusterHealthStatus()
+| union AksClusterHealthStatus()
 | union KeyvaultHealthStatus()
 | union EventHubHealthStatus()
 | union CheckpointStorageHealthStatus()
 | where TimeGenerated < ago(2m)
 | summarize YellowScore = max(IsYellow), RedScore = max(IsRed) by bin(TimeGenerated, 2m)
 | extend HealthScore = 1 - (YellowScore * 0.25) - (RedScore * 0.5)
-| extend ComponentName = "BackgroundProcessor", Dependencies="Cluster,Keyvault,EventHub,CheckpointStorage" // These values are added to build the dependency visualization.
+| extend ComponentName = "BackgroundProcessor", Dependencies="AKSCluster,Keyvault,EventHub,CheckpointStorage" // These values are added to build the dependency visualization.
 | order by TimeGenerated desc

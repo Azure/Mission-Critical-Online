@@ -1,6 +1,6 @@
 # Bring your own workload
 
-The Azure Mission-Critical reference implementation follows a mono-repo approach hosting workload, infrastructure and supporting artifacts in a single repository. This is mainly done to make the reuse and maintenance as easy as possible. In a real-world environment (see [Brownfield considerations](./Brownfield-Considerations.md)) this can be different and the application code is often times separated from the infrastructure. In this guide we will describe the most common approaches to get existing workloads into the Azure Mission-Critical deployment.
+The Azure Mission-Critical reference implementation follows a mono-repo approach hosting workload, infrastructure and supporting artifacts in a single repository. This is mainly done to make the reuse and maintenance of the reference implementation as easy as possible. In a real-world environment (see [Brownfield considerations](./Brownfield-Considerations.md)) this can be different and the application code is often times separated from the infrastructure. In this guide we will describe the most common approaches to get existing workloads into the Azure Mission-Critical deployment.
 
 - [Application Code](#application-code)
 - [Kubernetes](#kubernetes-deployment)
@@ -10,7 +10,7 @@ The Azure Mission-Critical reference implementation follows a mono-repo approach
 
 The simplest way to bring existing workloads into the reference implementation is to continue with the **mono-repo** approach. New workloads including their source code can be added to the repo, and the existing pipelines can be extended to build, push and deploy it to the infrastructure.
 
-In a **multi-repo** setup, the application code is stored in a different or in individual repositories, separated from each other and from the infrastructure. This also means that the application code is usually built and published with a separate pipeline and drop to shared location (e.g. Artifact store).
+In a **multi-repo** setup, the application code is stored in a different or in individual repositories, separated from each other and from the infrastructure. This also means that the application code is usually built and published via a separate pipeline and stored in shared location (e.g. Artifact store).
 
 The following two sub-sections contain information on how to either bring workloads using the mono-repo approach or the multi-repo approach into a cloned Azure Mission-Critical environment.
 
@@ -43,9 +43,9 @@ The [`jobs-container-build.yaml`](/.ado/pipelines/templates/jobs-container-build
 
 ### Multi-repo
 
-The main consideration here is to which registry the container images are pushed e.g. to a corporate-wide central container registry (see [Brownfield considerations](./Brownfield-Considerations.md)) or following the Azure Mission-Critical recommendation into a solution-specific one and how they can be accessed and pulled to the clusters we're deploying here.
+In multi-repo environments, container images are usually pushed to a corporate-wide centrally managed container registry (see [Brownfield considerations](./Brownfield-Considerations.md)). Following the Azure Mission-Critical guidance this can remain the same, but its highly recommended to import them from there into a solution-specific per-environment container registry which is replicated together with the regional stamps and locked down to allow access only from the clusters.
 
-Other options are to push container images to the Azure Container Registry deployed as part of the Azure Mission-Critical reference implementation, or to import images from another registry into the Azure Mission-Critical environment. See [Brownfield considerations](./Brownfield-Considerations.md#Existing-container-registry) for more information.
+Pushing container images directly to Azure Mission-Critical container registries, outside of a mono-repo, isn't recommended as this would not work with e2e environments and could cause consistency issues between the other environments as well.
 
 ## Kubernetes deployment
 

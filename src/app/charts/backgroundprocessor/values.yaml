@@ -2,9 +2,25 @@ container:
   containerimage: "OVERWRITE.acr.io/alwayson/backgroundprocessor:1234" # Container Image Name
   pullPolicy: "IfNotPresent" # Container Image Pull Policy. Using IfNotPresent to enable pod starts even if ACR cannot be reached and image was pulled on the node previously
 
+containerSecurityContext:
+  privileged: false # Running a container as privileged gives all capabilities to the container, and it also lifts all the limitations enforced by the device cgroup controller.
+  readOnlyRootFilesystem: true # If a container does not need to write files, it should be run with a read-only filesystem.
+  allowPrivilegeEscalation: false # Controls whether a process can gain more privileges than its parent process.
+
 scale: # Horizontal Pod Autoscaler (HPA) configuration
   minReplicas: 2 # Min. number of replicas used for HPA
   maxReplicas: 8 # Max. number of replicas used for HPA
+
+resources:
+  limits:
+    cpu: "0.5"
+    memory: "1Gi"
+  requests:
+    cpu: "0.5"
+    memory: "512Mi"
+
+azure:
+  region: "East US 2"
 
 # Note! When disabling Network Policy for this helm chart,
 # make sure to disable Network Policy for the CatalogService as well
@@ -12,6 +28,3 @@ scale: # Horizontal Pod Autoscaler (HPA) configuration
 networkPolicy:
   enabled: true # Enable Network Policy
   egressRange: "0.0.0.0/0" # CIDR range for allowed egress traffic
-
-azure:
-  region: "East US 2"

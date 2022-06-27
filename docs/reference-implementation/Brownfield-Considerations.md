@@ -1,6 +1,6 @@
 # Brownfield scenario considerations
 
-While the initial usage of the Azure Mission-Critical reference implementation often times include deploying it into empty Azure subscription(s) aka greenfields, is it not limited to that. This guide describes some of the most common scenarios when deploying the Azure Mission-Critical reference implementation into existing environments aka brownfield scenarios.
+While the initial usage of the Azure Mission-Critical reference implementation often times include deploying it into a green field environment, is it not limited to that. This guide describes some of the most common scenarios when deploying the Azure Mission-Critical reference implementation into existing environments aka brownfield scenarios.
 
 ## Existing networking infrastructure
 

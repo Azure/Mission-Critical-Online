@@ -1,11 +1,16 @@
 // Returns the health status of an event hub. 
 // Currently we only look at the processingbacklog, i.e. the number of messages that comes in minus messages that go out. 
+let _maxAge = 2d; // Only include data from the last two days
+let _timespanStart = ago(_maxAge); // Start time for the timespan
+// Examining timeframe from series start to now-2m (ingestion delay)
+let _timespanEnd = now(-2m); // there is some ingestion lag, so we account for this by stripping the last 2m
 let Thresholds = datatable(MetricName: string, YellowThreshold: double, RedThreshold: double) [
     // Difference between incoming and outgoing messages:
     "ProcessingBacklog", 3, 10
     ];
 //
 let Timeseries = AzureMetrics
+| where TimeGenerated > _timespanStart
 | where ResourceProvider == "MICROSOFT.EVENTHUB"
 | where MetricName == "IncomingMessages" or MetricName == "OutgoingMessages"
 | order by TimeGenerated,ResourceId desc
@@ -27,12 +32,8 @@ let Timeseries = AzureMetrics
 | where MetricName == "IncomingMessages"
 | extend ProcessingBacklog = iff(Total - ProcessedCount < 0, toreal(0), Total - ProcessedCount);
 //
-// Examining timeframe from series start to now-2m (ingestion delay)
-let timespanStart = todatetime(format_datetime( todatetime(toscalar(Timeseries | summarize min(TimeGenerated))), 'yyyy-MM-dd HH:ss'));
-let timespanEnd = now(-2m); // there is some ingestion lag, so we account for this by stripping the last 2m
-//
-Timeseries 
-| make-series Value=sum(ProcessingBacklog) default=double(null) on TimeGenerated from timespanStart to timespanEnd step 1m
+Timeseries
+| make-series Value=sum(ProcessingBacklog) default=double(null) on TimeGenerated from _timespanStart to _timespanEnd step 1m
 | extend Value = series_fill_forward(Value) // Use the last value for any missing points
 | mv-expand TimeGenerated, Value
 | extend TimeGenerated = todatetime(TimeGenerated), Value=toreal(Value), MetricName='ProcessingBacklog', ComponentName="EventHub"

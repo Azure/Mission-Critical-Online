@@ -3,12 +3,30 @@ container:
   pullPolicy: "IfNotPresent" # Container Image Pull Policy. Using IfNotPresent to enable pod starts even if ACR cannot be reached and image was pulled on the node previously
 
 workload:
+  domainname: "OVERWRITE-cluster.eastus2.cloudapp.azure.com" # External Domain Name of the AKS cluster (used for Ingress)
+  tlsSecret: workload-ingress-secret # k8s secret name for the tls cert - make sure that the name is the same when shared
   port: 8080 # Port of the container workload
+  replicas: 3 # number of replicas
   service:
     port: 80 # Service Port (not used for Ingress)
     type: "ClusterIP" # Service Type (default ClusterIP)
 
-replicas: 3
+containerSecurityContext:
+  privileged: false # Running a container as privileged gives all capabilities to the container, and it also lifts all the limitations enforced by the device cgroup controller.
+  readOnlyRootFilesystem: true # If a container does not need to write files, it should be run with a read-only filesystem.
+  allowPrivilegeEscalation: false # Controls whether a process can gain more privileges than its parent process.
+
+resources:
+  limits:
+    cpu:    "300m"
+    memory: "512Mi"
+  requests:
+    cpu:    "100m"
+    memory: "250Mi"
+
+ingress:
+  annotations:
+    cert-manager.io/cluster-issuer: "cert-manager-alwayson" # this will trigger cert-manager to request a certificate
 
 # Note! When disabling Network Policy for this helm chart,
 # make sure to disable Network Policy for the CatalogService as well
@@ -17,4 +35,5 @@ networkPolicy:
   enabled: true # Enable Network Policy
 
 azure:
+  frontdoorid: "" # Azure Front Door Header ID
   region: "East US 2"

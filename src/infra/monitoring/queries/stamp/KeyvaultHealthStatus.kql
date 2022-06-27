@@ -1,9 +1,14 @@
+let _maxAge = 2d; // Only include data from the last two days
+let _timespanStart = ago(_maxAge); // Start time for the timespan
+let _timespanEnd = now(-2m); // there is some ingestion lag, so we account for this by stripping the last 2m
+//
 let Thresholds = datatable(MetricName: string, YellowThreshold: double, RedThreshold: double) [
     // Failure count on key vault requests
     "failureCount", 3, 10
     ];
 //
 let failureStats = AzureDiagnostics
+| where TimeGenerated > _timespanStart
 | where ResourceProvider == "MICROSOFT.KEYVAULT"
 // Ignore Authentication operations with a 401. This is normal when using Key Vault SDK, first an unauthenticated request is done then the response is used for authentication.
 | where Category=="AuditEvent" and not (OperationName == "Authentication" and httpStatusCode_d == 401)
@@ -16,11 +21,9 @@ let failureStats = AzureDiagnostics
                                ResultSignature == "Accepted", "Success",
                                ResultSignature);
 //
-let timespanStart= todatetime(format_datetime( todatetime(toscalar(failureStats| summarize min(TimeGenerated))), 'yyyy-MM-dd HH:ss'));
-let timespanEnd = now(-2m); // there is some ingestion lag, so we account for this by stripping the last 2m
 //
-failureStats 
-| make-series Value=countif(ResultStatus != "Success") default=0 on TimeGenerated from timespanStart to timespanEnd step 1m
+failureStats
+| make-series Value=countif(ResultStatus != "Success") default=0 on TimeGenerated from _timespanStart to _timespanEnd step 1m
 | mv-expand TimeGenerated, Value
 | extend TimeGenerated = todatetime(TimeGenerated), Value=toreal(Value), MetricName="failureCount", ComponentName="Keyvault"
 | lookup kind = inner Thresholds on MetricName

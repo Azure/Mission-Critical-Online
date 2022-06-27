@@ -1,9 +1,10 @@
 parameters:
   workingDirectory: ''
+  displayName: 'Parse infrastructure Terraform outputs'
 
 steps:
 - task: PowerShell@2
-  displayName: 'Parse infrastructure Terraform outputs'
+  displayName: ${{ parameters.displayName }}
   inputs:
     targetType: inline
     script: |

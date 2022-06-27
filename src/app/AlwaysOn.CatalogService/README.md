@@ -80,7 +80,7 @@ public void ConfigureServices(IServiceCollection services)
 [ApiController]
 [ApiVersion("1.0")] // controller supports version 1.0
 [ApiVersion("2.0")] // controller supports also version 2.0
-[Route("{version:apiVersion}/[controller]")] // route for updated clients with version: /1.0/game/
+[Route("{version:apiVersion}/[controller]")] // route for updated clients with version: /1.0/catalogitem/
 ```
 
 We are using attributes to declare that this controller supports two versions: 1.0 and 2.0. All action methods will default to 1.0 unless specified otherwise. This is how versioning would be implemented on action methods:
@@ -107,7 +107,7 @@ public async Task<ActionResult<CatalogItem>> GetCatalogItemByIdAsyncV2(Guid item
 }
 ```
 
-- Providing version string in the URL is mandatory (e.g. `https://localhost:5000/1.0/catalogitem/` or `https://ao6bd5-global-fd.azurefd.net/api/1.0/catalogitem`).
+- Providing version string in the URL is mandatory (e.g. `https://localhost:5000/1.0/catalogitem/` or `https://ao6bd5-global-fd.azurefd.net/catalogservice/api/1.0/catalogitem`).
 - If version is `1.0`, the first implementation will get called (`GetCatalogItemByIdAsync`).
 - If version is `2.0`, the second implementation will get called (`GetCatalogItemByIdAsyncV2`).
 - If version `3.0` is specified on the controller, but no actions map to it, first implementation will be called.

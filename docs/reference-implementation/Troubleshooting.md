@@ -47,7 +47,7 @@ Sorry, we are currently experiencing high demand in this region, and cannot fulf
 
 **Description:** When deploying Cosmos DB with zone redundancy it can happen that a region and subscription combination can cause the deployment failure with the error message above. Re-running the pipeline or switching to another region most probably won't help.
 
-**Solution:** As a tactical solution, disable zone redundancy in the geolocation configuration. (`/src/infra/cosmosdb.tf` -> `dynamic "geo_location"` -> `"zone_redundant = false"`). Then *manually delete the failed Cosmos DB resource in the portal*. This will likely allow the deployment to succeed.
+**Solution:** As a tactical solution, disable zone redundancy in the geolocation configuration. (`/src/infra/workload/globalresources/cosmosdb.tf` -> `dynamic "geo_location"` -> `"zone_redundant = false"`). Then *manually delete the failed Cosmos DB resource in the portal*. This will likely allow the deployment to succeed.
 
 As disabling zone redundancy is not a recommended solution for a production deployment, you should open an Azure Support Ticket to request quota for zone-redundant deployments for Cosmos DB in your required regions.
 
@@ -68,6 +68,33 @@ Location: SwedenCentral, Current Limit: 100, Current Usage: 96, Additional Requi
 **Description:** Occurs when a deployment requires more cores than the current quota allows.
 
 **Solution:** Either reduce the number of cores used, request more quota for a given VM SKU size in a given region or switch to another region that provides the required quota. See [regional quota requests](https://docs.microsoft.com/azure/azure-supportability/regional-quota-requests) for more details.
+
+---
+
+**Error:**
+
+```console
+Error: deleting Front Door (Subscription: "xxxxx-8cbd-46f2-a146-yyyyyyyyyy"
+│ Resource Group Name: "xxxxx-global-rg"
+│ Front Door Name: "xxxxx-global-fd"): performing Delete: frontdoors.FrontDoorsClient#Delete: Failure sending request: StatusCode=0 -- Original Error: autorest/azure: Service returned an error. Status=<nil> Code="Conflict" Message="Cannot delete frontend endpoint \"xxxxx.e2e.example.com\" because it is still directly or indirectly (using \"afdverify\" prefix) CNAMEd to front door \"xxxxx-global-fd.azurefd.net\". Please remove the DNS CNAME records and try again."
+
+```
+
+**Description:** *This only happens when you are using custom domain names*. In order to protect customers from DNS-rebinding attacks, by default an Azure Front Door resource cannot be deleted while still a CNAME is pointing to it. However, because of the way Terraform tracks and handles dependencies, there is no direct way to circumvent this.
+
+**Solution:** You can disable the protection by running the following command towards your Azure subscription:
+
+```powershell
+az feature register --namespace Microsoft.Network --name BypassCnameCheckForCustomDomainDeletion
+
+# Then you can check the state of it by running:
+az feature list -o table --query "[?contains(name, 'Microsoft.Network/BypassCnameCheckForCustomDomainDeletion')].{Name:name,State:properties.state}"
+
+# To de-register the feature again, in case it is not needed/wanted anymore run:
+# az feature unregister --namespace Microsoft.Network --name BypassCnameCheckForCustomDomainDeletion
+```
+
+Once the feature has been registered (this can take a couple of minutes), deletion should work fine.
 
 ### Deploy Workload stage
 

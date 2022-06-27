@@ -1,4 +1,4 @@
-// This is the aggregate score for the whole website.
+// This is the aggregate score for the whole stamp.
 AddCommentUserFlowHealthScore()
 | union ListCatalogItemsUserFlowHealthScore()
 | union ShowStaticContentUserFlowHealthScore()
@@ -6,4 +6,4 @@ AddCommentUserFlowHealthScore()
 | summarize YellowScore = max(YellowScore), RedScore = max(RedScore) by bin(TimeGenerated, 2m)
 | extend HealthScore = 1 - (YellowScore * 0.25) - (RedScore * 0.5)
 | order by TimeGenerated desc
-| extend ComponentName = "Website", Dependencies = "AddCommentUserFlow,ShowStaticContentUserFlow,ListCatalogItemsUserFlow"
+| extend ComponentName = "Stamp", Dependencies = "AddCommentUserFlow,ShowStaticContentUserFlow,ListCatalogItemsUserFlow"

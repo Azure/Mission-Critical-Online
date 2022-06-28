@@ -56,13 +56,13 @@ Azure Mission-Critical uses different Kusto Query Language (KQL) queries to impl
 
 This approach separates the query logic from the visualization layer. It allows us to call these functions individually and use them either directly to retrieve data from Log Analytics or to visualize the results in Azure Dashboards, Azure Monitor Workbooks or 3rd-Party dashboarding solutions like Grafana.
 
-Here's an example - the `ClusterHealthStatus()` ([see the .kql file for details](/src/infra/monitoring/queries/stamp/ClusterHealthScore.kql)) query retrieves some key metrics per cluster and decides based on given thresholds if the status is "yellow" or "red":
+Here's an example - the `AksClusterHealthStatus()` ([see the .kql file for details](/src/infra/monitoring/queries/stamp/AksClusterHealthScore.kql)) query retrieves some key metrics per cluster and decides based on given thresholds if the status is "yellow" or "red":
 
 ![LogAnalytics Query](/docs/media/Monitoring3.png)
 
-This result provides a granular overview about the cluster's health status based on the given metrics and thresholds. To sum this up and to get a more high-level overview per cluster, `ClusterHealthScore()` can be used:
+This result provides a granular overview about the cluster's health status based on the given metrics and thresholds. To sum this up and to get a more high-level overview per cluster, `AksClusterHealthScore()` can be used:
 
-![LogAnalytics Query ClusterHealthScore](/docs/media/Monitoring4.png)
+![LogAnalytics Query AksClusterHealthScore](/docs/media/Monitoring4.png)
 
 ## Visualization
 

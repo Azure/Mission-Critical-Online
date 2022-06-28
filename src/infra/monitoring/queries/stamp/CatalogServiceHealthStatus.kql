@@ -1,4 +1,6 @@
-let _timespanStart = ago(1d); // Start time for the timespan
+let _maxAge = 2d; // Only include data from the last two days
+let _timespanStart = ago(_maxAge); // Start time for the timespan
+let _timespanEnd = now(-2m); // there is some ingestion lag, so we account for this by stripping the last 2m
 // For the timeframe, compare the averages to the following threshold values:
 let Thresholds=datatable(MetricName: string, YellowThreshold: double, RedThreshold: double) [
     // Failed requests. Anything non-200. We allow a few more than 0 for user-caused errors like 404s. 
@@ -7,20 +9,18 @@ let Thresholds=datatable(MetricName: string, YellowThreshold: double, RedThresho
     "avgProcessingTime", 150, 500
     ];
 //
-let timespanStart= _timespanStart; //todatetime(format_datetime( todatetime(toscalar(AppRequests| summarize min(TimeGenerated))), 'yyyy-MM-dd HH:ss')); // We need to remove any sub-second part from the start, otherwise the series are not to the seconds
-let timespanEnd = now(-2m); // there is some ingestion lag, so we account for this by stripping the last 2m
 // Calculate average processing time for each request
 let avgProcessingTime = AppRequests
 | where AppRoleName startswith "CatalogService"
 | where OperationName != "GET /health/liveness" // Since the liveness requests don't do any processing, including them would skew the results. 
-| make-series Value = avg(DurationMs)  default=0 on TimeGenerated from timespanStart to timespanEnd step 1m
+| make-series Value = avg(DurationMs) default=0 on TimeGenerated from _timespanStart to _timespanEnd step 1m
 | mv-expand TimeGenerated, Value
 | extend TimeGenerated = todatetime(TimeGenerated), Value=toreal(Value), MetricName= 'avgProcessingTime';
 // Calculate failed requests
 let failureCount = AppRequests
 | where AppRoleName startswith "CatalogService"
 | where OperationName != "GET /health/liveness" // Since the liveness requests don't do any processing, including them would skew the results. 
-| make-series Value=countif(Success != true) default=0 on TimeGenerated from timespanStart to timespanEnd step 1m
+| make-series Value=countif(Success != true) default=0 on TimeGenerated from _timespanStart to _timespanEnd step 1m
 | mv-expand TimeGenerated, Value
 | extend TimeGenerated = todatetime(TimeGenerated), Value=toreal(Value), MetricName= 'failureCount';
 // Union all together and join with the thresholds

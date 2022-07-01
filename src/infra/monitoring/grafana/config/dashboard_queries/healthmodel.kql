@@ -1,4 +1,4 @@
-WebsiteHealthScore
+StampHealthScore
 | union AddCommentUserFlowHealthScore
 | union ListCatalogItemsUserFlowHealthScore
 | union ShowStaticContentUserFlowHealthScore
@@ -8,6 +8,6 @@ WebsiteHealthScore
 | union EventHubHealthScore
 | union CheckpointStorageHealthScore
 | union BackgroundProcessorHealthScore
-| union ClusterHealthScore
+| union AksClusterHealthScore
 | summarize arg_max(TimeGenerated, *) by ComponentName,Dependencies
 | project-away TimeGenerated

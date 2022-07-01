@@ -21,13 +21,13 @@ spec:
   ingressClassName: nginx
   tls:
   - hosts:
-    - {{ .Values.workload.domainname }}
+    - {{ .Values.workload.domainname | quote }}
     secretName: {{ .Values.workload.tlsSecret }} # shouldn't be changed as this might be used by other services
   rules:
-  - host: {{ .Values.workload.domainname }}
+  - host: {{ .Values.workload.domainname | quote }}
     http:
       paths:
-      - path: /healthservice/
+      - path: /healthservice/ # The path prefix MUST NOT overlap with any other ingress definition of another exposed service
         pathType: Prefix
         backend:
           service:

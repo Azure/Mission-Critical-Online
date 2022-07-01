@@ -81,9 +81,9 @@ az devops configure --defaults organization=https://dev.azure.com/<your-org> pro
 
 Azure DevOps Repos would allow us to import the Azure Mission-Critical reference implementation GitHub repository into Azure DevOps as well. For this guide we have decided to generate our own repository based on the template on GitHub and use it from there.
 
-Go to the root of the Azure Mission-Critical reference implementation repository on GitHub and click on "Use this template" in the top right corner:
+Sign into GitHub and go to the root of the Azure Mission-Critical reference implementation repository on GitHub and click on "Use this template" in the top right corner':
 
-![Use GitHub Repo template](/docs/media/AlwaysOnGettingStarted2Fork.png)
+![Use GitHub Repo template](/docs/media/GettingStarted-template.png)
 
 This will let you create a repository in your own account or organization. This is needed to allow you to make modification to our code within your own repository.
 
@@ -181,7 +181,7 @@ xxx-xxxxxxx-xxxxxxx-xxxx
 # Verify that this is indeed the subscription you want to target. Otherwise you can switch the scope using:
 # az account set --subscription <name>
 
-# Make sure to change the name to a unique one within your tenant
+# Make sure to change the name to a unique one within your tenant. You must have Azure CLI version 2.25.0 or later.
 az ad sp create-for-rbac --scopes "/subscriptions/xxx-xxxxxxx-xxxxxxx-xxxx" --role "Owner" --name <CHANGE-MY-NAME-alwayson-deployment-sp>
 
 # Output:

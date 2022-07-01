@@ -1,6 +1,6 @@
 # Frequently Asked Questions (FAQ)
 
-In this section we document all the FAQ related to this reference implementation. There is another FAQ section covering general and non reference related questions in the [Azure Mission-Critical repo](https://github.com/Azure/Mission-Critical/blob/docs/main/docs/FAQ.md) (➡️ `Azure/Mission-Critical`).
+In this section we document all the FAQ related to this reference implementation.
 
 ## General
 

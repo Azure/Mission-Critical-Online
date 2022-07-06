@@ -64,6 +64,7 @@ steps:
 
       # loop through stamps from pipeline artifact json
       foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
+        echo "**************************** REGION: $($stamp.location) ****************************"
 
         # Build API backend config object for Front Door
         $clusterFqdn = $stamp.aks_cluster_ingress_fqdn

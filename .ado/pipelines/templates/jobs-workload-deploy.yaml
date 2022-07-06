@@ -29,6 +29,7 @@ jobs: # using jobs so they each run in parallel
 
           # loop through stamps from pipeline artifact json
           foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
+            echo "**************************** REGION: $($stamp.location) ****************************"
 
             $aksClusterName = $stamp.aks_cluster_name
             $aksClusterResourceGroup = $stamp.resource_group_name
@@ -117,6 +118,7 @@ jobs: # using jobs so they each run in parallel
 
           # loop through stamps from pipeline artifact json
           foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
+            echo "**************************** REGION: $($stamp.location) ****************************"
 
             $aksClusterName = $stamp.aks_cluster_name
             $aksClusterResourceGroup = $stamp.resource_group_name
@@ -174,6 +176,7 @@ jobs: # using jobs so they each run in parallel
 
           # loop through stamps from pipeline artifact json
           foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
+            echo "**************************** REGION: $($stamp.location) ****************************"
 
             $aksClusterName = $stamp.aks_cluster_name
             $aksClusterResourceGroup = $stamp.resource_group_name
@@ -220,6 +223,7 @@ jobs: # using jobs so they each run in parallel
 
           # loop through stamps from pipeline artifact json
           foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
+            echo "**************************** REGION: $($stamp.location) ****************************"
 
             echo "*** Uploading UI app to storage account $($stamp.public_storage_account_name) in stamp $($stamp.location)"
 

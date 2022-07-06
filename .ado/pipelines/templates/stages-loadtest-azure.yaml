@@ -113,6 +113,8 @@ stages:
 
             # loop through stamps from pipeline artifact json
             foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
+              echo "**************************** REGION: $($stamp.location) ****************************"
+
               ./src/testing/loadtest-azure/scripts/appcomponents-add-to-loadtest.ps1 `
                 -loadTestId "$(loadTestId)" `
                 -apiEndpoint "$(azureLoadTestDataPlaneURI)" `

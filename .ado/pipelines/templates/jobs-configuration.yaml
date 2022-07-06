@@ -26,6 +26,7 @@ jobs:
 
         # loop through stamps from pipeline artifact json
         foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
+          echo "**************************** REGION: $($stamp.location) ****************************"
 
           echo "*** Configuring stamp in region $($stamp.location)"
           $aksClusterName = $stamp.aks_cluster_name
@@ -68,6 +69,7 @@ jobs:
 
         # loop through stamps from pipeline artifact json
         foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
+          echo "**************************** REGION: $($stamp.location) ****************************"
 
           $aksClusterName = $stamp.aks_cluster_name
           $aksClusterResourceGroup = $stamp.resource_group_name
@@ -95,6 +97,7 @@ jobs:
 
         # loop through stamps from pipeline artifact json
         foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
+          echo "**************************** REGION: $($stamp.location) ****************************"
 
           $aksClusterName = $stamp.aks_cluster_name
           $aksClusterResourceGroup = $stamp.resource_group_name
@@ -140,6 +143,7 @@ jobs:
 
         # loop through stamps from pipeline artifact json
         foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
+          echo "**************************** REGION: $($stamp.location) ****************************"
 
           $aksClusterName = $stamp.aks_cluster_name
           $aksClusterResourceGroup = $stamp.resource_group_name

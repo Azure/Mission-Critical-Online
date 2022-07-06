@@ -12,7 +12,7 @@ if($chaosRpStatus -ne "Registered")
 }
 
 # load json data from downloaded pipeline artifact json
-$releaseUnitInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputReleaseUnitInfra/*.json | Get-Content | ConvertFrom-JSON
+$releaseUnitInfraDeployOutput = Get-ChildItem $env:PIPELINE_WORKSPACE/terraformOutputReleaseUnitInfra/*.json | Get-Content | ConvertFrom-JSON
 
 $ChaosStudioApiVersion = "2021-09-15-preview"
 

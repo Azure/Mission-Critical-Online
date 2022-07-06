@@ -105,7 +105,6 @@ When you are later ready to also deploy further environments such as INT (integr
 - `/.ado/pipelines/azure-release-int.yaml`
 - `/.ado/pipelines/azure-release-prod.yaml`
 
-#### Import via Azure DevOps CLI
 
 Using the `az devops` / `az pipelines` CLI:
 
@@ -177,9 +176,7 @@ Our Azure Mission-Critical reference implementation knows three different enviro
 
 > If you only created one Service Principal above, you only need to create one Service Connection for now.
 
-These service connections can be created in the Azure DevOps Portal or via the `az devops` CLI. Create them using either one of these two methods. Make sure that you specify the right credentials for the **service principal created earlier**.
-
-#### Use Azure DevOps CLI
+When you create the service connections, make sure that you specify the right credentials for the **service principal created earlier**.
 
 ```powershell
 # set the org/project context

@@ -5,8 +5,7 @@ param(
 # First we need to check if the Resource Provider was registered
 $chaosRpStatus = az provider show -n Microsoft.Chaos --query "registrationState" -o tsv
 
-if($chaosRpStatus -ne "Registered")
-{
+if ($chaosRpStatus -ne "Registered") {
     # Not registering RP directly here since it will take too long and thus break the synchorization with Load Test
     throw "*** Resource Provider Microsoft.Chaos not yet registered. Current status: $chaosRpStatus Please run 'az provider register -n Microsoft.Chaos' first and then run the pipeline again"
 }
@@ -34,21 +33,18 @@ Write-Output "*** Creating Chaos Target sub-resource: $targetResourceId "
 # Create chaos target as AKS sub-resource
 $url = "https://management.azure.com$($targetResourceId)?api-version=$($ChaosStudioApiVersion)"
 az rest --method put --url $url --body '{\"properties\":{}}'
-if($LastExitCode -ne 0)
-{
+if ($LastExitCode -ne 0) {
     throw "*** Error on chaos target creation against $targetResourceId" # This can, for instance, happen if the region is not supported by Chaos Studio
 }
 
 $targetCreationResult # print for debug
 
 # Enable all capabilities on the cluster
-foreach($capability in $capabilities)
-{
+foreach ($capability in $capabilities) {
     Write-Output "*** Enabling capability $capability on sub-resource: $targetResourceId "
     $url = "https://management.azure.com$($targetResourceId)/capabilities/$($capability)?api-version=$($ChaosStudioApiVersion)"
     az rest --method put --url $url --body '{}'
-    if($LastExitCode -ne 0)
-    {
+    if ($LastExitCode -ne 0) {
         throw "*** Error on chaos capability '$capability' against $targetResourceId"
     }
 }

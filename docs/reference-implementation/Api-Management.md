@@ -60,7 +60,7 @@ Converting the ingress controller service to a private load balancer is done via
 
 ### Change tests and import task to point to APIM
 
-Using the new output variables from the Terraform definition, we can now change all the tests and import tasks to point to the new APIM service. For instance in the [jobs-init-sampledata.yaml](/.ado/pipelines/templates/jobs-init-sampledata.yaml) as well as in [SmokeTests.ps1](/.ado/pipelines/scripts/SmokeTest.ps1).
+Using the new output variables from the Terraform definition, we can now change all the tests and import tasks to point to the new APIM service. For instance in the [jobs-init-sampledata.yaml](/.ado/pipelines/templates/jobs-init-sampledata.yaml) as well as in [SmokeTests.ps1](/.ado/pipelines/scripts/Run-SmokeTests.ps1).
 
 ### Change Azure Front Door backend to point to APIM
 

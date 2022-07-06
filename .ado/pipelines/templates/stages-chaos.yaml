@@ -110,7 +110,7 @@ stages:
             azureSubscription: $(azureServiceConnection)
             scriptType: pscore
             scriptLocation: scriptPath
-            scriptPath: '$(System.DefaultWorkingDirectory)/.ado/scripts/Invoke-ChaosMeshExperiment.ps1'
+            scriptPath: '$(System.DefaultWorkingDirectory)/.ado/pipelines/scripts/Invoke-ChaosMeshExperiment.ps1'
             arguments:
               -ExperimentName "${{ parameters.customPrefix }}-PodFailure"
               -ExperimentJsonPath "$(System.DefaultWorkingDirectory)/src/testing/chaos-testing/experiment-json/aks_pod_failure.json"
@@ -124,7 +124,7 @@ stages:
             azureSubscription: $(azureServiceConnection)
             scriptType: pscore
             scriptLocation: scriptPath
-            scriptPath: '$(System.DefaultWorkingDirectory)/.ado/scripts/Invoke-ChaosMeshExperiment.ps1'
+            scriptPath: '$(System.DefaultWorkingDirectory)/.ado/pipelines/scripts/Invoke-ChaosMeshExperiment.ps1'
             arguments:
               -ExperimentName "${{ parameters.customPrefix }}-CpuStress"
               -ExperimentJsonPath "$(System.DefaultWorkingDirectory)/src/testing/chaos-testing/experiment-json/aks_cpu_stress.json"
@@ -138,7 +138,7 @@ stages:
             azureSubscription: $(azureServiceConnection)
             scriptType: pscore
             scriptLocation: scriptPath
-            scriptPath: '$(System.DefaultWorkingDirectory)/.ado/scripts/Invoke-ChaosMeshExperiment.ps1'
+            scriptPath: '$(System.DefaultWorkingDirectory)/.ado/pipelines/scripts/Invoke-ChaosMeshExperiment.ps1'
             arguments:
               -ExperimentName "${{ parameters.customPrefix }}-MemoryStress"
               -ExperimentJsonPath "$(System.DefaultWorkingDirectory)/src/testing/chaos-testing/experiment-json/aks_memory_stress.json"

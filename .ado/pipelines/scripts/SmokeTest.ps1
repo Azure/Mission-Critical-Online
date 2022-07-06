@@ -7,7 +7,7 @@ param(
 # -----------
 # Load helper functions.
 # -----------
-. $env:SYSTEM_DEFAULTWORKINGDIRECTORY/.ado/scripts/Invoke-WebRequestWithRetry.ps1
+. $env:SYSTEM_DEFAULTWORKINGDIRECTORY/.ado/pipelines/scripts/Invoke-WebRequestWithRetry.ps1
 
 # -----------
 # Execute smoke tests.

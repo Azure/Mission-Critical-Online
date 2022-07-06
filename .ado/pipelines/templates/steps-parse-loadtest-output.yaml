@@ -13,7 +13,7 @@ steps:
     script: |
 
           # load compare-locuststats powershell script
-          . ./.ado/scripts/Compare-LocustStats.ps1
+          . ./.ado/pipelines/scripts/Compare-LocustStats.ps1
 
           $baselinePath = "./.ado/pipelines/config/loadtest-baseline.json"
           echo "*** Using load test baseline $baselinePath"

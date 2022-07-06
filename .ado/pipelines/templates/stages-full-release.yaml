@@ -71,8 +71,8 @@ stages:
                 # We need the az CLI Front Door extension
                 az extension add --name front-door
 
-                $rgName = "$(prefix)$(globalSuffix)-global-rg"
-                $fdName = "$(prefix)$(globalSuffix)-global-fd"
+                $rgName = "$(prefix)$(globalResourceSuffix)-global-rg"
+                $fdName = "$(prefix)$(globalResourceSuffix)-global-fd"
 
                 # check if Front Door exists
                 $frontDoor = $(az network front-door list --query "[?name=='$fdName']" -o tsv)
@@ -135,7 +135,7 @@ stages:
             parameters:
               jobName:                    'GlobalInfra'
               terraformWorkingDirectory:  '$(workingDirectory)/globalresources'
-              customPrefix:               '$(prefix)$(globalSuffix)'      # custom resource prefix
+              customPrefix:               '$(prefix)$(globalResourceSuffix)'      # custom resource prefix
               customAttributes:           '-var=branch="$(sourceBranch)"
                                           -var=queued_by="$(Build.QueuedBy)"
                                           -var=contact_email="$(contactEmail)"
@@ -197,7 +197,7 @@ stages:
   jobs:
   - template: jobs-configuration.yaml
     parameters:
-      runChaosTesting: ${{ parameters.runChaosTesting }}
+      prepareForChaosTesting: ${{ parameters.runChaosTesting }}
 
 - stage: testcode
   displayName: 'Test Application Code'
@@ -493,14 +493,14 @@ stages:
                       echo "*** No load test resources found in $loadtestRg"
                     }
 
-              # Initialize Terraform for destroy
+              # Run Terraform for destroy for the global resources of this E2E env
               - template: steps-terraform-destroy.yaml
                 parameters:
                   terraformStorageAccountName:        '$(terraformStorageAccount)'
                   terraformStorageResourceGroupName:  '$(terraformResourceGroup)'
                   terraformStateFilename:             '$(terraformStateFileGlobal)'
                   terraformWorkingDirectory:          '$(workingDirectory)/globalresources'
-                  customAttributes:           '-var=prefix="$(prefix)$(globalSuffix)"
+                  customAttributes:           '-var=prefix="$(prefix)$(globalResourceSuffix)"
                                                -var=environment="${{ parameters.environment }}"
                                                -var=branch="$(sourceBranch)"
                                                -var=queued_by="$(Build.QueuedBy)"

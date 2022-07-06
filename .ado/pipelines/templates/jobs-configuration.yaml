@@ -1,5 +1,5 @@
 parameters:
-  - name: runChaosTesting
+  - name: prepareForChaosTesting
     type: boolean
     default: true
 
@@ -47,11 +47,11 @@ jobs:
 
           # Deploy helm chart for ingress-nginx using a custom load balancer ip and resource group
           helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx `
-                --namespace $ingressNamespace --create-namespace `
-                --values src/config/ingress-nginx/values.helm.yaml `
-                --set controller.service.loadBalancerIP="$aksIngressIp" `
-                --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-resource-group"="$aksClusterResourceGroup" `
-                --version "$(ingressNginxVersion)"
+                       --namespace $ingressNamespace --create-namespace `
+                       --values src/config/ingress-nginx/values.helm.yaml `
+                       --set controller.service.loadBalancerIP="$aksIngressIp" `
+                       --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-resource-group"="$aksClusterResourceGroup" `
+                       --version "$(ingressNginxVersion)"
         }
 
   - task: AzureCLI@2
@@ -161,14 +161,14 @@ jobs:
           echo "*** Retrieved Kubelet clientId $kubeletIdentityClientId for cluster $clusterName"
           echo "*** Configuring CSI secret driver on $aksClusterName via helm"
           helm upgrade --install csi-secrets-driver src/config/csi-secrets-driver/chart/csi-secrets-driver-config `
-                        --namespace "$(workloadNamespace)" --create-namespace `
-                        --set azure.tenantId=$tenantId `
-                        --set azure.keyVaultName="$keyVaultName" `
-                        --set azure.managedIdentityClientId="$kubeletIdentityClientId" `
-                        --set kvSecrets="{$allSecretNames}"
+                       --namespace "$(workloadNamespace)" --create-namespace `
+                       --set azure.tenantId=$tenantId `
+                       --set azure.keyVaultName="$keyVaultName" `
+                       --set azure.managedIdentityClientId="$kubeletIdentityClientId" `
+                       --set kvSecrets="{$allSecretNames}"
         }
 
-  - ${{ if eq(parameters.runChaosTesting, 'true') }}: # If chaos experiments are executed, we need to prepare one stamps AKS cluster by installing Chaos Mesh
+  - ${{ if eq(parameters.prepareForChaosTesting, 'true') }}: # If chaos experiments are executed, we need to prepare one stamps AKS cluster by installing Chaos Mesh
     - task: AzureCLI@2
       displayName: "Install Chaos Mesh $(chaosMeshVersion) on AKS cluster"
       retryCountOnTaskFailure: 1
@@ -202,7 +202,7 @@ jobs:
 
           # Install Chaos Mesh
           helm upgrade --install chaos-mesh chaos-mesh/chaos-mesh `
-                        --namespace=$chaosTestingNamespace --create-namespace `
-                        --version=$(chaosMeshVersion) `
-                        --set chaosDaemon.runtime=containerd `
-                        --set chaosDaemon.socketPath=/run/containerd/containerd.sock
+                       --namespace=$chaosTestingNamespace --create-namespace `
+                       --version=$(chaosMeshVersion) `
+                       --set chaosDaemon.runtime=containerd `
+                       --set chaosDaemon.socketPath=/run/containerd/containerd.sock

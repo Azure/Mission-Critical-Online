@@ -152,7 +152,7 @@ steps:
   parameters:
     jobName:                    'GlobalInfra'
     terraformWorkingDirectory:  '$(workingDirectory)/globalresources'
-    customPrefix:               '$(prefix)$(globalSuffix)'      # custom resource prefix
+    customPrefix:               '$(prefix)$(globalResourceSuffix)'      # custom resource prefix
     customAttributes: '-var=branch="$(sourceBranch)"
                        -var=queued_by="$(Build.QueuedBy)"
                        -var=contact_email="$(contactEmail)"

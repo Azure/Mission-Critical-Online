@@ -51,9 +51,11 @@ spec:
             mountPath: "/tmp"
           - name: var-log-volume
             mountPath: "/var/log"
+      nodeSelector:
+        role: workload
       tolerations:
       - key: "workload"
-        operator: "Eqal"
+        operator: "Equal"
         value: "true"
         effect: "NoSchedule"
       volumes:

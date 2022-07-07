@@ -71,10 +71,10 @@ resource "azurerm_kubernetes_cluster" "stamp" {
 }
 
 resource "azurerm_kubernetes_cluster_node_pool" "workload" {
-  name                  = "workloadpool" # Name of the workload node pool
+  name                  = "workloadpool"
   kubernetes_cluster_id = azurerm_kubernetes_cluster.stamp.id
   vm_size               = var.aks_user_node_pool_sku_size
-  enable_auto_scaling   = true # Enable autoscaling
+  enable_auto_scaling   = true
   min_count             = var.aks_user_node_pool_autoscale_minimum
   max_count             = var.aks_user_node_pool_autoscale_maximum
   vnet_subnet_id        = azurerm_subnet.kubernetes.id
@@ -82,7 +82,7 @@ resource "azurerm_kubernetes_cluster_node_pool" "workload" {
   orchestrator_version  = var.aks_kubernetes_version
 
   mode  = "User"    # Define this node pool as a "user" aka workload node pool
-  zones = [1, 2, 3] # Distribute user node pool nodes across all availability zones
+  zones = [1, 2, 3]
 
   upgrade_settings {
     max_surge = "33%"

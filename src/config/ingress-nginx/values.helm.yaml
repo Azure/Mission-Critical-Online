@@ -22,7 +22,7 @@ controller:
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/port: "10254"
-  tolerations:
+  tolerations: # Schedule the ingress controller on our user node pool
   - key: "workload"
     operator: "Equal"
     value: "true"

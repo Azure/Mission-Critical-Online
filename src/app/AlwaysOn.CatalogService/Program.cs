@@ -43,7 +43,7 @@ namespace AlwaysOn.CatalogService
                                     .Enrich.FromLogContext()
                                     .WriteTo.Console(
                                             outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} {Level:u3}] {Message:lj} {Properties:j}{NewLine}{Exception}")
-                                    .WriteTo.ApplicationInsights(builtConfig[SysConfiguration.ApplicationInsightsInstrumentationKeyName], TelemetryConverter.Traces)
+                                    .WriteTo.ApplicationInsights(builtConfig[SysConfiguration.ApplicationInsightsConnStringKeyName], TelemetryConverter.Traces)
                                     .CreateLogger();
             })
             .UseSerilog()

@@ -102,18 +102,36 @@ variable "aks_kubernetes_version" {
 }
 
 variable "aks_system_node_pool_sku_size" {
-  description = "VM SKU of the AKS worker nodes"
+  description = "VM SKU of the AKS system nodes"
   type        = string
-  default     = "Standard_F8s_v2"
+  default     = "Standard_D2s_v3"
 }
 
 variable "aks_system_node_pool_autoscale_minimum" {
-  description = "Minimum number of AKS worker nodes for auto-scale settings"
+  description = "Minimum number of AKS system nodes for auto-scale settings"
   type        = number
   default     = 3
 }
 
 variable "aks_system_node_pool_autoscale_maximum" {
+  description = "Maximum number of AKS system nodes for auto-scale settings"
+  type        = number
+  default     = 9
+}
+
+variable "aks_user_node_pool_sku_size" {
+  description = "VM SKU of the AKS worker nodes"
+  type        = string
+  default     = "Standard_F8s_v2"
+}
+
+variable "aks_user_node_pool_autoscale_minimum" {
+  description = "Minimum number of AKS worker nodes for auto-scale settings"
+  type        = number
+  default     = 3
+}
+
+variable "aks_user_node_pool_autoscale_maximum" {
   description = "Maximum number of AKS worker nodes for auto-scale settings"
   type        = number
   default     = 9

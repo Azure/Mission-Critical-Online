@@ -71,7 +71,7 @@ resource "azurerm_kubernetes_cluster" "stamp" {
 }
 
 resource "azurerm_kubernetes_cluster_node_pool" "workload" {
-  name                  = "workload1" # Name of the workload node pool
+  name                  = "workloadpool" # Name of the workload node pool
   kubernetes_cluster_id = azurerm_kubernetes_cluster.stamp.id
   vm_size               = var.aks_user_node_pool_sku_size
   enable_auto_scaling   = true # Enable autoscaling

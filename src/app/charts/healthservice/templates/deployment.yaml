@@ -51,6 +51,11 @@ spec:
             mountPath: "/tmp"
           - name: var-log-volume
             mountPath: "/var/log"
+      tolerations:
+      - key: "workload"
+        operator: "Eqal"
+        value: "true"
+        effect: "NoSchedule"
       volumes:
         - name: secrets-store-inline
           csi:

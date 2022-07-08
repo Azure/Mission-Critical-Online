@@ -1,9 +1,11 @@
 # Variable file for PROD env
 vnet_address_space = "10.1.0.0/16" # /16 allows for up to 16 stamps
 
+aks_system_node_pool_sku_size          = "Standard_D2s_v3" # Adjust as needed for your workload
 aks_system_node_pool_autoscale_minimum = 3
 aks_system_node_pool_autoscale_maximum = 6
 
+aks_user_node_pool_sku_size          = "Standard_F8s_v2" # Adjust as needed for your workload
 aks_user_node_pool_autoscale_minimum = 3
 aks_user_node_pool_autoscale_maximum = 12
 

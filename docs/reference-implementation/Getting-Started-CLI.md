@@ -105,7 +105,6 @@ When you are later ready to also deploy further environments such as INT (integr
 - `/.ado/pipelines/azure-release-int.yaml`
 - `/.ado/pipelines/azure-release-prod.yaml`
 
-
 Using the `az devops` / `az pipelines` CLI:
 
 > Note: If you are using Azure DevOps Repos instead of GitHub, change `--repository-type github` to `--repository-type tfsgit` in the command below. Also, if your branch is not called `main` but, for example, `master` change this accordingly.

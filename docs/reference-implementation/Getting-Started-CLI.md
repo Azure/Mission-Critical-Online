@@ -2,7 +2,7 @@
 
 This step-by-step guide describes the process to deploy Azure Mission-Critical in your own environment from the beginning. At the end of this guide you will have an Azure DevOps organization and project set up to deploy a copy of the Azure Mission-Critical reference implementation into an Azure Subscription.
 
-**This guide describes the steps to get started using the (Azure DevOps) CLI only. To create the set up through the Portal (UI) follow [this guide](./Getting-Started.md) instead.**
+**This guide describes the steps to get started using the Azure CLI only. To create the set up through the Portal (UI) follow [this guide](./Getting-Started.md) instead.**
 
 ## How to deploy?
 
@@ -31,8 +31,8 @@ The following must be installed on the client machine used to deploy Azure Missi
 
 The process to deploy Azure Mission-Critical is comprised of the following steps:
 
-1) Create an [Azure DevOps organization and project](#create-a-new-azure-devops-project)
-1) Generate your own repository based on the [Azure Mission-Critical GitHub template](https://github.com/Azure/Mission-Critical-Online/generate) repository
+1) Create an [Azure DevOps organization and project](#1-create-a-new-azure-devops-organization-and-project)
+1) Generate your own repository based on the Azure Mission-Critical [GitHub template](#2-generate-your-own-repository-based-on-the-azure-mission-critical-github-template) repository
 1) Import [deployment pipelines](#3-import-deployment-pipelines)
 1) Create [Service Principals](#4-create-azure-service-principal) for each individual Azure subscription
 1) Create [Service Connections](#5-create-azure-service-connections) in Azure DevOps
@@ -80,7 +80,7 @@ az devops configure --defaults organization=https://dev.azure.com/<your-org> pro
 
 Azure DevOps Repos would allow us to import the Azure Mission-Critical reference implementation GitHub repository into Azure DevOps as well. For this guide we have decided to generate our own repository based on the template on GitHub and use it from there.
 
-Sign into GitHub and go to the root of the Azure Mission-Critical reference implementation repository on GitHub and click on "Use this template" in the top right corner':
+Sign into GitHub and go to the root of the Azure Mission-Critical reference implementation repository on GitHub and click on [Use this template](https://github.com/Azure/Mission-Critical-Online/generate) in the top right corner':
 
 ![Use GitHub Repo template](/docs/media/GettingStarted-template.png)
 

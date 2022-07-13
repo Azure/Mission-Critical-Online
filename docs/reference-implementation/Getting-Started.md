@@ -21,9 +21,7 @@ The Azure Mission-Critical reference implementation gets deployed into an Azure 
 - Either your user needs to have **Owner** or **User Access Administrator (UAA)** permission and you have **the right to create new Service Principals** on your Azure AD tenant, or
 - You need to have a pre-provisioned Service Principal with Owner permissions on the subscription
 
-The following must be installed on the client machine used to deploy Azure Mission-Critical reference implementation:
-
-- [Azure CLI](https://docs.microsoft.com/cli/azure/service-page/azure%20cli?view=azure-cli-latest)
+If you will create the Service Principal yourself, it is recommended to have either [Azure CLI](https://docs.microsoft.com/cli/azure/service-page/azure%20cli?view=azure-cli-latest) installed on your machine or have access to it through the [Azure Cloud Shell](https://docs.microsoft.com/azure/cloud-shell/).
 
 ## Overview
 

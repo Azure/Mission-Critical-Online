@@ -52,7 +52,7 @@ To deploy the Azure Mission-Critical reference implementation, you need to creat
 
 #### Create a new Azure DevOps project
 
-When using Azure DevOps CLI, make sure that the [Azure DevOps CLI](https://docs.microsoft.com/azure/devops/cli/?view=azure-devops) is configured to use the Azure DevOps organization that was created in the previous task.
+Make sure that [Azure DevOps CLI](https://docs.microsoft.com/azure/devops/cli/?view=azure-devops) is configured to use the Azure DevOps organization that was created in the previous task.
 
 ```powershell
 $env:AZURE_DEVOPS_EXT_PAT="<azure-devops-personal-access-token>"

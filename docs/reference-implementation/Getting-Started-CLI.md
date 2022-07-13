@@ -262,7 +262,7 @@ You can now go to the Azure Portal and check the provisioned resources. In the R
 
 We can now browse to the demo app website. Fetch the URL from the Front Door resource:
 
-1) Find the "Global Resource" group, e.g. `<myprefix>123-global-fd`
+1) Find the "Global Resource" group (e.g. `<myprefix>123-global-fd`)
 1) Click on the Front Door resource (e.g. `<myprefix>123-global-fd`)
 1) Click on the "Frontend host" link
 ![Frontend host](/docs/media/frontdoor-resource-hostlink.png)

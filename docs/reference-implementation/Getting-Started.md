@@ -2,7 +2,7 @@
 
 This step-by-step guide describes the process to deploy Azure Mission-Critical in your own environment from the beginning. At the end of this guide you will have an Azure DevOps organization and project set up to deploy a copy of the Azure Mission-Critical reference implementation into an Azure Subscription.
 
-**This guide describes the steps to get started using the Azure DevOps Portal (UI) only. To create the set up through the Azure DevOps CLI follow [this guide](./Getting-Started-CLI.md) instead.**
+**This guide describes the steps to get started using the Azure DevOps Portal (UI) only. To create the set up through the Azure CLI only follow [this guide](./Getting-Started-CLI.md) instead.**
 
 ## How to deploy?
 

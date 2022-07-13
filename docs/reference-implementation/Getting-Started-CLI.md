@@ -80,7 +80,7 @@ az devops configure --defaults organization=https://dev.azure.com/<your-org> pro
 
 Azure DevOps Repos would allow us to import the Azure Mission-Critical reference implementation GitHub repository into Azure DevOps as well. For this guide we have decided to generate our own repository based on the template on GitHub and use it from there.
 
-Sign into GitHub and go to the root of the Azure Mission-Critical reference implementation repository on GitHub and click on [Use this template](https://github.com/Azure/Mission-Critical-Online/generate) in the top right corner':
+Sign into GitHub and go to the root of the Azure Mission-Critical reference implementation repository on GitHub and click on [Use this template](https://github.com/Azure/Mission-Critical-Online/generate) in the top right corner:
 
 ![Use GitHub Repo template](/docs/media/GettingStarted-template.png)
 

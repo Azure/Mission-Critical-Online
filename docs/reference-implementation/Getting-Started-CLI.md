@@ -1,8 +1,8 @@
-# Getting started
+# Getting started using CLI
 
 This step-by-step guide describes the process to deploy Azure Mission-Critical in your own environment from the beginning. At the end of this guide you will have an Azure DevOps organization and project set up to deploy a copy of the Azure Mission-Critical reference implementation into an Azure Subscription.
 
-**This guide describes the steps to get started using the Azure DevOps Portal (UI) only. To create the set up through the Azure CLI only follow [this guide](./Getting-Started-CLI.md) instead.**
+**This guide describes the steps to get started using the Azure CLI only. To create the set up through the Portal (UI) follow [this guide](./Getting-Started.md) instead.**
 
 ## How to deploy?
 
@@ -21,7 +21,11 @@ The Azure Mission-Critical reference implementation gets deployed into an Azure 
 - Either your user needs to have **Owner** or **User Access Administrator (UAA)** permission and you have **the right to create new Service Principals** on your Azure AD tenant, or
 - You need to have a pre-provisioned Service Principal with Owner permissions on the subscription
 
-If you will create the Service Principal yourself, it is recommended to have either [Azure CLI](https://docs.microsoft.com/cli/azure/service-page/azure%20cli?view=azure-cli-latest) installed on your machine or have access to it through the [Azure Cloud Shell](https://docs.microsoft.com/azure/cloud-shell/).
+The following must be installed on the client machine used to deploy Azure Mission-Critical reference implementation using this guide:
+
+- [Azure CLI](https://docs.microsoft.com/cli/azure/service-page/azure%20cli?view=azure-cli-latest)
+- [Azure DevOps CLI](https://docs.microsoft.com/azure/devops/cli/?view=azure-devops)
+- [PowerShell](https://docs.microsoft.com/powershell/scripting/install/installing-powershell?view=powershell-7.1) (on Windows, Linux or macOS).
 
 ## Overview
 
@@ -44,23 +48,39 @@ To deploy the Azure Mission-Critical reference implementation, you need to creat
 
 - [Create an organization or project collection](https://docs.microsoft.com/azure/devops/organizations/accounts/create-organization?view=azure-devops)
 
+> **Important!** The [Azure DevOps CLI](https://docs.microsoft.com/azure/devops/cli/?view=azure-devops) is used for the subsequent steps. Please make sure that it is installed. The authentication is done via a Personal Access Token (PAT). This can be done via `az devops login` or by storing the PAT token in the `AZURE_DEVOPS_EXT_PAT` environment variable.  The token is expected to have at least the following scopes: `Agent Pools`: Read & manage, `Build`: Read & execute, `Project and Team`: Read, write, & manage, `Service Connections`: Read, query, & manage.
 
 #### Create a new Azure DevOps project
 
-Once you have created an Azure DevOps organization, you can create a new project in that organization. Go to the Azure DevOps portal, select the desired Organization and Click on "+ New Project" in the upper right hand corner.
+Make sure that [Azure DevOps CLI](https://docs.microsoft.com/azure/devops/cli/?view=azure-devops) is configured to use the Azure DevOps organization that was created in the previous task.
 
-Select a name and set the visibility. Both "Enterprise" or "Private" are fine for this walkthrough.
+```powershell
+$env:AZURE_DEVOPS_EXT_PAT="<azure-devops-personal-access-token>"
+
+# set the org context
+az devops configure --defaults organization=https://dev.azure.com/<your-org>
+
+# create a new project
+az devops project create --name <your-project>
+```
+
+> `AZURE_DEVOPS_EXT_PAT` is used for automation purposes. If not set, `az devops login` will prompt you for the Personal Access Token (PAT).
 
 This will result in a new project, `<your-project>` in your Azure DevOps organization:
 
 ![New ADO Project](/docs/media/AlwaysOnGettingStarted1.png)
 
+For all the subsequent tasks done via `az devops` or `az pipelines` the context can be set via:
+
+```powershell
+az devops configure --defaults organization=https://dev.azure.com/<your-org> project=<your-project>
+```
 
 ### 2) Generate your own repository based on the Azure Mission-Critical GitHub template
 
 Azure DevOps Repos would allow us to import the Azure Mission-Critical reference implementation GitHub repository into Azure DevOps as well. For this guide we have decided to generate our own repository based on the template on GitHub and use it from there.
 
-Sign into GitHub and go to the root of the Azure Mission-Critical reference implementation repository on GitHub and click on [Use this template](https://github.com/Azure/Mission-Critical-Online/generate) in the top right corner':
+Sign into GitHub and go to the root of the Azure Mission-Critical reference implementation repository on GitHub and click on [Use this template](https://github.com/Azure/Mission-Critical-Online/generate) in the top right corner:
 
 ![Use GitHub Repo template](/docs/media/GettingStarted-template.png)
 
@@ -69,6 +89,8 @@ This will let you create a repository in your own account or organization. This 
 ### 3) Import deployment pipelines
 
 Now that you have your own repo, let's start to import the pre-created pipelines into Azure Pipelines.
+
+> **You will need to import each Pipeline YAML file individually. But we will only import the E2E pipeline to start with.**
 
 The files to import are the YAML files stored in the `/.ado/pipelines/` directory. **Do not** import files from subdirectories, such as `/.ado/pipelines/config/` or `/.ado/pipelines/templates/`, or from other directories in the repo.
 
@@ -83,36 +105,29 @@ When you are later ready to also deploy further environments such as INT (integr
 - `/.ado/pipelines/azure-release-int.yaml`
 - `/.ado/pipelines/azure-release-prod.yaml`
 
-#### Import in Azure DevOps Portal
+Using the `az devops` / `az pipelines` CLI:
 
-> **Important!** The Import Pipeline UI will ask you to approve needed permissions, and will show you a list of all YAML files found within the repository. See note above about which YAML files to import.
+> Note: If you are using Azure DevOps Repos instead of GitHub, change `--repository-type github` to `--repository-type tfsgit` in the command below. Also, if your branch is not called `main` but, for example, `master` change this accordingly.
 
-1) Go to your Azure DevOps project
-1) Go to "Pipelines"
-1) Click "Create pipeline" or "New pipeline"
-1) Select "GitHub (YAML)"
+First, you need to create a PAT (personal access token) on GitHub to use with ADO. This is required to be able to import the pipelines. For this, create a new token [here](https://github.com/settings/tokens). Select `repo` as the scope.
 
-   > **Note!** If requested, grant the Azure Pipelines app permissions to access your GitHub repository.
+Save the token securely. Then, set it as an environment variable in your shell:
 
-   ![github authorization](/docs/media/github-ado-auth-1.png)
+```powershell
+$env:AZURE_DEVOPS_EXT_GITHUB_PAT=<your PAT>
+```
 
-1) Search for your repository in "Select a repository" (name of your template)
+Now your session is authenticated and the ADO CLI will be able to import the pipelines from GitHub.
 
-   > **Note!** If requested, grant the Azure Pipelines app permissions to access your GitHub repository.
+```powershell
+# set the org/project context
+az devops configure --defaults organization=https://dev.azure.com/<your-org> project=<your-project>
 
-1) Select "Existing Azure Pipelines YAML file" in the "Configure your pipeline" dialog and click "Continue"
-
-   > **Note!** In the "Select an existing YAML file" dialog, select the YAML file you want to import. For the e2e pipeline this is `/.ado/pipelines/azure-release-e2e.yaml`.
-
-   ![select yaml pipline](/docs/media/AlwaysOnGettingStarted2Pipeline_select_yaml_pipeline.png)
-
-1) Select "Save" (from the dropdown menu under the "Run" button) to save the pipeline
-
-   ![Run or save Pipeline](/docs/media/AlwaysOnGettingStarted2RunOrSavePipeline.png 'Run or save Pipeline')
-
-1) Rename the pipeline by clicking on the three dots and (optionally) move it into a folder (see below).  The UI usually doesn't immediately reflect the change, so just refresh the page.
-
-   ![Rename/move pipeline](/docs/media/AlwaysOnGettingStarted2PipelineRename.png 'Rename/move pipeline')
+# import a YAML pipeline
+az pipelines create --name "Azure.AlwaysOn E2E Release" --description "Azure.AlwaysOn E2E Release" `
+                    --branch main --repository https://github.com/<your-template>/ --repository-type github `
+                    --skip-first-run true --yaml-path "/.ado/pipelines/azure-release-e2e.yaml"
+```
 
 ### 4) Create Azure Service Principal
 
@@ -152,7 +167,7 @@ More information about the required permissions needed to deploy via Terraform c
 
 ### 5) Create Azure Service Connections
 
-Our Azure Mission-Critical reference implementation knows three different environments: prod, int and e2e. These three environments can be selected for each individual pipeline run and can refer to the same or different (recommended) Azure subscriptions for proper separation. These environments are represented by service connections in Azure DevOps:
+The Azure Mission-Critical reference implementation knows three different environments: prod, int and e2e. These three environments can be selected for each individual pipeline run and can refer to the same or different (recommended) Azure subscriptions for proper separation. These environments are represented by service connections in Azure DevOps:
 
 > **Important!** Since these connection names are used in pipelines, use them exactly as specified below. If you change the name of the service connection, you have to also change it in pipeline YAML.
 
@@ -164,16 +179,22 @@ Our Azure Mission-Critical reference implementation knows three different enviro
 
 When you create the service connections, make sure that you specify the right credentials for the **service principal created earlier**.
 
-#### Use Azure DevOps Portal
+```powershell
+# set the org/project context
+az devops configure --defaults organization=https://dev.azure.com/<your-org> project=<your-project>
 
-1) Go to "Project settings" in Azure DevOps Portal
-1) Go to "Service connections" in the "Pipelines" section
-1) Click on "New service connection"
-1) Select "Azure Resource Manager"
-1) Select "Service principal (manual)"
-1) Set the subscription details and credentials
-1) Set the service connection name to one of the three above
-1) Click on "Verify and save"
+$env:AZURE_DEVOPS_EXT_AZURE_RM_SERVICE_PRINCIPAL_KEY="<service-principal-password>"
+
+# create a new service connection
+az devops service-endpoint azurerm create `
+    --name alwayson-e2e-serviceconnection `
+    --azure-rm-tenant-id <tenant-id> `
+    --azure-rm-service-principal-id <app-id> `
+    --azure-rm-subscription-id <subscription-id> `
+    --azure-rm-subscription-name <subscription-name>
+```
+
+> `AZURE_DEVOPS_EXT_AZURE_RM_SERVICE_PRINCIPAL_KEY` is used for automation purposes. If not set, `az devops` will prompt you for the service principal password. See [az devops service-endpoint azurerm](https://docs.microsoft.com/cli/azure/devops/service-endpoint/azurerm?view=azure-cli-latest) for more information about parameters and options.
 
 ### 6) Adjust configuration
 
@@ -193,7 +214,6 @@ Modify the respective file for the environment which you want to deploy. At leas
 **After modifying the file, make sure to commit and push the changes to your Git repository.**
 
 For more details on the variables, you can consult [this guide](/.ado/pipelines/README.md#configuration-files).
-
 
 ### 7) Execute the first deployment
 
@@ -244,7 +264,7 @@ You can now go to the Azure Portal and check the provisioned resources. In the R
 
 We can now browse to the demo app website. Fetch the URL from the Front Door resource:
 
-1) Find the "Global Resource" group, e.g. `<myprefix>123-global-fd`
+1) Find the "Global Resource" group (e.g. `<myprefix>123-global-fd`)
 1) Click on the Front Door resource (e.g. `<myprefix>123-global-fd`)
 1) Click on the "Frontend host" link
 ![Frontend host](/docs/media/frontdoor-resource-hostlink.png)

@@ -27,7 +27,7 @@ param
   [string] $apiEndpoint,
 
   # Load Test data plane api version
-  [string] $apiVersion = "2021-07-01-preview",
+  [string] $apiVersion = "2022-06-01-preview",
 
   [bool] $pipeline = $false
 )

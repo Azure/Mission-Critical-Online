@@ -59,13 +59,13 @@ spec:
           - name: var-log-volume
             mountPath: "/var/log"
 ### This is an example of how to target a dedicated user node pool.
-#      nodeSelector:
-#        role: workload
-#      tolerations:
-#      - key: "workload"
-#        operator: "Equal"
-#        value: "true"
-#        effect: "NoSchedule"
+      nodeSelector:
+        role: workload
+      tolerations:
+      - key: "workload"
+        operator: "Equal"
+        value: "true"
+        effect: "NoSchedule"
       volumes:
         - name: secrets-store-inline
           csi:

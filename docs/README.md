@@ -11,7 +11,8 @@
 ## Azure Mission-Critical Reference Implementation Guide
 
 - [Overview](./reference-implementation/README.md)
-- [Getting Started](./reference-implementation/Getting-Started.md)
+- [Getting started](./reference-implementation/Getting-Started.md)
+  - [Getting Started using CLI](./reference-implementation/Getting-Started-CLI.md)
 - [Frequently Asked Questions (FAQs)](./reference-implementation/FAQ.md)
 - [Critical Design Areas](./reference-implementation/README.md#Critical-Design-Areas)
   - Application Design

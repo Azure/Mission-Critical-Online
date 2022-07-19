@@ -76,6 +76,8 @@ $body = GetTestBody -loadTestDisplayName $loadTestDisplayName `
             -engineInstances $engineInstances 
 
 if ($passFailCriteria) {
+  Write-Verbose "*** passFailCriteria set to $passFailCriteria"
+
   if (!(Test-Path $passFailCriteria)) {
     throw "ERROR: $passFailCriteria not found or invalid."
   }
@@ -86,8 +88,6 @@ if ($passFailCriteria) {
   $jsonBase | Add-Member -MemberType NoteProperty -Name "passFailCriteria" -Value $content
 
   $body = $jsonBase | ConvertTo-JSON -Depth 4
-
-  Write-Host $body
 }
 
 $body | Out-File $testDataFileName -Encoding utf8

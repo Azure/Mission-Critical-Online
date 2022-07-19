@@ -93,6 +93,7 @@ stages:
           -loadTestUserThreads "$(azureLoadTestUserThreads)" `
           -loadTestDurationSeconds "$(azureLoadTestDurationSeconds)" `
           -engineInstances "$(azureLoadTestEngineInstances)" `
+          -passFailCriteria ./ado/pipelines/config/loadtest-basline-normal.json `
           -pipeline $true `
           -verbose:$true
 

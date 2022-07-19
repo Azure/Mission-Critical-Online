@@ -6,13 +6,6 @@ parameters:
     type: boolean
     default: false
 
-  - name: loadTestingFramework # embedded load testing framework Azure oder Locust
-    type: string
-    default: 'AzureLoadTest'
-    values:
-    - AzureLoadTest
-    - Locust
-
   - name: runChaosTesting # Enable or disable embedded Chaos testing (automatically enables load testing)
     type: boolean
     default: false
@@ -276,22 +269,9 @@ stages:
       testGlobalEndpoint: true
 
 - ${{ if eq(parameters.environment, 'e2e') }}:
-  # Pipeline-embedded load testing for e2e (optional) with locust.
-  # Runs if either Load test or Chaos test was selected by the user
-  - ${{ if and(eq(parameters.loadTestingFramework, 'Locust'), or(eq(parameters.runEmbeddedLoadtesting, 'true'), eq(parameters.runChaosTesting, 'true'))) }}: # only in e2e and when either runLoadTesting or runChaosTesting is true
-    - template: stages-loadtest-locust.yaml # headless load testing
-      parameters:
-        terraformWorkingDirectory: 'src/testing/loadtest-locust/infra'
-        customPrefix: '$(prefix)$(customSuffix)'
-        loadTestNumberOfWorkerNodes: $(loadTestNumberOfWorkerNodes)
-        loadTestDurationInSeconds: $(loadTestDurationInSeconds)
-        loadTestNumberOfUsers: $(loadTestNumberOfUsers)
-        loadTestUserSpawnRate: $(loadTestUserSpawnRate)
-        locustHeadless: true # run locust in headless mode
-
   # Pipeline-embedded load testing for e2e (optional) with Microsoft Azure Load Test (MALT).
   # Runs if either Load test or Chaos test was selected by the user
-  - ${{ if and(eq(parameters.loadTestingFramework, 'AzureLoadTest'), or(eq(parameters.runEmbeddedLoadtesting, 'true'), eq(parameters.runChaosTesting, 'true'))) }}: # only in e2e and when either runLoadTesting or runChaosTesting is true
+  - ${{ if or(eq(parameters.runEmbeddedLoadtesting, 'true'), eq(parameters.runChaosTesting, 'true')) }}: # only in e2e and when either runLoadTesting or runChaosTesting is true
     - template: stages-loadtest-azure.yaml # embedded load testing
       parameters:
         terraformWorkingDirectory: 'src/testing/loadtest-azure/infra'
@@ -301,7 +281,7 @@ stages:
 
   # Chaos testing for e2e (optional) with Azure Chaos Studio
   - ${{ if eq(parameters.runChaosTesting, 'true') }}: # only in e2e and when runChaosTesting is true
-    - template: stages-chaos.yaml # chaos testing pipline
+    - template: stages-chaos.yaml # chaos testing pipeline
       parameters:
         stageName: 'deployChaosExperiments'
         customPrefix: '$(prefix)$(customSuffix)'

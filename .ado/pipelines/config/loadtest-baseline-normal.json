@@ -16,7 +16,7 @@
                 "actualValue": 0.0,
                 "aggregate": "avg",
                 "clientmetric": "response_time_ms",
-                "condition": "<",
+                "condition": ">",
                 "requestName": null,
                 "result": null,
                 "value": 75.0

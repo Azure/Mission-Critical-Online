@@ -20,7 +20,17 @@
                 "requestName": null,
                 "result": null,
                 "value": 75.0
-              }
+              },
+              "a7ab8dec-07e6-4870-911c-4505382b8511": {
+                "action": "continue",
+                "actualValue": 0.0,
+                "aggregate": "percentage",
+                "clientmetric": "error",
+                "condition": ">",
+                "requestName": null,
+                "result": null,
+                "value": 0.0
+              },
         }
     }
 ]

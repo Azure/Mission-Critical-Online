@@ -1,0 +1,16 @@
+[
+    {
+        "passFailMetrics": {
+            "ece127bc-6271-4a70-93f6-758c56a3f12c": {
+                "clientmetric": "requests_per_sec",
+                "aggregate": "avg",
+                "condition": "<",
+                "value": 1000.0,
+                "result": null,
+                "actualValue": 0.0,
+                "requestName": null,
+                "action": "continue"
+            } 
+        }
+    }
+]

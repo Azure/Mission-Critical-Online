@@ -52,7 +52,8 @@ jobs:
                        --values src/config/ingress-nginx/values.helm.yaml `
                        --set controller.service.loadBalancerIP="$aksIngressIp" `
                        --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-resource-group"="$aksClusterResourceGroup" `
-                       --version "$(ingressNginxVersion)"
+                       --version "$(ingressNginxVersion)" `
+                       --wait
         }
 
   - task: AzureCLI@2
@@ -115,7 +116,8 @@ jobs:
           echo "*** Setting up cert-manager ClusterIssuer with Let's Encrypt in namespace $certManagerNamespace on $aksClusterName"
           helm upgrade --install cert-manager-config src/config/cert-manager/chart/cert-manager-config`
                        --namespace $certManagerNamespace --create-namespace `
-                       --set letsencrypt.contactEmail="$(contactEmail)"
+                       --set letsencrypt.contactEmail="$(contactEmail)" `
+                       --wait
 
           echo "*** Installing cert-manager via helm on $aksClusterName"
           helm repo add jetstack https://charts.jetstack.io
@@ -123,7 +125,8 @@ jobs:
           helm upgrade --install cert-manager jetstack/cert-manager `
                        --values src/config/cert-manager/values.helm.yaml `
                        --namespace $certManagerNamespace --create-namespace `
-                       --version "$(certManagerVersion)"
+                       --version "$(certManagerVersion)" `
+                       --wait
         }
 
   - task: AzureCLI@2
@@ -169,7 +172,8 @@ jobs:
                        --set azure.tenantId=$tenantId `
                        --set azure.keyVaultName="$keyVaultName" `
                        --set azure.managedIdentityClientId="$kubeletIdentityClientId" `
-                       --set kvSecrets="{$allSecretNames}"
+                       --set kvSecrets="{$allSecretNames}" `
+                       --wait
         }
 
   - ${{ if eq(parameters.prepareForChaosTesting, 'true') }}: # If chaos experiments are executed, we need to prepare one stamps AKS cluster by installing Chaos Mesh
@@ -209,4 +213,5 @@ jobs:
                        --namespace=$chaosTestingNamespace --create-namespace `
                        --version=$(chaosMeshVersion) `
                        --set chaosDaemon.runtime=containerd `
-                       --set chaosDaemon.socketPath=/run/containerd/containerd.sock
+                       --set chaosDaemon.socketPath=/run/containerd/containerd.sock `
+                       --wait

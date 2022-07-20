@@ -188,7 +188,7 @@ stages:
   displayName: 'Deploy Configuration' # Apply configuration to Azure Infrastructure
   dependsOn: deployreleaseinfrastructure
   jobs:
-  - template: jobs-configuration.yaml
+  - template: jobs-deploy-configuration.yaml
     parameters:
       prepareForChaosTesting: ${{ parameters.runChaosTesting }}
 
@@ -238,7 +238,7 @@ stages:
   - testcode
   - buildapplication
   jobs:
-  - template: jobs-workload-deploy.yaml
+  - template: jobs-deploy-workload.yaml
 
 - stage: importSampleData # Import sample data
   displayName: 'Import sample data'

@@ -49,8 +49,7 @@ Global replication protects Cosmos DB instances from regional outage. The Cosmos
 | --------------------------------------------- | ------------------------------------------------------------ | ---------- |
 | **Regional outage**              | Container registry uses Traffic Manager to failover between replica regions. Thus, **any request should be automatically re-routed to another region**. At worst, no Docker images can be pulled for a couple of minutes by a certain AKS node while DNS failover needs to happen. | No     |
 | **Image(s) get deleted (e.g. by manual error)** | *Impact*: No images can be pulled. This should only affect newly spawned/rebooted nodes. **Existing nodes should have the images cached already.** <br />*Mitigation*: If detected quickly enough, re-running the latest build pipelines should bring the images back into the registry. | No   |
-
-+ throttling - affect massive scale-out operations (limit is quite high)
+| **Throttling** | *Impact*: Throttling can delay scale-out operations which can result in a temporarily degraded performance.<br /> *Mitigation*: Azure Mission-Critical uses the Premium SKU which provides 10k read operations per minute. Container images are optimized and have only small numbers of layers. ImagePullPolicy is set to IfNotPresent to use locally cached versions first. <br />*Comment*: Pulling a container image consists of multiple read operations, depending on the number of layers. The number of read operations per minute is limited and depends on the [ACR SKU size](https://docs.microsoft.com/azure/container-registry/container-registry-skus#service-tier-features-and-limits). | No |
 
 ### (stamp) AKS cluster
 

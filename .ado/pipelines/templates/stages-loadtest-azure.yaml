@@ -38,7 +38,7 @@ stages:
         terraformStateFilename:            'terraform-azurelt-${{ parameters.customPrefix }}.state'
         terraformWorkingDirectory:         '${{ parameters.terraformWorkingDirectory }}'
 
-    # Deploy the locust infrastructure. If running in headless mode, the test will automatically start once the infra is provisioned.
+    # Deploy the MALT infrastructure. If running in headless mode, the test will automatically start once the infra is provisioned.
     - template: steps-terraform-apply.yaml
       parameters:
         terraformWorkingDirectory: '${{ parameters.terraformWorkingDirectory }}'

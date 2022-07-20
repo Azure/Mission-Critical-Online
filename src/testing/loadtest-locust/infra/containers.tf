@@ -19,7 +19,7 @@ resource "azurerm_container_group" "master" {
       "locust"
     ]
 
-    environment_variables = merge(local.environment_variables_common, var.locust_headless != true ? local.environment_variables_master : merge(local.environment_variables_master, local.environment_variables_headless))
+    environment_variables = merge(local.environment_variables_common, local.environment_variables_master)
 
     secure_environment_variables = {
       "LOCUST_WEB_AUTH" = "locust:${azurerm_key_vault_secret.locustsecret.value}"

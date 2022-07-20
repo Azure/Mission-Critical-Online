@@ -136,12 +136,6 @@ stages:
           pathToPublish: '${{ parameters.terraformWorkingDirectory }}/locust/'
           artifactName: 'locust-test-results'
 
-      # Parse load test results
-      - template: steps-parse-loadtest-output.yaml
-        parameters:
-          customPrefix: ${{ parameters.customPrefix }}
-          statsPath: '${{ parameters.terraformWorkingDirectory }}/locust/'
-
       # Destroy Locust infrastructure at the end
       - template: steps-terraform-destroy.yaml
         parameters:

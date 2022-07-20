@@ -176,7 +176,8 @@ jobs:
                        --wait
         }
 
-  - ${{ if eq(parameters.prepareForChaosTesting, 'true') }}: # If chaos experiments are executed, we need to prepare one stamps AKS cluster by installing Chaos Mesh
+  # If chaos experiments are executed as part of the pipeline run later, we need to prepare one stamps AKS cluster by installing Chaos Mesh
+  - ${{ if eq(parameters.prepareForChaosTesting, 'true') }}:
     - task: AzureCLI@2
       displayName: "Install Chaos Mesh $(chaosMeshVersion) on AKS cluster"
       retryCountOnTaskFailure: 1
@@ -192,6 +193,8 @@ jobs:
           # take only the first stamp to inject faults into
           $locations = '$(stampLocations)' | ConvertFrom-Json -NoEnumerate # get the stamp locations
           $stamp = $releaseUnitInfraDeployOutput.stamp_properties.value | Where-Object { $_.location -eq $locations[0] }
+
+          echo "**************************** REGION: $($stamp.location) ****************************"
 
           $aksClusterName = $stamp.aks_cluster_name
           $aksClusterResourceGroup = $stamp.resource_group_name

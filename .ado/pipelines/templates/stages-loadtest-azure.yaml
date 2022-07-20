@@ -187,6 +187,7 @@ stages:
       # get load test status and wait till it's done
       - task: AzureCLI@2
         displayName: 'Wait for load test to be finished'
+        continueOnError: true # shows a warning but continues the pipeline
         inputs:
           azureSubscription: $(azureServiceConnection)
           scriptType: pscore

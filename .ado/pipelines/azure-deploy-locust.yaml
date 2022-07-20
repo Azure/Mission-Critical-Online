@@ -45,4 +45,3 @@ stages:
     customPrefix: '$(prefix)'
     loadTestTargetUrl: ${{ parameters.loadTestTargetUrl }}
     loadTestNumberOfWorkerNodes: ${{ parameters.loadTestNumberOfWorkerNodes }}
-    locustHeadless: false # set to false to run in webui mode

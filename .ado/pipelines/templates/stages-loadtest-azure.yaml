@@ -71,15 +71,12 @@ stages:
       - script: |
           echo "*** Setting loadTestTargetFQDN to $(frontdoor_fqdn)"
           echo "##vso[task.setvariable variable=azureLoadTestTargetFQDN]$(frontdoor_fqdn)"
-        displayName: 'Set Loadtest targetUrl to Azure Front Door'
 
-    # use default baseline file when chaostesting is NOT enabled
-    - ${{ if eq(parameters.runChaosTesting, 'false') }}:
-      - script: |
           loadTestBaseline="./.ado/pipelines/config/loadtest-baseline-normal.json"
           echo "*** Setting loadTestBaseline to $loadTestBaseline"
           echo "##vso[task.setvariable variable=loadTestBaseline]$loadTestBaseline"
-        displayName: 'Set loadTestBaseline'
+
+        displayName: 'Set Azure Load Test variables'
 
     # override baseline when chaos testing is enabled
     - ${{ if eq(parameters.runChaosTesting, 'true') }}:
@@ -87,12 +84,12 @@ stages:
           loadTestBaseline="./.ado/pipelines/config/loadtest-baseline-chaos.json"
           echo "*** Setting loadTestBaseline to $loadTestBaseline"
           echo "##vso[task.setvariable variable=loadTestBaseline]$loadTestBaseline"
-        displayName: 'Set loadTestBaseline to Chaos'
+        displayName: 'Override loadTestBaseline for Chaos Experiments'
 
     # setting parameters for embedded load tests
     - ${{ if ne(parameters.embeddedLoadTest, 'true') }}:
 
-      # embedded - set loadTestTargetFQDN to the FQDN specified in the pipeline parameters
+      # standalone - set loadTestTargetFQDN to the FQDN specified in the pipeline parameters
       - script: |
           echo "*** Setting loadTestTargetFQDN to ${{ parameters.loadTestTargetFQDN }}"
           echo "##vso[task.setvariable variable=azureLoadTestTargetFQDN]${{ parameters.loadTestTargetFQDN }}"

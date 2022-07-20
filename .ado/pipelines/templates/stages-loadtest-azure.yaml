@@ -149,7 +149,7 @@ stages:
 
       # upload a jmx file for the previously created azure load test with an auto-generated testFileId
       - task: AzureCLI@2
-        displayName: 'Upload *.jmx file for Azure Load Test'
+        displayName: 'Upload JMeter file'
         name: 'uploadAzureLoadTestJmx'
         inputs:
           azureSubscription: '$(azureServiceConnection)'
@@ -164,7 +164,7 @@ stages:
 
       # Create config csv for Azure Load Test
       - task: PowerShell@2
-        displayName: 'Create config *.csv file'
+        displayName: 'Create config JMeter file'
         name: 'createAzureLoadTestConfigCsv'
         enabled: false # currently not used / vars handed over via env vars and parameters
         inputs:
@@ -178,7 +178,7 @@ stages:
 
       # upload a loadtest config file from previous task
       - task: AzureCLI@2
-        displayName: 'Upload auto-generated load test config file for Azure Load Test'
+        displayName: 'Upload auto-generated config file'
         name: 'uploadAzureLoadTestConfig'
         enabled: false # currently not used / vars handed over via env vars and parameters
         inputs:

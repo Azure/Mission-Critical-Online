@@ -100,8 +100,11 @@ Global replication protects Cosmos DB instances from regional outage. The Cosmos
 | **Expired credentials (stamp resource)**  | If, for example, Event Hub SAS token or Storage Account key was changed without properly updating them in Key Vault so that the pods can use them, the respective application component will start to fail. This should then also affect the Health Service and hence **the stamp should be taken out of rotation automatically**.<br/>*Mitigation*: As a potential way to not run into these issues in the first place, using AAD-based authentication all services which support it, could be implemented. However, when using AKS, this would require to use Pod Identity to  use Managed Identities within the pods. We considered this but found pod identity not stable enough yet and thus decided against using it for now. But this could be a solution in the future.  | No     |
 | **Expired credentials (globally shared resource)**  | If, for example, Cosmos DB API key was changed without properly updating it in all stamp Key Vaults so that the pods can use them, the respective application components will start to fail. **This would likely bring all stamps down at about the same time and cause an workload-wide outage.** See the article on [Key Rotation](./OpProcedures-KeyRotation.md) for an example walkthrough how to execute this process properly without downtime. For a possible way around the need for keys and secrets in the first place using AAD auth, see the previous item. | Full     |
 
+### (stamp) Virtual Networking
 
-+ VNET, IP address exhaustion
+| **Risk**        | **Impact/Mitigation/Comment**                | **Outage** |
+| ----------------------- | ------------------------------------------------------------ | ---------- |
+| **Subnet IP address space exhausted**  | If the IP address space on a subnet is exhausted, no scale out operations, such as creating new AKS nodes or pods, can happen. It will not lead to an outage but might decrease performance and impact user experience. Mitigation can occur through increasing the IP space (if possible). If that is not an option, it might also help to increase the resources per Node (larger VM SKUs) or per pod (more CPU/memory), so that each pod can handle more traffic, thus decreasing the need for scale out. | No     |
 
 ---
 [Azure Mission-Critical - Full List of Documentation](/docs/README.md)

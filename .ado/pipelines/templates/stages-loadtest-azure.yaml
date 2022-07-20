@@ -202,6 +202,7 @@ stages:
               $testRunStatus = ($result).status
               echo "*** Test Run $(testRunId) is in status $testRunStatus"
               if ($result.status -eq "DONE") {
+
                 echo $result
                 $resultUrl = ($result).testArtifacts.outputArtifacts.resultUrl.url
                 $logsUrl = ($result).testArtifacts.outputArtifacts.logsUrl.url
@@ -210,7 +211,13 @@ stages:
                 Invoke-WebRequest $resultUrl -OutFile "results/results.zip"
                 echo "*** Download logsUrl"
                 Invoke-WebRequest $logsUrl -OutFile "results/logs.zip"
+
+                if ($result.testResult -eq "FAILED") {
+                  throw "*** ERROR: Test $result.testRunId failed."
+                }
+
               }
+
               # todo - timeout?
             } while ($result.status -ne "DONE")
 

@@ -16,7 +16,6 @@ spec:
     # Name of a secret used to store the ACME account private key
     privateKeySecretRef:
       name: cert-manager-alwayson
-      {{- fail "value for .Values.letsencrypt.contactEmail is not as expected" }}
     # Enable the HTTP-01 challenge provider
     solvers:
     - http01:

@@ -61,11 +61,10 @@ Global replication protects Cosmos DB instances from regional outage. The Cosmos
 | **Subscription runs out of CPU core quota to add new nodes** | **Scale up/out operations will fail**, but it shouldn’t affect existing nodes and their operation. <br />Ideally traffic should shift automatically to other regions for load balancing. | No           |
 | **Let’s Encrypt SSL certificates can’t be issued/renewed** | Cluster should report unhealthy towards Front Door and traffic should shift to other stamps. <br />*Mitigation*: Needs manual investigation on what happened. | No           |
 | **Pod utilization reaches the allocated capacity**      | When resource requests/limits are configured incorrectly, pods can reach 100% CPU utilization and start failing requests. <br />During load test **the observed behavior wasn’t blocking** – application retry mechanism was able to recover failed requests, causing a longer request duration, without surfacing the error to the client. Excessive load would eventually break it. | No (if not excessive) |
-| **3rd-party container images / registry not available** | Some components like cert-manager and ingress-nginx require downloading container images from external container registries (outbound traffic). In case one or more of these repositories or images are unavailable, new instances on new nodes (where the image is not already cached) might not be able to start. | Partially (during scale and update/upgrade operations) |
+| **3rd-party container images / registry not available** | *Impact*: Some components like cert-manager and ingress-nginx require downloading container images and helm charts from external container registries (outbound traffic). In case one or more of these repositories or images are unavailable, new instances on new nodes (where the image is not already cached) might not be able to start. <br />*Possible Mitigation*: In some scenarios is could make sense to import 3rd-party container images into the per-solution container registry. This adds additional complexity and should be planned and operationalized carefully. | Partially (during scale and update/upgrade operations) |
 
 + check cluster upgrades - do they or don't they kill pods?
 + scale in operations - no outage, happens gracefully
-+ consider importing external images into local ACR
 
 ### (stamp) Event Hub
 

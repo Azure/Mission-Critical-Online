@@ -54,6 +54,10 @@ jobs:
                        --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-resource-group"="$aksClusterResourceGroup" `
                        --version "$(ingressNginxVersion)" `
                        --wait
+
+          if ($LastExitCode -ne 0) {
+            throw "*** Error on installing nginx helm chart!"
+          }
         }
 
   - task: AzureCLI@2
@@ -119,6 +123,10 @@ jobs:
                        --set letsencrypt.contactEmail="$(contactEmail)" `
                        --wait
 
+          if ($LastExitCode -ne 0) {
+            throw "*** Error on installing ClusterIssuer helm chart!"
+          }
+
           echo "*** Installing cert-manager via helm on $aksClusterName"
           helm repo add jetstack https://charts.jetstack.io
           helm repo update
@@ -127,6 +135,11 @@ jobs:
                        --namespace $certManagerNamespace --create-namespace `
                        --version "$(certManagerVersion)" `
                        --wait
+
+          if ($LastExitCode -ne 0) {
+            throw "*** Error on installing cert-manager helm chart!"
+          }
+
         }
 
   - task: AzureCLI@2
@@ -174,6 +187,11 @@ jobs:
                        --set azure.managedIdentityClientId="$kubeletIdentityClientId" `
                        --set kvSecrets="{$allSecretNames}" `
                        --wait
+
+          if ($LastExitCode -ne 0) {
+            throw "*** Error on installing CSI secret driver helm chart!"
+          }
+
         }
 
   # If chaos experiments are executed as part of the pipeline run later, we need to prepare one stamps AKS cluster by installing Chaos Mesh
@@ -218,3 +236,7 @@ jobs:
                        --set chaosDaemon.runtime=containerd `
                        --set chaosDaemon.socketPath=/run/containerd/containerd.sock `
                        --wait
+
+          if ($LastExitCode -ne 0) {
+            throw "*** Error on installing chaos-mesh helm chart!"
+          }

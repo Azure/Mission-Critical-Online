@@ -73,19 +73,21 @@ stages:
           echo "##vso[task.setvariable variable=azureLoadTestTargetFQDN]$(frontdoor_fqdn)"
         displayName: 'Set Loadtest targetUrl to Azure Front Door'
 
+    # use default baseline file when chaostesting is NOT enabled
+    - ${{ if eq(parameters.runChaosTesting, 'false') }}:
       - script: |
           loadTestBaseline="./.ado/pipelines/config/loadtest-baseline-normal.json"
           echo "*** Setting loadTestBaseline to $loadTestBaseline"
           echo "##vso[task.setvariable variable=loadTestBaseline]$loadTestBaseline"
-        displayName: 'Set loadTestBaseline to $loadTestBaseline'
+        displayName: 'Set loadTestBaseline'
 
-    # override baseline when chaos testing is enabled - set loadtest baseline definition file
-    - ${{ if ne(parameters.runChaosTesting, 'true') }}:
+    # override baseline when chaos testing is enabled
+    - ${{ if eq(parameters.runChaosTesting, 'true') }}:
       - script: |
           loadTestBaseline="./.ado/pipelines/config/loadtest-baseline-chaos.json"
           echo "*** Setting loadTestBaseline to $loadTestBaseline"
           echo "##vso[task.setvariable variable=loadTestBaseline]$loadTestBaseline"
-        displayName: 'Set loadTestBaseline to $loadTestBaseline'
+        displayName: 'Set loadTestBaseline to Chaos'
 
     # setting parameters for embedded load tests
     - ${{ if ne(parameters.embeddedLoadTest, 'true') }}:
@@ -98,7 +100,7 @@ stages:
 
     # create a new azure load test with an auto-generated loadTestId
     - task: AzureCLI@2
-      displayName: 'Create a new Azure Load Test'
+      displayName: 'Create new Azure Load Test'
       name: 'createAzureLoadTest'
       inputs:
         azureSubscription: '$(azureServiceConnection)'

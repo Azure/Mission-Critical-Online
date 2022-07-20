@@ -23,12 +23,6 @@ parameters:
    type: boolean
    default: false
 
-variables:
- - name: 'loadtestBaseline'
-   value: './.ado/pipelines/config/loadtest-baseline-normal.json'
- - name: 'loadtestBaselineChaos'
-   value: "./.ado/pipelines/config/loadtest-baseline-chaos.json"
-
 stages:
 
 - stage: deployazloadtest
@@ -80,16 +74,18 @@ stages:
         displayName: 'Set Loadtest targetUrl to Azure Front Door'
 
       - script: |
-          echo "*** Setting loadTestBaseline to ${{ variables.loadtestBaseline }}"
-          echo "##vso[task.setvariable variable=loadTestBaseline]${{ variables.loadtestBaseline }}"
-        displayName: 'Set loadTestBaseline to ${{ variables.loadtestBaseline }}'
+          loadTestBaseline="./.ado/pipelines/config/loadtest-baseline-normal.json"
+          echo "*** Setting loadTestBaseline to $loadTestBaseline"
+          echo "##vso[task.setvariable variable=loadTestBaseline]$loadTestBaseline"
+        displayName: 'Set loadTestBaseline to $loadTestBaseline'
 
     # override baseline when chaos testing is enabled - set loadtest baseline definition file
     - ${{ if ne(parameters.runChaosTesting, 'true') }}:
       - script: |
-          echo "*** Setting loadTestBaseline to ${{ variables.loadtestBaselineChaos }}"
-          echo "##vso[task.setvariable variable=loadTestBaseline]${{ variables.loadtestBaselineChaos }}"
-        displayName: 'Set loadTestBaseline to ${{ variables.loadtestBaselineChaos }}'
+          loadTestBaseline="./.ado/pipelines/config/loadtest-baseline-chaos.json"
+          echo "*** Setting loadTestBaseline to $loadTestBaseline"
+          echo "##vso[task.setvariable variable=loadTestBaseline]$loadTestBaseline"
+        displayName: 'Set loadTestBaseline to $loadTestBaseline'
 
     # setting parameters for embedded load tests
     - ${{ if ne(parameters.embeddedLoadTest, 'true') }}:

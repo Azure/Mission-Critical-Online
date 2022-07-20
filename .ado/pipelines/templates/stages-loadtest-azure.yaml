@@ -18,6 +18,17 @@ parameters:
    type: string
    default: ''
 
+ - name: runChaosTesting
+   displayName: "Run chaos testing"
+   type: boolean
+   default: false
+
+variables:
+ - name: 'loadtestBaseline'
+   value: './.ado/pipelines/config/loadtest-baseline-normal.json'
+ - name: 'loadtestBaselineChaos'
+   value: "./.ado/pipelines/config/loadtest-baseline-chaos.json"
+
 stages:
 
 - stage: deployazloadtest
@@ -68,9 +79,22 @@ stages:
           echo "##vso[task.setvariable variable=azureLoadTestTargetFQDN]$(frontdoor_fqdn)"
         displayName: 'Set Loadtest targetUrl to Azure Front Door'
 
-    # Set loadTestTargetFQDN to the FQDN specified in the pipeline parameters
+      - script: |
+          echo "*** Setting loadTestBaseline to ${{ variables.loadtestBaseline }}"
+          echo "##vso[task.setvariable variable=loadTestBaseline]${{ variables.loadtestBaseline }}"
+        displayName: 'Set loadTestBaseline to ${{ variables.loadtestBaseline }}'
+
+    # override baseline when chaos testing is enabled - set loadtest baseline definition file
+    - ${{ if ne(parameters.runChaosTesting, 'true') }}:
+      - script: |
+          echo "*** Setting loadTestBaseline to ${{ variables.loadtestBaselineChaos }}"
+          echo "##vso[task.setvariable variable=loadTestBaseline]${{ variables.loadtestBaselineChaos }}"
+        displayName: 'Set loadTestBaseline to ${{ variables.loadtestBaselineChaos }}'
+
+    # setting parameters for embedded load tests
     - ${{ if ne(parameters.embeddedLoadTest, 'true') }}:
 
+      # embedded - set loadTestTargetFQDN to the FQDN specified in the pipeline parameters
       - script: |
           echo "*** Setting loadTestTargetFQDN to ${{ parameters.loadTestTargetFQDN }}"
           echo "##vso[task.setvariable variable=azureLoadTestTargetFQDN]${{ parameters.loadTestTargetFQDN }}"
@@ -94,7 +118,7 @@ stages:
           -loadTestUserThreads "$(azureLoadTestUserThreads)" `
           -loadTestDurationSeconds "$(azureLoadTestDurationSeconds)" `
           -engineInstances "$(azureLoadTestEngineInstances)" `
-          -passFailCriteria ./.ado/pipelines/config/loadtest-baseline-normal.json `
+          -passFailCriteria $(loadTestBaseline) `
           -pipeline $true `
           -verbose:$true
 

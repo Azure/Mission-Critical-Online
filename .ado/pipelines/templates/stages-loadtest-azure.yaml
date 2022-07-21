@@ -19,7 +19,7 @@ parameters:
    default: ''
 
  - name: runChaosTesting
-   displayName: "Run chaos testing"
+   displayName: "Run chaos testing" # Influences which baseline to compare to
    type: boolean
    default: false
 

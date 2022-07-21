@@ -89,7 +89,7 @@ stages:
             echo "*** Setting loadTestBaseline to $(chaosLoadTestBaseline)"
             echo "##vso[task.setvariable variable=loadTestBaseline]$(chaosLoadTestBaseline)"
 
-    # setting parameters for embedded load tests
+    # setting parameters for standalone load test runs
     - ${{ if ne(parameters.embeddedLoadTest, 'true') }}:
 
       # standalone - set loadTestTargetFQDN to the FQDN specified in the pipeline parameters

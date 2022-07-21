@@ -68,30 +68,38 @@ stages:
           displayName: 'Parse global infrastructure deployment outputs'
 
       # Set loadTestTargetFQDN to the Azure Front Door FQDN (when load test is embedded)
-      - script: |
-          echo "*** Setting loadTestTargetFQDN to $(frontdoor_fqdn)"
-          echo "##vso[task.setvariable variable=azureLoadTestTargetFQDN]$(frontdoor_fqdn)"
-
-          echo "*** Setting loadTestBaseline to $(azureLoadTestBaseline)"
-          echo "##vso[task.setvariable variable=loadTestBaseline]$(azureLoadTestBaseline)"
-
+      - task: PowerShell@2
         displayName: 'Set Azure Load Test variables'
+        inputs:
+          targetType: inline
+          script: |
+            echo "*** Setting loadTestTargetFQDN to $(frontdoor_fqdn)"
+            echo "##vso[task.setvariable variable=azureLoadTestTargetFQDN]$(frontdoor_fqdn)"
+
+            echo "*** Setting loadTestBaseline to $(azureLoadTestBaseline)"
+            echo "##vso[task.setvariable variable=loadTestBaseline]$(azureLoadTestBaseline)"
 
     # override baseline when chaos testing is enabled
     - ${{ if eq(parameters.runChaosTesting, 'true') }}:
-      - script: |
-          echo "*** Setting loadTestBaseline to $(chaosLoadTestBaseline)"
-          echo "##vso[task.setvariable variable=loadTestBaseline]$(chaosLoadTestBaseline)"
+      - task: PowerShell@2
         displayName: 'Override loadTestBaseline for Chaos Experiments'
+        inputs:
+          targetType: inline
+          script: |
+            echo "*** Setting loadTestBaseline to $(chaosLoadTestBaseline)"
+            echo "##vso[task.setvariable variable=loadTestBaseline]$(chaosLoadTestBaseline)"
 
     # setting parameters for embedded load tests
     - ${{ if ne(parameters.embeddedLoadTest, 'true') }}:
 
       # standalone - set loadTestTargetFQDN to the FQDN specified in the pipeline parameters
-      - script: |
-          echo "*** Setting loadTestTargetFQDN to ${{ parameters.loadTestTargetFQDN }}"
-          echo "##vso[task.setvariable variable=azureLoadTestTargetFQDN]${{ parameters.loadTestTargetFQDN }}"
+      - task: PowerShell@2
         displayName: 'Set Loadtest targetUrl to ${{ parameters.loadTestTargetFQDN }}'
+        inputs:
+          targetType: inline
+          script: |
+            echo "*** Setting loadTestTargetFQDN to ${{ parameters.loadTestTargetFQDN }}"
+            echo "##vso[task.setvariable variable=azureLoadTestTargetFQDN]${{ parameters.loadTestTargetFQDN }}"
 
     # create a new azure load test with an auto-generated loadTestId
     - task: AzureCLI@2
@@ -154,20 +162,6 @@ stages:
             -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
             -testFileName "$(System.DefaultWorkingDirectory)/src/testing/loadtest-azure/scripts/catalog-test.jmx" `
             -verbose:$true
-
-      # Create config csv for Azure Load Test
-      - task: PowerShell@2
-        displayName: 'Create JMeter config file'
-        name: 'createAzureLoadTestConfigCsv'
-        enabled: false # currently not used / vars handed over via env vars and parameters
-        inputs:
-          targetType: inline
-          script: |
-            $config = @(
-              [pscustomobject]@{
-              url = "$(frontdoor_fqdn)"
-            })
-            $config | export-csv "$(System.DefaultWorkingDirectory)/test-config.csv"  -NoTypeInformation
 
       # start azure load test
       - task: AzureCLI@2

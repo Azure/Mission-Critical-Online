@@ -465,14 +465,22 @@ stages:
                   scriptType: pscore
                   scriptLocation: inlineScript
                   inlineScript: |
-                    $loadtestRg="$(prefix)$(customSuffix)-loadtest-rg"
-                    $loadtestRgExists=az group exists --name $loadtestRg
-                    if ($loadtestRgExists -ne "false") {
+                    $loadtestRg = "$(prefix)$(customSuffix)-loadtest-rg"
+                    $loadtestRgExists = az group exists --name $loadtestRg | ConvertFrom-Json
+                    if ($loadtestRgExists) {
                       echo "*** Delete abandoned load test resources in $loadtestRg"
                       az group delete --name "$loadtestRg" --yes
                     } else {
                       echo "*** No load test resources found in $loadtestRg"
                     }
+
+                    $ltTerraformStateFile = "terraform-azurelt-$(prefix)$(customSuffix).state"
+                    echo "*** Deleting Terraform state file $ltTerraformStateFile on Storage Account $(terraformStorageAccount)"
+
+                    az storage blob delete --account-name $(terraformStorageAccount) `
+                      --container-name tfstate `
+                      --name $ltTerraformStateFile `
+                      --auth-mode login
 
               # Run Terraform for destroy for the global resources of this E2E env
               - template: steps-terraform-destroy.yaml

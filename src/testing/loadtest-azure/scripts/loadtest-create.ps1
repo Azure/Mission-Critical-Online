@@ -84,7 +84,7 @@ if ($passFailCriteria) {
 
   $content = Get-Content $passFailCriteria | ConvertFrom-JSON
 
-  $jsonBase = $body | convertfrom-json  
+  $jsonBase = $body | ConvertFrom-Json
   $jsonBase | Add-Member -MemberType NoteProperty -Name "passFailCriteria" -Value $content
 
   $body = $jsonBase | ConvertTo-JSON -Depth 4

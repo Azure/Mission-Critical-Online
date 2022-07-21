@@ -231,7 +231,7 @@ stages:
                 Invoke-WebRequest $logsUrl -OutFile "results/logs.zip"
 
                 if ($result.testResult -eq "FAILED") {
-                  throw "*** ERROR: Test ($result).testRunId failed."
+                  throw "*** ERROR: Test $($result.testRunId) failed."
                 }
 
               }

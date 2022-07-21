@@ -455,10 +455,10 @@ stages:
 
               - template: steps-set-pipeline-variables.yaml # load set-pipeline-variables function
 
-              # Delete abandoned Load Test resource (if still present)
+              # Delete leftover Load Test resource (if still present)
               # There might be edge cases when load testing artifacts remain and need to be cleaned up
               - task: AzureCLI@2
-                displayName: 'Cleanup abandoned load testing artifacts (if needed)'
+                displayName: 'Cleanup leftover load testing artifacts (if needed)'
                 retryCountOnTaskFailure: 1
                 inputs:
                   azureSubscription: $(azureServiceConnection)

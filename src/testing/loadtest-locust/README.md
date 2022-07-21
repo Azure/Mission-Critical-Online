@@ -1,12 +1,10 @@
 # Load Testing with Locust
 
-[locust.io](https://locust.io) is an easy to use, scriptable and scalable open source load and performance testing tool.
-
-The Azure Mission-Critical reference implementation leverages Locust as a standalone deployment only. This is a separate pipeline that spins up a Locust deployment with a WebUI to conduct customized load tests on-demand.
+[locust.io](https://locust.io) is an easy to use, scriptable and scalable open source load and performance testing tool. The Azure Mission-Critical reference implementation leverages Locust as a standalone load testing tool only. A separate pipeline is used to spin up a Locust deployment with a WebUI to conduct customized load tests on-demand.
 
 ## Infrastructure
 
-The standalone a single master node and one or more worker nodes distributed across multiple Azure regions. The worker nodes execute the load testing tasks and communicate with the master node on port `5557/TCP`. The master node is orchestrating the worker nodes, gathering the load test data and (in standalone-mode only) hosting a web interface on port `8089/TCP` to conduct and monitor load tests.
+The standalone deployment consists of a single master node and one or more worker nodes, the number can be configured at pipeline execution time, distributed across multiple Azure regions. The worker nodes execute the load testing tasks and communicate with the master node on port `5557/TCP`. The master node is orchestrating the worker nodes, gathering the load test data and (in standalone-mode only) hosting a web interface on port `8089/TCP` to conduct and monitor load tests.
 
 All nodes are represented as individual container instances, hosted on Azure Container Instances (ACI) and are deployed via Terraform. The Terraform definition is stored in the `src/infra/loadtest-locust` directory.
 

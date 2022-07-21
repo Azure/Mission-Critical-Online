@@ -35,7 +35,7 @@ Microsoft [Azure Load Test](https://docs.microsoft.com/azure/load-testing/overvi
 
 ### Locust
 
-Locust is an open source Load Testing framework written in Python. See [locust](./loadtest-locust/README.md) for more details about the implementation and configuration. Locust was used before MALT was available and is still available as a [standalone deployment using Azure Container Instances](https://medium.com/microsoftazure/globally-distributed-load-tests-in-azure-with-locust-aeb3a365cd60).
+Locust is an open source Load Testing framework written in Python. See [locust](./loadtest-locust/README.md) for more details about the implementation and configuration. Locust was used in the Mission-Critical reference implementation before MALT was available and is still available as a [standalone deployment using Azure Container Instances](https://medium.com/microsoftazure/globally-distributed-load-tests-in-azure-with-locust-aeb3a365cd60).
 
 ### Playwright
 

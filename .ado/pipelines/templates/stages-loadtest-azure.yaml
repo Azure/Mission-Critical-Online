@@ -19,7 +19,7 @@ parameters:
    default: ''
 
  - name: runChaosTesting
-   displayName: "Run chaos testing"
+   displayName: "Run chaos testing" # Influences which baseline to compare to
    type: boolean
    default: false
 
@@ -43,7 +43,7 @@ stages:
         terraformStateFilename:            'terraform-azurelt-${{ parameters.customPrefix }}.state'
         terraformWorkingDirectory:         '${{ parameters.terraformWorkingDirectory }}'
 
-    # Deploy the MALT infrastructure. If running in headless mode, the test will automatically start once the infra is provisioned.
+    # Deploy the MALT infrastructure. If running in embedded mode, the test will automatically start once the infra is provisioned.
     - template: steps-terraform-apply.yaml
       parameters:
         terraformWorkingDirectory: '${{ parameters.terraformWorkingDirectory }}'
@@ -157,7 +157,7 @@ stages:
 
       # Create config csv for Azure Load Test
       - task: PowerShell@2
-        displayName: 'Create config JMeter file'
+        displayName: 'Create JMeter config file'
         name: 'createAzureLoadTestConfigCsv'
         enabled: false # currently not used / vars handed over via env vars and parameters
         inputs:

@@ -2,7 +2,7 @@
 
 Azure Mission-Critical uses the Microsoft Azure Load Test Service (MALT) for load testing. MALT is a Apache JMeter-based managed service and is implemented as a standalone as well as as a pipeline-embedded solution in Azure Mission-Critical.
 
-Standalone creates the Load test infrastructure, creates a test and uploads the JMeter load test definition created and optimized for the Azure Mission-Critical sample application and its APIs.
+The **Azure.AlwaysOn Deploy Azure Load Test (standalone)** pipeline creates the Load test resource in Azure, creates a test and uploads the JMeter load test definition created and optimized for the Azure Mission-Critical sample application and its APIs.
 
 ![MALT Standalone pipeline](screenshots/malt_standalone_pipeline.png)
 

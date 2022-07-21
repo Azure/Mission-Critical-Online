@@ -80,8 +80,8 @@ stages:
     # override baseline when chaos testing is enabled
     - ${{ if eq(parameters.runChaosTesting, 'true') }}:
       - script: |
-          echo "*** Setting loadTestBaseline to $chaosLoadTestBaseline"
-          echo "##vso[task.setvariable variable=loadTestBaseline]$chaosLoadTestBaseline"
+          echo "*** Setting loadTestBaseline to $(chaosLoadTestBaseline)"
+          echo "##vso[task.setvariable variable=loadTestBaseline]$(chaosLoadTestBaseline)"
         displayName: 'Override loadTestBaseline for Chaos Experiments'
 
     # setting parameters for embedded load tests

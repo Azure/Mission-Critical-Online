@@ -475,12 +475,20 @@ stages:
                     }
 
                     $ltTerraformStateFile = "terraform-azurelt-$(prefix)$(customSuffix).state"
-                    echo "*** Deleting Terraform state file $ltTerraformStateFile on Storage Account $(terraformStorageAccount)"
 
-                    az storage blob delete --account-name $(terraformStorageAccount) `
+                    $stateBlobExists = az storage blob exists --account-name $(terraformStorageAccount) `
                       --container-name tfstate `
                       --name $ltTerraformStateFile `
-                      --auth-mode login
+                      --auth-mode login -o tsv
+
+                    if($stateBlobExists -eq "True")
+                    {
+                      echo "*** Deleting Terraform state file $ltTerraformStateFile on Storage Account $(terraformStorageAccount)"
+                      az storage blob delete --account-name $(terraformStorageAccount) `
+                        --container-name tfstate `
+                        --name $ltTerraformStateFile `
+                        --auth-mode login
+                    }
 
               # Run Terraform for destroy for the global resources of this E2E env
               - template: steps-terraform-destroy.yaml

@@ -1,10 +1,10 @@
 # Load Testing with Locust
 
-[locust.io](https://locust.io) is an easy to use, scriptable and scalable open source load and performance testing tool.
+[locust.io](https://locust.io) is an easy to use, scriptable and scalable open source load and performance testing tool. The Azure Mission-Critical reference implementation leverages Locust as a standalone load testing tool only. A separate pipeline is used to spin up a Locust deployment with a WebUI to conduct customized load tests on-demand.
 
 ## Infrastructure
 
-The standalone Locust implementation used for the Azure Mission-Critical reference implementation consists of one master node and one or more worker nodes distributed across multiple Azure regions. The worker nodes execute the load testing tasks and communicate with the master node on port `5557/TCP`. The master node is orchestrating the worker nodes, gathering the load test data and (in standalone-mode only) hosting a web interface on port `8089/TCP` to conduct and monitor load tests.
+The standalone deployment consists of a single master node and one or more worker nodes, the number can be configured at pipeline execution time, distributed across multiple Azure regions. The worker nodes execute the load testing tasks and communicate with the master node on port `5557/TCP`. The master node is orchestrating the worker nodes, gathering the load test data and (in standalone-mode only) hosting a web interface on port `8089/TCP` to conduct and monitor load tests.
 
 All nodes are represented as individual container instances, hosted on Azure Container Instances (ACI) and are deployed via Terraform. The Terraform definition is stored in the `src/infra/loadtest-locust` directory.
 
@@ -26,6 +26,22 @@ Further configuration changes can by done by modifying the `variables.tf` file. 
 The additional infrastructure consisting of an Azure Storage Account hosting the `locustfile.py` test definition as well as an Azure Key Vault hosting the randomly generated password used to access the locust web interface. Those two resources will remain, even if the Locust workers are scaled down to zero.
 
 Check out [Globally distributed load tests in Azure with Locust](https://medium.com/microsoftazure/globally-distributed-load-tests-in-azure-with-locust-aeb3a365cd60?source=friends_link&sk=af2c76b46c2cfebd4c972106c9ecbadc) to learn more about Locust on ACI.
+
+### Embedded (deprecated)
+
+*The embedded version is deprecated and was removed in a previous release.*
+
+The embedded version of Locust is "embedded" into the **Azure.AlwaysOn E2E Release** pipeline and can be enabled by selecting "Run embedded load testing" when running the pipeline.
+
+![Run E2E pipeline with Load Test](screenshots/locust_run_e2e_pipeline.png)
+
+This results in an additional pipeline stage:
+
+![Embedded locust pipeline stage](screenshots/locust_embedded_stage.png)
+
+And uploads the load test results at the end at the end of each successful run as pipeline artifacts:
+
+![Locust pipeline artifacts](screenshots/locust_embedded_artifacts.png)
 
 ## Authentication
 

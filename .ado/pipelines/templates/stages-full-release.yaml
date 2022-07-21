@@ -276,12 +276,13 @@ stages:
       parameters:
         terraformWorkingDirectory: 'src/testing/loadtest-azure/infra'
         customPrefix: '$(prefix)$(customSuffix)'
-        destroyInfra: ${{ parameters.destroyOldEnvironment }}
-        embeddedLoadTest: true
+        destroyInfra: ${{ parameters.destroyOldEnvironment }} # this will destroy the load test infrastructure together with the other infrastructure
+        runChaosTesting: ${{ parameters.runChaosTesting }} # handover chaos parameter to let the load test know if chaos is running or not
+        embeddedLoadTest: true # execute loadtest pipeline-embedded aka headless
 
   # Chaos testing for e2e (optional) with Azure Chaos Studio
   - ${{ if eq(parameters.runChaosTesting, 'true') }}: # only in e2e and when runChaosTesting is true
-    - template: stages-chaos.yaml # chaos testing pipline
+    - template: stages-chaos.yaml # chaos testing pipeline
       parameters:
         stageName: 'deployChaosExperiments'
         customPrefix: '$(prefix)$(customSuffix)'

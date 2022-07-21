@@ -240,8 +240,10 @@ Azure Policy is used to monitor and enforce certain baselines. All policies are 
 
 This repository also contains a couple of supporting services for the Azure Mission-Critical project:
 
-- [Self-hosted Agents](./build-agents/README.md)
+- [Chaos Testing](../testing/chaos-testing/README.md)
 - [Locust Load Testing](../testing/loadtest-locust/README.md)
+- [Azure Load Test](../testing/loadtest-azure/README.md)
+- [Userload generator](../testing/userload-generator/README.md)
 
 These supporting services are required / optional based on how you chose to use Azure Mission-Critical.
 

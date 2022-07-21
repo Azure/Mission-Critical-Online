@@ -9,20 +9,11 @@ parameters:
    default: ''
  - name: loadTestNumberOfWorkerNodes
    default: 0
- - name: loadTestDurationInSeconds
-   default: 0
- - name: loadTestUserSpawnRate
-   default: 0
- - name: loadTestNumberOfUsers
-   default: 0
- - name: locustHeadless
-   type: boolean
-   default: false
 
 stages:
 
 - stage: deploylocust
-  displayName: 'Run loadtest'
+  displayName: 'Run locust loadtest'
   jobs:
   - job: deploylocustterraform
     displayName: 'Deploy loadtest infrastructure (and run test when in embedded mode)'
@@ -38,31 +29,6 @@ stages:
         terraformStorageResourceGroupName:  '$(terraformResourceGroup)'
         terraformStateFilename:             'terraform-locust-${{ parameters.customPrefix }}.state'
         terraformWorkingDirectory:          '${{ parameters.terraformWorkingDirectory }}'
-
-      # If supplied as a parameter, write loadTestTargetUrl parameter into a pipeline variable
-    - ${{ if ne(parameters.loadTestTargetUrl, '') }}:
-      - task: Bash@3
-        name: 'bashsetTargetUrlVariable'
-        displayName: 'Set loadTestTargetUrl variable'
-        inputs:
-          targetType: 'inline'
-          script: |
-            echo "##vso[task.setvariable variable=loadTestTargetUrl]${{ parameters.loadTestTargetUrl }}"
-
-      # parse global terraform output to fetch frontdoor fqdn (used for headless-locust-only)
-    - ${{ if eq(parameters.locustHeadless, 'true') }}:
-      - template: steps-parse-terraform-output.yaml
-        parameters:
-          workingDirectory: '$(Pipeline.Workspace)/terraformOutputGlobalInfra'  # Global infra deploy output directory
-
-      # overwrite loadTestTargetUrl pipeline variable with frontdoor fqdn (used for headless-locust-only)
-      - task: Bash@3
-        name: 'bashsetTargetUrlVariableHeadless'
-        displayName: 'Set loadTestTargetUrl variable'
-        inputs:
-          targetType: 'inline'
-          script: |
-            echo "##vso[task.setvariable variable=loadTestTargetUrl]https://$(frontdoor_fqdn)"
 
     - task: Bash@3
       name: 'terraformtaintlocustfile'
@@ -83,70 +49,7 @@ stages:
         terraformWorkingDirectory:  '${{ parameters.terraformWorkingDirectory }}'
         customPrefix:               '${{ parameters.customPrefix }}'
         environment:                '$(environment)'
-        customAttributes:           '-var targeturl=$(loadTestTargetUrl)
-                                    -var queued_by="$(Build.QueuedBy)"
-                                    -var branch="$(sourceBranch)"
-                                    -var locust_workers=${{ parameters.loadTestNumberOfWorkerNodes }}
-                                    -var locust_runtime="${{ parameters.loadTestDurationInSeconds }}s"
-                                    -var locust_spawn_rate=${{ parameters.loadTestUserSpawnRate }}
-                                    -var locust_headless="${{ lower(parameters.locustHeadless) }}"
-                                    -var locust_number_of_users=${{ parameters.loadTestNumberOfUsers }}'
-
-    # All of the next tasks are only applicable in headless mode
-    - ${{ if eq(parameters.locustHeadless, 'true') }}:
-      # Sleep for the duration of the load test
-      - task: Bash@3
-        displayName: 'Sleep for ${{ parameters.loadTestDurationInSeconds }} seconds'
-        inputs:
-          targetType: 'inline'
-          script: |
-            echo "Sleeping for ${{ parameters.loadTestDurationInSeconds }} seconds while the test is running..."
-            sleep ${{ parameters.loadTestDurationInSeconds }}
-
-    # Download locust stats and logs from storage account to build agent so we can then store it as a pipeline artifact
-      - task: Bash@3
-        displayName: 'Download loadtest stats and logs'
-        inputs:
-          targetType: 'inline'
-          workingDirectory: '${{ parameters.terraformWorkingDirectory }}'
-          script: |
-
-            # Retrieve Azure Files URL and SAS token
-            storageurl=`terraform output -raw locust_storage_url`
-            sastoken=`terraform output -raw locust_readwrite_sas_token`
-
-            # Download logs and stats via az CLI
-            mkdir locust/
-            azcopy copy "$storageurl/stats/*$sastoken" locust/
-            azcopy copy "$storageurl/logs/*$sastoken" locust/
-
-            # Creating an HTML report based on the locust results
-            wget https://github.com/benc-uk/locust-reporter/releases/download/v1.2.3/locust-reporter -O locust-reporter
-            chmod u+x locust-reporter
-            ./locust-reporter -dir locust -failures -outfile locust/Report_${{ parameters.customPrefix }}.html -prefix ${{ parameters.customPrefix }}
-
-            # Clean up storage file share. Otherwise terraform cannot delete it
-            echo "Deleting all files on file share using azcopy"
-            azcopy remove "$storageurl$sastoken" --recursive --exclude-pattern "stats;logs"
-
-      # Publish Loadtest results stats and logs as pipeline artifacts
-      - task: PublishBuildArtifacts@1
-        displayName: 'Publish loadtest results and logs'
-        inputs:
-          pathToPublish: '${{ parameters.terraformWorkingDirectory }}/locust/'
-          artifactName: 'locust-test-results'
-
-      # Parse load test results
-      - template: steps-parse-loadtest-output.yaml
-        parameters:
-          customPrefix: ${{ parameters.customPrefix }}
-          statsPath: '${{ parameters.terraformWorkingDirectory }}/locust/'
-
-      # Destroy Locust infrastructure at the end
-      - template: steps-terraform-destroy.yaml
-        parameters:
-          terraformStorageAccountName:        '$(terraformStorageAccount)'
-          terraformStorageResourceGroupName:  '$(terraformResourceGroup)'
-          terraformStateFilename:     'terraform-locust-${{ parameters.customPrefix }}.state'
-          terraformWorkingDirectory:  '${{ parameters.terraformWorkingDirectory }}'
-          customAttributes:           '-var prefix="${{ parameters.customPrefix }}"'
+        customAttributes:           '-var targeturl=${{ parameters.loadTestTargetUrl }}
+                                     -var queued_by="$(Build.QueuedBy)"
+                                     -var branch="$(sourceBranch)"
+                                     -var locust_workers=${{ parameters.loadTestNumberOfWorkerNodes }}'

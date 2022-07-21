@@ -1,7 +1,7 @@
 parameters:
   - name: prepareForChaosTesting
     type: boolean
-    default: true
+    default: false
 
 jobs:
 - job: deployconfiguration
@@ -46,7 +46,7 @@ jobs:
 
           $ingressNamespace = "ingress-nginx"
 
-          # Deploy helm chart for ingress-nginx using a custom load balancer ip and resource group
+          # Deploy helm chart for ingress-nginx using a custom load balancer ip and resource group (RG in which the Public IP sits in)
           helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx `
                        --namespace $ingressNamespace --create-namespace `
                        --values src/config/ingress-nginx/values.helm.yaml `
@@ -86,6 +86,10 @@ jobs:
           # Apply ConfigMap which configures OMS Agent's log and metric collection. Take a look at the reference file to understand what is being collected/excluded
           echo "*** Apply configmap for OMSAgent (Container Insights) on $aksClusterName"
           kubectl apply -f src/config/monitoring/container-azm-ms-agentconfig.yaml
+
+          if ($LastExitCode -ne 0) {
+            throw "*** Error on installing OMSAgent configmap!"
+          }
         }
 
   - task: AzureCLI@2

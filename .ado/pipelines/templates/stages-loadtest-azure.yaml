@@ -169,21 +169,6 @@ stages:
             })
             $config | export-csv "$(System.DefaultWorkingDirectory)/test-config.csv"  -NoTypeInformation
 
-      # upload a loadtest config file from previous task
-      - task: AzureCLI@2
-        displayName: 'Upload auto-generated config file'
-        name: 'uploadAzureLoadTestConfig'
-        enabled: false # currently not used / vars handed over via env vars and parameters
-        inputs:
-          azureSubscription: '$(azureServiceConnection)'
-          scriptType: pscore
-          scriptLocation: 'scriptPath'
-          scriptPath: '$(System.DefaultWorkingDirectory)/src/testing/loadtest-azure/scripts/file-upload-to-loadtest.ps1'
-          arguments:
-            -loadTestId "$(loadTestId)" `
-            -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
-            -testFileName "$(System.DefaultWorkingDirectory)/test-config.csv"
-
       # start azure load test
       - task: AzureCLI@2
         displayName: 'Run Azure Load Test'

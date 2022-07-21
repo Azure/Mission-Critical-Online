@@ -26,6 +26,8 @@ MALT provides native support to define test criteria for each load test. Azure M
 
 ![MALT test criteria](screenshots/malt_embedded_test_criteria.png)
 
+The baseline definition files can be either modified directly or replaced by changing the path in `/.ado/pipelines/config/configuration`. The regular baseline is specified in `azureLoadTestBaseline` the chaos-specific baseline in `chaosLoadTestBaseline`.
+
 ---
 
 [Back to documentation root](/docs/README.md)

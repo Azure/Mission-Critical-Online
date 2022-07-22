@@ -21,11 +21,13 @@ function Invoke-WebRequestWithRetry {
         throw "*** Expecting reponse code $ExpectedResponseCode, was: $($response.StatusCode)"
       }
       $isSuccess = $true
-    } catch {
+    }
+    catch {
       Write-Host $_; # print the first exception too
       if ($retrycount -ge $MaximumRetryCount) {
         throw "*** Request to $Uri failed the max. number of retries."
-      } else {
+      }
+      else {
         $retrycount++
         Write-Warning "*** Request to $Uri failed. Retrying... $retrycount/$MaximumRetryCount"
         Start-Sleep $RetryWaitSeconds

@@ -139,4 +139,5 @@ stages:
                                       -var=wapp_container_image="$(ImageName-alwayson_grafana)"
                                       -var=acr_resource_id="$(acr_resource_id)"
                                       -var=''stamps=$(grafanaStamps)''
+                                      -var=frontdoor_fqdn="$(frontdoor_fqdn)"
                                       -var=frontdoor_header_id="$(frontdoor_header_id)"'

@@ -49,8 +49,8 @@ stages:
         terraformWorkingDirectory: '${{ parameters.terraformWorkingDirectory }}'
         customPrefix:              '${{ parameters.customPrefix }}'
         environment:               '$(environment)'
-        customAttributes:          '-var queued_by="$(Build.QueuedBy)"
-                                    -var branch="$(sourceBranch)"'
+        customAttributes:          '-var=queued_by="$(Build.QueuedBy)"
+                                    -var=branch="$(sourceBranch)"'
 
     # Parsing the Terraform output for the MALT service deployment
     - template: steps-parse-terraform-output.yaml
@@ -140,6 +140,8 @@ stages:
 
             # loop through stamps from pipeline artifact json
             foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
+              echo "**************************** REGION: $($stamp.location) ****************************"
+
               ./src/testing/loadtest-azure/scripts/appcomponents-add-to-loadtest.ps1 `
                 -loadTestId "$(loadTestId)" `
                 -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
@@ -248,4 +250,4 @@ stages:
           terraformStorageResourceGroupName: '$(terraformResourceGroup)'
           terraformStateFilename:     'terraform-azurelt-${{ parameters.customPrefix }}.state'
           terraformWorkingDirectory:  '${{ parameters.terraformWorkingDirectory }}'
-          customAttributes:           '-var prefix="${{ parameters.customPrefix }}"'
+          customAttributes:           '-var=prefix="${{ parameters.customPrefix }}"'

@@ -34,7 +34,7 @@ resource "azurerm_linux_web_app" "appservice" {
     "GF_DATABASE_SSL_MODE" = "require"
 
     "GF_SECURITY_CSRF_ADDITIONAL_HEADERS" = "X-FORWARDED-HOST"
-    "GF_SECURITY_CSRF_TRUSTED_ORIGINS" = var.frontdoor_fqdn
+    "GF_SECURITY_CSRF_TRUSTED_ORIGINS" = "https://${var.frontdoor_fqdn}"
 
     "GRAFANA_USERNAME"           = "alwayson"
     "GRAFANA_PASSWORD"           = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.grafana_password[each.key].id})"

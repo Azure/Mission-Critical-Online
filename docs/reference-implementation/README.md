@@ -62,6 +62,7 @@ As with the Azure Mission-Critical Design Guidelines, the Reference Implementati
 ## Helpful Information
 
 - [Getting started](Getting-Started.md) outlines the process and required steps to deploy Azure Mission-Critical in your environment, including preparing Azure DevOps pipelines. It should be read in tandem with the Reference Implementation guidance.
+  - [Getting started using CLI](Getting-Started-CLI.md) - same as the guide above but contains instructions on how to create the setup using CLI instead of the ADO portal experience.
 - [SLO and Availability](AppDesign-SLO-Availability.md) outlines the SLO for Azure Mission-Critical (99.95%) and how this figure was calculated.
 - [ESLZ Alignment](ESLZ-Alignment.md) outlines how Azure Mission-Critical aligns with and compliments the Enterprise Scale Landing Zones.
 - [Troubleshooting](Troubleshooting.md) collects solutions to known issues during development and deployment.

@@ -33,6 +33,9 @@ resource "azurerm_linux_web_app" "appservice" {
     "GF_DATABASE_PASSWORD" = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.postgres_password[each.key].id})"
     "GF_DATABASE_SSL_MODE" = "require"
 
+    "GF_SECURITY_CSRF_ADDITIONAL_HEADERS" = "X-FORWARDED-HOST"
+    "GF_SECURITY_CSRF_TRUSTED_ORIGINS"    = "https://${var.frontdoor_fqdn}"
+
     "GRAFANA_USERNAME"           = "alwayson"
     "GRAFANA_PASSWORD"           = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.grafana_password[each.key].id})"
     "AZURE_DEFAULT_SUBSCRIPTION" = data.azurerm_subscription.current.subscription_id
@@ -41,8 +44,8 @@ resource "azurerm_linux_web_app" "appservice" {
   }
 
   site_config {
-    always_on                   = true
-    scm_use_main_ip_restriction = true
+    always_on                               = true
+    scm_use_main_ip_restriction             = true
     container_registry_use_managed_identity = true
 
     application_stack {

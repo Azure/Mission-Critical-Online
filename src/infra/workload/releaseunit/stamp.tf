@@ -43,6 +43,11 @@ module "stamp" {
   aks_system_node_pool_autoscale_minimum = var.aks_system_node_pool_autoscale_minimum
   aks_system_node_pool_autoscale_maximum = var.aks_system_node_pool_autoscale_maximum
 
+  aks_user_node_pool_sku_size          = var.aks_user_node_pool_sku_size
+  aks_user_node_pool_autoscale_minimum = var.aks_user_node_pool_autoscale_minimum
+  aks_user_node_pool_autoscale_maximum = var.aks_user_node_pool_autoscale_maximum
+
+
   event_hub_thoughput_units         = var.event_hub_thoughput_units
   event_hub_enable_auto_inflate     = var.event_hub_enable_auto_inflate
   event_hub_auto_inflate_maximum_tu = var.event_hub_auto_inflate_maximum_tu

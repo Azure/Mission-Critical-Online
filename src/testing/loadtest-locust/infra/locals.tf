@@ -29,13 +29,5 @@ locals {
     "LOCUST_MODE_WORKER" = "true"
   }
 
-  # specifics for headless mode (doesn't apply to worker - that's always headless)
-  environment_variables_headless = {
-    "LOCUST_RUN_TIME"       = var.locust_runtime, # defaults to 0 when not in headless mode
-    "LOCUST_EXPECT_WORKERS" = var.locust_workers, # defaults to 0 when not in headless mode
-    "LOCUST_HEADLESS"       = "true",             # locust runs either in headless mode or webui
-    "LOCUST_SPAWN_RATE"     = var.locust_spawn_rate,
-    "LOCUST_USERS"          = var.locust_number_of_users
-  }
 }
 

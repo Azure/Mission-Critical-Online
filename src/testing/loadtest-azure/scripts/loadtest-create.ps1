@@ -20,14 +20,16 @@ param
   [int] $loadTestDurationSeconds,
 
   # Load Test engine instances
-  [int] $engineInstances = "0",
+  [int] $engineInstances = "1",
 
   # Load Test data plane endpoint
   [Parameter(Mandatory=$true)]
   [string] $apiEndpoint,
 
+  [string] $passFailCriteria,
+
   # Load Test data plane api version
-  [string] $apiVersion = "2021-07-01-preview",
+  [string] $apiVersion = "2022-06-01-preview",
 
   [bool] $pipeline = $false
 )
@@ -68,9 +70,27 @@ function GetTestBody {
 # Write test data to file as this avoids request too long as well as
 # PS1+az cli quoting issues - see https://github.com/Azure/azure-cli/blob/dev/doc/quoting-issues-with-powershell.md#best-practice-use-file-input-for-json
 $testDataFileName = $loadTestId + ".txt"
-GetTestBody -loadTestDisplayName $loadTestDisplayName `
+
+$body = GetTestBody -loadTestDisplayName $loadTestDisplayName `
             -loadTestDescription $loadTestDescription `
-            -engineInstances $engineInstances | Out-File $testDataFileName -Encoding utf8
+            -engineInstances $engineInstances 
+
+if ($passFailCriteria) {
+  Write-Verbose "*** passFailCriteria set to $passFailCriteria"
+
+  if (!(Test-Path $passFailCriteria)) {
+    throw "ERROR: $passFailCriteria not found or invalid."
+  }
+
+  $content = Get-Content $passFailCriteria | ConvertFrom-JSON
+
+  $jsonBase = $body | ConvertFrom-Json
+  $jsonBase | Add-Member -MemberType NoteProperty -Name "passFailCriteria" -Value $content
+
+  $body = $jsonBase | ConvertTo-JSON -Depth 4
+}
+
+$body | Out-File $testDataFileName -Encoding utf8
 
 $urlRoot = "https://" + $apiEndpoint + "/loadtests/" + $loadTestId
 Write-Verbose "*** Load test service data plane: $urlRoot"

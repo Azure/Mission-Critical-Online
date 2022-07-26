@@ -16,7 +16,7 @@ jobs:
       retryCountOnTaskFailure: 1
       inputs:
         targetType: 'filePath'
-        filePath: $(System.DefaultWorkingDirectory)/.ado/scripts/SmokeTest.ps1
+        filePath: $(System.DefaultWorkingDirectory)/.ado/pipelines/scripts/Run-SmokeTests.ps1
         arguments: > # avoid newline characters in multiline string
           -mode "stamp"
           -smokeTestRetryCount $(smokeTestRetryCount)
@@ -58,7 +58,7 @@ jobs:
       retryCountOnTaskFailure: 1
       inputs:
         targetType: 'filePath'
-        filePath: $(System.DefaultWorkingDirectory)/.ado/scripts/SmokeTest.ps1
+        filePath: $(System.DefaultWorkingDirectory)/.ado/pipelines/scripts/Run-SmokeTests.ps1
         arguments: > # avoid newline characters in multiline string
           -mode "global"
           -smokeTestRetryCount $(smokeTestRetryCount)

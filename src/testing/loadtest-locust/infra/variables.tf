@@ -19,7 +19,7 @@ variable "branch" {
 variable "locust_container_image" {
   description = "Locust Container Image"
   type        = string
-  default     = "locustio/locust:2.8.2"
+  default     = "locustio/locust:2.10.1"
 }
 
 variable "queued_by" {
@@ -32,30 +32,6 @@ variable "targeturl" {
   description = "Target URL"
   type        = string
   default     = "https://www.int.mission-critical.app"
-}
-
-variable "locust_headless" {
-  description = "Deploy Locust in headless mode?"
-  type        = bool
-  default     = false
-}
-
-variable "locust_spawn_rate" {
-  description = "Locust spawn rate users per second"
-  type        = string
-  default     = "0"
-}
-
-variable "locust_number_of_users" {
-  description = "Number of simulated users"
-  type        = string
-  default     = "0"
-}
-
-variable "locust_runtime" {
-  description = "Runtime for Locust in headless mode (in seconds e.g. '300s')"
-  type        = string
-  default     = "0s"
 }
 
 variable "locust_workers" {

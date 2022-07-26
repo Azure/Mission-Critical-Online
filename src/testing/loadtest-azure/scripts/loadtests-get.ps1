@@ -1,7 +1,8 @@
 # loadtests-get.ps1 | List existing load tests
 param
 (
-  # Load Test Id (optional)
+  # Load Test Id
+  [Parameter(Mandatory=$true)]
   [string] $loadTestId,
   
   # Load Test data plane endpoint
@@ -9,18 +10,14 @@ param
   [string] $apiEndpoint,
 
   # Load Test data plane api version
-  [string] $apiVersion = "2021-07-01-preview",
+  [string] $apiVersion = "2022-06-01-preview",
 
   [int] $maxPageSize
 )
 
 . "$PSScriptRoot/common.ps1"
 
-$urlRoot = "https://" + $apiEndpoint + "/loadtests/sortAndFilter"
-
-if (!$loadTestId) {
-  $urlRoot = $urlRoot + "?testId=" + $loadTestId
-}
+$urlRoot = "https://" + $apiEndpoint + "/loadtests/" + $loadTestId
 
 az rest --url $urlRoot `
   --method GET `

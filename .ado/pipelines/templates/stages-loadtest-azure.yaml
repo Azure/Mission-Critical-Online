@@ -18,6 +18,11 @@ parameters:
    type: string
    default: ''
 
+ - name: runChaosTesting
+   displayName: "Run chaos testing" # Influences which baseline to compare to
+   type: boolean
+   default: false
+
 stages:
 
 - stage: deployazloadtest
@@ -38,14 +43,14 @@ stages:
         terraformStateFilename:            'terraform-azurelt-${{ parameters.customPrefix }}.state'
         terraformWorkingDirectory:         '${{ parameters.terraformWorkingDirectory }}'
 
-    # Deploy the locust infrastructure. If running in headless mode, the test will automatically start once the infra is provisioned.
+    # Deploy the MALT infrastructure. If running in embedded mode, the test will automatically start once the infra is provisioned.
     - template: steps-terraform-apply.yaml
       parameters:
         terraformWorkingDirectory: '${{ parameters.terraformWorkingDirectory }}'
         customPrefix:              '${{ parameters.customPrefix }}'
         environment:               '$(environment)'
-        customAttributes:          '-var queued_by="$(Build.QueuedBy)"
-                                    -var branch="$(sourceBranch)"'
+        customAttributes:          '-var=queued_by="$(Build.QueuedBy)"
+                                    -var=branch="$(sourceBranch)"'
 
     # Parsing the Terraform output for the MALT service deployment
     - template: steps-parse-terraform-output.yaml
@@ -63,25 +68,46 @@ stages:
           displayName: 'Parse global infrastructure deployment outputs'
 
       # Set loadTestTargetFQDN to the Azure Front Door FQDN (when load test is embedded)
-      - script: |
-          echo "*** Setting loadTestTargetFQDN to $(frontdoor_fqdn)"
-          echo "##vso[task.setvariable variable=azureLoadTestTargetFQDN]$(frontdoor_fqdn)" 
-        displayName: 'Set Loadtest targetUrl to Azure Front Door'
+      - task: PowerShell@2
+        displayName: 'Set Azure Load Test variables'
+        inputs:
+          targetType: inline
+          script: |
+            echo "*** Setting loadTestTargetFQDN to $(frontdoor_fqdn)"
+            echo "##vso[task.setvariable variable=azureLoadTestTargetFQDN]$(frontdoor_fqdn)"
 
-    # Set loadTestTargetFQDN to the FQDN specified in the pipeline parameters
+            echo "*** Setting loadTestBaseline to $(azureLoadTestBaseline)"
+            echo "##vso[task.setvariable variable=loadTestBaseline]$(azureLoadTestBaseline)"
+
+    # override baseline when chaos testing is enabled
+    - ${{ if eq(parameters.runChaosTesting, 'true') }}:
+      - task: PowerShell@2
+        displayName: 'Override loadTestBaseline for Chaos Experiments'
+        inputs:
+          targetType: inline
+          script: |
+            echo "*** Setting loadTestBaseline to $(chaosLoadTestBaseline)"
+            echo "##vso[task.setvariable variable=loadTestBaseline]$(chaosLoadTestBaseline)"
+
+    # setting parameters for standalone load test runs
     - ${{ if ne(parameters.embeddedLoadTest, 'true') }}:
 
-      - script: |
-          echo "*** Setting loadTestTargetFQDN to ${{ parameters.loadTestTargetFQDN }}"
-          echo "##vso[task.setvariable variable=azureLoadTestTargetFQDN]${{ parameters.loadTestTargetFQDN }}" 
-        displayName: 'Set Loadtest targetUrl to ${{ parameters.loadTestTargetFQDN }}'    
+      # standalone - set loadTestTargetFQDN to the FQDN specified in the pipeline parameters
+      - task: PowerShell@2
+        displayName: 'Set Loadtest targetUrl to ${{ parameters.loadTestTargetFQDN }}'
+        inputs:
+          targetType: inline
+          script: |
+            echo "*** Setting loadTestTargetFQDN to ${{ parameters.loadTestTargetFQDN }}"
+            echo "##vso[task.setvariable variable=azureLoadTestTargetFQDN]${{ parameters.loadTestTargetFQDN }}"
 
     # create a new azure load test with an auto-generated loadTestId
     - task: AzureCLI@2
-      displayName: 'Create a new Azure Load Test'
+      displayName: 'Create new Azure Load Test'
       name: 'createAzureLoadTest'
       inputs:
         azureSubscription: '$(azureServiceConnection)'
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
         scriptType: pscore
         scriptLocation: 'scriptPath'
         scriptPath: '$(System.DefaultWorkingDirectory)/src/testing/loadtest-azure/scripts/loadtest-create.ps1'
@@ -93,6 +119,7 @@ stages:
           -loadTestUserThreads "$(azureLoadTestUserThreads)" `
           -loadTestDurationSeconds "$(azureLoadTestDurationSeconds)" `
           -engineInstances "$(azureLoadTestEngineInstances)" `
+          -passFailCriteria $(loadTestBaseline) `
           -pipeline $true `
           -verbose:$true
 
@@ -100,8 +127,8 @@ stages:
     - ${{ if eq(parameters.embeddedLoadTest, 'true') }}:
 
       # This step adds additional App Components to the Load Test dashboard
-      - task: AzureCLI@2 
-        displayName: 'Add AppComponents to Load Test' 
+      - task: AzureCLI@2
+        displayName: 'Add AppComponents to Load Test'
         name: 'addAppComponentsToLoadTest'
         inputs:
           azureSubscription: '$(azureServiceConnection)'
@@ -113,6 +140,8 @@ stages:
 
             # loop through stamps from pipeline artifact json
             foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
+              echo "**************************** REGION: $($stamp.location) ****************************"
+
               ./src/testing/loadtest-azure/scripts/appcomponents-add-to-loadtest.ps1 `
                 -loadTestId "$(loadTestId)" `
                 -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
@@ -123,7 +152,7 @@ stages:
 
       # upload a jmx file for the previously created azure load test with an auto-generated testFileId
       - task: AzureCLI@2
-        displayName: 'Upload *.jmx file for Azure Load Test'
+        displayName: 'Upload JMeter file'
         name: 'uploadAzureLoadTestJmx'
         inputs:
           azureSubscription: '$(azureServiceConnection)'
@@ -135,35 +164,6 @@ stages:
             -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
             -testFileName "$(System.DefaultWorkingDirectory)/src/testing/loadtest-azure/scripts/catalog-test.jmx" `
             -verbose:$true
-
-      # Create config csv for Azure Load Test
-      - task: PowerShell@2
-        displayName: 'Create config *.csv file'
-        name: 'createAzureLoadTestConfigCsv'
-        enabled: false # currently not used / vars handed over via env vars and parameters
-        inputs:
-          targetType: inline
-          script: |      
-            $config = @(
-              [pscustomobject]@{
-              url = "$(frontdoor_fqdn)" 
-            })
-            $config | export-csv "$(System.DefaultWorkingDirectory)/test-config.csv"  -NoTypeInformation
-
-      # upload a loadtest config file from previous task
-      - task: AzureCLI@2
-        displayName: 'Upload auto-generated load test config file for Azure Load Test'
-        name: 'uploadAzureLoadTestConfig'
-        enabled: false # currently not used / vars handed over via env vars and parameters
-        inputs:
-          azureSubscription: '$(azureServiceConnection)'
-          scriptType: pscore
-          scriptLocation: 'scriptPath'
-          scriptPath: '$(System.DefaultWorkingDirectory)/src/testing/loadtest-azure/scripts/file-upload-to-loadtest.ps1'
-          arguments:
-            -loadTestId "$(loadTestId)" `
-            -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
-            -testFileName "$(System.DefaultWorkingDirectory)/test-config.csv"            
 
       # start azure load test
       - task: AzureCLI@2
@@ -185,13 +185,14 @@ stages:
       # get load test status and wait till it's done
       - task: AzureCLI@2
         displayName: 'Wait for load test to be finished'
+        continueOnError: true # shows a warning but continues the pipeline
         inputs:
           azureSubscription: $(azureServiceConnection)
           scriptType: pscore
           scriptLocation: inlineScript
           inlineScript: |
-            
-            Do {
+
+            do {
               echo "*** Waiting additional 90 seconds for the load test run to complete.."
               start-sleep -seconds 90
               $result = $(System.DefaultWorkingDirectory)/src/testing/loadtest-azure/scripts/loadtest-get-run.ps1 `
@@ -200,6 +201,7 @@ stages:
               $testRunStatus = ($result).status
               echo "*** Test Run $(testRunId) is in status $testRunStatus"
               if ($result.status -eq "DONE") {
+
                 echo $result
                 $resultUrl = ($result).testArtifacts.outputArtifacts.resultUrl.url
                 $logsUrl = ($result).testArtifacts.outputArtifacts.logsUrl.url
@@ -208,7 +210,13 @@ stages:
                 Invoke-WebRequest $resultUrl -OutFile "results/results.zip"
                 echo "*** Download logsUrl"
                 Invoke-WebRequest $logsUrl -OutFile "results/logs.zip"
+
+                if ($result.testResult -eq "FAILED") {
+                  throw "*** ERROR: Test $($result.testRunId) failed."
+                }
+
               }
+
               # todo - timeout?
             } while ($result.status -ne "DONE")
 
@@ -242,4 +250,4 @@ stages:
           terraformStorageResourceGroupName: '$(terraformResourceGroup)'
           terraformStateFilename:     'terraform-azurelt-${{ parameters.customPrefix }}.state'
           terraformWorkingDirectory:  '${{ parameters.terraformWorkingDirectory }}'
-          customAttributes:           '-var prefix="${{ parameters.customPrefix }}"'
+          customAttributes:           '-var=prefix="${{ parameters.customPrefix }}"'

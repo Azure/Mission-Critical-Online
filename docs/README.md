@@ -6,12 +6,13 @@
 
 ## Introduction to Azure Mission-Critical
 
-- [Introduction](https://github.com/Azure/Mission-Critical/blob/main/docs/Introduction.md) (➡️ `Azure/Mission-Critical`)
+- [Introduction](https://docs.microsoft.com/azure/architecture/framework/mission-critical/mission-critical-overview) (➡️ `Azure/Mission-Critical`)
 
 ## Azure Mission-Critical Reference Implementation Guide
 
 - [Overview](./reference-implementation/README.md)
-- [Getting Started](./reference-implementation/Getting-Started.md)
+- [Getting started](./reference-implementation/Getting-Started.md)
+  - [Getting Started using CLI](./reference-implementation/Getting-Started-CLI.md)
 - [Frequently Asked Questions (FAQs)](./reference-implementation/FAQ.md)
 - [Critical Design Areas](./reference-implementation/README.md#Critical-Design-Areas)
   - Application Design

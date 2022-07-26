@@ -8,24 +8,12 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name }}
     helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
   annotations:
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "120"   #  Set timeout to read from the backend pods to 120s. Cosmos DB retries can go up to 60s
-    nginx.ingress.kubernetes.io/use-regex: "true"
-    # Rewrite for the Location response header. Replaces the internal FQDN of the cluster with the base URL of the environment
-    # Docs: https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/#proxy-redirect
-    # Backend header might look like this: http://adaptedanteater-cluster.northeurope.cloudapp.azure.com/api/1.0/game/123
-    # Will be rewritte to something like https://aoint-app.alwaysonapp.net/api/1.0/game/123
-    nginx.ingress.kubernetes.io/proxy-redirect-from: "~^((http|https)://.+?)/(.+)$"
-    nginx.ingress.kubernetes.io/proxy-redirect-to: "https://{{ .Values.azure.baseurl }}/$3"
-  {{- if .Values.azure.frontdoorid }}
     # To restric traffic coming only through our Front Door instance, we use a header check on the X-Azure-FDID
     # The value gets injected by the pipeline. Hence, this ID should be treated as a senstive value
-    nginx.ingress.kubernetes.io/enable-modsecurity: "true"
     nginx.ingress.kubernetes.io/modsecurity-snippet: |
       SecRuleEngine On
       SecRule &REQUEST_HEADERS:X-Azure-FDID \"@eq 0\"  \"log,deny,id:106,status:403,msg:\'Front Door ID not present\'\"
       SecRule REQUEST_HEADERS:X-Azure-FDID \"@rx ^(?!{{ .Values.azure.frontdoorid }}).*$\"  \"log,deny,id:107,status:403,msg:\'Wrong Front Door ID\'\"
-  {{- end }}
   {{- if .Values.ingress.annotations }}
   {{ toYaml .Values.ingress.annotations | nindent 4 }}
   {{- end }}
@@ -33,30 +21,16 @@ spec:
   ingressClassName: nginx
   tls:
   - hosts:
-    - {{ .Values.workload.domainname }}
-    secretName: {{ .Chart.Name }}-ingress-secret
+    - {{ .Values.workload.domainname | quote }}
+    secretName: {{ .Values.workload.tlsSecret  }} # shouldn't be changed as this might be used by other services
   rules:
-  - host: {{ .Values.workload.domainname }}
+  - host: {{ .Values.workload.domainname | quote }}
     http:
       paths:
-      - path: /(api|swagger).*
+      - path: /catalogservice/ # The path prefix MUST NOT overlap with any other ingress definition of another exposed service
         pathType: Prefix
         backend:
           service:
             name: {{ .Chart.Name }}-service
             port:
               number: {{ .Values.workload.service.port | default 80 }}
-      - path: /swagger # exposing the swagger endpoint
-        pathType: Prefix
-        backend:
-          service:
-            name: {{ .Chart.Name }}-service
-            port:
-              number: {{ .Values.workload.service.port | default 80 }}
-      - path: /health # exposing the 'healthservice'
-        pathType: Prefix
-        backend:
-          service:
-            name: {{ .Values.healthservice.name | quote }}
-            port:
-              number: {{ .Values.healthservice.port | default 80 }}

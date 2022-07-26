@@ -6,13 +6,6 @@ parameters:
     type: boolean
     default: false
 
-  - name: loadTestingFramework # embedded load testing framework Azure oder Locust
-    type: string
-    default: 'AzureLoadTest'
-    values:
-    - AzureLoadTest
-    - Locust
-
   - name: runChaosTesting # Enable or disable embedded Chaos testing (automatically enables load testing)
     type: boolean
     default: false
@@ -31,7 +24,7 @@ parameters:
 stages:
 
 - stage: deployglobalinfrastructure
-  displayName: 'Deploy Global Infrastructure' # Deploy Global Azure Infrastructure
+  displayName: 'Deploy Global Infrastructure'
   jobs:
 
   - deployment: deployterraformglobalresources
@@ -71,8 +64,8 @@ stages:
                 # We need the az CLI Front Door extension
                 az extension add --name front-door
 
-                $rgName = "$(prefix)$(globalSuffix)-global-rg"
-                $fdName = "$(prefix)$(globalSuffix)-global-fd"
+                $rgName = "$(prefix)$(globalResourceSuffix)-global-rg"
+                $fdName = "$(prefix)$(globalResourceSuffix)-global-fd"
 
                 # check if Front Door exists
                 $frontDoor = $(az network front-door list --query "[?name=='$fdName']" -o tsv)
@@ -135,7 +128,7 @@ stages:
             parameters:
               jobName:                    'GlobalInfra'
               terraformWorkingDirectory:  '$(workingDirectory)/globalresources'
-              customPrefix:               '$(prefix)$(globalSuffix)'      # custom resource prefix
+              customPrefix:               '$(prefix)$(globalResourceSuffix)'      # custom resource prefix
               customAttributes:           '-var=branch="$(sourceBranch)"
                                           -var=queued_by="$(Build.QueuedBy)"
                                           -var=contact_email="$(contactEmail)"
@@ -195,9 +188,9 @@ stages:
   displayName: 'Deploy Configuration' # Apply configuration to Azure Infrastructure
   dependsOn: deployreleaseinfrastructure
   jobs:
-  - template: jobs-configuration.yaml
+  - template: jobs-deploy-configuration.yaml
     parameters:
-      runChaosTesting: ${{ parameters.runChaosTesting }}
+      prepareForChaosTesting: ${{ parameters.runChaosTesting }}
 
 - stage: testcode
   displayName: 'Test Application Code'
@@ -245,7 +238,7 @@ stages:
   - testcode
   - buildapplication
   jobs:
-  - template: jobs-workload-deploy.yaml
+  - template: jobs-deploy-workload.yaml
 
 - stage: importSampleData # Import sample data
   displayName: 'Import sample data'
@@ -254,7 +247,7 @@ stages:
   - template: jobs-init-sampledata.yaml
 
 - stage: testingOnlyStampEndpoints # smoke-testing the stamp endpoints
-  displayName: 'Testing Stamp Endpoints'
+  displayName: 'Test Stamp Endpoints'
   dependsOn: importSampleData
   jobs:
   - template: jobs-smoke-testing.yaml
@@ -268,7 +261,7 @@ stages:
       trafficWeightNewBackends: ${{ step }}
 
 - stage: testingGlobalEndpoints # smoke-testing global endpoint only after the switchover has happened
-  displayName: 'Testing Global Endpoint'
+  displayName: 'Test Global Endpoint'
   jobs:
   - template: jobs-smoke-testing.yaml
     parameters:
@@ -276,39 +269,28 @@ stages:
       testGlobalEndpoint: true
 
 - ${{ if eq(parameters.environment, 'e2e') }}:
-  # Pipeline-embedded load testing for e2e (optional) with locust. 
+  # Pipeline-embedded load testing for e2e (optional) with Microsoft Azure Load Test (MALT).
   # Runs if either Load test or Chaos test was selected by the user
-  - ${{ if and(eq(parameters.loadTestingFramework, 'Locust'), or(eq(parameters.runEmbeddedLoadtesting, 'true'), eq(parameters.runChaosTesting, 'true'))) }}: # only in e2e and when either runLoadTesting or runChaosTesting is true
-    - template: stages-loadtest-locust.yaml # headless load testing
-      parameters:
-        terraformWorkingDirectory: 'src/testing/loadtest-locust/infra'
-        customPrefix: '$(prefix)$(customSuffix)'
-        loadTestNumberOfWorkerNodes: $(loadTestNumberOfWorkerNodes)
-        loadTestDurationInSeconds: $(loadTestDurationInSeconds)
-        loadTestNumberOfUsers: $(loadTestNumberOfUsers)
-        loadTestUserSpawnRate: $(loadTestUserSpawnRate)
-        locustHeadless: true # run locust in headless mode
-
-  # Pipeline-embedded load testing for e2e (optional) with Microsoft Azure Load Test (MALT). 
-  # Runs if either Load test or Chaos test was selected by the user
-  - ${{ if and(eq(parameters.loadTestingFramework, 'AzureLoadTest'), or(eq(parameters.runEmbeddedLoadtesting, 'true'), eq(parameters.runChaosTesting, 'true'))) }}: # only in e2e and when either runLoadTesting or runChaosTesting is true
+  - ${{ if or(eq(parameters.runEmbeddedLoadtesting, 'true'), eq(parameters.runChaosTesting, 'true')) }}: # only in e2e and when either runLoadTesting or runChaosTesting is true
     - template: stages-loadtest-azure.yaml # embedded load testing
       parameters:
         terraformWorkingDirectory: 'src/testing/loadtest-azure/infra'
         customPrefix: '$(prefix)$(customSuffix)'
-        destroyInfra: ${{ parameters.destroyOldEnvironment }}
-        embeddedLoadTest: true
+        destroyInfra: ${{ parameters.destroyOldEnvironment }} # this will destroy the load test infrastructure together with the other infrastructure
+        runChaosTesting: ${{ parameters.runChaosTesting }} # handover chaos parameter to let the load test know if chaos is running or not
+        embeddedLoadTest: true # execute loadtest pipeline-embedded aka headless
 
   # Chaos testing for e2e (optional) with Azure Chaos Studio
   - ${{ if eq(parameters.runChaosTesting, 'true') }}: # only in e2e and when runChaosTesting is true
-    - template: stages-chaos.yaml # chaos testing pipline
+    - template: stages-chaos.yaml # chaos testing pipeline
       parameters:
         stageName: 'deployChaosExperiments'
         customPrefix: '$(prefix)$(customSuffix)'
-        testDurationSeconds: 180 # Chaos test duration for each experiment
-        memoryStress: true # run Chaos Memory stress
-        cpuStress: true # run Chaos CPU stress
-        podFailure: true # run Chaos Pod Killer
+        experimentDurationSeconds: '$(chaosExperimentDurationSeconds)' # duration of each experiment
+        startDelaySeconds: '$(chaosStartDelaySeconds)'
+        podFailure: true # run Chaos Pod Failure experiment
+        memoryStress: false # do not run Chaos Memory stress
+        cpuStress: false # do not run Chaos CPU stress
         dependsOn:
         - testingGlobalEndpoints
 
@@ -331,6 +313,10 @@ stages:
 
             - template: steps-buildagent-prerequisites.yaml # Install tools like kubectl
 
+            - template: steps-parse-terraform-output.yaml # parse global configuration settings from terraform deployment output
+              parameters:
+                workingDirectory: '$(Pipeline.Workspace)/terraformOutputGlobalInfra'  # Global infra deploy output directory
+
             - ${{ if ne(parameters.environment, 'e2e') }}: # Only in int/prod
               - task: AzureCLI@2
                 displayName: 'Fetch previous release prefix through disabled Front Door backends'
@@ -343,16 +329,11 @@ stages:
                     # We need the az CLI Front Door extension
                     az extension add --name front-door
 
-                    $globalInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputGlobalInfra/*.json | Get-Content | ConvertFrom-JSON
-
-                    $rgName = $globalInfraDeployOutput.global_resource_group_name.value
-                    $fdName = $globalInfraDeployOutput.frontdoor_name.value
-
                     # Fetch disabled backends from the BackendApis pool. We only fetch the first one, assuming it represents all the stamps of the previous release unit
                     $disabledBackendAddress = $(az network front-door backend-pool backend list `
-                                      --front-door-name $fdName `
+                                      --front-door-name $(frontdoor_name) `
                                       --pool-name BackendApis `
-                                      --resource-group $rgName `
+                                      --resource-group $(global_resource_group_name) `
                                       --query "[?enabledState=='Disabled'].{address:address}[0]" -o tsv)
 
                     if($LastExitCode -ne 0)
@@ -396,11 +377,6 @@ stages:
                     # Setting oldReleasePrefix=prefix-customSuffix means that we target the same release unit that was deployed earlier by this very pipeline
                     echo "*** Setting pipeline variable oldReleasePrefix = $(prefix)$(customSuffix)"
                     echo "##vso[task.setvariable variable=oldReleasePrefix]$(prefix)$(customSuffix)"
-
-            - template: steps-parse-terraform-output.yaml
-              parameters:
-                workingDirectory: '$(Pipeline.Workspace)/terraformOutputGlobalInfra'  # Global infra deploy output directory
-
 
             # Delete all deployments in the workload namespace. This will make sure the application is not running anymore before we destroy the infrastructure in the next step.
             # This prevents side effects in the logging in which errors might show up which are only related to the destructions of the infra
@@ -479,33 +455,49 @@ stages:
 
               - template: steps-set-pipeline-variables.yaml # load set-pipeline-variables function
 
-              # Delete abandoned Load Test resource (if still present)
+              # Delete leftover Load Test resource (if still present)
               # There might be edge cases when load testing artifacts remain and need to be cleaned up
               - task: AzureCLI@2
-                displayName: 'Cleanup abandoned load testing artifacts (if needed)'
+                displayName: 'Cleanup leftover load testing artifacts (if needed)'
                 retryCountOnTaskFailure: 1
                 inputs:
                   azureSubscription: $(azureServiceConnection)
                   scriptType: pscore
                   scriptLocation: inlineScript
                   inlineScript: |
-                    $loadtestRg="$(prefix)$(customSuffix)-loadtest-rg"
-                    $loadtestRgExists=az group exists --name $loadtestRg
-                    if ($loadtestRgExists -ne "false") {
+                    $loadtestRg = "$(prefix)$(customSuffix)-loadtest-rg"
+                    $loadtestRgExists = az group exists --name $loadtestRg | ConvertFrom-Json
+                    if ($loadtestRgExists) {
                       echo "*** Delete abandoned load test resources in $loadtestRg"
                       az group delete --name "$loadtestRg" --yes
                     } else {
                       echo "*** No load test resources found in $loadtestRg"
                     }
 
-              # Initialize Terraform for destroy
+                    $ltTerraformStateFile = "terraform-azurelt-$(prefix)$(customSuffix).state"
+
+                    $stateBlobExists = az storage blob exists --account-name $(terraformStorageAccount) `
+                      --container-name tfstate `
+                      --name $ltTerraformStateFile `
+                      --auth-mode login -o tsv
+
+                    if($stateBlobExists -eq "True")
+                    {
+                      echo "*** Deleting Terraform state file $ltTerraformStateFile on Storage Account $(terraformStorageAccount)"
+                      az storage blob delete --account-name $(terraformStorageAccount) `
+                        --container-name tfstate `
+                        --name $ltTerraformStateFile `
+                        --auth-mode login
+                    }
+
+              # Run Terraform for destroy for the global resources of this E2E env
               - template: steps-terraform-destroy.yaml
                 parameters:
                   terraformStorageAccountName:        '$(terraformStorageAccount)'
                   terraformStorageResourceGroupName:  '$(terraformResourceGroup)'
                   terraformStateFilename:             '$(terraformStateFileGlobal)'
                   terraformWorkingDirectory:          '$(workingDirectory)/globalresources'
-                  customAttributes:           '-var=prefix="$(prefix)$(globalSuffix)"
+                  customAttributes:           '-var=prefix="$(prefix)$(globalResourceSuffix)"
                                                -var=environment="${{ parameters.environment }}"
                                                -var=branch="$(sourceBranch)"
                                                -var=queued_by="$(Build.QueuedBy)"

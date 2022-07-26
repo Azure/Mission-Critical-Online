@@ -1,8 +1,8 @@
 # Azure Mission-Critical - Reference Implementation - Solution Guide
 
-As outlined in the [Azure Mission-Critical introduction](https://github.com/Azure/Mission-Critical/blob/main/docs/introduction/README.md) (➡️ `Azure/Mission-Critical`), Azure Mission-Critical has been developed to help customers with business critical systems to design and build a best practice Azure based solution that maximizes reliability. Azure Mission-Critical does this by giving customers prescriptive and opinionated guidance on how to build this best practice system as well as providing production ready technical artifacts for customers to quickly build that best practice system in their own environment.
+As outlined in the [Azure Mission-Critical introduction](https://docs.microsoft.com/azure/architecture/framework/mission-critical/mission-critical-overview) (➡️ `Azure/Mission-Critical`), Azure Mission-Critical has been developed to help customers with business critical systems to design and build a best practice Azure based solution that maximizes reliability. Azure Mission-Critical does this by giving customers prescriptive and opinionated guidance on how to build this best practice system as well as providing production ready technical artifacts for customers to quickly build that best practice system in their own environment.
 
-Where the Azure Mission-Critical [Design Principles](https://github.com/Azure/Mission-Critical/blob/main/docs/design-methodology/Principles.md) (➡️ `Azure/Mission-Critical`) provide the thought and justification behind the Azure Mission-Critical architecture and product choices, this part of the repository tells you how to build your own production-ready Azure Mission-Critical solution using the technical artifacts provided within this repository i.e. Infrastructure-As-Code templates and CI/CD pipelines (via GitHub and Azure DevOps).
+Where the Azure Mission-Critical [Design Principles](https://docs.microsoft.com/azure/architecture/framework/mission-critical/mission-critical-design-principles) (➡️ `Azure/Mission-Critical`) provide the thought and justification behind the Azure Mission-Critical architecture and product choices, this part of the repository tells you how to build your own production-ready Azure Mission-Critical solution using the technical artifacts provided within this repository i.e. Infrastructure-As-Code templates and CI/CD pipelines (via GitHub and Azure DevOps).
 
 As with the Azure Mission-Critical Design Guidelines, the Reference Implementation section is divided into 8 Critical Design Areas, each giving clear instructions on how the solution is configured.  When you are ready to start, the [Getting Started](./Getting-Started.md) guide outlines the process and required steps to deploy Azure Mission-Critical in your environment, including preparing Azure DevOps pipelines.
 
@@ -62,9 +62,14 @@ As with the Azure Mission-Critical Design Guidelines, the Reference Implementati
 ## Helpful Information
 
 - [Getting started](Getting-Started.md) outlines the process and required steps to deploy Azure Mission-Critical in your environment, including preparing Azure DevOps pipelines. It should be read in tandem with the Reference Implementation guidance.
+  - [Getting started using CLI](Getting-Started-CLI.md) - same as the guide above but contains instructions on how to create the setup using CLI instead of the ADO portal experience.
 - [SLO and Availability](AppDesign-SLO-Availability.md) outlines the SLO for Azure Mission-Critical (99.95%) and how this figure was calculated.
 - [ESLZ Alignment](ESLZ-Alignment.md) outlines how Azure Mission-Critical aligns with and compliments the Enterprise Scale Landing Zones.
 - [Troubleshooting](Troubleshooting.md) collects solutions to known issues during development and deployment.
+
+## Optional Additions
+
+- [Adding API Management](Api-Management.md)
 
 ---
 

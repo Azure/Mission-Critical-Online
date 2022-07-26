@@ -7,7 +7,7 @@ param(
 # -----------
 # Load helper functions.
 # -----------
-. $env:SYSTEM_DEFAULTWORKINGDIRECTORY/.ado/scripts/Invoke-WebRequestWithRetry.ps1
+. $env:SYSTEM_DEFAULTWORKINGDIRECTORY/.ado/pipelines/scripts/Invoke-WebRequestWithRetry.ps1
 
 # -----------
 # Execute smoke tests.
@@ -33,7 +33,7 @@ Write-Output "*******************"
 # request body needs to be a valid object expected by the API - keep up to date when the contract changes
 $post_comment_body = @{
   "authorName" = "Smoke Test Author"
-  "text" = "Just a smoke test"
+  "text"       = "Just a smoke test"
 } | ConvertTo-JSON
 
 
@@ -47,12 +47,12 @@ if ($mode -eq "stamp") {
 
   # setting header with X-Azure-FDID for HTTP-based smoke tests (required to access the individual stamps directly, bypassing Front Door)
   $header = @{
-    "X-Azure-FDID"="$frontdoorHeaderId"
-    "X-TEST-DATA"="true" # Header to indicate that posted comments and rating are just for test and can be deleted again by the app
+    "X-Azure-FDID" = "$frontdoorHeaderId"
+    "X-TEST-DATA"  = "true" # Header to indicate that posted comments and rating are just for test and can be deleted again by the app
   }
 
   # loop through stamps from pipeline artifact json
-  foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
+  foreach ($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
     # from stamp we need:
     # - aks_cluster_ingress_fqdn = endpoint to be called
     # - storage_web_host = ui host
@@ -60,7 +60,7 @@ if ($mode -eq "stamp") {
     $props = @{
       # Individual Cluster Endpoint FQDN (from pipeline artifact json)
       ApiEndpointFqdn = $stamp.aks_cluster_ingress_fqdn
-      UiEndpointFqdn = $stamp.storage_web_host
+      UiEndpointFqdn  = $stamp.storage_web_host
     }
 
     $obj = New-Object PSObject -Property $props
@@ -69,12 +69,12 @@ if ($mode -eq "stamp") {
 }
 else {
   $header = @{
-    "X-TEST-DATA"="true"
+    "X-TEST-DATA" = "true"
   }
 
   $props = @{
     ApiEndpointFqdn = $frontdoorFqdn
-    UiEndpointFqdn = $frontdoorFqdn
+    UiEndpointFqdn  = $frontdoorFqdn
   }
 
   $obj = New-Object PSObject -Property $props
@@ -84,7 +84,7 @@ else {
 Write-Output "*** Testing $($targets.Count) targets"
 
 # loop through targets - either multiple stamps or one front door (global)
-foreach($target in $targets) {
+foreach ($target in $targets) {
 
   # shorthand for easier manipulation in strings
   $targetFqdn = $target.ApiEndpointFqdn
@@ -94,14 +94,14 @@ foreach($target in $targets) {
 
   # test health endpoints for stamps only
   if ($mode -eq "stamp") {
-    $stampHealthUrl = "https://$targetFqdn/health/stamp"
+    $stampHealthUrl = "https://$targetFqdn/healthservice/health/stamp"
     Write-Output "*** Call - Stamp Health ($mode)"
 
     # custom retry loop to handle the situation when the SSL certificate is not valid yet and Invoke-WebRequest throws an exception
     Invoke-WebRequestWithRetry -Uri $stampHealthUrl -Method 'GET' -Headers $header -MaximumRetryCount $smokeTestRetryCount -RetryWaitSeconds $smokeTestRetryWaitSeconds
   }
 
-  $listCatalogUrl = "https://$targetFqdn/api/1.0/catalogitem"
+  $listCatalogUrl = "https://$targetFqdn/catalogservice/api/1.0/catalogitem"
   Write-Output "*** Call - List Catalog ($mode)"
   $responseListCatalog = Invoke-WebRequestWithRetry -Uri $listCatalogUrl -Method 'get' -Headers $header -MaximumRetryCount $smokeTestRetryCount -RetryWaitSeconds $smokeTestRetryWaitSeconds
   $responseListCatalog
@@ -114,11 +114,11 @@ foreach($target in $targets) {
 
   $randomItem = Get-Random $allItems
 
-  $itemUrl = "https://$targetFqdn/api/1.0/catalogitem/$($randomItem.id)"
+  $itemUrl = "https://$targetFqdn/catalogservice/api/1.0/catalogitem/$($randomItem.id)"
   Write-Output "*** Call - Get get item ($($randomItem.id)) ($mode)"
   Invoke-WebRequestWithRetry -Uri $itemUrl -Method 'GET' -Headers $header -MaximumRetryCount $smokeTestRetryCount -RetryWaitSeconds $smokeTestRetryWaitSeconds
 
-  $postCommentUrl = "https://$targetFqdn/api/1.0/catalogitem/$($randomItem.id)/comments"
+  $postCommentUrl = "https://$targetFqdn/catalogservice/api/1.0/catalogitem/$($randomItem.id)/comments"
   Write-Output "*** Call - Post new comment to item $($randomItem.id) ($mode)"
 
   $responsePostComment = Invoke-WebRequestWithRetry -Uri $postCommentUrl -Method 'POST' -Headers $header -Body $post_comment_body -MaximumRetryCount $smokeTestRetryCount -RetryWaitSeconds $smokeTestRetryWaitSeconds -ExpectedResponseCode 202
@@ -128,12 +128,10 @@ foreach($target in $targets) {
   Start-Sleep 10
 
   # The 202-response to POST new comment contains in the 'Location' header the URL under which the new comment will be accessible
-  $getCommentUrl = $responsePostComment.Headers['Location'][0]
+  $getCommentPath = $responsePostComment.Headers['Location'][0]
 
-  if ($mode -eq "stamp") {
-    # The Location header contains the global FQDN of the Front Door entry point. For the the individual cluster, we need to change the URL
-    $getCommentUrl = $getCommentUrl -replace $frontdoorFqdn,$targetFqdn
-  }
+  # The location header does not contain the host part of the URL so we need to prepend it
+  $getCommentUrl = "https://$($targetFqdn)$($getCommentPath)"
 
   Write-Output "*** Call - Get newly created comment ($mode)"
   Invoke-WebRequestWithRetry -Uri $getCommentUrl -Method 'GET' -Headers $header -MaximumRetryCount $smokeTestRetryCount -RetryWaitSeconds $smokeTestRetryWaitSeconds
@@ -142,8 +140,7 @@ foreach($target in $targets) {
   $responseUi = Invoke-WebRequestWithRetry -Uri https://$targetUiFqdn -Method 'GET' -MaximumRetryCount $smokeTestRetryCount -RetryWaitSeconds $smokeTestRetryWaitSeconds
   $responseUi
 
-  if (!$responseUi.Content.Contains("<title>AlwaysOn Catalog</title>")) # Check in the HTML content of the response for a known string (the page title in this case)
-  {
+  if (!$responseUi.Content.Contains("<title>AlwaysOn Catalog</title>")) { # Check in the HTML content of the response for a known string (the page title in this case)
     throw "*** Web UI for $targetUiFqdn doesn't contain the expected site title."
   }
 }

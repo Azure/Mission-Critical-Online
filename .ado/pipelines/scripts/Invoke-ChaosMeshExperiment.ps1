@@ -74,8 +74,7 @@ $startResult
 
 $statusUrl = $startResult.statusUrl
 
-if(-not $statusUrl)
-{
+if (-not $statusUrl) {
     throw "*** ERROR - could not fetch statusUrl for experiment '$ExperimentName'"
 }
 
@@ -86,7 +85,12 @@ do {
     $statusResult = $(az rest --method get --url $statusUrl) | ConvertFrom-Json
     echo "*** Experiment currently in state $($statusResult.properties.status)"
 }
-while (($statusResult.properties.status -ne "Success") -and ($statusResult.properties.status -ne "Failed"))
+while ($statusResult.properties.status -notin "Success", "Failed", "Cancelled")
+
+if ($statusResult.properties.status -eq "Failed") {
+    $statusResult.properties
+    throw "*** ERROR - experiment '$ExperimentName' failed"
+}
 
 echo "*** Experiment '$ExperimentName' finished with status: $($statusResult.properties.status)"
 $statusResult

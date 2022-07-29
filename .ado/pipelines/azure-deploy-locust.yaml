@@ -54,14 +54,14 @@ stages:
       parameters:
         terraformStorageAccountName:        '$(terraformStorageAccount)'
         terraformStorageResourceGroupName:  '$(terraformResourceGroup)'
-        terraformStateFilename:             'terraform-locust-${{ parameters.customPrefix }}.state'
-        terraformWorkingDirectory:          '${{ parameters.terraformWorkingDirectory }}'
+        terraformStateFilename:             'terraform-locust-$(prefix).state'
+        terraformWorkingDirectory:          '$(workingDirectory)'
 
     - task: Bash@3
       name: 'terraformtaintlocustfile'
       displayName: 'Terraform taint locustfile file'
       inputs:
-        workingDirectory: '${{ parameters.terraformWorkingDirectory }}'
+        workingDirectory: '$(workingDirectory)'
         targetType: 'inline'
         script: |
           set -eux  # fail on error
@@ -73,8 +73,8 @@ stages:
     - template: templates/steps-terraform-apply.yaml
       parameters:
         jobName:                    'LocustInfra'
-        terraformWorkingDirectory:  '${{ parameters.terraformWorkingDirectory }}'
-        customPrefix:               '${{ parameters.customPrefix }}'
+        terraformWorkingDirectory:  '$(workingDirectory)'
+        customPrefix:               '$(prefix)'
         environment:                '$(environment)'
         customAttributes:           '-var targeturl=${{ parameters.loadTestTargetUrl }}
                                      -var queued_by="$(Build.QueuedBy)"

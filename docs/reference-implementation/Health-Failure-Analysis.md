@@ -39,6 +39,9 @@ Global replication protects Cosmos DB instances from regional outage. The Cosmos
 | **Database/collection is renamed**     | Can happen due to mismatch in configuration when deploying – Terraform would overwrite the whole database, which could result in data loss (this can be prevented by using [database/collection  level locks](https://feedback.azure.com/forums/263030-azure-cosmos-db/suggestions/35535298-enable-locks-at-database-and-collection-level-as-w)). <br />**Application will not be able to access any data**. App configuration needs to be updated and pods restarted. | Yes                     |
 | **Regional outage**             | Azure Mission-Critical has multi-region writes enabled, so in case of failure on read or write, the **client retries the current operation** and all the future operations are permanently [routed to the next region](https://docs.microsoft.com/azure/cosmos-db/troubleshoot-sdk-availability#regional-outage) in order of preference. In case the preference list only had one entry (or was empty) but the account has other regions available, it will route to the next region in the account list. | No                     |
 | **Extensive throttling due to lack of RUs** | Depending on how we decide on how many RUs (max setting for the auto scaler), we want to deploy and what load balancing we employ on Front Door level, it could be that certain stamp(s) run hot on Cosmos utilization while others could still serve more requests. <br />Could be mitigated by better load distribution to more stamps – or of course more RUs. | No |
+| **Partition full** | Cosmos DB logical partition size limit is 20 GB. If data for a partition key within a container reaches this size, additional write requests will fail with the error "Partition key reached maximum size". | Partial (DB writes disabled) |
+
++ note to rename: the same applies to other resources
 
 ### Container Registry
 
@@ -46,18 +49,22 @@ Global replication protects Cosmos DB instances from regional outage. The Cosmos
 | --------------------------------------------- | ------------------------------------------------------------ | ---------- |
 | **Regional outage**              | Container registry uses Traffic Manager to failover between replica regions. Thus, **any request should be automatically re-routed to another region**. At worst, no Docker images can be pulled for a couple of minutes by a certain AKS node while DNS failover needs to happen. | No     |
 | **Image(s) get deleted (e.g. by manual error)** | *Impact*: No images can be pulled. This should only affect newly spawned/rebooted nodes. **Existing nodes should have the images cached already.** <br />*Mitigation*: If detected quickly enough, re-running the latest build pipelines should bring the images back into the registry. | No   |
+| **Throttling** | *Impact*: Throttling can delay scale-out operations which can result in a temporarily degraded performance.<br /> *Mitigation*: Azure Mission-Critical uses the Premium SKU which provides 10k read operations per minute. Container images are optimized and have only small numbers of layers. ImagePullPolicy is set to IfNotPresent to use locally cached versions first. <br />*Comment*: Pulling a container image consists of multiple read operations, depending on the number of layers. The number of read operations per minute is limited and depends on the [ACR SKU size](https://docs.microsoft.com/azure/container-registry/container-registry-skus#service-tier-features-and-limits). | No |
 
 ### (stamp) AKS cluster
 
 | **Risk**                          | **Impact/Mitigation/Comment**                | **Outage**       |
 | ------------------------------------------------------------ | ------------------------------------------------------------ | ---------------------- |
 | **Cluster upgrade fails**                  | [AKS Node upgrades](https://docs.microsoft.com/azure/aks/upgrade-cluster) should occur at different times across the stamps. Hence, if one if upgrades fail, other cluster should not be affected. Also, cluster upgrades should happen in a rolling fashion across the nodes so that not all nodes will become unavailable. | No           |
-| **Application pod is killed when serving request**      | Should not happen because cluster upgrades use "cordon and drain" with a buffer node. | No           |
+| **Application pod is killed when serving request**      | *Impact*: This could result in enduser facing errors and a poor user experience. *Mitigation*: Kubernetes by default removes pods in a graceful way. Pods are removed from services first and the workload receives a SIGTERM with a grace period to finish open requests and write data before terminating. *Comment*: The application code needs to understand SIGTERM and the grace period might need to be adjusted if the workload takes longer to shutdown.  | No           |
 | **There is not enough compute capacity in the datacenter to add more nodes** | **Scale up/out operations will fail**, but it shouldn’t affect existing nodes and their operation. Ideally traffic should shift automatically to other regions for load balancing. | No           |
 | **Subscription runs out of CPU core quota to add new nodes** | **Scale up/out operations will fail**, but it shouldn’t affect existing nodes and their operation. <br />Ideally traffic should shift automatically to other regions for load balancing. | No           |
 | **Let’s Encrypt SSL certificates can’t be issued/renewed** | Cluster should report unhealthy towards Front Door and traffic should shift to other stamps. <br />*Mitigation*: Needs manual investigation on what happened. | No           |
 | **Pod utilization reaches the allocated capacity**      | When resource requests/limits are configured incorrectly, pods can reach 100% CPU utilization and start failing requests. <br />During load test **the observed behavior wasn’t blocking** – application retry mechanism was able to recover failed requests, causing a longer request duration, without surfacing the error to the client. Excessive load would eventually break it. | No (if not excessive) |
-| **3rd-party container images / registry not available** | Some components like cert-manager and ingress-nginx require downloading container images from external container registries (outbound traffic). In case one or more of these repositories or images are unavailable, new instances on new nodes (where the image is not already cached) might not be able to start. | Partially (during scale and update/upgrade operations) |
+| **3rd-party container images / registry not available** | *Impact*: Some components like cert-manager and ingress-nginx require downloading container images and helm charts from external container registries (outbound traffic). In case one or more of these repositories or images are unavailable, new instances on new nodes (where the image is not already cached) might not be able to start. <br />*Possible Mitigation*: In some scenarios is could make sense to import 3rd-party container images into the per-solution container registry. This adds additional complexity and should be planned and operationalized carefully. | Partially (during scale and update/upgrade operations) |
+
++ check cluster upgrades - do they or don't they kill pods?
++ scale in operations - no outage, happens gracefully
 
 ### (stamp) Event Hub
 
@@ -66,12 +73,16 @@ Global replication protects Cosmos DB instances from regional outage. The Cosmos
 | **No messages can be sent to the Event Hub** | Stamp becomes unusable for any write operations. **Health service should automatically detect this** and take the stamp out of rotation | No     |
 | **No messages can be read by the BackgroundProcessor** | Messages will queue up, but no messages should get lost since they are persisted. <br />**Currently this is not covered by the Health Service**. But there should be monitoring/alerting in place on the Worker to detect errors in reading messages.<br/>*Mitigation*: The stamp needs to be manually disabled until the problem is fixed. | No     |
 
++ throttling - hopefully no outage, stamp should just slow down
+
 ### (stamp) Storage Account
 
 | **Risk**                           | **Impact/Mitigation/Comment**                | **Outage** |
 | ------------------------------------------------------------ | ------------------------------------------------------------ | ---------- |
 | **Storage account becomes unusable by the Worker for Event Hub checkpointing** | **Stamp will not be able to process any messages from the Event Hub.** <br />The storage account is also used by the HealthService, so we expect issues with storage to be detected by the HealthService and the stamp should be taken out of rotation. <br />Anyway, as Storage is a foundational service, it can be expected that other services in the stamp would also be impacted at the same time. | No     |
 | **Static website encounter issues**             | If serving of the static web site encounters any issues, this should be detected by Front Door and no more traffic should be send to this storage account. Plus, we will use caching in Front Door as well. | No     |
+
++ throttling - mostly through event hub processor
 
 ### (stamp) Key Vault
 
@@ -88,6 +99,12 @@ Global replication protects Cosmos DB instances from regional outage. The Cosmos
 | **Misconfiguration**  | Incorrect connection strings or secrets injected to the app. Should be mitigated by automated deployment (pipeline handles configuration automatically) and blue-green rollout of updates. | No     |
 | **Expired credentials (stamp resource)**  | If, for example, Event Hub SAS token or Storage Account key was changed without properly updating them in Key Vault so that the pods can use them, the respective application component will start to fail. This should then also affect the Health Service and hence **the stamp should be taken out of rotation automatically**.<br/>*Mitigation*: As a potential way to not run into these issues in the first place, using AAD-based authentication all services which support it, could be implemented. However, when using AKS, this would require to use Pod Identity to  use Managed Identities within the pods. We considered this but found pod identity not stable enough yet and thus decided against using it for now. But this could be a solution in the future.  | No     |
 | **Expired credentials (globally shared resource)**  | If, for example, Cosmos DB API key was changed without properly updating it in all stamp Key Vaults so that the pods can use them, the respective application components will start to fail. **This would likely bring all stamps down at about the same time and cause an workload-wide outage.** See the article on [Key Rotation](./OpProcedures-KeyRotation.md) for an example walkthrough how to execute this process properly without downtime. For a possible way around the need for keys and secrets in the first place using AAD auth, see the previous item. | Full     |
+
+### (stamp) Virtual Networking
+
+| **Risk**        | **Impact/Mitigation/Comment**                | **Outage** |
+| ----------------------- | ------------------------------------------------------------ | ---------- |
+| **Subnet IP address space exhausted**  | If the IP address space on a subnet is exhausted, no scale out operations, such as creating new AKS nodes or pods, can happen. It will not lead to an outage but might decrease performance and impact user experience. Mitigation can occur through increasing the IP space (if possible). If that is not an option, it might also help to increase the resources per Node (larger VM SKUs) or per pod (more CPU/memory), so that each pod can handle more traffic, thus decreasing the need for scale out. | No     |
 
 ---
 [Azure Mission-Critical - Full List of Documentation](/docs/README.md)

@@ -10,16 +10,16 @@
   "author": "CAE AppDev",
   "license": "ISC",
   "dependencies": {
-    "@microsoft/applicationinsights-web": "^2.8.4",
+    "@microsoft/applicationinsights-web": "^2.8.5",
     "tiny-emitter": "^2.1.0",
     "vue": "^3.2.37",
     "vue-router": "^4.0.16"
   },
   "devDependencies": {
-    "@vue/cli-service": "^5.0.6",
+    "@vue/cli-service": "^5.0.8",
     "is-primitive": "^3.0.1",
     "nprogress": "^0.2.0",
-    "vue-template-compiler": "^2.7.0",
+    "vue-template-compiler": "^2.7.8",
     "ajv": "8.11.0"
   },
   "resolutions": {

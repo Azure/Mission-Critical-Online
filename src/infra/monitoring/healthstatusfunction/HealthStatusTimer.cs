@@ -1,8 +1,6 @@
 using System;
 using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 
 namespace HealthStatusFunction
@@ -11,8 +9,7 @@ namespace HealthStatusFunction
     {
         [FunctionName("HealthStatusTimer")]
         public async Task Run(  
-                //[HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
-                [TimerTrigger("0 */5 * * * *")]TimerInfo myTimer, 
+                [TimerTrigger("%TimerSchedule%")]TimerInfo myTimer, 
                 ILogger log
                 )
         {
@@ -24,13 +21,22 @@ namespace HealthStatusFunction
             string workspaceId = Environment.GetEnvironmentVariable("LA_WORKSPACE_ID").ToString();
             string workspaceKey = Environment.GetEnvironmentVariable("LA_WORKSPACE_KEY").ToString();
 
+            // We want to align the query timespan to the Function's schedule. We're storing that as an env variable, so we can retrieve it.
+            string schedule = Environment.GetEnvironmentVariable("TimerSchedule").ToString();
+
             try {
-                await new HealthStatusFunction(log, workspaceId, workspaceKey).PostHealthData();
+                await new HealthStatusFunction(log, workspaceId, workspaceKey, GetCronMinutes(schedule)).PostHealthData();
             }
             catch(Exception ex) {
                 log.LogError(ex, "Error in HealthStatusTimer");
             }
             log.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
+        }
+        
+        private static int GetCronMinutes(string expression)
+        {
+            string mins = expression.Split(' ')[1];
+            return int.Parse(mins[(mins.IndexOf('/')+1)..]);
         }
     }
 }

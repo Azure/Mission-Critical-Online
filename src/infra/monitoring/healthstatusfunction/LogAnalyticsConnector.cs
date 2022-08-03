@@ -62,6 +62,7 @@ namespace HealthStatusFunction
             HttpContent httpContent = new StringContent(jsonBody, Encoding.UTF8);
             httpContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             HttpResponseMessage response = await httpClient.PostAsync(new Uri(url), httpContent);
+            logger.LogInformation("Saved {count} bytes of data to table {table} with statuscode {status}", jsonBytes.Length, logTableName, response.StatusCode);
 
             bool result = response.IsSuccessStatusCode;
             return result;

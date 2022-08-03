@@ -1,0 +1,8 @@
+PublicBlobStorageHealthStatus
+| union KeyvaultHealthStatus
+| union CatalogServiceHealthStatus
+| union BackgroundProcessorHealthStatus
+| union AksClusterHealthStatus
+| union CheckpointStorageHealthStatus
+| union EventHubHealthStatus
+| order by TimeGenerated,MetricName desc

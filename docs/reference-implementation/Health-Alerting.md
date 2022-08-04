@@ -15,9 +15,6 @@ Resource-level alerts are configured on an Azure resource itself. It is therefor
 
 ### Activity Log Alerts
 
-#### Valuable alerts
-
--
 
 ### Metric Alerts
 
@@ -44,7 +41,7 @@ A metric alert is configured as part of the infrastructure deployment on Front D
 
 Many causes for the backend health to drop should also be detected on other levels (and potentially earlier). For instance, anything that causes the Health Service to report "unhealthy" to Front Door's health probes should also be logged to Application Insights. Similarly, issues on the static storage accounts should also be detected through the collected diagnostic logs. However, there can still be outages which are not showing up in other signals.
 
-Front Door does not provide any further insight into why the backend health for a certain backend drops. Therefore, we also implemented [URL Ping tests](https://docs.microsoft.com/azure/azure-monitor/app/monitor-web-app-availability) in each stamp's Application Insights resource ([/src/infra/workload/releaseunit/modules/stamp/monitoring.tf](/src/infra/workload/releaseunit/modules/stamp/monitoring.tf)). This calls the same URL of the cluster HealthService (as well as checking the static website storage account) as Front Door does and provides detailed logging and tracing. We can use this to help us determine the cause for an outage: Was the cluster reachable at all? Is the Ingress Controller routing the request correctly? Did the HealthService respond with a 503 response?
+Front Door does not provide any further insight into why the backend health for a certain backend drops. Therefore, we also implemented [URL Ping tests](https://docs.microsoft.com/azure/azure-monitor/app/monitor-web-app-availability) in each stamp's Application Insights resource ([/src/infra/workload/releaseunit/modules/stamp/monitoring_webtests.tf](/src/infra/workload/releaseunit/modules/stamp/monitoring_webtests.tf)). This calls the same URL of the cluster HealthService (as well as checking the static website storage account) as Front Door does and provides detailed logging and tracing. We can use this to help us determine the cause for an outage: Was the cluster reachable at all? Is the Ingress Controller routing the request correctly? Did the HealthService respond with a 503 response?
 
 ![Application Insights URL Ping test](/docs/media/monitoring-appi-url-pingtest.png)
 

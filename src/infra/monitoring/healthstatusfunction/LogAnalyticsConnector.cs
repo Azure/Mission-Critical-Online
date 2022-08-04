@@ -6,12 +6,15 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Dynamic;
 using Azure;
 using Azure.Identity;
 using Azure.Monitor.Query;
 using Azure.Monitor.Query.Models;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace HealthStatusFunction
 {
@@ -41,7 +44,24 @@ namespace HealthStatusFunction
 
             logger.LogInformation("Retrieved {count} rows from query '{query}'", response.Value.Table.Rows.Count, query);
             IReadOnlyList<LogsTableRow> result = response.Value.Table.Rows;
-            return JsonConvert.SerializeObject(result);
+            return formatLogsResult(response.Value.Table);
+        }
+
+        private string formatLogsResult(LogsTable table)
+        {
+            // In order for the result to be accepted by the DataCollector API later, it needs to have the column names in each JSON object.
+            // We insert those to each row before returning the JSON array. 
+            dynamic resultset = new JArray();
+            foreach (LogsTableRow row in table.Rows)
+            {
+                dynamic rowObj = new JObject();
+                for(int i=0; i<table.Columns.Count; i++)
+                {
+                    rowObj.Add(new JProperty(table.Columns[i].Name, row[i]));
+                }
+                resultset.Add(rowObj);
+            }
+            return JsonConvert.SerializeObject(resultset);
         }
 
         public async Task<bool> PostData(string logTableName, string jsonBody)

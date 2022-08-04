@@ -9,7 +9,7 @@ namespace HealthStatusFunction
     {
         [FunctionName("HealthStatusTimer")]
         public async Task Run(  
-                [TimerTrigger("%TimerSchedule%")]TimerInfo myTimer, 
+                [TimerTrigger("%TimerSchedule%")]TimerInfo myTimer, // 0 */5 * * * *
                 ILogger log
                 )
         {

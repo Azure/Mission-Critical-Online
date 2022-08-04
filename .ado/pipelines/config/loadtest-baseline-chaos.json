@@ -1,0 +1,36 @@
+[
+    {
+        "passFailMetrics": {
+            "ece127bc-6271-4a70-93f6-758c56a3f11c": {
+                "clientmetric": "requests_per_sec",
+                "aggregate": "avg",
+                "condition": "<",
+                "value": 1200.0,
+                "result": null,
+                "actualValue": 0.0,
+                "requestName": null,
+                "action": "continue"
+            },
+            "ac6c5e62-647a-4a1a-b001-b961e384891f": {
+                "action": "continue",
+                "actualValue": 0.0,
+                "aggregate": "avg",
+                "clientmetric": "response_time_ms",
+                "condition": ">",
+                "requestName": null,
+                "result": null,
+                "value": 75.0
+              },
+              "a7ab8dec-07e6-4870-911c-4505382b8511": {
+                "action": "continue",
+                "actualValue": 0.0,
+                "aggregate": "percentage",
+                "clientmetric": "error",
+                "condition": ">",
+                "requestName": null,
+                "result": null,
+                "value": 50.0
+              }
+        }
+    }
+]

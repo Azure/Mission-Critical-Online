@@ -21,7 +21,7 @@ variables:
 
 - name: 'terraformAdditionalParametersCustomDomains'
   ${{ if ne(variables.envDomainName, '') }}:
-    value: '-var custom_dns_zone_resourcegroup_name=$(envDnsZoneRG) -var custom_fqdn=www.$(envDomainName)'
+    value: '-var=custom_dns_zone_resourcegroup_name=$(envDnsZoneRG) -var=custom_fqdn=www.$(envDomainName)'
   ${{ else }}:
     value: ''
 

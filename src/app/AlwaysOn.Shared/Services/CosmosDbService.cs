@@ -473,51 +473,25 @@ namespace AlwaysOn.Shared.Services
 
         public async Task<RatingDto> GetAverageRatingForCatalogItemAsync(Guid itemId)
         {
-            var startTime = DateTime.UtcNow;
+            var requestOptions = AppInsightsRequestHandler.CreateOptionsWithOperation<QueryRequestOptions>(nameof(GetAverageRatingForCatalogItemAsync), _dbClient.Endpoint.Host);
+
             FeedResponse<RatingDto> response = null;
-            CosmosDiagnostics diagnostics = null;
-            var success = false;
-            var conflict = false;
+            
             try
             {
                 var queryDefintion = new QueryDefinition("SELECT AVG(c.rating) as averageRating, count(1) as numberOfVotes FROM c WHERE c.catalogItemId = @itemId")
                                                         .WithParameter("@itemId", itemId);
-                var query = _ratingsContainer.GetItemQueryIterator<RatingDto>(queryDefintion);
+                var query = _ratingsContainer.GetItemQueryIterator<RatingDto>(queryDefintion, requestOptions: requestOptions);
                 response = await query.ReadNextAsync();
-                diagnostics = response.Diagnostics;
-                success = true;
             }
             catch (CosmosException cex)
             {
-                diagnostics = cex.Diagnostics;
                 throw new AlwaysOnDependencyException(cex.StatusCode, innerException: cex);
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "Unknown exception on request to Cosmos DB");
                 throw new AlwaysOnDependencyException(HttpStatusCode.InternalServerError, "Unknown exception on request to Cosmos DB", innerException: e);
-            }
-            finally
-            {
-                var overallDuration = DateTime.UtcNow - startTime;
-                var telemetry = new DependencyTelemetry()
-                {
-                    Type = AppInsightsDependencyType,
-                    Data = $"ItemId={itemId}",
-                    Name = "Get Average Rating for CatalogItem",
-                    Timestamp = startTime,
-                    Duration = diagnostics != null ? diagnostics.GetClientElapsedTime() : overallDuration,
-                    Target = diagnostics != null ? diagnostics.GetContactedRegions().FirstOrDefault().uri?.Host : _dbClient.Endpoint.Host,
-                    Success = success
-                };
-                if (response != null)
-                    telemetry.Metrics.Add("CosmosDbRequestUnits", response.RequestCharge);
-
-                if (conflict)
-                {
-                    telemetry.Properties.Add("ConflictOnInsert", conflict.ToString());
-                }
-                _telemetryClient.TrackDependency(telemetry);
             }
 
             return response?.FirstOrDefault();

@@ -26,6 +26,9 @@ namespace AlwaysOn.Shared.TelemetryExtensions
 
             using var dependency = _telemetryClient.StartOperation<DependencyTelemetry>(title);
 
+            //
+            // Comparison with the original telemetry object:
+            //
             //var telemetry = new DependencyTelemetry()
             //{
             //    OK - Type = AppInsightsDependencyType,
@@ -36,16 +39,15 @@ namespace AlwaysOn.Shared.TelemetryExtensions
             //    OK - Target = diagnostics != null ? diagnostics.GetContactedRegions().FirstOrDefault().uri?.Host : _dbClient.Endpoint.Host,
             //    REMOVED - Success = success
             //};
+            //
             //if (response != null)
             //    OK - telemetry.Metrics.Add("CosmosDbRequestUnits", response.RequestCharge);
 
             var response = await base.SendAsync(request, cancellationToken);
 
-            // Used to identify Cosmos DB in Application Insights
             dependency.Telemetry.Type = "Azure DocumentDB";
             dependency.Telemetry.Data = request.RequestUri.OriginalString; // Will be shown as "Command" in Application Insights
             dependency.Telemetry.Target = response.Diagnostics != null ? response.Diagnostics.GetContactedRegions().FirstOrDefault().uri?.Host : dbClientEndpoint;
-
             dependency.Telemetry.ResultCode = ((int)response.StatusCode).ToString();
             dependency.Telemetry.Success = response.IsSuccessStatusCode;
 

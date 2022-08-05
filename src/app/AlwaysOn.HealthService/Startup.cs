@@ -1,6 +1,7 @@
 using AlwaysOn.Shared;
 using AlwaysOn.Shared.Interfaces;
 using AlwaysOn.Shared.Services;
+using AlwaysOn.Shared.TelemetryExtensions;
 using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.Extensibility;
@@ -40,6 +41,8 @@ namespace AlwaysOn.HealthService
             {
                 ConnectionString = Configuration[SysConfiguration.ApplicationInsightsConnStringKeyName]
             });
+
+            services.AddSingleton<AppInsightsRequestHandler>();
 
             services.AddSingleton<IDatabaseService, CosmosDbService>();
 

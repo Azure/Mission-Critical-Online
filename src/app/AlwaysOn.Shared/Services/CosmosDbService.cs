@@ -3,6 +3,7 @@ using AlwaysOn.Shared.Exceptions;
 using AlwaysOn.Shared.Interfaces;
 using AlwaysOn.Shared.Models;
 using AlwaysOn.Shared.Models.DataTransfer;
+using AlwaysOn.Shared.TelemetryExtensions;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.Azure.Cosmos;
@@ -43,7 +44,8 @@ namespace AlwaysOn.Shared.Services
         public CosmosDbService(
             ILogger<CosmosDbService> logger,
             SysConfiguration sysConfig,
-            TelemetryClient tc)
+            TelemetryClient tc,
+            AppInsightsRequestHandler appInsightsRequestHandler)
         {
             _logger = logger;
             _telemetryClient = tc;
@@ -55,7 +57,8 @@ namespace AlwaysOn.Shared.Services
                 .WithContentResponseOnWrite(false)
                 .WithRequestTimeout(TimeSpan.FromSeconds(sysConfig.ComsosRequestTimeoutSeconds))
                 .WithThrottlingRetryOptions(TimeSpan.FromSeconds(sysConfig.ComsosRetryWaitSeconds), sysConfig.ComsosMaxRetryCount)
-                .WithCustomSerializer(new CosmosNetSerializer(Globals.JsonSerializerOptions));
+                .WithCustomSerializer(new CosmosNetSerializer(Globals.JsonSerializerOptions))
+                .AddCustomHandlers(appInsightsRequestHandler);
 
             if (sysConfig.AzureRegion != "unknown")
             {

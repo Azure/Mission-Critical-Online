@@ -2,6 +2,7 @@ using AlwaysOn.CatalogService.SwaggerHelpers;
 using AlwaysOn.Shared;
 using AlwaysOn.Shared.Interfaces;
 using AlwaysOn.Shared.Services;
+using AlwaysOn.Shared.TelemetryExtensions;
 using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.Extensibility;
@@ -44,6 +45,8 @@ namespace AlwaysOn.CatalogService
                 ConnectionString = Configuration[SysConfiguration.ApplicationInsightsConnStringKeyName],
                 EnableAdaptiveSampling = bool.TryParse(Configuration[SysConfiguration.ApplicationInsightsAdaptiveSamplingName], out bool result) ? result : true
             });
+
+            services.AddSingleton<AppInsightsRequestHandler>();
 
             services.AddHealthChecks();// Adds a simple liveness probe HTTP endpoint, path mapping happens further below
 

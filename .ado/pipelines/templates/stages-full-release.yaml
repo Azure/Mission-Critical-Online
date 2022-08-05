@@ -390,7 +390,7 @@ stages:
                 inlineScript: |
 
                   # Find AKS clusters with the prefix $(oldReleasePrefix)
-                  $aksClusters = az resource list --tag prefix="$(oldReleasePrefix)" --query "[?type == 'Microsoft.ContainerService/managedClusters']" | ConvertFrom-Json
+                  $aksClusters = az aks list --query "[?tags.Prefix=='$(oldReleasePrefix)']" | ConvertFrom-Json
 
                   echo "*** Found $($aksClusters.Count) AKS cluster(s) for prefix $(oldReleasePrefix)"
 

@@ -423,12 +423,7 @@ namespace AlwaysOn.Shared.Services
         /// <returns></returns>
         public async Task<IEnumerable<CatalogItem>> ListCatalogItemsAsync(int limit)
         {
-            var opts = new QueryRequestOptions()
-            {
-                MaxItemCount = 1
-            };
-
-            var queryable = _catalogItemsContainer.GetItemLinqQueryable<CatalogItem>(linqSerializerOptions: _cosmosSerializationOptions, requestOptions: opts)
+            var queryable = _catalogItemsContainer.GetItemLinqQueryable<CatalogItem>(linqSerializerOptions: _cosmosSerializationOptions)
                 .Select(i => new CatalogItem() 
                 { 
                     Id = i.Id, 

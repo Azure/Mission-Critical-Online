@@ -181,31 +181,33 @@ namespace AlwaysOn.Shared.Services
 
         public async Task<CatalogItem> GetCatalogItemByIdAsync(Guid itemId)
         {
-            string partitionKey = itemId.ToString();
-            var startTime = DateTime.UtcNow;
+            var requestOptions = AppInsightsRequestHandler.CreateOptionsWithOperation<ItemRequestOptions>(nameof(GetCatalogItemByIdAsync), _dbClient.Endpoint.Host);
+
             ResponseMessage responseMessage = null;
-            CosmosDiagnostics diagnostics = null;
-            var success = false;
             try
             {
                 // Read the item as a stream for higher performance.
                 // See: https://github.com/Azure/azure-cosmos-dotnet-v3/blob/master/Exceptions.md#stream-api
-                responseMessage = await _catalogItemsContainer.ReadItemStreamAsync(
-                    partitionKey: new PartitionKey(partitionKey),
-                    id: itemId.ToString());
-                diagnostics = responseMessage.Diagnostics;
+                responseMessage = await _catalogItemsContainer.ReadItemStreamAsync(itemId.ToString(), new PartitionKey(itemId.ToString()), requestOptions);
 
                 // Item stream operations do not throw exceptions for better performance
                 if (responseMessage.IsSuccessStatusCode)
                 {
-                    var item = await JsonSerializer.DeserializeAsync<CatalogItem>(responseMessage.Content, Globals.JsonSerializerOptions);
-                    success = true;
-                    return item;
+                    try
+                    {
+                        var item = await JsonSerializer.DeserializeAsync<CatalogItem>(responseMessage.Content, Globals.JsonSerializerOptions);
+                        return item;
+                    }
+                    catch (Exception e)
+                    {
+                        // Translating exceptions during JSON deserialization to AlwaysOnDependencyException.
+                        _logger.LogError(e, "Unknown exception on request to Cosmos DB.");
+                        throw new AlwaysOnDependencyException(HttpStatusCode.InternalServerError, "Unknown exception on request to Cosmos DB.", innerException: e);
+                    }
                 }
                 else if (responseMessage.StatusCode == HttpStatusCode.NotFound)
                 {
                     // No CatalogItem found for the id/partitionkey
-                    success = true;
                     return null;
                 }
                 else
@@ -213,36 +215,8 @@ namespace AlwaysOn.Shared.Services
                     throw new AlwaysOnDependencyException(responseMessage.StatusCode, $"Unexpected status code in {nameof(GetCatalogItemByIdAsync)}. Code={responseMessage.StatusCode}");
                 }
             }
-            catch (CosmosException cex)
-            {
-                diagnostics = cex.Diagnostics;
-                throw new AlwaysOnDependencyException(cex.StatusCode, innerException: cex);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, "Unknown exception on request to Cosmos DB");
-                throw new AlwaysOnDependencyException(HttpStatusCode.InternalServerError, "Unknown exception on request to Cosmos DB", innerException: e);
-            }
             finally
             {
-                var overallDuration = DateTime.UtcNow - startTime;
-                var telemetry = new DependencyTelemetry()
-                {
-                    Type = AppInsightsDependencyType,
-                    Data = $"CatalogItemId={itemId}, Partitionkey={partitionKey}",
-                    Name = "Get CatalogItem by Id",
-                    Timestamp = startTime,
-                    Duration = diagnostics != null ? diagnostics.GetClientElapsedTime() : overallDuration,
-                    Target = diagnostics != null ? diagnostics.GetContactedRegions().FirstOrDefault().uri?.Host : _dbClient.Endpoint.Host,
-                    Success = success,
-                    ResultCode = responseMessage.StatusCode.ToString()
-                };
-                if (responseMessage != null)
-                {
-                    telemetry.Metrics.Add("CosmosDbRequestUnits", responseMessage.Headers.RequestCharge);
-                }
-
-                _telemetryClient.TrackDependency(telemetry);
                 responseMessage?.Dispose();
             }
         }

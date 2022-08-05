@@ -21,45 +21,56 @@ namespace AlwaysOn.Shared.TelemetryExtensions
 
         public override async Task<ResponseMessage> SendAsync(RequestMessage request, CancellationToken cancellationToken)
         {
-            var title = request.Properties.ContainsKey("Operation") ?
-                request.Properties["Operation"].ToString() :
-                $"{request.Method} {request.RequestUri.OriginalString}";
+            var title = request.Properties.ContainsKey("Operation") ? request.Properties["Operation"].ToString() : $"{request.Method} {request.RequestUri.OriginalString}";
+            var dbClientEndpoint = request.Properties.ContainsKey("DbClientEndpoint") ? request.Properties["DbClientEndpoint"].ToString() : null;
 
             using var dependency = _telemetryClient.StartOperation<DependencyTelemetry>(title);
 
             //var telemetry = new DependencyTelemetry()
             //{
-            //    Type = AppInsightsDependencyType,
-            //    Data = $"ObjectId={objectId}, Partitionkey={partitionKey}",
-            //    Name = $"Delete {typeof(T).Name}",
-            //    Timestamp = startTime,
-            //    Duration = diagnostics != null ? diagnostics.GetClientElapsedTime() : overallDuration,
-            //    Target = diagnostics != null ? diagnostics.GetContactedRegions().FirstOrDefault().uri?.Host : _dbClient.Endpoint.Host,
-            //    Success = success
+            //    OK - Type = AppInsightsDependencyType,
+            //    OK - Data = $"ObjectId={objectId}, Partitionkey={partitionKey}",
+            //    OK - Name = $"Delete {typeof(T).Name}",
+            //    OK - Timestamp = startTime,
+            //    OK - Duration = diagnostics != null ? diagnostics.GetClientElapsedTime() : overallDuration,
+            //    OK - Target = diagnostics != null ? diagnostics.GetContactedRegions().FirstOrDefault().uri?.Host : _dbClient.Endpoint.Host,
+            //    REMOVED - Success = success
             //};
             //if (response != null)
-            //    telemetry.Metrics.Add("CosmosDbRequestUnits", response.RequestCharge);
+            //    OK - telemetry.Metrics.Add("CosmosDbRequestUnits", response.RequestCharge);
 
             var response = await base.SendAsync(request, cancellationToken);
 
             // Used to identify Cosmos DB in Application Insights
             dependency.Telemetry.Type = "Azure DocumentDB";
-            dependency.Telemetry.Data = request.RequestUri.OriginalString;
-            //dependency.Telemetry.Target = 
+            dependency.Telemetry.Data = request.RequestUri.OriginalString; // Will be shown as "Command" in Application Insights
+            dependency.Telemetry.Target = response.Diagnostics != null ? response.Diagnostics.GetContactedRegions().FirstOrDefault().uri?.Host : dbClientEndpoint;
 
             dependency.Telemetry.ResultCode = ((int)response.StatusCode).ToString();
             dependency.Telemetry.Success = response.IsSuccessStatusCode;
 
-            dependency.Telemetry.Metrics.Add("RequestCharge", response.Headers.RequestCharge);
-            dependency.Telemetry.Metrics.Add("ClientElapsedTime", response.Diagnostics.GetClientElapsedTime().TotalMilliseconds);
+            dependency.Telemetry.Metrics.Add("CosmosDbRequestUnits", response.Headers.RequestCharge);
+            dependency.Telemetry.Metrics.Add("ClientElapsedTime", response.Diagnostics != null ? response.Diagnostics.GetClientElapsedTime().TotalMilliseconds : -1);
+
+            if (request.Headers.TryGetValue("x-ms-documentdb-partitionkey", out string partitionKey))
+            {
+                dependency.Telemetry.Properties.Add("PartitionKey", partitionKey);
+            }
 
             return response;
         }
 
-        public static T CreateOptionsWithOperation<T>(string operationName) where T : RequestOptions
+        public static T CreateOptionsWithOperation<T>(string operationName, string dbClientEndpoint = null) where T : RequestOptions
         {
             var requestOptions = Activator.CreateInstance<T>();
-            requestOptions.Properties = new Dictionary<string, object>() { { "Operation", operationName } };
+
+            var props = new Dictionary<string, object>() { { "Operation", operationName } };
+            if (dbClientEndpoint != null)
+            {
+                props.Add("DbClientEndpoint", dbClientEndpoint);
+            }
+
+            requestOptions.Properties = props;
 
             return requestOptions;
         }

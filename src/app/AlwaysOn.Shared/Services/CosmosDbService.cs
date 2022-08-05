@@ -338,45 +338,20 @@ namespace AlwaysOn.Shared.Services
         /// <exception cref="AlwaysOnDependencyException"></exception>
         public async Task UpsertCatalogItemAsync(CatalogItem item)
         {
-            string partitionKey = item.Id.ToString();
-            var startTime = DateTime.UtcNow;
-            var success = false;
-            ItemResponse<CatalogItem> response = null;
-            CosmosDiagnostics diagnostics = null;
+            var requestOptions = AppInsightsRequestHandler.CreateOptionsWithOperation<ItemRequestOptions>(nameof(UpsertCatalogItemAsync), _dbClient.Endpoint.Host);
 
             try
             {
-                response = await _catalogItemsContainer.UpsertItemAsync(item, new PartitionKey(partitionKey));
-                diagnostics = response.Diagnostics;
-                success = true;
+                await _catalogItemsContainer.UpsertItemAsync(item, new PartitionKey(item.Id.ToString()), requestOptions);
             }
             catch (CosmosException cex)
             {
-                diagnostics = cex.Diagnostics;
                 throw new AlwaysOnDependencyException(cex.StatusCode, innerException: cex);
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "Unknown exception on request to Cosmos DB");
                 throw new AlwaysOnDependencyException(HttpStatusCode.InternalServerError, "Unknown exception on request to Cosmos DB", innerException: e);
-            }
-            finally
-            {
-                var overallDuration = DateTime.UtcNow - startTime;
-                var telemetry = new DependencyTelemetry()
-                {
-                    Type = AppInsightsDependencyType,
-                    Data = $"CatalogItemId={item.Id}, Partitionkey={partitionKey}",
-                    Name = "Upsert CatalogItem",
-                    Timestamp = startTime,
-                    Duration = diagnostics != null ? diagnostics.GetClientElapsedTime() : overallDuration,
-                    Target = diagnostics != null ? diagnostics.GetContactedRegions().FirstOrDefault().uri?.Host : _dbClient.Endpoint.Host,
-                    Success = success
-                };
-                if (response != null)
-                    telemetry.Metrics.Add("CosmosDbRequestUnits", response.RequestCharge);
-
-                _telemetryClient.TrackDependency(telemetry);
             }
         }
 

@@ -76,8 +76,8 @@ This definition is used to evaluate the capabilities of a SU on a regular basis,
 | --- | --- | --- |
 | AKS nodes | 3 | 12 |
 | Ingress controller replicas | 3 | 24 |
-| Game Service replicas | 3 | 24 |
-| Result Worker replicas | 3 | 12 |
+| CatalogService replicas | 3 | 24 |
+| BackgroundProcessor replicas | 3 | 12 |
 | Event Hub throughput units | 1 | 10 |
 | Cosmos DB RUs | 4000 | 40000 |
 

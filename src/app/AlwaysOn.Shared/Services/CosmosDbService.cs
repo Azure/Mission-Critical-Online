@@ -362,6 +362,8 @@ namespace AlwaysOn.Shared.Services
         /// <exception cref="AlwaysOnDependencyException"></exception>
         private async Task<IEnumerable<T>> ListDocumentsByQueryAsync<T>(IQueryable<T> queryable)
         {
+            var requestOptions = AppInsightsRequestHandler.CreateOptionsWithOperation<ItemRequestOptions>(nameof(ListDocumentsByQueryAsync), _dbClient.Endpoint.Host);
+
             var startTime = DateTime.UtcNow;
             var success = false;
             FeedIterator<T> feedIterator = queryable.ToFeedIterator();
@@ -420,55 +422,24 @@ namespace AlwaysOn.Shared.Services
 
         public async Task AddNewCatalogItemAsync(CatalogItem item)
         {
-            var startTime = DateTime.UtcNow;
-            ItemResponse<CatalogItem> response = null;
-            CosmosDiagnostics diagnostics = null;
-            var success = false;
-            var conflict = false;
+            var requestOptions = AppInsightsRequestHandler.CreateOptionsWithOperation<ItemRequestOptions>(nameof(AddNewCatalogItemAsync), _dbClient.Endpoint.Host);
+
             try
             {
-                response = await _catalogItemsContainer.CreateItemAsync(item, new PartitionKey(item.Id.ToString()));
-                diagnostics = response.Diagnostics;
-                success = true;
+                await _catalogItemsContainer.CreateItemAsync(item, new PartitionKey(item.Id.ToString()), requestOptions);
             }
             catch (CosmosException cex) when (cex.StatusCode == HttpStatusCode.Conflict)
             {
-                diagnostics = cex.Diagnostics;
                 _logger.LogWarning("CatalogItem with id {catalogItemId} already exists. Ignoring item", item.Id);
-                conflict = true;
-                success = true;
             }
             catch (CosmosException cex)
             {
-                diagnostics = cex.Diagnostics;
                 throw new AlwaysOnDependencyException(cex.StatusCode, innerException: cex);
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "Unknown exception on request to Cosmos DB");
                 throw new AlwaysOnDependencyException(HttpStatusCode.InternalServerError, "Unknown exception on request to Cosmos DB", innerException: e);
-            }
-            finally
-            {
-                var overallDuration = DateTime.UtcNow - startTime;
-                var telemetry = new DependencyTelemetry()
-                {
-                    Type = AppInsightsDependencyType,
-                    Data = $"CatalogItemId={item.Id}, Partitionkey={item.Id}",
-                    Name = "Add CatalogItem",
-                    Timestamp = startTime,
-                    Duration = diagnostics != null ? diagnostics.GetClientElapsedTime() : overallDuration,
-                    Target = diagnostics != null ? diagnostics.GetContactedRegions().FirstOrDefault().uri?.Host : _dbClient.Endpoint.Host,
-                    Success = success
-                };
-                if (response != null)
-                    telemetry.Metrics.Add("CosmosDbRequestUnits", response.RequestCharge);
-
-                if (conflict)
-                {
-                    telemetry.Properties.Add("ConflictOnInsert", conflict.ToString());
-                }
-                _telemetryClient.TrackDependency(telemetry);
             }
         }
 
@@ -480,7 +451,12 @@ namespace AlwaysOn.Shared.Services
         /// <returns></returns>
         public async Task<IEnumerable<CatalogItem>> ListCatalogItemsAsync(int limit)
         {
-            var queryable = _catalogItemsContainer.GetItemLinqQueryable<CatalogItem>(linqSerializerOptions: _cosmosSerializationOptions)
+            var opts = new QueryRequestOptions()
+            {
+                MaxItemCount = 1
+            };
+
+            var queryable = _catalogItemsContainer.GetItemLinqQueryable<CatalogItem>(linqSerializerOptions: _cosmosSerializationOptions, requestOptions: opts)
                 .Select(i => new CatalogItem() 
                 { 
                     Id = i.Id, 

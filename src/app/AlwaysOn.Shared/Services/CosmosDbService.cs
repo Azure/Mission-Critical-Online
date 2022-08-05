@@ -264,31 +264,31 @@ namespace AlwaysOn.Shared.Services
 
         public async Task<ItemRating> GetRatingByIdAsync(Guid ratingId, Guid itemId)
         {
-            string partitionKey = itemId.ToString();
-            var startTime = DateTime.UtcNow;
+            var requestOptions = AppInsightsRequestHandler.CreateOptionsWithOperation<ItemRequestOptions>(nameof(GetRatingByIdAsync), _dbClient.Endpoint.Host);
+
             ResponseMessage responseMessage = null;
-            CosmosDiagnostics diagnostics = null;
-            var success = false;
             try
             {
                 // Read the item as a stream for higher performance.
                 // See: https://github.com/Azure/azure-cosmos-dotnet-v3/blob/master/Exceptions.md#stream-api
-                responseMessage = await _ratingsContainer.ReadItemStreamAsync(
-                    partitionKey: new PartitionKey(partitionKey),
-                    id: ratingId.ToString());
-                diagnostics = responseMessage.Diagnostics;
-
+                responseMessage = await _ratingsContainer.ReadItemStreamAsync(ratingId.ToString(), new PartitionKey(itemId.ToString()), requestOptions);
+                    
                 // Item stream operations do not throw exceptions for better performance
                 if (responseMessage.IsSuccessStatusCode)
                 {
-                    var rating = await JsonSerializer.DeserializeAsync<ItemRating>(responseMessage.Content, Globals.JsonSerializerOptions);
-                    success = true;
-                    return rating;
+                    try
+                    {
+                        return await JsonSerializer.DeserializeAsync<ItemRating>(responseMessage.Content, Globals.JsonSerializerOptions);
+                    }
+                    catch (Exception e)
+                    {
+                        _logger.LogError(e, "Unknown exception on request to Cosmos DB");
+                        throw new AlwaysOnDependencyException(HttpStatusCode.InternalServerError, "Unknown exception on request to Cosmos DB", innerException: e);
+                    }
                 }
                 else if (responseMessage.StatusCode == HttpStatusCode.NotFound)
                 {
                     // No Comment found for the id/partitionkey
-                    success = true;
                     return null;
                 }
                 else
@@ -296,36 +296,8 @@ namespace AlwaysOn.Shared.Services
                     throw new AlwaysOnDependencyException(responseMessage.StatusCode, $"Unexpected status code in {nameof(GetRatingByIdAsync)}. Code={responseMessage.StatusCode}");
                 }
             }
-            catch (CosmosException cex)
-            {
-                diagnostics = cex.Diagnostics;
-                throw new AlwaysOnDependencyException(cex.StatusCode, innerException: cex);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, "Unknown exception on request to Cosmos DB");
-                throw new AlwaysOnDependencyException(HttpStatusCode.InternalServerError, "Unknown exception on request to Cosmos DB", innerException: e);
-            }
             finally
             {
-                var overallDuration = DateTime.UtcNow - startTime;
-                var telemetry = new DependencyTelemetry()
-                {
-                    Type = AppInsightsDependencyType,
-                    Data = $"RatingId={itemId}, Partitionkey={partitionKey}",
-                    Name = "Get ItemRating by Id",
-                    Timestamp = startTime,
-                    Duration = diagnostics != null ? diagnostics.GetClientElapsedTime() : overallDuration,
-                    Target = diagnostics != null ? diagnostics.GetContactedRegions().FirstOrDefault().uri?.Host : _dbClient.Endpoint.Host,
-                    Success = success,
-                    ResultCode = responseMessage.StatusCode.ToString()
-                };
-                if (responseMessage != null)
-                {
-                    telemetry.Metrics.Add("CosmosDbRequestUnits", responseMessage.Headers.RequestCharge);
-                }
-
-                _telemetryClient.TrackDependency(telemetry);
                 responseMessage?.Dispose();
             }
         }
@@ -483,55 +455,24 @@ namespace AlwaysOn.Shared.Services
 
         public async Task AddNewCommentAsync(ItemComment comment)
         {
-            var startTime = DateTime.UtcNow;
-            ItemResponse<ItemComment> response = null;
-            CosmosDiagnostics diagnostics = null;
-            var success = false;
-            var conflict = false;
+            var requestOptions = AppInsightsRequestHandler.CreateOptionsWithOperation<ItemRequestOptions>(nameof(AddNewCommentAsync), _dbClient.Endpoint.Host);
+
             try
             {
-                response = await _commentsContainer.CreateItemAsync(comment, new PartitionKey(comment.CatalogItemId.ToString()));
-                diagnostics = response.Diagnostics;
-                success = true;
+                await _commentsContainer.CreateItemAsync(comment, new PartitionKey(comment.CatalogItemId.ToString()));
             }
             catch (CosmosException cex) when (cex.StatusCode == HttpStatusCode.Conflict)
             {
-                diagnostics = cex.Diagnostics;
                 _logger.LogWarning("ItemComment with id {CommentId} already exists. Ignoring comment", comment.Id);
-                conflict = true;
-                success = true;
             }
             catch (CosmosException cex)
             {
-                diagnostics = cex.Diagnostics;
                 throw new AlwaysOnDependencyException(cex.StatusCode, innerException: cex);
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "Unknown exception on request to Cosmos DB");
                 throw new AlwaysOnDependencyException(HttpStatusCode.InternalServerError, "Unknown exception on request to Cosmos DB", innerException: e);
-            }
-            finally
-            {
-                var overallDuration = DateTime.UtcNow - startTime;
-                var telemetry = new DependencyTelemetry()
-                {
-                    Type = AppInsightsDependencyType,
-                    Data = $"CommentId={comment.Id}, Partitionkey={comment.CatalogItemId}",
-                    Name = "Add Comment",
-                    Timestamp = startTime,
-                    Duration = diagnostics != null ? diagnostics.GetClientElapsedTime() : overallDuration,
-                    Target = diagnostics != null ? diagnostics.GetContactedRegions().FirstOrDefault().uri?.Host : _dbClient.Endpoint.Host,
-                    Success = success
-                };
-                if (response != null)
-                    telemetry.Metrics.Add("CosmosDbRequestUnits", response.RequestCharge);
-
-                if (conflict)
-                {
-                    telemetry.Properties.Add("ConflictOnInsert", conflict.ToString());
-                }
-                _telemetryClient.TrackDependency(telemetry);
             }
         }
 
@@ -589,55 +530,24 @@ namespace AlwaysOn.Shared.Services
 
         public async Task AddNewRatingAsync(ItemRating rating)
         {
-            var startTime = DateTime.UtcNow;
-            ItemResponse<ItemRating> response = null;
-            CosmosDiagnostics diagnostics = null;
-            var success = false;
-            var conflict = false;
+            var requestOptions = AppInsightsRequestHandler.CreateOptionsWithOperation<ItemRequestOptions>(nameof(AddNewRatingAsync), _dbClient.Endpoint.Host);
+
             try
             {
-                response = await _ratingsContainer.CreateItemAsync(rating, new PartitionKey(rating.CatalogItemId.ToString()));
-                diagnostics = response.Diagnostics;
-                success = true;
+                await _ratingsContainer.CreateItemAsync(rating, new PartitionKey(rating.CatalogItemId.ToString()));
             }
             catch (CosmosException cex) when (cex.StatusCode == HttpStatusCode.Conflict)
             {
-                diagnostics = cex.Diagnostics;
                 _logger.LogWarning("ItemRating with id {ratingId} already exists. Ignoring rating", rating.Id);
-                conflict = true;
-                success = true;
             }
             catch (CosmosException cex)
             {
-                diagnostics = cex.Diagnostics;
                 throw new AlwaysOnDependencyException(cex.StatusCode, innerException: cex);
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "Unknown exception on request to Cosmos DB");
                 throw new AlwaysOnDependencyException(HttpStatusCode.InternalServerError, "Unknown exception on request to Cosmos DB", innerException: e);
-            }
-            finally
-            {
-                var overallDuration = DateTime.UtcNow - startTime;
-                var telemetry = new DependencyTelemetry()
-                {
-                    Type = AppInsightsDependencyType,
-                    Data = $"ratingId={rating.Id}, Partitionkey={rating.CatalogItemId}",
-                    Name = "Add Rating",
-                    Timestamp = startTime,
-                    Duration = diagnostics != null ? diagnostics.GetClientElapsedTime() : overallDuration,
-                    Target = diagnostics != null ? diagnostics.GetContactedRegions().FirstOrDefault().uri?.Host : _dbClient.Endpoint.Host,
-                    Success = success
-                };
-                if (response != null)
-                    telemetry.Metrics.Add("CosmosDbRequestUnits", response.RequestCharge);
-
-                if (conflict)
-                {
-                    telemetry.Properties.Add("ConflictOnInsert", conflict.ToString());
-                }
-                _telemetryClient.TrackDependency(telemetry);
             }
         }
     }

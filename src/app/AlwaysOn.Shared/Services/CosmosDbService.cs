@@ -524,15 +524,14 @@ namespace AlwaysOn.Shared.Services
         /// Helper method which populates a Cosmos DB request options object with properties: "Operation" and "DbClientEndpoint" (optional).
         /// </summary>
         /// <typeparam name="T">A Cosmos DB <c>RequestOptions</c> derived type. Typically <c>ItemRequestOptions</c> or <c>QueryRequestOptions</c>.</typeparam>
-        /// <param name="operationName">What will be shown as operation name in Application Insights.</param>
+        /// <param name="operationName">What will be shown as operation name in Application Insights. If not specified, CallerMemberName will be used.</param>
         /// <param name="dbClientEndpoint">Optional endpoint configured in the Cosmos Client.</param>
         /// <returns>Desired <c>RequestOptions</c> object.</returns>
-        private T CreateRequestOptionsWithOperation<T>([CallerMemberName] string callerName = "", string operationName = null) where T : RequestOptions
+        private T CreateRequestOptionsWithOperation<T>([CallerMemberName] string operationName = "") where T : RequestOptions
         {
-            var opName = operationName ?? callerName;
             var dbClientEndpoint = _dbClient.Endpoint.Host;
 
-            var props = new Dictionary<string, object>() { { "Operation", opName } };
+            var props = new Dictionary<string, object>() { { "Operation", operationName } };
             if (dbClientEndpoint != null)
             {
                 props.Add("DbClientEndpoint", dbClientEndpoint);

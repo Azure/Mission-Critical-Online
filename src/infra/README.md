@@ -28,7 +28,7 @@ The Azure Mission-Critical reference implementations are composed of three disti
 
 Infrastructure layer contains all infrastructure components and underlying foundational services required for Azure Mission-Critical reference implementation. It is deployed using [Terraform](./workload/README.md).
 
-> Note: Bicep (ARM DSL) was considered during the early stages as part of a proof-of-concept. Please refer to the following [(archived stub)](/docs/reference-implementation/ZZZ-Archived-Bicep.md) for more details.
+> Note: Bicep (ARM DSL) was considered during the early stages as part of a proof-of-concept, but discontinued for the time being.
 
 [Configuration layer](/src/config/README.md) applies the initial configuration and additional services on top of the infrastructure components deployed as part of infrastructure layer.
 
@@ -61,21 +61,23 @@ In addition to [stamp independence](#stamp-independence) and [stateless compute 
 An example Scale Unit design in Azure Mission-Critical consists of scalability requirements i.e. minimum values / the expected capacity:
 
 **Scalability requirements**
+
 | Metric | max |
 | --- | --- |
 | Users | 25k |
-| New games/sec. | 200 |
-| Get games/sec. | 5000 |
+| New records/sec. | 200 |
+| Get records/sec. | 5000 |
 
 This definition is used to evaluate the capabilities of a SU on a regular basis, which later then needs to be translated into a Capacity Model. This in turn will inform the configuration of a SU which is able to serve the expected demand:
 
 **Configuration**
+
 | Component | min | max |
 | --- | --- | --- |
 | AKS nodes | 3 | 12 |
 | Ingress controller replicas | 3 | 24 |
-| Game Service replicas | 3 | 24 |
-| Result Worker replicas | 3 | 12 |
+| CatalogService replicas | 3 | 24 |
+| BackgroundProcessor replicas | 3 | 12 |
 | Event Hub throughput units | 1 | 10 |
 | Cosmos DB RUs | 4000 | 40000 |
 
@@ -140,7 +142,7 @@ As regional availability of services used in reference implementation and AZs ra
 #### Azure Cosmos DB
 
 - SQL-API (Cosmos DB API) is being used
-- `Multi-master write` is enabled
+- `Multi-region write` is enabled
 - The account is replicated to every region in which there is a stamp deployed.
 - `zone_redundancy` is enabled for each replicated region.
 - Request Unit `autoscaling` is enabled on container-level.

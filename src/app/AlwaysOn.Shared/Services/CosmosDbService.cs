@@ -118,65 +118,39 @@ namespace AlwaysOn.Shared.Services
 
         public async Task DeleteItemAsync<T>(string objectId, string partitionKey)
         {
-            var startTime = DateTime.UtcNow;
-            ItemResponse<T> response = null;
-            CosmosDiagnostics diagnostics = null;
-            var success = false;
+            var requestOptions = CreateRequestOptionsWithOperation<ItemRequestOptions>();
+
             try
             {
                 if (typeof(T) == typeof(CatalogItem))
                 {
-                    response = await _catalogItemsContainer.DeleteItemAsync<T>(objectId, new PartitionKey(partitionKey));
+                    await _catalogItemsContainer.DeleteItemAsync<T>(objectId, new PartitionKey(partitionKey), requestOptions);
                 }
                 else if (typeof(T) == typeof(ItemComment))
                 {
-                    response = await _commentsContainer.DeleteItemAsync<T>(objectId, new PartitionKey(partitionKey));
+                    await _commentsContainer.DeleteItemAsync<T>(objectId, new PartitionKey(partitionKey), requestOptions);
                 }
                 else if (typeof(T) == typeof(ItemRating))
                 {
-                    response = await _ratingsContainer.DeleteItemAsync<T>(objectId, new PartitionKey(partitionKey));
+                    await _ratingsContainer.DeleteItemAsync<T>(objectId, new PartitionKey(partitionKey), requestOptions);
                 }
                 else
                 {
                     _logger.LogWarning($"Unsupported type {typeof(T).Name} for deletion");
                 }
-
-                diagnostics = response.Diagnostics;
-                success = true;
             }
             catch (CosmosException cex) when (cex.StatusCode == HttpStatusCode.NotFound)
             {
-                diagnostics = cex.Diagnostics;
                 _logger.LogInformation($"{typeof(T).Name} with id {objectId} does not exist anymore and cannot be deleted.");
-                success = true;
             }
             catch (CosmosException cex)
             {
-                diagnostics = cex.Diagnostics;
                 throw new AlwaysOnDependencyException(cex.StatusCode, innerException: cex);
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "Unknown exception on request to Cosmos DB");
                 throw new AlwaysOnDependencyException(HttpStatusCode.InternalServerError, "Unknown exception on request to Cosmos DB", innerException: e);
-            }
-            finally
-            {
-                var overallDuration = DateTime.UtcNow - startTime;
-                var telemetry = new DependencyTelemetry()
-                {
-                    Type = AppInsightsDependencyType,
-                    Data = $"ObjectId={objectId}, Partitionkey={partitionKey}",
-                    Name = $"Delete {typeof(T).Name}",
-                    Timestamp = startTime,
-                    Duration = diagnostics != null ? diagnostics.GetClientElapsedTime() : overallDuration,
-                    Target = diagnostics != null ? diagnostics.GetContactedRegions().FirstOrDefault().uri?.Host : _dbClient.Endpoint.Host,
-                    Success = success
-                };
-                if (response != null)
-                    telemetry.Metrics.Add("CosmosDbRequestUnits", response.RequestCharge);
-
-                _telemetryClient.TrackDependency(telemetry);
             }
         }
 
@@ -334,7 +308,6 @@ namespace AlwaysOn.Shared.Services
         /// <exception cref="AlwaysOnDependencyException"></exception>
         private async Task<IEnumerable<T>> ListDocumentsByQueryAsync<T>(IQueryable<T> queryable)
         {
-            var requestOptions = CreateRequestOptionsWithOperation<ItemRequestOptions>();
 
             var startTime = DateTime.UtcNow;
             var success = false;
@@ -423,7 +396,9 @@ namespace AlwaysOn.Shared.Services
         /// <returns></returns>
         public async Task<IEnumerable<CatalogItem>> ListCatalogItemsAsync(int limit)
         {
-            var queryable = _catalogItemsContainer.GetItemLinqQueryable<CatalogItem>(linqSerializerOptions: _cosmosSerializationOptions)
+            var requestOptions = CreateRequestOptionsWithOperation<QueryRequestOptions>();
+
+            var queryable = _catalogItemsContainer.GetItemLinqQueryable<CatalogItem>(linqSerializerOptions: _cosmosSerializationOptions, requestOptions: requestOptions)
                 .Select(i => new CatalogItem() 
                 { 
                     Id = i.Id, 
@@ -440,7 +415,9 @@ namespace AlwaysOn.Shared.Services
 
         public async Task<IEnumerable<ItemComment>> GetCommentsForCatalogItemAsync(Guid itemId, int limit)
         {
-            var queryable = _commentsContainer.GetItemLinqQueryable<ItemComment>(linqSerializerOptions: _cosmosSerializationOptions)
+            var requestOptions = CreateRequestOptionsWithOperation<QueryRequestOptions>();
+
+            var queryable = _commentsContainer.GetItemLinqQueryable<ItemComment>(linqSerializerOptions: _cosmosSerializationOptions, requestOptions: requestOptions)
                 .Where(l => l.CatalogItemId == itemId)
                 .OrderByDescending(c => c.CreationDate)
                 .Take(limit);
@@ -454,7 +431,7 @@ namespace AlwaysOn.Shared.Services
 
             try
             {
-                await _commentsContainer.CreateItemAsync(comment, new PartitionKey(comment.CatalogItemId.ToString()));
+                await _commentsContainer.CreateItemAsync(comment, new PartitionKey(comment.CatalogItemId.ToString()), requestOptions);
             }
             catch (CosmosException cex) when (cex.StatusCode == HttpStatusCode.Conflict)
             {
@@ -475,7 +452,7 @@ namespace AlwaysOn.Shared.Services
         {
             var requestOptions = CreateRequestOptionsWithOperation<QueryRequestOptions>();
 
-            FeedResponse<RatingDto> response = null;
+            FeedResponse<RatingDto> response;
             
             try
             {
@@ -503,7 +480,7 @@ namespace AlwaysOn.Shared.Services
 
             try
             {
-                await _ratingsContainer.CreateItemAsync(rating, new PartitionKey(rating.CatalogItemId.ToString()));
+                await _ratingsContainer.CreateItemAsync(rating, new PartitionKey(rating.CatalogItemId.ToString()), requestOptions);
             }
             catch (CosmosException cex) when (cex.StatusCode == HttpStatusCode.Conflict)
             {

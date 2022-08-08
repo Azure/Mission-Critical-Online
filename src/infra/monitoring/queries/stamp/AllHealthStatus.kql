@@ -5,4 +5,5 @@ PublicBlobStorageHealthStatus
 | union AksClusterHealthStatus
 | union CheckpointStorageHealthStatus
 | union EventHubHealthStatus
-| order by TimeGenerated,MetricName desc
+| extend TimeGenerated = todatetime((format_datetime(TimeGenerated, 'yyyy-MM-dd hh:mm')))
+| order by TimeGenerated desc

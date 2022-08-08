@@ -70,7 +70,7 @@ namespace AlwaysOn.BackgroundProcessor
                     EnableAdaptiveSampling = bool.TryParse(hostContext.Configuration[SysConfiguration.ApplicationInsightsAdaptiveSamplingName], out bool result) ? result : true
                 });
 
-                services.AddSingleton<AppInsightsRequestHandler>();
+                services.AddSingleton<AppInsightsCosmosRequestHandler>();
 
                 services.AddSingleton<IDatabaseService, CosmosDbService>();
 

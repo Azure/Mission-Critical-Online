@@ -46,7 +46,7 @@ namespace AlwaysOn.CatalogService
                 EnableAdaptiveSampling = bool.TryParse(Configuration[SysConfiguration.ApplicationInsightsAdaptiveSamplingName], out bool result) ? result : true
             });
 
-            services.AddSingleton<AppInsightsRequestHandler>();
+            services.AddSingleton<AppInsightsCosmosRequestHandler>();
 
             services.AddHealthChecks();// Adds a simple liveness probe HTTP endpoint, path mapping happens further below
 

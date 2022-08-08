@@ -42,7 +42,7 @@ namespace AlwaysOn.HealthService
                 ConnectionString = Configuration[SysConfiguration.ApplicationInsightsConnStringKeyName]
             });
 
-            services.AddSingleton<AppInsightsRequestHandler>();
+            services.AddSingleton<AppInsightsCosmosRequestHandler>();
 
             services.AddSingleton<IDatabaseService, CosmosDbService>();
 

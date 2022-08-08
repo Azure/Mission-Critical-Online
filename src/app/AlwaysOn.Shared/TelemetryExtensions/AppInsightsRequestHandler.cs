@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace AlwaysOn.Shared.TelemetryExtensions
 {
-    public class AppInsightsRequestHandler : RequestHandler
+    public class AppInsightsCosmosRequestHandler : RequestHandler
     {
-        public AppInsightsRequestHandler(TelemetryClient telemetryClient)
+        public AppInsightsCosmosRequestHandler(TelemetryClient telemetryClient)
         {
             _telemetryClient = telemetryClient;
         }

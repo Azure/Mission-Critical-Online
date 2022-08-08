@@ -195,8 +195,7 @@ namespace AlwaysOn.Shared.Services
                 {
                     try
                     {
-                        var item = await JsonSerializer.DeserializeAsync<CatalogItem>(responseMessage.Content, Globals.JsonSerializerOptions);
-                        return item;
+                        return await JsonSerializer.DeserializeAsync<CatalogItem>(responseMessage.Content, Globals.JsonSerializerOptions);
                     }
                     catch (Exception e)
                     {

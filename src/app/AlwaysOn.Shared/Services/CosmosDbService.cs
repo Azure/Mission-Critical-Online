@@ -181,7 +181,7 @@ namespace AlwaysOn.Shared.Services
 
         public async Task<CatalogItem> GetCatalogItemByIdAsync(Guid itemId)
         {
-            var requestOptions = AppInsightsCosmosRequestHandler.CreateOptionsWithOperation<ItemRequestOptions>(nameof(GetCatalogItemByIdAsync), _dbClient.Endpoint.Host);
+            var requestOptions = AppInsightsCosmosRequestHandler.CreateRequestOptionsWithOperation<ItemRequestOptions>(nameof(GetCatalogItemByIdAsync), _dbClient.Endpoint.Host);
 
             ResponseMessage responseMessage = null;
             try
@@ -222,7 +222,7 @@ namespace AlwaysOn.Shared.Services
 
         public async Task<ItemComment> GetCommentByIdAsync(Guid commentId, Guid itemId)
         {
-            var requestOptions = AppInsightsCosmosRequestHandler.CreateOptionsWithOperation<ItemRequestOptions>(nameof(GetCommentByIdAsync), _dbClient.Endpoint.Host);
+            var requestOptions = AppInsightsCosmosRequestHandler.CreateRequestOptionsWithOperation<ItemRequestOptions>(nameof(GetCommentByIdAsync), _dbClient.Endpoint.Host);
             ResponseMessage responseMessage = null;
             
             try
@@ -263,7 +263,7 @@ namespace AlwaysOn.Shared.Services
 
         public async Task<ItemRating> GetRatingByIdAsync(Guid ratingId, Guid itemId)
         {
-            var requestOptions = AppInsightsCosmosRequestHandler.CreateOptionsWithOperation<ItemRequestOptions>(nameof(GetRatingByIdAsync), _dbClient.Endpoint.Host);
+            var requestOptions = AppInsightsCosmosRequestHandler.CreateRequestOptionsWithOperation<ItemRequestOptions>(nameof(GetRatingByIdAsync), _dbClient.Endpoint.Host);
 
             ResponseMessage responseMessage = null;
             try
@@ -309,7 +309,7 @@ namespace AlwaysOn.Shared.Services
         /// <exception cref="AlwaysOnDependencyException"></exception>
         public async Task UpsertCatalogItemAsync(CatalogItem item)
         {
-            var requestOptions = AppInsightsCosmosRequestHandler.CreateOptionsWithOperation<ItemRequestOptions>(nameof(UpsertCatalogItemAsync), _dbClient.Endpoint.Host);
+            var requestOptions = AppInsightsCosmosRequestHandler.CreateRequestOptionsWithOperation<ItemRequestOptions>(nameof(UpsertCatalogItemAsync), _dbClient.Endpoint.Host);
 
             try
             {
@@ -333,7 +333,7 @@ namespace AlwaysOn.Shared.Services
         /// <exception cref="AlwaysOnDependencyException"></exception>
         private async Task<IEnumerable<T>> ListDocumentsByQueryAsync<T>(IQueryable<T> queryable)
         {
-            var requestOptions = AppInsightsCosmosRequestHandler.CreateOptionsWithOperation<ItemRequestOptions>(nameof(ListDocumentsByQueryAsync), _dbClient.Endpoint.Host);
+            var requestOptions = AppInsightsCosmosRequestHandler.CreateRequestOptionsWithOperation<ItemRequestOptions>(nameof(ListDocumentsByQueryAsync), _dbClient.Endpoint.Host);
 
             var startTime = DateTime.UtcNow;
             var success = false;
@@ -393,7 +393,7 @@ namespace AlwaysOn.Shared.Services
 
         public async Task AddNewCatalogItemAsync(CatalogItem item)
         {
-            var requestOptions = AppInsightsCosmosRequestHandler.CreateOptionsWithOperation<ItemRequestOptions>(nameof(AddNewCatalogItemAsync), _dbClient.Endpoint.Host);
+            var requestOptions = AppInsightsCosmosRequestHandler.CreateRequestOptionsWithOperation<ItemRequestOptions>(nameof(AddNewCatalogItemAsync), _dbClient.Endpoint.Host);
 
             try
             {
@@ -449,7 +449,7 @@ namespace AlwaysOn.Shared.Services
 
         public async Task AddNewCommentAsync(ItemComment comment)
         {
-            var requestOptions = AppInsightsCosmosRequestHandler.CreateOptionsWithOperation<ItemRequestOptions>(nameof(AddNewCommentAsync), _dbClient.Endpoint.Host);
+            var requestOptions = AppInsightsCosmosRequestHandler.CreateRequestOptionsWithOperation<ItemRequestOptions>(nameof(AddNewCommentAsync), _dbClient.Endpoint.Host);
 
             try
             {
@@ -472,7 +472,7 @@ namespace AlwaysOn.Shared.Services
 
         public async Task<RatingDto> GetAverageRatingForCatalogItemAsync(Guid itemId)
         {
-            var requestOptions = AppInsightsCosmosRequestHandler.CreateOptionsWithOperation<QueryRequestOptions>(nameof(GetAverageRatingForCatalogItemAsync), _dbClient.Endpoint.Host);
+            var requestOptions = AppInsightsCosmosRequestHandler.CreateRequestOptionsWithOperation<QueryRequestOptions>(nameof(GetAverageRatingForCatalogItemAsync), _dbClient.Endpoint.Host);
 
             FeedResponse<RatingDto> response = null;
             
@@ -498,7 +498,7 @@ namespace AlwaysOn.Shared.Services
 
         public async Task AddNewRatingAsync(ItemRating rating)
         {
-            var requestOptions = AppInsightsCosmosRequestHandler.CreateOptionsWithOperation<ItemRequestOptions>(nameof(AddNewRatingAsync), _dbClient.Endpoint.Host);
+            var requestOptions = AppInsightsCosmosRequestHandler.CreateRequestOptionsWithOperation<ItemRequestOptions>(nameof(AddNewRatingAsync), _dbClient.Endpoint.Host);
 
             try
             {

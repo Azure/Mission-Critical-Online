@@ -69,27 +69,5 @@ namespace AlwaysOn.Shared.TelemetryExtensions
 
             return response;
         }
-
-        /// <summary>
-        /// Helper method which populates a Cosmos DB request options object with properties: "Operation" and "DbClientEndpoint" (optional).
-        /// </summary>
-        /// <typeparam name="T">A Cosmos DB <c>RequestOptions</c> derived type. Typically <c>ItemRequestOptions</c> or <c>QueryRequestOptions</c>.</typeparam>
-        /// <param name="operationName">What will be shown as operation name in Application Insights.</param>
-        /// <param name="dbClientEndpoint">Optional endpoint configured in the Cosmos Client.</param>
-        /// <returns>Desired <c>RequestOptions</c> object.</returns>
-        public static T CreateRequestOptionsWithOperation<T>(string operationName, string dbClientEndpoint = null) where T : RequestOptions
-        {
-            var requestOptions = Activator.CreateInstance<T>();
-
-            var props = new Dictionary<string, object>() { { "Operation", operationName } };
-            if (dbClientEndpoint != null)
-            {
-                props.Add("DbClientEndpoint", dbClientEndpoint);
-            }
-
-            requestOptions.Properties = props;
-
-            return requestOptions;
-        }
     }
 }

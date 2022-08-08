@@ -14,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -181,7 +182,7 @@ namespace AlwaysOn.Shared.Services
 
         public async Task<CatalogItem> GetCatalogItemByIdAsync(Guid itemId)
         {
-            var requestOptions = AppInsightsCosmosRequestHandler.CreateRequestOptionsWithOperation<ItemRequestOptions>(nameof(GetCatalogItemByIdAsync), _dbClient.Endpoint.Host);
+            var requestOptions = CreateRequestOptionsWithOperation<ItemRequestOptions>();
 
             ResponseMessage responseMessage = null;
             try
@@ -222,7 +223,7 @@ namespace AlwaysOn.Shared.Services
 
         public async Task<ItemComment> GetCommentByIdAsync(Guid commentId, Guid itemId)
         {
-            var requestOptions = AppInsightsCosmosRequestHandler.CreateRequestOptionsWithOperation<ItemRequestOptions>(nameof(GetCommentByIdAsync), _dbClient.Endpoint.Host);
+            var requestOptions = CreateRequestOptionsWithOperation<ItemRequestOptions>();
             ResponseMessage responseMessage = null;
             
             try
@@ -263,7 +264,7 @@ namespace AlwaysOn.Shared.Services
 
         public async Task<ItemRating> GetRatingByIdAsync(Guid ratingId, Guid itemId)
         {
-            var requestOptions = AppInsightsCosmosRequestHandler.CreateRequestOptionsWithOperation<ItemRequestOptions>(nameof(GetRatingByIdAsync), _dbClient.Endpoint.Host);
+            var requestOptions = CreateRequestOptionsWithOperation<ItemRequestOptions>();
 
             ResponseMessage responseMessage = null;
             try
@@ -309,7 +310,7 @@ namespace AlwaysOn.Shared.Services
         /// <exception cref="AlwaysOnDependencyException"></exception>
         public async Task UpsertCatalogItemAsync(CatalogItem item)
         {
-            var requestOptions = AppInsightsCosmosRequestHandler.CreateRequestOptionsWithOperation<ItemRequestOptions>(nameof(UpsertCatalogItemAsync), _dbClient.Endpoint.Host);
+            var requestOptions = CreateRequestOptionsWithOperation<ItemRequestOptions>();
 
             try
             {
@@ -333,7 +334,7 @@ namespace AlwaysOn.Shared.Services
         /// <exception cref="AlwaysOnDependencyException"></exception>
         private async Task<IEnumerable<T>> ListDocumentsByQueryAsync<T>(IQueryable<T> queryable)
         {
-            var requestOptions = AppInsightsCosmosRequestHandler.CreateRequestOptionsWithOperation<ItemRequestOptions>(nameof(ListDocumentsByQueryAsync), _dbClient.Endpoint.Host);
+            var requestOptions = CreateRequestOptionsWithOperation<ItemRequestOptions>();
 
             var startTime = DateTime.UtcNow;
             var success = false;
@@ -393,7 +394,7 @@ namespace AlwaysOn.Shared.Services
 
         public async Task AddNewCatalogItemAsync(CatalogItem item)
         {
-            var requestOptions = AppInsightsCosmosRequestHandler.CreateRequestOptionsWithOperation<ItemRequestOptions>(nameof(AddNewCatalogItemAsync), _dbClient.Endpoint.Host);
+            var requestOptions = CreateRequestOptionsWithOperation<ItemRequestOptions>();
 
             try
             {
@@ -449,7 +450,7 @@ namespace AlwaysOn.Shared.Services
 
         public async Task AddNewCommentAsync(ItemComment comment)
         {
-            var requestOptions = AppInsightsCosmosRequestHandler.CreateRequestOptionsWithOperation<ItemRequestOptions>(nameof(AddNewCommentAsync), _dbClient.Endpoint.Host);
+            var requestOptions = CreateRequestOptionsWithOperation<ItemRequestOptions>();
 
             try
             {
@@ -472,7 +473,7 @@ namespace AlwaysOn.Shared.Services
 
         public async Task<RatingDto> GetAverageRatingForCatalogItemAsync(Guid itemId)
         {
-            var requestOptions = AppInsightsCosmosRequestHandler.CreateRequestOptionsWithOperation<QueryRequestOptions>(nameof(GetAverageRatingForCatalogItemAsync), _dbClient.Endpoint.Host);
+            var requestOptions = CreateRequestOptionsWithOperation<QueryRequestOptions>();
 
             FeedResponse<RatingDto> response = null;
             
@@ -498,7 +499,7 @@ namespace AlwaysOn.Shared.Services
 
         public async Task AddNewRatingAsync(ItemRating rating)
         {
-            var requestOptions = AppInsightsCosmosRequestHandler.CreateRequestOptionsWithOperation<ItemRequestOptions>(nameof(AddNewRatingAsync), _dbClient.Endpoint.Host);
+            var requestOptions = CreateRequestOptionsWithOperation<ItemRequestOptions>();
 
             try
             {
@@ -517,6 +518,30 @@ namespace AlwaysOn.Shared.Services
                 _logger.LogError(e, "Unknown exception on request to Cosmos DB");
                 throw new AlwaysOnDependencyException(HttpStatusCode.InternalServerError, "Unknown exception on request to Cosmos DB", innerException: e);
             }
+        }
+
+        /// <summary>
+        /// Helper method which populates a Cosmos DB request options object with properties: "Operation" and "DbClientEndpoint" (optional).
+        /// </summary>
+        /// <typeparam name="T">A Cosmos DB <c>RequestOptions</c> derived type. Typically <c>ItemRequestOptions</c> or <c>QueryRequestOptions</c>.</typeparam>
+        /// <param name="operationName">What will be shown as operation name in Application Insights.</param>
+        /// <param name="dbClientEndpoint">Optional endpoint configured in the Cosmos Client.</param>
+        /// <returns>Desired <c>RequestOptions</c> object.</returns>
+        private T CreateRequestOptionsWithOperation<T>([CallerMemberName] string callerName = "", string operationName = null) where T : RequestOptions
+        {
+            var opName = operationName ?? callerName;
+            var dbClientEndpoint = _dbClient.Endpoint.Host;
+
+            var props = new Dictionary<string, object>() { { "Operation", opName } };
+            if (dbClientEndpoint != null)
+            {
+                props.Add("DbClientEndpoint", dbClientEndpoint);
+            }
+
+            var requestOptions = Activator.CreateInstance<T>();
+            requestOptions.Properties = props;
+
+            return requestOptions;
         }
     }
 }

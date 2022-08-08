@@ -45,11 +45,19 @@ namespace AlwaysOn.Shared.TelemetryExtensions
 
             var response = await base.SendAsync(request, cancellationToken);
 
+            var success = response.IsSuccessStatusCode;
+            // Application-specific special handling in order to have cleaner Application Insights error reporting. Client will still get proper error response.
+            // There are cases which we don't consider database errors and would create noise in monitoring:
+            //  - Considering NotFound as successful call to Cosmos DB, looking for a non-existent object.
+            //  - The same with Conflict, which is handled the application code (ignoring the request, because it already exists).
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound || response.StatusCode == System.Net.HttpStatusCode.Conflict)
+                success = true;
+
             dependency.Telemetry.Type = "Azure DocumentDB";
             dependency.Telemetry.Data = request.RequestUri.OriginalString; // Will be shown as "Command" in Application Insights
             dependency.Telemetry.Target = response.Diagnostics != null ? response.Diagnostics.GetContactedRegions().FirstOrDefault().uri?.Host : dbClientEndpoint;
             dependency.Telemetry.ResultCode = ((int)response.StatusCode).ToString();
-            dependency.Telemetry.Success = response.IsSuccessStatusCode;
+            dependency.Telemetry.Success = success;
 
             dependency.Telemetry.Metrics.Add("CosmosDbRequestUnits", response.Headers.RequestCharge);
             dependency.Telemetry.Metrics.Add("ClientElapsedTime", response.Diagnostics != null ? response.Diagnostics.GetClientElapsedTime().TotalMilliseconds : -1);
@@ -69,7 +77,7 @@ namespace AlwaysOn.Shared.TelemetryExtensions
         /// <param name="operationName">What will be shown as operation name in Application Insights.</param>
         /// <param name="dbClientEndpoint">Optional endpoint configured in the Cosmos Client.</param>
         /// <returns>Desired <c>RequestOptions</c> object.</returns>
-        public static T CreateOptionsWithOperation<T>(string operationName, string dbClientEndpoint = null) where T : RequestOptions
+        public static T CreateRequestOptionsWithOperation<T>(string operationName, string dbClientEndpoint = null) where T : RequestOptions
         {
             var requestOptions = Activator.CreateInstance<T>();
 

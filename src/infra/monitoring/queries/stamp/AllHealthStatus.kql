@@ -5,5 +5,5 @@ PublicBlobStorageHealthStatus
 | union AksClusterHealthStatus
 | union CheckpointStorageHealthStatus
 | union EventHubHealthStatus
-| extend TimeGenerated = todatetime((format_datetime(TimeGenerated, 'yyyy-MM-dd hh:mm')))
+| summarize Value=max(Value) by ComponentName, MetricName, bin(TimeGenerated, 1m), IsYellow, IsRed, YellowThreshold, RedThreshold
 | order by TimeGenerated desc

@@ -22,13 +22,11 @@ namespace HealthStatusFunction
     {
         private string workspaceId;
         private string sharedKey;
-        private HttpClient httpClient;
         private ILogger logger;
         public LogAnalyticsConnector(string workspaceId, string sharedKey, ILogger logger) 
         {
             this.workspaceId = workspaceId;
             this.sharedKey = sharedKey;
-            this.httpClient = new HttpClient();
             this.logger = logger;
         }
 
@@ -45,6 +43,7 @@ namespace HealthStatusFunction
             logger.LogInformation("Retrieved {count} rows from query '{query}'", response.Value.Table.Rows.Count, query);
             IReadOnlyList<LogsTableRow> result = response.Value.Table.Rows;
             return formatLogsResult(response.Value.Table);
+            //return JsonConvert.SerializeObject(response.Value.Table.Rows);
         }
 
         private string formatLogsResult(LogsTable table)
@@ -73,6 +72,7 @@ namespace HealthStatusFunction
             string signature = string.Format("SharedKey {0}:{1}", workspaceId, hashedString);
 
             string url = String.Format("https://{0}.ods.opinsights.azure.com/api/logs?api-version=2016-04-01", workspaceId);
+            HttpClient httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
             httpClient.DefaultRequestHeaders.Add("Log-Type", logTableName);
             httpClient.DefaultRequestHeaders.Add("Authorization", signature);

@@ -308,11 +308,7 @@ namespace AlwaysOn.Shared.Services
         /// <exception cref="AlwaysOnDependencyException"></exception>
         private async Task<IEnumerable<T>> ListDocumentsByQueryAsync<T>(IQueryable<T> queryable)
         {
-
-            var startTime = DateTime.UtcNow;
-            var success = false;
             FeedIterator<T> feedIterator = queryable.ToFeedIterator();
-            CosmosDiagnostics diagnostics = null;
             int readIterations = 0;
             double sumRUCharge = 0;
             var results = new List<T>();
@@ -323,17 +319,14 @@ namespace AlwaysOn.Shared.Services
                 {
                     readIterations++;
                     var response = await feedIterator.ReadNextAsync(); // actual call to Cosmos DB to retrieve a batch of results
-                    diagnostics = response.Diagnostics;
                     sumRUCharge += response.RequestCharge;
                     results.AddRange(response.Resource);
                 }
 
-                success = true;
+                _logger.LogInformation("List request iterations: {readIterations}, combined RU cost: {sumRUCharge}.", readIterations, sumRUCharge);
             }
             catch (CosmosException cex)
             {
-                success = false;
-                diagnostics = cex.Diagnostics;
                 throw new AlwaysOnDependencyException(cex.StatusCode, innerException: cex);
             }
             catch (Exception e)
@@ -343,25 +336,9 @@ namespace AlwaysOn.Shared.Services
             }
             finally
             {
-                var overallDuration = DateTime.UtcNow - startTime;
-                var telemetry = new DependencyTelemetry()
-                {
-                    Type = AppInsightsDependencyType,
-                    Data = $"{queryable}",
-                    Name = $"List {typeof(T).Name} items",
-                    Timestamp = startTime,
-                    Duration = overallDuration,
-                    Target = diagnostics != null ? diagnostics.GetContactedRegions().FirstOrDefault().uri?.Host : _dbClient.Endpoint.Host,
-                    Success = success
-                };
-
-                telemetry.Metrics.Add("CosmosDbRequestUnits", sumRUCharge);
-                telemetry.Metrics.Add("ReadIterations", readIterations);
-                telemetry.Metrics.Add("FetchedItemCount", results.Count);
-                _telemetryClient.TrackDependency(telemetry);
-
                 feedIterator.Dispose();
             }
+
             return results;
         }
 

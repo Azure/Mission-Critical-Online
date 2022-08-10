@@ -40,17 +40,29 @@ namespace AlwaysOn.Shared.TelemetryExtensions
                 success = true;
 
             dependency.Telemetry.Type = "Azure DocumentDB";
-            dependency.Telemetry.Data = request.RequestUri.OriginalString; // Will be shown as "Command" in Application Insights
-            dependency.Telemetry.Target = response.Diagnostics != null ? response.Diagnostics.GetContactedRegions().FirstOrDefault().uri?.Host : dbClientEndpoint;
-            dependency.Telemetry.ResultCode = ((int)response.StatusCode).ToString();
-            dependency.Telemetry.Success = success;
-
-            dependency.Telemetry.Metrics.Add("CosmosDbRequestUnits", response.Headers.RequestCharge);
-            dependency.Telemetry.Metrics.Add("ClientElapsedTime", response.Diagnostics != null ? response.Diagnostics.GetClientElapsedTime().TotalMilliseconds : -1);
-
-            if (request.Headers.TryGetValue("x-ms-documentdb-partitionkey", out string partitionKey))
+            dependency.Telemetry.Data = request.RequestUri.OriginalString; // will be shown as "Command" in Application Insights
+            
+            try
             {
-                dependency.Telemetry.Properties.Add("PartitionKey", partitionKey);
+                dependency.Telemetry.Target = response.Diagnostics != null ? response.Diagnostics.GetContactedRegions().FirstOrDefault().uri?.Host : dbClientEndpoint;
+                dependency.Telemetry.ResultCode = ((int)response.StatusCode).ToString();
+                dependency.Telemetry.Success = success;
+
+                dependency.Telemetry.Metrics.Add("CosmosDbRequestUnits", response.Headers.RequestCharge);
+                dependency.Telemetry.Metrics.Add("ClientElapsedTime", response.Diagnostics != null ? response.Diagnostics.GetClientElapsedTime().TotalMilliseconds : -1);
+
+                if (request.Headers.TryGetValue("x-ms-documentdb-partitionkey", out string partitionKey))
+                {
+                    dependency.Telemetry.Properties.Add("PartitionKey", partitionKey);
+                }
+            }
+            catch (Exception ex)
+            {
+                // Cosmos request happened, but there's something wrong with the response - e.g. missing fields on the Diagnostics object.
+                // We track the issue, but still return the response afterwards.
+                dependency.Telemetry.Success = false;
+                dependency.Telemetry.Properties.Add("Reason", ex.Message);
+                _telemetryClient.TrackException(ex);
             }
 
             return response;

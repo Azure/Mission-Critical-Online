@@ -12,6 +12,9 @@ namespace AlwaysOn.Shared.TelemetryExtensions
 {
     public class AppInsightsCosmosRequestHandler : RequestHandler
     {
+        /// <summary>
+        /// Custom Cosmos DB request handler which automatically adds dependency tracking with <c>TelemetryClient</c> for each database request. Added metadata includes RU cost of the request.
+        /// </summary>
         public AppInsightsCosmosRequestHandler(TelemetryClient telemetryClient)
         {
             _telemetryClient = telemetryClient;

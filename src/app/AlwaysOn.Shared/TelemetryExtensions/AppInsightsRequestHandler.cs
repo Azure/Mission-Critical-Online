@@ -26,23 +26,6 @@ namespace AlwaysOn.Shared.TelemetryExtensions
 
             using var dependency = _telemetryClient.StartOperation<DependencyTelemetry>(title);
 
-            //
-            // Comparison with the original telemetry object:
-            //
-            //var telemetry = new DependencyTelemetry()
-            //{
-            //    OK - Type = AppInsightsDependencyType,
-            //    OK - Data = $"ObjectId={objectId}, Partitionkey={partitionKey}",
-            //    OK - Name = $"Delete {typeof(T).Name}",
-            //    OK - Timestamp = startTime,
-            //    OK - Duration = diagnostics != null ? diagnostics.GetClientElapsedTime() : overallDuration,
-            //    OK - Target = diagnostics != null ? diagnostics.GetContactedRegions().FirstOrDefault().uri?.Host : _dbClient.Endpoint.Host,
-            //    REMOVED - Success = success
-            //};
-            //
-            //if (response != null)
-            //    OK - telemetry.Metrics.Add("CosmosDbRequestUnits", response.RequestCharge);
-
             var response = await base.SendAsync(request, cancellationToken);
 
             var success = response.IsSuccessStatusCode;

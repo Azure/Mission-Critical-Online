@@ -7,6 +7,7 @@ It is inevitable in a system with the complexity of Azure Mission-Critical that 
   - [Deploy Workload stage](#deploy-workload-stage)
   - [Testing stages](#testing-stages)
   - [Destroy Infrastructure stage](#destroy-infrastructure-stage)
+- [Application issues](#application-issues)
 
 ## Deployment issues
 
@@ -175,6 +176,7 @@ Destroy Infrastructure • Destroy Old Release Unit Deployment • Fetch previou
 To prevent the error from happening to begin with, you can manually de-select the Destroy stage when starting the pipeline run in Azure DevOps.
 
 ---
+
 **Error:**
 
 ```console
@@ -188,6 +190,18 @@ To prevent the error from happening to begin with, you can manually de-select th
 **Description:** The deletion of the event hub consumer group as part of the terraform infrastructure destroy process can fail from time to time due to a conflicting operation that happens at the same time.
 
 **Solution:** Re-run the failing step.
+
+## Application issues
+
+**Error:** Starting `BackroundProcessor` fails with a Storage exception that contains the following message:
+
+```console
+Status: 403 (Server failed to authenticate the request. Make sure the value of Authorization header is formed correctly including the signature.)
+```
+
+**Description:** This can happen when debugging the application locally during connection to a stamp's Storage Account (which for the `BackgroundProcessor` is immediately after start) or the global Storage Account in case of the `CatalogService` (which is used for image uploads).
+
+**Solution:** Check if your Storage connection string contains the `/` character. If so, either switch to a secondary key, which doesn't have it, or regenerate the key.
 
 ---
 [Azure Mission-Critical - Full List of Documentation](/docs/README.md)

@@ -44,6 +44,7 @@ resource "azurerm_linux_function_app" "regional" {
       "SCM_DO_BUILD_DURING_DEPLOYMENT" = "true"
       "WEBSITE_MOUNT_ENABLED"          = "1"
       "WEBSITE_RUN_FROM_PACKAGE"       = "" # This value will be set by the Function deployment later
+      "EventHubsConnectionString"      = azurerm_eventhub_namespace.regional.default_primary_connection_string
   })
 
   lifecycle {

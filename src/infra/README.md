@@ -122,6 +122,7 @@ As of May 2022, following regions have been successfully tested with the referen
 - eastasia
 - japaneast
 - koreacentral
+- centralindia
 
 > Note: Depending on which regions you select, you might need to first request quota with Azure Support for some of the services (mostly for AKS VMs and Cosmos DB).
 

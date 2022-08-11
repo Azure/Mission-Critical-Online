@@ -403,11 +403,9 @@ stages:
                     echo "*** Load credentials for AKS Cluster $aksClusterName in $aksClusterResourceGroup"
                     az aks get-credentials --name $aksClusterName --resource-group $aksClusterResourceGroup --overwrite-existing
 
-                    $ingressNamespace = "ingress-nginx"
-
                     # First delete the ingress controllers
-                    echo "*** Deleting all deployments in namespace $ingressNamespace"
-                    kubectl delete --all deployments --namespace=$ingressNamespace
+                    echo "*** Deleting all deployments in namespace $(ingressNamespace)"
+                    kubectl delete --all deployments --namespace=$(ingressNamespace)
 
                     # Now delete all the workload deployments
                     echo "*** Deleting all deployments in namespace $(workloadNamespace)"

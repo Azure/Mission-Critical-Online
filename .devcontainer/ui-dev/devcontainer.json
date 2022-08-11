@@ -9,9 +9,6 @@
 		"args": { "VARIANT": "18" }
 	},
 
-  "workspaceMount": "source=${localWorkspaceFolder},target=/home/codespace/workspace,type=bind,consistency=cached",
-  "workspaceFolder": "/home/codespace/workspace/src/app/AlwaysOn.UI/",
-
 	// Configure tool-specific properties.
 	"customizations": {
 		// Configure properties specific to VS Code.

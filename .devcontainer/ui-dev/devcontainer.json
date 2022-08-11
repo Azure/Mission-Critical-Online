@@ -4,10 +4,12 @@
 	"name": "UI development with Vue.js",
 	"build": {
 		"dockerfile": "Dockerfile",
-		"context": "../..",
+		"context": "../../src/app/AlwaysOn.UI/",
 		// Update 'VARIANT' to pick a Node version: 12, 14, 16
 		"args": { "VARIANT": "18" }
 	},
+
+	"mounts": [ "source=${localWorkspaceFolder}/src/app/AlwaysOn.UI,target=/app,type=volume" ],
 
 	// Configure tool-specific properties.
 	"customizations": {

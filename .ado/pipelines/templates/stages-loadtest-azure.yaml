@@ -200,7 +200,7 @@ stages:
                           -testRunId "$(testRunId)"
               $testRunStatus = ($result).status
 
-              if ($result.status -eq "DONE") {
+              if ($result.status -eq "DONE") { # other states are FAILED, EXECUTING and CANCELLED
                 # test has successfully finished
                 echo "*** Test Run $(testRunId) was successfully completed. Status: $testRunStatus"
 
@@ -217,9 +217,9 @@ stages:
                   throw "*** ERROR: Test result for test run $($result.testRunId) is failed. Test did not match the defined test criteria."
                 }
 
-              } elseif ($result.status -eq "FAILED") {
-                # test ended in failed state
-                throw "*** ERROR: Test run $(testRunId) ended in failed state."
+              } elseif (($result.status -eq "FAILED") -or ($result.status -eq "CANCELLED")) {
+                # test ended in failed or cancelled (manually stopped) state
+                throw "*** ERROR: Test run $(testRunId) ended in $($result.status) state."
               } else {
                 # test is still running
                 echo "*** Test Run $(testRunId) is in status $testRunStatus"

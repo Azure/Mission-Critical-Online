@@ -3,7 +3,7 @@ ARG VARIANT=16
 FROM mcr.microsoft.com/vscode/devcontainers/javascript-node:0-${VARIANT}
 
 RUN su node -c "umask 0002 && npm install -g http-server @vue/cli @vue/cli-service-global"
-WORKDIR /app
+WORKDIR src/app/AlwaysOn.UI
 
 EXPOSE 8080
 

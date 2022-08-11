@@ -12,7 +12,7 @@ steps:
       # The branch name is used as an Azure Resource Tag for all resources deployed, as well as to generate a unique identifier used for resource names to avoid naming conflicts
       echo "*** Build.SourceBranch: $(Build.SourceBranch)"
       $sourceBranch = $("$(Build.SourceBranch)" -replace "refs/heads/", "")
-      echo "*** Strip branch name from SourceBranch: $sourceBranch"
+      echo "*** Strip branch prefix from SourceBranch: $sourceBranch"
       $branchName = $("$sourceBranch" -replace "/", "-")
 
       $hashInput = $branchName
@@ -60,13 +60,27 @@ steps:
     targetType: inline
     script: |
 
-      $globalSuffix = ""
+      # For long-living environments, there is no additional suffix for the globa resources. The prefix alone is enough to make the resources unique
+      # This only exists for E2E since we will have multiple global resources in parallel for the same E2E-prefix
+
+      $globalResourceSuffix = ""
       if("$(environment)" -eq "e2e")
       {
-        echo "*** Running e2e environment. Setting globalSuffix to '$(customSuffix)'"
-        $globalSuffix = "$(customSuffix)"
+        echo "*** Running e2e environment. Setting globalResourceSuffix to '$(customSuffix)'"
+        $globalResourceSuffix = "$(customSuffix)"
+      }
+      else {
+        $globalResourceSuffix = ""
       }
 
+      $terraformStateFileGlobal = "terraform-global-$(prefix)$globalResourceSuffix.state"
+      $terraformStateFileReleaseUnit = "terraform-$(prefix)$(customSuffix).state"
+
+      echo "*** DEBUG: Setting globalResourceSuffix to '$globalResourceSuffix'"
+      echo "*** DEBUG: Setting terraformStateFileGlobal to '$terraformStateFileGlobal'"
+      echo "*** DEBUG: Setting terraformStateFileReleaseUnit to '$terraformStateFileReleaseUnit'"
+
+      echo "##vso[task.setvariable variable=globalResourceSuffix]$globalResourceSuffix"
       if("$(envDomainName)" -ne "")
       {
 
@@ -86,15 +100,15 @@ steps:
         $domainSuffix = ""
       }
 
-      $terraformStateFileGlobal = "terraform-global-$(prefix)$globalSuffix.state"
+      $terraformStateFileGlobal = "terraform-global-$(prefix)$globalResourceSuffix.state"
       $terraformStateFileReleaseUnit = "terraform-$(prefix)$(customSuffix).state"
 
-      echo "*** DEBUG: Setting globalSuffix to '$globalSuffix'"
+      echo "*** DEBUG: Setting globalResourceSuffix to '$globalResourceSuffix'"
       echo "*** DEBUG: Setting domainSuffix to '$domainSuffix'"
       echo "*** DEBUG: Setting terraformStateFileGlobal to '$terraformStateFileGlobal'"
       echo "*** DEBUG: Setting terraformStateFileReleaseUnit to '$terraformStateFileReleaseUnit'"
 
-      echo "##vso[task.setvariable variable=globalSuffix]$globalSuffix"
+      echo "##vso[task.setvariable variable=globalResourceSuffix]$globalResourceSuffix"
       echo "##vso[task.setvariable variable=domainSuffix]$domainSuffix"
       echo "##vso[task.setvariable variable=terraformStateFileGlobal]$terraformStateFileGlobal"
       echo "##vso[task.setvariable variable=terraformStateFileReleaseUnit]$terraformStateFileReleaseUnit"

@@ -24,18 +24,18 @@ Azure Mission-Critical integrates [Azure Chaos Studio](https://aka.ms/chaosstudi
 
 The Azure Mission-Critical online reference implementation uses existing testing capabilities and frameworks whenever possible. The subsequent sections contain an overview of the used tools and frameworks.
 
-- [JMeter with Azure Load Test](#jmeter-with-azure-load-test)
-- [Locust](#locust) for load testing
+- [Azure Load Test Service](#azure-load-test-service) for load testing using the Microsoft Azure Load Test service
+- [Locust](#locust) for load testing using the open source load testing framework locust
 - [Playwright](#playwright) for UI testing
 - [Azure Chaos Studio](#azure-chaos-studio) for failure injection testing
 
-### JMeter with Azure Load Test
+### Azure Load Test Service
 
-[Azure Load Test](https://docs.microsoft.com/azure/load-testing/overview-what-is-azure-load-testing) is a managed service to execute [Apache JMeter](https://jmeter.apache.org/) load test definitions.
+Microsoft [Azure Load Test](https://docs.microsoft.com/azure/load-testing/overview-what-is-azure-load-testing) Service (MALT) is a managed service to execute [Apache JMeter](https://jmeter.apache.org/) load test definitions. Azure Mission-Critical comes with a load test definition for its sample application that can be leveraged either standalone (infrastructure and test service is deployed via a separate pipeline) or embedded into the e2e pipeline including a baseline definition.
 
 ### Locust
 
-Locust is an open source Load Testing framework written in Python. See [locust](./loadtest-locust/README.md) for more details about the implementation and configuration.
+Locust is an open source Load Testing framework written in Python. See [locust](./loadtest-locust/README.md) for more details about the implementation and configuration. Locust was used in the Mission-Critical reference implementation before MALT was available and is still available as a [standalone deployment using Azure Container Instances](https://medium.com/microsoftazure/globally-distributed-load-tests-in-azure-with-locust-aeb3a365cd60).
 
 ### Playwright
 

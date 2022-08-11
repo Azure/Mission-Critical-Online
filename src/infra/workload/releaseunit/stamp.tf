@@ -47,6 +47,10 @@ module "stamp" {
   aks_system_node_pool_autoscale_minimum = var.aks_system_node_pool_autoscale_minimum
   aks_system_node_pool_autoscale_maximum = var.aks_system_node_pool_autoscale_maximum
 
+  aks_user_node_pool_sku_size          = var.aks_user_node_pool_sku_size
+  aks_user_node_pool_autoscale_minimum = var.aks_user_node_pool_autoscale_minimum
+  aks_user_node_pool_autoscale_maximum = var.aks_user_node_pool_autoscale_maximum
+
   apim_sku = var.apim_sku
 
   event_hub_thoughput_units         = var.event_hub_thoughput_units

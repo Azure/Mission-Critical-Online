@@ -7,7 +7,7 @@ param(
 # -----------
 # Load helper functions.
 # -----------
-. $env:SYSTEM_DEFAULTWORKINGDIRECTORY/.ado/scripts/Invoke-WebRequestWithRetry.ps1
+. $env:SYSTEM_DEFAULTWORKINGDIRECTORY/.ado/pipelines/scripts/Invoke-WebRequestWithRetry.ps1
 
 # -----------
 # Execute smoke tests.
@@ -33,7 +33,7 @@ Write-Output "*******************"
 # request body needs to be a valid object expected by the API - keep up to date when the contract changes
 $post_comment_body = @{
   "authorName" = "Smoke Test Author"
-  "text" = "Just a smoke test"
+  "text"       = "Just a smoke test"
 } | ConvertTo-JSON
 
 
@@ -47,12 +47,12 @@ if ($mode -eq "stamp") {
 
   # setting header with X-Azure-FDID for HTTP-based smoke tests (required to access the individual stamps directly, bypassing Front Door)
   $header = @{
-    "X-Azure-FDID"="$frontdoorHeaderId"
-    "X-TEST-DATA"="true" # Header to indicate that posted comments and rating are just for test and can be deleted again by the app
+    "X-Azure-FDID" = "$frontdoorHeaderId"
+    "X-TEST-DATA"  = "true" # Header to indicate that posted comments and rating are just for test and can be deleted again by the app
   }
 
   # loop through stamps from pipeline artifact json
-  foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
+  foreach ($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
     # from stamp we need:
     # - apim_fqdn = endpoint to be called
     # - storage_web_host = ui host
@@ -60,7 +60,7 @@ if ($mode -eq "stamp") {
     $props = @{
       # Individual Cluster Endpoint FQDN (from pipeline artifact json)
       ApiEndpointFqdn = $stamp.apim_fqdn
-      UiEndpointFqdn = $stamp.storage_web_host
+      UiEndpointFqdn  = $stamp.storage_web_host
     }
 
     $obj = New-Object PSObject -Property $props
@@ -69,12 +69,12 @@ if ($mode -eq "stamp") {
 }
 else {
   $header = @{
-    "X-TEST-DATA"="true"
+    "X-TEST-DATA" = "true"
   }
 
   $props = @{
     ApiEndpointFqdn = $frontdoorFqdn
-    UiEndpointFqdn = $frontdoorFqdn
+    UiEndpointFqdn  = $frontdoorFqdn
   }
 
   $obj = New-Object PSObject -Property $props
@@ -84,7 +84,7 @@ else {
 Write-Output "*** Testing $($targets.Count) targets"
 
 # loop through targets - either multiple stamps or one front door (global)
-foreach($target in $targets) {
+foreach ($target in $targets) {
 
   # shorthand for easier manipulation in strings
   $targetFqdn = $target.ApiEndpointFqdn
@@ -140,8 +140,8 @@ foreach($target in $targets) {
   $responseUi = Invoke-WebRequestWithRetry -Uri https://$targetUiFqdn -Method 'GET' -MaximumRetryCount $smokeTestRetryCount -RetryWaitSeconds $smokeTestRetryWaitSeconds
   $responseUi
 
-  if (!$responseUi.Content.Contains("<title>AlwaysOn Catalog</title>")) # Check in the HTML content of the response for a known string (the page title in this case)
-  {
+  if (!$responseUi.Content.Contains("<title>AlwaysOn Catalog</title>")) {
+    # Check in the HTML content of the response for a known string (the page title in this case)
     throw "*** Web UI for $targetUiFqdn doesn't contain the expected site title."
   }
 }

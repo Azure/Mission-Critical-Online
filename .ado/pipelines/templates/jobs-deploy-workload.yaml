@@ -29,12 +29,14 @@ jobs: # using jobs so they each run in parallel
 
           # loop through stamps from pipeline artifact json
           foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
+            echo "**************************** REGION: $($stamp.location) ****************************"
 
             $aksClusterName = $stamp.aks_cluster_name
             $aksClusterResourceGroup = $stamp.resource_group_name
 
-            $region = $(az eventhubs namespace list --resource-group $aksClusterResourceGroup --query "[0].location" --output tsv)
-            echo "*** Use Azure Region $region from Event Hub namespace"
+            # We are using the list-locations command to retrieve the display name of the region as this is needed for the Cosmos DB SDK's ApplicationRegion parameter
+            $region = az account list-locations --query "[?name == '$($stamp.location)'].displayName" -o tsv
+            echo "*** Using Azure Region display name $region"
 
             echo "*** Load credentials for AKS Cluster $aksClusterName in $aksClusterResourceGroup"
             az aks get-credentials --name $aksClusterName --resource-group $aksClusterResourceGroup --overwrite-existing
@@ -121,13 +123,14 @@ jobs: # using jobs so they each run in parallel
 
           # loop through stamps from pipeline artifact json
           foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
+            echo "**************************** REGION: $($stamp.location) ****************************"
 
             $aksClusterName = $stamp.aks_cluster_name
             $aksClusterResourceGroup = $stamp.resource_group_name
 
-            # We are using the Region of the EH namespace as a workaround since this has the right format for the Cosmos SDK ("East US 2" instead of "eastus2")
-            $region = $(az eventhubs namespace list --resource-group $aksClusterResourceGroup --query "[0].location" --output tsv)
-            echo "*** Use Azure Region $region from Event Hub namespace"
+            # We are using the list-locations command to retrieve the display name of the region as this is needed for the Cosmos DB SDK's ApplicationRegion parameter
+            $region = az account list-locations --query "[?name == '$($stamp.location)'].displayName" -o tsv
+            echo "*** Using Azure Region display name $region"
 
             # load AKS cluster credentials
             echo "*** Load credentials for AKS Cluster $aksClusterName in $aksClusterResourceGroup"
@@ -181,13 +184,14 @@ jobs: # using jobs so they each run in parallel
 
           # loop through stamps from pipeline artifact json
           foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
+            echo "**************************** REGION: $($stamp.location) ****************************"
 
             $aksClusterName = $stamp.aks_cluster_name
             $aksClusterResourceGroup = $stamp.resource_group_name
 
-            # We are using the Region of the EH namespace as a workaround since this has the right format for the Cosmos SDK ("East US 2" instead of "eastus2")
-            $region = $(az eventhubs namespace list --resource-group $aksClusterResourceGroup --query "[0].location" --output tsv)
-            echo "*** Use Azure Region $region from Event Hub namespace"
+            # We are using the list-locations command to retrieve the display name of the region as this is needed for the Cosmos DB SDK's ApplicationRegion parameter
+            $region = az account list-locations --query "[?name == '$($stamp.location)'].displayName" -o tsv
+            echo "*** Using Azure Region display name $region"
 
             # Load AKS / K8s cluster credentials via az aks get-credentials (using IAM permissions)
             echo "*** Load credentials for AKS Cluster $aksClusterName in $aksClusterResourceGroup"
@@ -227,6 +231,7 @@ jobs: # using jobs so they each run in parallel
 
           # loop through stamps from pipeline artifact json
           foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
+            echo "**************************** REGION: $($stamp.location) ****************************"
 
             echo "*** Uploading UI app to storage account $($stamp.public_storage_account_name) in stamp $($stamp.location)"
 

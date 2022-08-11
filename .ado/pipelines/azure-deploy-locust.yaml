@@ -39,10 +39,44 @@ variables:
 
 stages:
 
-- template: templates/stages-loadtest-locust.yaml
-  parameters:
-    terraformWorkingDirectory: '$(workingDirectory)'
-    customPrefix: '$(prefix)'
-    loadTestTargetUrl: ${{ parameters.loadTestTargetUrl }}
-    loadTestNumberOfWorkerNodes: ${{ parameters.loadTestNumberOfWorkerNodes }}
-    locustHeadless: false # set to false to run in webui mode
+- stage: deploylocust
+  displayName: 'Run locust loadtest'
+  jobs:
+  - job: deploylocustterraform
+    displayName: 'Deploy loadtest infrastructure (and run test when in embedded mode)'
+    steps:
+    - checkout: self # checkout github repository
+    - download: current # download pipeline artifacts
+
+    - template: templates/steps-set-pipeline-variables.yaml # load set-pipeline-variables function
+
+    - template: templates/steps-terraform-init.yaml
+      parameters:
+        terraformStorageAccountName:        '$(terraformStorageAccount)'
+        terraformStorageResourceGroupName:  '$(terraformResourceGroup)'
+        terraformStateFilename:             'terraform-locust-$(prefix).state'
+        terraformWorkingDirectory:          '$(workingDirectory)'
+
+    - task: Bash@3
+      name: 'terraformtaintlocustfile'
+      displayName: 'Terraform taint locustfile file'
+      inputs:
+        workingDirectory: '$(workingDirectory)'
+        targetType: 'inline'
+        script: |
+          set -eux  # fail on error
+
+          # Taint the locustfile so it will always be replaced with the latest version
+          terraform taint -allow-missing azurerm_storage_share_file.locustfile
+
+    # Deploy the locust infrastructure. If running in headless mode, the test will automatically start once the infra is provisioned.
+    - template: templates/steps-terraform-apply.yaml
+      parameters:
+        jobName:                    'LocustInfra'
+        terraformWorkingDirectory:  '$(workingDirectory)'
+        customPrefix:               '$(prefix)'
+        environment:                '$(environment)'
+        customAttributes:           '-var targeturl=${{ parameters.loadTestTargetUrl }}
+                                     -var queued_by="$(Build.QueuedBy)"
+                                     -var branch="$(sourceBranch)"
+                                     -var locust_workers=${{ parameters.loadTestNumberOfWorkerNodes }}'

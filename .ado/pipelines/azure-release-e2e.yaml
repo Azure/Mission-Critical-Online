@@ -19,14 +19,6 @@ parameters:
   type: boolean
   default: false
 
-- name: loadTestingFramework # embedded load testing framework Azure oder Locust
-  displayName: 'Select load testing framework'
-  type: string
-  default: 'AzureLoadTest'
-  values:
-  - AzureLoadTest
-  - Locust
-
 - name: destroyEnvironment
   displayName: "Destroy environment at the end"
   type: boolean
@@ -49,7 +41,6 @@ stages:
 - template: templates/stages-full-release.yaml
   parameters:
     environment: '${{ variables.environment }}'
-    loadTestingFramework: '${{ parameters.loadTestingFramework }}'
     runEmbeddedLoadtesting: ${{ parameters.runEmbeddedLoadtesting }}
     runChaosTesting: ${{ parameters.runChaosTesting }}
     destroyOldEnvironment: ${{ parameters.destroyEnvironment }}

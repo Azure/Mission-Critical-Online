@@ -214,7 +214,7 @@ stages:
                 Invoke-WebRequest $logsUrl -OutFile "results/logs.zip"
 
                 if ($result.testResult -eq "FAILED") {
-                  throw "*** ERROR: Test result for test run $($result.testRunId) is failed. Test did not match the defined test criteria."
+                  throw "*** ERROR: Test result for run $($result.testRunId) is 'FAILED'. Test did not match the defined test criteria."
                 }
 
               } elseif (($result.status -eq "FAILED") -or ($result.status -eq "CANCELLED")) {

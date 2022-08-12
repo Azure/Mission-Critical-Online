@@ -1,6 +1,6 @@
 resource "azurerm_service_plan" "asp" {
-  for_each            = var.stamps
-  name                = "${local.prefix}-${substr(each.value["location"], 0, 5)}-asp"
+  for_each            = local.stamps
+  name                = "${local.prefix}-${substr(each.value, 0, 5)}-asp"
   location            = azurerm_resource_group.rg[each.key].location
   resource_group_name = azurerm_resource_group.rg[each.key].name
   os_type             = "Linux"
@@ -13,8 +13,8 @@ resource "azurerm_service_plan" "asp" {
 }
 
 resource "azurerm_linux_web_app" "appservice" {
-  for_each            = var.stamps
-  name                = "${local.prefix}-${substr(each.value["location"], 0, 5)}-app"
+  for_each            = local.stamps
+  name                = "${local.prefix}-${substr(each.value, 0, 5)}-app"
   location            = azurerm_resource_group.rg[each.key].location
   resource_group_name = azurerm_resource_group.rg[each.key].name
   service_plan_id     = azurerm_service_plan.asp[each.key].id
@@ -27,9 +27,9 @@ resource "azurerm_linux_web_app" "appservice" {
   // these env variables are specific to postgres backend supported by grafana
   app_settings = {
     "GF_DATABASE_TYPE"     = "postgres"
-    "GF_DATABASE_HOST"     = "${each.key == "primary" ? azurerm_postgresql_server.pgprimary.name : azurerm_postgresql_server.pgreplica.name}.privatelink.postgres.database.azure.com"
+    "GF_DATABASE_HOST"     = "${each.key == 0 ? azurerm_postgresql_server.pgprimary.name : azurerm_postgresql_server.pgreplica[each.key].name}.privatelink.postgres.database.azure.com"
     "GF_DATABASE_NAME"     = azurerm_postgresql_database.pgdb.name
-    "GF_DATABASE_USER"     = "${var.db_admin_user}@${each.key == "primary" ? azurerm_postgresql_server.pgprimary.name : azurerm_postgresql_server.pgreplica.name}"
+    "GF_DATABASE_USER"     = "${var.db_admin_user}@${each.key == 0 ? azurerm_postgresql_server.pgprimary.name : azurerm_postgresql_server.pgreplica[each.key].name}"
     "GF_DATABASE_PASSWORD" = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.postgres_password[each.key].id})"
     "GF_DATABASE_SSL_MODE" = "require"
 
@@ -70,7 +70,7 @@ resource "azurerm_linux_web_app" "appservice" {
 
 # This is required to enable outbound connectivity from app service.
 resource "azurerm_app_service_virtual_network_swift_connection" "vnetintegrationconnection" {
-  for_each       = var.stamps
+  for_each       = local.stamps
   app_service_id = azurerm_linux_web_app.appservice[each.key].id
   subnet_id      = azurerm_subnet.snet_app_outbound[each.key].id
 }

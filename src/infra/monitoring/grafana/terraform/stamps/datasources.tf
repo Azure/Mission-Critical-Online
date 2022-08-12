@@ -17,7 +17,8 @@ data "azurerm_monitor_diagnostic_categories" "pgprimary" {
 }
 
 data "azurerm_monitor_diagnostic_categories" "pgreplica" {
-  resource_id = azurerm_postgresql_server.pgreplica.id
+  for_each    = slice(var.stamps, 1, length(var.stamps))
+  resource_id = azurerm_postgresql_server.pgreplica[each.key].id
 }
 
 data "azurerm_monitor_diagnostic_categories" "vnet" {

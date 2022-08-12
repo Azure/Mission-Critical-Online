@@ -43,7 +43,7 @@ resource "azurerm_monitor_diagnostic_setting" "appservice" {
 resource "azurerm_monitor_diagnostic_setting" "pgprimary" {
   name                       = "pgdbdiagnostics-primary"
   target_resource_id         = azurerm_postgresql_server.pgprimary.id
-  log_analytics_workspace_id = azurerm_log_analytics_workspace.log_analytics_workspace["primary"].id
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.log_analytics_workspace[0].id
 
   dynamic "log" {
     iterator = entry

@@ -20,6 +20,8 @@ resource "azurerm_linux_web_app" "appservice" {
   service_plan_id     = azurerm_service_plan.asp[each.key].id
   https_only          = true
 
+  virtual_network_subnet_id = azurerm_subnet.snet_app_outbound[each.key].id
+
   identity {
     type = "SystemAssigned"
   }
@@ -66,11 +68,4 @@ resource "azurerm_linux_web_app" "appservice" {
   }
 
   tags = local.default_tags
-}
-
-# This is required to enable outbound connectivity from app service.
-resource "azurerm_app_service_virtual_network_swift_connection" "vnetintegrationconnection" {
-  for_each       = local.stamps
-  app_service_id = azurerm_linux_web_app.appservice[each.key].id
-  subnet_id      = azurerm_subnet.snet_app_outbound[each.key].id
 }

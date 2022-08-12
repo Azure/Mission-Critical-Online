@@ -27,9 +27,9 @@ resource "azurerm_linux_web_app" "appservice" {
   // these env variables are specific to postgres backend supported by grafana
   app_settings = {
     "GF_DATABASE_TYPE"     = "postgres"
-    "GF_DATABASE_HOST"     = "${each.key == 0 ? azurerm_postgresql_server.pgprimary.name : azurerm_postgresql_server.pgreplica[each.key].name}.privatelink.postgres.database.azure.com"
+    "GF_DATABASE_HOST"     = "${each.key == "0" ? azurerm_postgresql_server.pgprimary.name : azurerm_postgresql_server.pgreplica[each.key].name}.privatelink.postgres.database.azure.com"
     "GF_DATABASE_NAME"     = azurerm_postgresql_database.pgdb.name
-    "GF_DATABASE_USER"     = "${var.db_admin_user}@${each.key == 0 ? azurerm_postgresql_server.pgprimary.name : azurerm_postgresql_server.pgreplica[each.key].name}"
+    "GF_DATABASE_USER"     = "${var.db_admin_user}@${each.key == "0" ? azurerm_postgresql_server.pgprimary.name : azurerm_postgresql_server.pgreplica[each.key].name}"
     "GF_DATABASE_PASSWORD" = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.postgres_password[each.key].id})"
     "GF_DATABASE_SSL_MODE" = "require"
 

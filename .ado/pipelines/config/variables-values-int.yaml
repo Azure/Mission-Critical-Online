@@ -12,7 +12,7 @@ variables:
   value: '["swedencentral", "brazilsouth"]' # Check which regions are valid. There is a list in /src/infra/README.md
 
 - name: 'stampLocationsGrafana'
-  value: '["eastus", "brazilsouth"]' # Check which regions are valid. There is a list in /src/infra/README.md
+  value: '["eastus", "brazilsouth","germanywestcentral"]' # Check which regions are valid. There is a list in /src/infra/README.md
 
 # Terraform state variables
 - name:  'terraformResourceGroup'

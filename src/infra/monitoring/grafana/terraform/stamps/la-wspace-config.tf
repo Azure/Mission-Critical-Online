@@ -78,7 +78,7 @@ resource "azurerm_monitor_diagnostic_setting" "pgprimary" {
 
 
 resource "azurerm_monitor_diagnostic_setting" "pgreplica" {
-  for_each                   = slice(local.stamps, 1, length(local.stamps))
+  for_each                   = azurerm_postgresql_server.pgreplica
   name                       = "pgdbdiagnostics-replicas"
   target_resource_id         = azurerm_postgresql_server.pgreplica[each.key].id
   log_analytics_workspace_id = azurerm_log_analytics_workspace.log_analytics_workspace[each.key].id

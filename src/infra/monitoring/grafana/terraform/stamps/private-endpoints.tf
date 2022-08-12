@@ -38,7 +38,7 @@ resource "azurerm_private_endpoint" "pgdb_primary" {
 
 # Private Endpoint for the secondary region to the replica server
 resource "azurerm_private_endpoint" "pgdb_replicas" {
-  for_each            = slice(local.stamps, 1, length(local.stamps))
+  for_each            = { for k, v in local.stamps : k => v if k != 0 }
   name                = "${local.prefix}-${each.value}-privatepgdb"
   location            = azurerm_resource_group.rg[each.key].location
   resource_group_name = azurerm_resource_group.rg[each.key].name

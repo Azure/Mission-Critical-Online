@@ -29,7 +29,7 @@ resource "azurerm_postgresql_database" "pgdb" {
 
 # Separate resource definition for secondary PGDB as it must be deployed only once parent (primary DB) has been deployed.
 resource "azurerm_postgresql_server" "pgreplica" {
-  for_each = { for k, v in local.stamps : k => v if k != 0 } # cut of the first region from the list of regions as that is the primary
+  for_each = { for k, v in local.stamps : k => v if k != "0" } # cut of the first region from the list of regions as that is the primary
 
   depends_on                       = [azurerm_postgresql_database.pgdb]
   name                             = "${local.prefix}-${substr(each.value, 0, 5)}-pgdb"

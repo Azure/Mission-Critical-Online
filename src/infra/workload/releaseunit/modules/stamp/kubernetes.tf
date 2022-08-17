@@ -81,7 +81,7 @@ resource "azurerm_kubernetes_cluster_node_pool" "workload" {
   os_disk_type          = "Ephemeral"
   orchestrator_version  = var.aks_kubernetes_version
 
-  mode  = "User"    # Define this node pool as a "user" aka workload node pool
+  mode  = "User" # Define this node pool as a "user" aka workload node pool
   zones = [1, 2, 3]
 
   upgrade_settings {

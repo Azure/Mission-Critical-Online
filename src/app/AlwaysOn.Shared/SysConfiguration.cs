@@ -61,6 +61,7 @@ namespace AlwaysOn.Shared
         public string BackendReaderEventHubConsumergroup => Configuration["BACKEND_READEREVENTHUBCONSUMERGROUPNAME"];
         public string BackendStorageConnectionString => Configuration["STORAGEACCOUNT_CONNECTIONSTRING"];
         public string BackendCheckpointBlobContainerName => Configuration["STORAGEACCOUNT_EHCHECKPOINTCONTAINERNAME"];
+        public string RegionalLogAnalyticsWorkspaceId => Configuration["LOGANALYTICS_WORKSPACEID"];
 
         /// <summary>
         /// Controls how often checkpointing on Blob Storage is executed. The more often this happens, the more overhead and thus slower the processing.

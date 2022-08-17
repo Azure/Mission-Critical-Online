@@ -16,6 +16,7 @@ locals {
     "CosmosDb-ApiKey"                            = data.azurerm_cosmosdb_account.global.primary_key
     "CosmosDb-DatabaseName"                      = var.cosmosdb_database_name
     "API-Key"                                    = var.api_key
+    "LogAnalytics-WorkspaceId"                   = data.azurerm_log_analytics_workspace.stamp.workspace_id
   }
 }
 

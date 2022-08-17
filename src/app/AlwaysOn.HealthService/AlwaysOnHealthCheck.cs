@@ -6,10 +6,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using AlwaysOn.Shared;
 using AlwaysOn.Shared.Interfaces;
+using Azure.Monitor.Query.Models;
+using Azure.Monitor.Query;
 using Azure.Storage.Blobs;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
+using Azure.Identity;
+using Azure;
 
 namespace AlwaysOn.HealthService
 {
@@ -18,6 +22,7 @@ namespace AlwaysOn.HealthService
         private const string STATE_BLOB_CACHE_KEY = "stateBlobHealth";
         private const string STATE_MESSAGE_PRODUCER_CACHE_KEY = "stateMessageProducerHealth";
         private const string STATE_DATABASE_CACHE_KEY = "stateDatabaseHealth";
+        private const string STATE_AZMONITOR_CACHE_KEY = "stateAzMonitorHealth";
 
         private readonly ILogger<AlwaysOnHealthCheck> _log;
         private readonly SysConfiguration _sysConfig;
@@ -77,16 +82,26 @@ namespace AlwaysOn.HealthService
                 return result;
             });
 
+            // Check Az Monitor HealthScore
+            var azMonitorIsHealthyTask = _cache.GetOrCreateAsync(STATE_AZMONITOR_CACHE_KEY, entry =>
+            {
+                var result = GetStampHealthFromAzMonitor(cancellationToken);
+                _log.LogDebug("Probing Azure Monitor health score - Cache empty or expired");
+                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(_sysConfig.HealthServiceCacheDurationSeconds);
+                return result;
+            });
+
             // Run all checks in parallel
-            await Task.WhenAll(stateBlobIsHealthyTask, messageProducerIsHealthyTask, databaseIsHealthyTask);
+            await Task.WhenAll(stateBlobIsHealthyTask, messageProducerIsHealthyTask, databaseIsHealthyTask, azMonitorIsHealthyTask);
 
             var props = new Dictionary<string, object>();
             props.Add("StateBlobHealthy", stateBlobIsHealthyTask.Result);
             props.Add("MessageProducerServiceHealthy", messageProducerIsHealthyTask.Result);
             props.Add("DatabaseServiceHealthy", databaseIsHealthyTask.Result);
+            props.Add("AzMonitorHealthy", azMonitorIsHealthyTask.Result);
 
             // If any one of the three is not health, report overall unhealthy
-            if (!stateBlobIsHealthyTask.Result || !messageProducerIsHealthyTask.Result || !databaseIsHealthyTask.Result)
+            if (!stateBlobIsHealthyTask.Result || !messageProducerIsHealthyTask.Result || !databaseIsHealthyTask.Result || !azMonitorIsHealthyTask.Result)
             {
                 return HealthCheckResult.Unhealthy(data: props);
             }
@@ -127,6 +142,42 @@ namespace AlwaysOn.HealthService
                 _log.LogError(e, "Could not check health state blob. Responding with UNHEALTHY state");
                 return false;
             }
+        }
+
+        /// <summary>
+        /// Query regional Log Analytics workspace to fetch the latest HealthScore
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        private async Task<bool> GetStampHealthFromAzMonitor(CancellationToken cancellationToken = default(CancellationToken))
+        {
+            try
+            {
+                var client = new LogsQueryClient(new DefaultAzureCredential());
+                Response<LogsQueryResult> response = await client.QueryWorkspaceAsync(
+                    _sysConfig.RegionalLogAnalyticsWorkspaceId,
+                    "StampHealthScore | project TimeGenerated,HealthScore | order by TimeGenerated desc | take 1",
+                    new QueryTimeRange(TimeSpan.FromMinutes(10)),
+                    cancellationToken: cancellationToken);
+
+                LogsTable table = response.Value.Table;
+
+                foreach (var row in table.Rows)
+                {
+                    var healthScore = row.GetDouble("HealthScore");
+                    Console.WriteLine($"[{row["TimeGenerated"]}] HealthScore: {healthScore}");
+                    // If the healthscore indicates red, return false
+                    if (healthScore <= 0.5)
+                    {
+                        return false;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                _log.LogError(e, "Could not query Log Analytics health score. Responding with HEALTHY state");
+            }
+            return true;
         }
     }
 }

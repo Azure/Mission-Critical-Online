@@ -1,19 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using AlwaysOn.Shared;
+﻿using AlwaysOn.Shared;
 using AlwaysOn.Shared.Interfaces;
-using Azure.Monitor.Query.Models;
+using Azure;
+using Azure.Identity;
 using Azure.Monitor.Query;
+using Azure.Monitor.Query.Models;
 using Azure.Storage.Blobs;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
-using Azure.Identity;
-using Azure;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace AlwaysOn.HealthService
 {

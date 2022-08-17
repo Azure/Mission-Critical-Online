@@ -10,6 +10,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -83,26 +84,30 @@ namespace AlwaysOn.HealthService
                 return result;
             });
 
-            // Check Az Monitor HealthScore
+            // Check Az Monitor for stamp HealthScore
             var azMonitorIsHealthyTask = _cache.GetOrCreateAsync(STATE_AZMONITOR_CACHE_KEY, entry =>
             {
                 var result = GetStampHealthFromAzMonitor(cancellationToken);
-                _log.LogDebug("Probing Azure Monitor health score - Cache empty or expired");
+                _log.LogDebug("Probing Azure Monitor for stamp HealthScore - Cache empty or expired");
                 entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(_sysConfig.HealthServiceCacheDurationSeconds);
                 return result;
             });
 
+            var checkTasks = new[] { stateBlobIsHealthyTask, messageProducerIsHealthyTask, databaseIsHealthyTask, azMonitorIsHealthyTask };
+
             // Run all checks in parallel
-            await Task.WhenAll(stateBlobIsHealthyTask, messageProducerIsHealthyTask, databaseIsHealthyTask, azMonitorIsHealthyTask);
+            await Task.WhenAll(checkTasks);
 
-            var props = new Dictionary<string, object>();
-            props.Add("StateBlobHealthy", stateBlobIsHealthyTask.Result);
-            props.Add("MessageProducerServiceHealthy", messageProducerIsHealthyTask.Result);
-            props.Add("DatabaseServiceHealthy", databaseIsHealthyTask.Result);
-            props.Add("AzMonitorHealthy", azMonitorIsHealthyTask.Result);
+            var props = new Dictionary<string, object>
+            {
+                { "StateBlobHealthy", stateBlobIsHealthyTask.Result },
+                { "MessageProducerServiceHealthy", messageProducerIsHealthyTask.Result },
+                { "DatabaseServiceHealthy", databaseIsHealthyTask.Result },
+                { "StampHealthScoreOk", azMonitorIsHealthyTask.Result }
+            };
 
-            // If any one of the three is not health, report overall unhealthy
-            if (!stateBlobIsHealthyTask.Result || !messageProducerIsHealthyTask.Result || !databaseIsHealthyTask.Result || !azMonitorIsHealthyTask.Result)
+            // If any one of the checks is false (= unhealthy), report overall unhealthy
+            if (checkTasks.Any(t => t.Result == false))
             {
                 return HealthCheckResult.Unhealthy(data: props);
             }
@@ -158,6 +163,7 @@ namespace AlwaysOn.HealthService
                 {
                     ManagedIdentityClientId = _sysConfig.ManagedIdentityClientId
                 }));
+
                 Response<LogsQueryResult> response = await client.QueryWorkspaceAsync(
                     _sysConfig.RegionalLogAnalyticsWorkspaceId,
                     "StampHealthScore | project TimeGenerated,HealthScore | order by TimeGenerated desc | take 1",
@@ -166,7 +172,7 @@ namespace AlwaysOn.HealthService
 
                 LogsTable table = response.Value.Table;
 
-                foreach (var row in table.Rows)
+                foreach (var row in table.Rows) // there will be only one row (take 1)
                 {
                     var healthScore = row.GetDouble("HealthScore");
                     _log.LogDebug($"TimeGenerated: [{row["TimeGenerated"]}] HealthScore: {healthScore}");
@@ -180,7 +186,8 @@ namespace AlwaysOn.HealthService
             }
             catch (Exception e)
             {
-                _log.LogError(e, "Could not query Log Analytics health score. Responding with HEALTHY state");
+                _log.LogError(e, "Could not query Log Analytics health score. Responding with UNHEALTHY state");
+                return false;
             }
             return true;
         }

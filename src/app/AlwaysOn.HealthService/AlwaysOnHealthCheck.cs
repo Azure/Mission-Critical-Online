@@ -153,7 +153,10 @@ namespace AlwaysOn.HealthService
         {
             try
             {
-                var client = new LogsQueryClient(new DefaultAzureCredential());
+                var client = new LogsQueryClient(new DefaultAzureCredential(new DefaultAzureCredentialOptions()
+                {
+                    ManagedIdentityClientId = _sysConfig.ManagedIdentityClientId
+                }));
                 Response<LogsQueryResult> response = await client.QueryWorkspaceAsync(
                     _sysConfig.RegionalLogAnalyticsWorkspaceId,
                     "StampHealthScore | project TimeGenerated,HealthScore | order by TimeGenerated desc | take 1",

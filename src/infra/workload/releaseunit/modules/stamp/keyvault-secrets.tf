@@ -1,4 +1,5 @@
 # Add any secrets that should go into Key Vault to this list. Key is the name of the secret in Key Vault
+# Mind that secret names can only contain hyphens, no underscores.
 locals {
   secrets = {
     "Frontend-SenderEventHubConnectionString"    = azurerm_eventhub_authorization_rule.frontend_sender.primary_connection_string

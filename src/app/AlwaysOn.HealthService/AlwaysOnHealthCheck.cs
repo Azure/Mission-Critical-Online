@@ -24,6 +24,9 @@ namespace AlwaysOn.HealthService
         private const string STATE_DATABASE_CACHE_KEY = "stateDatabaseHealth";
         private const string STATE_AZMONITOR_CACHE_KEY = "stateAzMonitorHealth";
 
+        // If the HealthScore as returned by the Az Monitor query is equal or less than this, the stamp is considered unhealthy
+        private const double HEALTHSCORE_THRESHOLD = 0.5;
+
         private readonly ILogger<AlwaysOnHealthCheck> _log;
         private readonly SysConfiguration _sysConfig;
         private readonly IDatabaseService _databaseService;
@@ -168,10 +171,11 @@ namespace AlwaysOn.HealthService
                 foreach (var row in table.Rows)
                 {
                     var healthScore = row.GetDouble("HealthScore");
-                    Console.WriteLine($"[{row["TimeGenerated"]}] HealthScore: {healthScore}");
+                    _log.LogDebug($"TimeGenerated: [{row["TimeGenerated"]}] HealthScore: {healthScore}");
                     // If the healthscore indicates red, return false
-                    if (healthScore <= 0.5)
+                    if (healthScore <= HEALTHSCORE_THRESHOLD)
                     {
+                        _log.LogInformation($"HealthScore of {healthScore} is <= {HEALTHSCORE_THRESHOLD}. Reporting stamp as unhealty!");
                         return false;
                     }
                 }

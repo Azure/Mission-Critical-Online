@@ -217,7 +217,7 @@ stages:
                   throw "*** ERROR: Test result for run $($result.testRunId) is 'FAILED'. Test did not match the defined test criteria."
                 }
 
-              } elseif (($result.status -eq "FAILED") -or ($result.status -eq "CANCELLED")) {
+              } elseif ($result.status -in "FAILED","CANCELLED") {
                 # test ended in failed or cancelled (manually stopped) state
                 throw "*** ERROR: Test run $(testRunId) ended in $($result.status) state."
               } else {

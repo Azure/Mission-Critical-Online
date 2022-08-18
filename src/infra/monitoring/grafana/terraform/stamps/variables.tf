@@ -63,8 +63,6 @@ variable "frontdoor_header_id" {
 }
 
 variable "stamps" {
-  type = map(object({
-    location           = string
-    vnet_address_space = string
-  }))
+  description = "List of Azure regions into which stamps are deployed. Important: The first location in this list will be used as the main location for this deployment."
+  type        = list(string)
 }

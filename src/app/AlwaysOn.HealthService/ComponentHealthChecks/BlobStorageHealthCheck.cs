@@ -1,6 +1,6 @@
 ﻿using AlwaysOn.Shared;
-using AlwaysOn.Shared.Interfaces;
 using Azure.Storage.Blobs;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading;
@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace AlwaysOn.HealthService.ComponentHealthChecks
 {
-    public class BlobStorageHealthCheck : IAlwaysOnHealthCheck
+    public class BlobStorageHealthCheck : IHealthCheck
     {
         private readonly ILogger<BlobStorageHealthCheck> _log;
         private readonly SysConfiguration _sysConfig;
@@ -20,21 +20,28 @@ namespace AlwaysOn.HealthService.ComponentHealthChecks
             _sysConfig = sysConfig;
         }
 
-        public string HealthCheckComponentName => "BlobStorageHealthCheck";
-
         /// <summary>
         /// Checks whether the state file on blob storage exists. File exists means: Healthy
         /// </summary>
         /// <returns>True=HEALTHY, False=UNHEALTHY</returns>
-        public async Task<bool> IsHealthy(CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
         {
+            const string HealthCheckName = "BlobStorageHealthCheck";
+
             try
             {
                 var blobContainerClient = new BlobContainerClient(_sysConfig.HealthServiceStorageConnectionString, _sysConfig.HealthServiceBlobContainerName);
                 _log.LogDebug("Initiated health state blob container client at {HealthBlobContainerUrl}", blobContainerClient.Uri.ToString());
 
                 var stateBlobClient = blobContainerClient.GetBlobClient(_sysConfig.HealthServiceBlobName);
-                return await stateBlobClient.ExistsAsync(cancellationToken);
+                if(await stateBlobClient.ExistsAsync(cancellationToken))
+                {
+                    return new HealthCheckResult(HealthStatus.Healthy, HealthCheckName);
+                }
+                else
+                {
+                    return new HealthCheckResult(HealthStatus.Unhealthy, HealthCheckName);
+                }
 
                 /*
                  * As an alternative to just checking for the file's existence, we could also examine the file's content for specfic states
@@ -53,7 +60,7 @@ namespace AlwaysOn.HealthService.ComponentHealthChecks
                 // If the file does not exist or we cannot reach our storage at all, we treat this a an unhealthy state
                 // as well as it might very well mean that storage in that region has an issue.
                 _log.LogError(e, "Could not check health state blob. Responding with UNHEALTHY state");
-                return false;
+                return new HealthCheckResult(HealthStatus.Unhealthy, HealthCheckName, e);
             }
         }
     }

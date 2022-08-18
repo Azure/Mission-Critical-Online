@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.Extensions.Diagnostics.HealthChecks;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace AlwaysOn.Shared.Interfaces
 {
-    public interface IMessageProducerService : IAlwaysOnHealthCheck
+    public interface IMessageProducerService : IHealthCheck
     {
         /// <summary>
         /// Sends a single message to the message bus

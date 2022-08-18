@@ -9,6 +9,7 @@ using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Fluent;
 using Microsoft.Azure.Cosmos.Linq;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -72,16 +73,16 @@ namespace AlwaysOn.Shared.Services
             _ratingsContainer = _dbClient.GetContainer(sysConfig.CosmosDBDatabaseName, SysConfiguration.CosmosItemRatingsContainerName);
         }
 
-        public string HealthCheckComponentName => "CosmosDbHealthCheck";
-
         /// <summary>
         /// A health check that does two things:
         /// - Attempt to run a simple query
         /// - Attempt to write a dummy document to the database
         /// </summary>
         /// <returns></returns>
-        public async Task<bool> IsHealthy(CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
         {
+            const string HealthCheckName = "CosmosDbHealthCheck";
+
             try
             {
                 _logger.LogDebug("Testing Read query to Cosmos DB");
@@ -91,7 +92,7 @@ namespace AlwaysOn.Shared.Services
             catch (Exception e)
             {
                 _logger.LogError(e, "Exception on health probe read query towards Cosmos DB");
-                return false;
+                return new HealthCheckResult(HealthStatus.Unhealthy, HealthCheckName, e);
             }
 
             try
@@ -112,10 +113,10 @@ namespace AlwaysOn.Shared.Services
             catch (Exception e)
             {
                 _logger.LogError(e, "Exception on health probe document write towards Cosmos DB");
-                return false;
+                return new HealthCheckResult(HealthStatus.Unhealthy, HealthCheckName, e);
             }
 
-            return true;
+            return new HealthCheckResult(HealthStatus.Healthy, HealthCheckName);
         }
 
         public async Task DeleteItemAsync<T>(string objectId, string partitionKey)

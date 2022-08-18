@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using AlwaysOn.Shared.Models;
 using AlwaysOn.Shared.Models.DataTransfer;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace AlwaysOn.Shared.Interfaces
 {
-    public interface IDatabaseService : IAlwaysOnHealthCheck
+    public interface IDatabaseService : IHealthCheck
     {
         /// <summary>
         /// Get a specific catalogItem by its ID

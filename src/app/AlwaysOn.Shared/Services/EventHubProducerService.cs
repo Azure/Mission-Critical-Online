@@ -2,6 +2,7 @@
 using AlwaysOn.Shared.Interfaces;
 using Azure.Messaging.EventHubs;
 using Azure.Messaging.EventHubs.Producer;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -25,20 +26,20 @@ namespace AlwaysOn.Shared.Services
             _logger.LogInformation("Initializing Event Hub producer client with Event Hub namespace {eventHubNamespace}", _eventHubProducerClient.FullyQualifiedNamespace);
         }
 
-        public string HealthCheckComponentName => "EventHubProduerHealthCheck";
-
         /// <summary>
         /// Very simple health check. Attempts to send an empty message
         /// Adds a property "HEALTHCHECK=TRUE" to the message
         /// </summary>
         /// <returns></returns>
-        public async Task<bool> IsHealthy(CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
         {
+            const string HealthCheckName = "EventHubProduerHealthCheck";
+
             _logger.LogDebug("Event Hub health probe requested");
             if (_eventHubProducerClient.IsClosed)
             {
-                _logger.LogError($"Unexpected 'Closed' status of Event Hub in {nameof(IsHealthy)}");
-                return false;
+                _logger.LogError($"Unexpected 'Closed' status of Event Hub in {nameof(CheckHealthAsync)}");
+                return new HealthCheckResult(HealthStatus.Unhealthy, HealthCheckName);
             }
 
             try
@@ -47,12 +48,12 @@ namespace AlwaysOn.Shared.Services
                 message.Properties.Add("HEALTHCHECK", "TRUE");
                 message.MessageId = Guid.NewGuid().ToString();
                 await SendSingleEventAsync(message, cancellationToken);
-                return true;
+                return new HealthCheckResult(HealthStatus.Healthy, HealthCheckName);
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "Exception on sending health probe message to Event Hub");
-                return false;
+                return new HealthCheckResult(HealthStatus.Unhealthy, HealthCheckName, e);
             }
         }
 

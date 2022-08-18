@@ -21,7 +21,7 @@ resource "random_password" "grafana_password" {
 }
 
 resource "azurerm_key_vault_secret" "postgres_password" {
-  for_each     = var.stamps
+  for_each     = local.stamps
   name         = "pgdb-admin-pwd"
   value        = random_password.postgres_password.result
   key_vault_id = azurerm_key_vault.stamp[each.key].id
@@ -29,7 +29,7 @@ resource "azurerm_key_vault_secret" "postgres_password" {
 }
 
 resource "azurerm_key_vault_secret" "grafana_password" {
-  for_each     = var.stamps
+  for_each     = local.stamps
   name         = "grafana-pwd"
   value        = random_password.grafana_password.result
   key_vault_id = azurerm_key_vault.stamp[each.key].id

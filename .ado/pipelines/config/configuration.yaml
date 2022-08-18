@@ -23,6 +23,8 @@ variables:
 
 - name: 'workloadNamespace'   # K8s namespace for workload deployment
   value: 'workload'
+- name: 'ingressNamespace'    # K8s namespace for ingress deployment
+  value: 'ingress-nginx'
 
 # Docker image names and paths to the Dockerfiles for the different components
 - name: 'catalogserviceDockerfile'

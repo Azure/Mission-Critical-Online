@@ -4,7 +4,7 @@ using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Extensibility;
 
-namespace AlwaysOn.Shared
+namespace AlwaysOn.Shared.TelemetryExtensions
 {
     /// <summary>Add a cloud role name to the context of every telemetries.</summary>
     /// <remarks>

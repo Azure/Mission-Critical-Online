@@ -1,3 +1,4 @@
+using AlwaysOn.HealthService.ComponentHealthChecks;
 using AlwaysOn.Shared;
 using AlwaysOn.Shared.Interfaces;
 using AlwaysOn.Shared.Services;
@@ -44,9 +45,11 @@ namespace AlwaysOn.HealthService
 
             services.AddSingleton<AppInsightsCosmosRequestHandler>();
 
+            // Register services for the healthchecks
             services.AddSingleton<IDatabaseService, CosmosDbService>();
-
             services.AddSingleton<IMessageProducerService, EventHubProducerService>();
+            services.AddSingleton<AzMonitorHealthScoreCheck>();
+            services.AddSingleton<BlobStorageHealthCheck>();
 
             services.AddHealthChecks().AddCheck<AlwaysOnHealthCheck>(nameof(AlwaysOnHealthCheck));
 

@@ -1,10 +1,10 @@
-# Deploy foundational networking capabilities such as VNETs; subnets and peerings. 
+# Deploy foundational networking capabilities such as VNETs; subnets and peerings.
 
 module "subnet_addrs" {
   source   = "hashicorp/subnets/cidr"
-  for_each = var.stamps
+  for_each = local.stamps
 
-  base_cidr_block = each.value["vnet_address_space"]
+  base_cidr_block = "10.1.0.0/16"
   networks = [
     {
       name     = "app_outbound"
@@ -18,8 +18,8 @@ module "subnet_addrs" {
 }
 
 resource "azurerm_virtual_network" "vnet" {
-  for_each            = var.stamps
-  name                = "${local.prefix}-${substr(each.value["location"], 0, 5)}-vnet"
+  for_each            = local.stamps
+  name                = "${local.prefix}-${substr(each.value, 0, 5)}-vnet"
   location            = azurerm_resource_group.rg[each.key].location
   resource_group_name = azurerm_resource_group.rg[each.key].name
   address_space       = [module.subnet_addrs[each.key].base_cidr_block]
@@ -29,8 +29,8 @@ resource "azurerm_virtual_network" "vnet" {
 
 # Delegated subnet for web app. This is required to enable outbound conectivity from the app to PGDB backend.
 resource "azurerm_subnet" "snet_app_outbound" {
-  for_each                                       = var.stamps
-  name                                           = "${local.prefix}-${substr(each.value["location"], 0, 5)}-app-snet"
+  for_each                                       = local.stamps
+  name                                           = "${local.prefix}-${substr(each.value, 0, 5)}-app-snet"
   address_prefixes                               = [module.subnet_addrs[each.key].network_cidr_blocks["app_outbound"]]
   virtual_network_name                           = azurerm_virtual_network.vnet[each.key].name
   resource_group_name                            = azurerm_resource_group.rg[each.key].name
@@ -46,15 +46,15 @@ resource "azurerm_subnet" "snet_app_outbound" {
 
 # NSG - Assign default nsg to snet_app_outbound subnet
 resource "azurerm_subnet_network_security_group_association" "snet_app_outbound_nsg" {
-  for_each                  = var.stamps
+  for_each                  = local.stamps
   subnet_id                 = azurerm_subnet.snet_app_outbound[each.key].id
   network_security_group_id = azurerm_network_security_group.default[each.key].id
 }
 
 # Dedicated subnet for all backend datastores including PGDB.
 resource "azurerm_subnet" "snet_datastores" {
-  for_each                                       = var.stamps
-  name                                           = "${local.prefix}-${substr(each.value["location"], 0, 5)}-pgdb-snet"
+  for_each                                       = local.stamps
+  name                                           = "${local.prefix}-${substr(each.value, 0, 5)}-pgdb-snet"
   address_prefixes                               = [module.subnet_addrs[each.key].network_cidr_blocks["postgres"]]
   virtual_network_name                           = azurerm_virtual_network.vnet[each.key].name
   resource_group_name                            = azurerm_resource_group.rg[each.key].name
@@ -63,7 +63,7 @@ resource "azurerm_subnet" "snet_datastores" {
 
 # NSG - Assign default nsg to snet_datastores subnet
 resource "azurerm_subnet_network_security_group_association" "snet_datastores_nsg" {
-  for_each                  = var.stamps
+  for_each                  = local.stamps
   subnet_id                 = azurerm_subnet.snet_datastores[each.key].id
   network_security_group_id = azurerm_network_security_group.default[each.key].id
 }
@@ -71,8 +71,8 @@ resource "azurerm_subnet_network_security_group_association" "snet_datastores_ns
 # Default Network Security Group (nsg) definition
 # Allows outbound and intra-vnet/cross-subnet communication
 resource "azurerm_network_security_group" "default" {
-  for_each            = var.stamps
-  name                = "${local.prefix}-${substr(each.value["location"], 0, 5)}-nsg"
+  for_each            = local.stamps
+  name                = "${local.prefix}-${substr(each.value, 0, 5)}-nsg"
   location            = azurerm_resource_group.rg[each.key].location
   resource_group_name = azurerm_resource_group.rg[each.key].name
 

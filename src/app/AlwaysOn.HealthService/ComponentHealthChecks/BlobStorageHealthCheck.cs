@@ -1,4 +1,5 @@
 ﻿using AlwaysOn.Shared;
+using AlwaysOn.Shared.Interfaces;
 using Azure.Storage.Blobs;
 using Microsoft.Extensions.Logging;
 using System;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace AlwaysOn.HealthService.ComponentHealthChecks
 {
-    public class BlobStorageHealthCheck
+    public class BlobStorageHealthCheck : IAlwaysOnHealthCheck
     {
         private readonly ILogger<BlobStorageHealthCheck> _log;
         private readonly SysConfiguration _sysConfig;
@@ -19,11 +20,13 @@ namespace AlwaysOn.HealthService.ComponentHealthChecks
             _sysConfig = sysConfig;
         }
 
+        public string HealthCheckComponentName => "BlobStorageHealthCheck";
+
         /// <summary>
         /// Checks whether the state file on blob storage exists. File exists means: Healthy
         /// </summary>
         /// <returns>True=HEALTHY, False=UNHEALTHY</returns>
-        public async Task<bool> GetStateBlobHealth(CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<bool> IsHealthy(CancellationToken cancellationToken = default(CancellationToken))
         {
             try
             {

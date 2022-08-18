@@ -72,6 +72,8 @@ namespace AlwaysOn.Shared.Services
             _ratingsContainer = _dbClient.GetContainer(sysConfig.CosmosDBDatabaseName, SysConfiguration.CosmosItemRatingsContainerName);
         }
 
+        public string HealthCheckComponentName => "CosmosDbHealthCheck";
+
         /// <summary>
         /// A health check that does two things:
         /// - Attempt to run a simple query

@@ -1,4 +1,5 @@
 ﻿using AlwaysOn.Shared;
+using AlwaysOn.Shared.Interfaces;
 using Azure;
 using Azure.Identity;
 using Azure.Monitor.Query;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace AlwaysOn.HealthService.ComponentHealthChecks
 {
-    public class AzMonitorHealthScoreCheck
+    public class AzMonitorHealthScoreCheck : IAlwaysOnHealthCheck
     {
         // If the HealthScore as returned by the Az Monitor query is equal or less than this, the stamp is considered unhealthy
         private const double HEALTHSCORE_THRESHOLD = 0.5;
@@ -31,12 +32,14 @@ namespace AlwaysOn.HealthService.ComponentHealthChecks
             }));
         }
 
+        public string HealthCheckComponentName => "AzMonitorHealthScoreCheck";
+
         /// <summary>
         /// Query regional Log Analytics workspace to fetch the latest HealthScore
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public async Task<bool> GetStampHealthFromAzMonitor(CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<bool> IsHealthy(CancellationToken cancellationToken = default(CancellationToken))
         {
             try
             {

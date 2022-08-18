@@ -27,6 +27,8 @@ namespace AlwaysOn.HealthService
         private readonly BlobStorageHealthCheck _blobStorageHealthCheck;
         private IMemoryCache _cache;
 
+        private readonly List<IAlwaysOnHealthCheck> _healthChecks;
+
         public AlwaysOnHealthCheck(ILogger<AlwaysOnHealthCheck> log,
             SysConfiguration sysConfig,
             IMemoryCache memoryCache,
@@ -42,11 +44,36 @@ namespace AlwaysOn.HealthService
             _messageProducerService = messageProducerService;
             _azMonitorHealthScoreCheck = azMonitorHealthScoreCheck;
             _blobStorageHealthCheck = blobStorageHealthCheck;
+
+            _healthChecks = new List<IAlwaysOnHealthCheck>();
+
+            // Check database querying?
+            if (_sysConfig.HealthServiceDatabaseHealthCheckEnabled)
+            {
+                _healthChecks.Add(_databaseService);
+            }
+
+            // Check state blob?
+            if (_sysConfig.HealthServiceBlobStorageHealthCheckEnabled)
+            {
+                _healthChecks.Add(_blobStorageHealthCheck);
+            }
+
+            // Check message sending?
+            if (_sysConfig.HealthServiceMessageProducerHealthCheckEnabled)
+            {
+                _healthChecks.Add(_messageProducerService);
+            }
+
+            // Check Az Monitor for stamp HealthScore?
+            if (_sysConfig.HealthServiceAzMonitorHealthScoreHealthCheckEnabled)
+            {
+                _healthChecks.Add(_azMonitorHealthScoreCheck);
+            }
         }
 
         /// <summary>
         /// Checks downstream dependencies like Message Producer and database service for their health
-        /// Also, checks the state blob storage
         /// Uses caching in order not to overload the components just with health checks
         /// </summary>
         /// <param name="context"></param>
@@ -56,62 +83,34 @@ namespace AlwaysOn.HealthService
             HealthCheckContext context,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            // Check state blob
-            var stateBlobIsHealthyTask = _cache.GetOrCreateAsync(STATE_BLOB_CACHE_KEY, entry =>
-            {
-                var result = _blobStorageHealthCheck.GetStateBlobHealth(cancellationToken);
-                _log.LogDebug("Probing state blob health state - Cache empty or expired");
-                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(_sysConfig.HealthServiceCacheDurationSeconds);
-                return result;
-            });
 
-            // Check message sending
-            var messageProducerIsHealthyTask = _cache.GetOrCreateAsync(STATE_MESSAGE_PRODUCER_CACHE_KEY, entry =>
-            {
-                var result = _messageProducerService.IsHealthy(cancellationToken);
-                _log.LogDebug("Probing message producer health state - Cache empty or expired");
-                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(_sysConfig.HealthServiceCacheDurationSeconds);
-                return result;
-            });
-
-            // Check database querying
-            var databaseIsHealthyTask = _cache.GetOrCreateAsync(STATE_DATABASE_CACHE_KEY, entry =>
-            {
-                var result = _databaseService.IsHealthy(cancellationToken);
-                _log.LogDebug("Probing database health state - Cache empty or expired");
-                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(_sysConfig.HealthServiceCacheDurationSeconds);
-                return result;
-            });
-
-            // Check Az Monitor for stamp HealthScore
-            var azMonitorIsHealthyTask = _cache.GetOrCreateAsync(STATE_AZMONITOR_CACHE_KEY, entry =>
-            {
-                var result = _azMonitorHealthScoreCheck.GetStampHealthFromAzMonitor(cancellationToken);
-                _log.LogDebug("Probing Azure Monitor for stamp HealthScore - Cache empty or expired");
-                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(_sysConfig.HealthServiceCacheDurationSeconds);
-                return result;
-            });
-
-            var checkTasks = new[] { stateBlobIsHealthyTask, messageProducerIsHealthyTask, databaseIsHealthyTask, azMonitorIsHealthyTask };
+            // Create healthCheck tasks for all of them
+            var checkTasks = _healthChecks.Select(c => CreateHealthCheckTask(c, cancellationToken)).ToDictionary(c => c.Name, c => c.CheckTask);
 
             // Run all checks in parallel
-            await Task.WhenAll(checkTasks);
+            await Task.WhenAll(checkTasks.Values);
 
-            var props = new Dictionary<string, object>
-            {
-                { "StateBlobHealthy", stateBlobIsHealthyTask.Result },
-                { "MessageProducerServiceHealthy", messageProducerIsHealthyTask.Result },
-                { "DatabaseServiceHealthy", databaseIsHealthyTask.Result },
-                { "StampHealthScoreOk", azMonitorIsHealthyTask.Result }
-            };
+            var properties = checkTasks.ToDictionary(c => c.Key, c => (object)c.Value.Result);
 
             // If any one of the checks is false (= unhealthy), report overall unhealthy
-            if (checkTasks.Any(t => t.Result == false))
+            if (checkTasks.Any(t => t.Value.Result == false))
             {
-                return HealthCheckResult.Unhealthy(data: props);
+                return HealthCheckResult.Unhealthy(data: properties);
             }
 
-            return HealthCheckResult.Healthy(data: props);
+            return HealthCheckResult.Healthy(data: properties);
+        }
+
+        private (string Name, Task<bool> CheckTask) CreateHealthCheckTask(IAlwaysOnHealthCheck healthCheck, CancellationToken cancellationToken)
+        {
+            var task = _cache.GetOrCreateAsync(healthCheck.HealthCheckComponentName, entry =>
+            {
+                var result = healthCheck.IsHealthy(cancellationToken);
+                _log.LogDebug("Probing {healthCheck} - Cache empty or expired", healthCheck.HealthCheckComponentName);
+                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(_sysConfig.HealthServiceCacheDurationSeconds);
+                return result;
+            });
+            return (Name: healthCheck.HealthCheckComponentName, CheckTask: task);
         }
     }
 }

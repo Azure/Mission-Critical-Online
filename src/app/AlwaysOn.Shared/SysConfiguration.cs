@@ -167,6 +167,39 @@ namespace AlwaysOn.Shared
             }
         }
 
+        public bool HealthServiceDatabaseHealthCheckEnabled
+        {
+            get
+            {
+                var value = Configuration["HEALTHSERVICE_DATABASE_HEALTHCHECK_ENABLED"];
+                return bool.TryParse(value, out bool result) ? result : true;
+            }
+        }
+        public bool HealthServiceMessageProducerHealthCheckEnabled
+        {
+            get
+            {
+                var value = Configuration["HEALTHSERVICE_MESSAGEPRODUCER_HEALTHCHECK_ENABLED"];
+                return bool.TryParse(value, out bool result) ? result : true;
+            }
+        }
+        public bool HealthServiceBlobStorageHealthCheckEnabled
+        {
+            get
+            {
+                var value = Configuration["HEALTHSERVICE_BLOBSTORAGE_HEALTHCHECK_ENABLED"];
+                return bool.TryParse(value, out bool result) ? result : true;
+            }
+        }
+        public bool HealthServiceAzMonitorHealthScoreHealthCheckEnabled
+        {
+            get
+            {
+                var value = Configuration["HEALTHSERVICE_AZMONITOR_HEALTHSCORE_HEALTHCHECK_ENABLED"];
+                return bool.TryParse(value, out bool result) ? result : true;
+            }
+        }
+
         /// <summary>
         /// Enable Swagger endpoint on the service?
         /// Defaults to true

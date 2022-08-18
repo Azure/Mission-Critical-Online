@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace AlwaysOn.Shared.Interfaces
 {
-    public interface IMessageProducerService
+    public interface IMessageProducerService : IAlwaysOnHealthCheck
     {
         /// <summary>
         /// Sends a single message to the message bus
@@ -22,12 +22,5 @@ namespace AlwaysOn.Shared.Interfaces
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task SendMessageBatchAsync(IEnumerable<(string messageBody, string action)> messages, CancellationToken cancellationToken = default(CancellationToken));
-
-        /// <summary>
-        /// Healthcheck for the message bus. Attempts to send a dummy message
-        /// </summary>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        Task<bool> IsHealthy(CancellationToken cancellationToken = default(CancellationToken));
     }
 }

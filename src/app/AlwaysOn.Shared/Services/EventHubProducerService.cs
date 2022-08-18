@@ -25,6 +25,8 @@ namespace AlwaysOn.Shared.Services
             _logger.LogInformation("Initializing Event Hub producer client with Event Hub namespace {eventHubNamespace}", _eventHubProducerClient.FullyQualifiedNamespace);
         }
 
+        public string HealthCheckComponentName => "EventHubProduerHealthCheck";
+
         /// <summary>
         /// Very simple health check. Attempts to send an empty message
         /// Adds a property "HEALTHCHECK=TRUE" to the message

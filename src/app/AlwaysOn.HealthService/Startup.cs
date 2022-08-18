@@ -48,10 +48,16 @@ namespace AlwaysOn.HealthService
             // Register services for the healthchecks
             services.AddSingleton<IDatabaseService, CosmosDbService>();
             services.AddSingleton<IMessageProducerService, EventHubProducerService>();
-            services.AddSingleton<AzMonitorHealthScoreCheck>();
-            services.AddSingleton<BlobStorageHealthCheck>();
 
-            services.AddHealthChecks().AddCheck<AlwaysOnHealthCheck>(nameof(AlwaysOnHealthCheck));
+            services.AddHealthChecks()
+                .AddCheck<AzMonitorHealthScoreCheck>(nameof(AzMonitorHealthScoreCheck))
+                .AddCheck<BlobStorageHealthCheck>(nameof(BlobStorageHealthCheck))
+                .AddCheck<IDatabaseService>(nameof(IDatabaseService))
+                .AddCheck<IMessageProducerService>(nameof(IMessageProducerService));
+
+            //services.AddHealthChecks().AddCheck<AlwaysOnHealthCheck>(nameof(AlwaysOnHealthCheck));
+
+            services.AddHostedService<HealthJob>();
 
             services.AddControllers().AddJsonOptions(options =>
             {

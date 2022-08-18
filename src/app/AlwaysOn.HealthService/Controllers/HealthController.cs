@@ -1,10 +1,8 @@
-﻿using AlwaysOn.Shared;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using System;
+using Newtonsoft.Json;
+using System.Linq;
 using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace AlwaysOn.HealthService.Controllers
 {
@@ -12,23 +10,14 @@ namespace AlwaysOn.HealthService.Controllers
     [Route("[controller]")]
     public class HealthController : ControllerBase
     {
-        private readonly HealthCheckService _healthCheckService;
-        private readonly SysConfiguration _sysConfig;
-
-        public HealthController(SysConfiguration sysConfig, HealthCheckService healthCheckService)
-        {
-            _sysConfig = sysConfig;
-            _healthCheckService = healthCheckService;
-        }
-
         /// <summary>
         ///     Get Health status of the healthservice itself. Just for Kubernetes
         /// </summary>
         /// <remarks>Provides an indication about the health of the API</remarks>
         [HttpGet("liveness")]
-        public async Task<IActionResult> GetPodLiveness()
+        public IActionResult GetPodLiveness()
         {
-            return await Task.FromResult(Ok());
+            return Ok();
         }
 
         /// <summary>
@@ -37,22 +26,20 @@ namespace AlwaysOn.HealthService.Controllers
         /// <remarks>Provides an indication about the health of the API</remarks>
         [HttpGet("stamp")]
         [HttpHead("stamp")]
-        public async Task<IActionResult> GetStampLiveness()
+        public IActionResult GetStampLiveness()
         {
-            var cts = new CancellationTokenSource();
-            try
+            var latestHealthReport = HealthJob.LastReport;
+
+            var summaryReport = latestHealthReport?.Entries.Select(e => new { Component = e.Key, Status = e.Value.Status.ToString(), Duration = e.Value.Duration }).ToList();
+
+            var json = JsonConvert.SerializeObject(latestHealthReport);
+            if(latestHealthReport?.Status == HealthStatus.Healthy)
             {
-                cts.CancelAfter(TimeSpan.FromSeconds(_sysConfig.HealthServiceOverallTimeoutSeconds));
-                var report = await _healthCheckService.CheckHealthAsync(cts.Token);
-                return report.Status == HealthStatus.Healthy ? Ok(report) : StatusCode((int)HttpStatusCode.ServiceUnavailable, report);
+                return Ok(summaryReport);
             }
-            catch (TaskCanceledException)
+            else
             {
-                return StatusCode((int)HttpStatusCode.ServiceUnavailable);
-            }
-            finally
-            {
-                cts.Dispose();
+                return StatusCode((int)HttpStatusCode.ServiceUnavailable, summaryReport);
             }
         }
     }

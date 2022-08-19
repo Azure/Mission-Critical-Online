@@ -48,7 +48,7 @@ namespace AlwaysOn.Shared
         public string AzureRegionShort => AzureRegion.Replace(" ", "").ToLower();
 
         /// <summary>
-        /// Client ID of the User defined Managed Identity to be used for MSI-based authentication
+        /// Client ID of the User-defined Managed Identity to be used for any MSI-based authentication
         /// </summary>
         public string ManagedIdentityClientId => Configuration["MANAGED_IDENTITY_CLIENTID"];
 

@@ -25,21 +25,19 @@ namespace AlwaysOn.HealthService.ComponentHealthChecks
         /// </summary>
         public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
         {
-            const string HealthCheckName = "BlobStorageHealthCheck";
-
             try
             {
                 var blobContainerClient = new BlobContainerClient(_sysConfig.HealthServiceStorageConnectionString, _sysConfig.HealthServiceBlobContainerName);
                 _log.LogDebug("Initiated health state blob container client at {HealthBlobContainerUrl}", blobContainerClient.Uri.ToString());
 
                 var stateBlobClient = blobContainerClient.GetBlobClient(_sysConfig.HealthServiceBlobName);
-                if(await stateBlobClient.ExistsAsync(cancellationToken))
+                if (await stateBlobClient.ExistsAsync(cancellationToken))
                 {
-                    return new HealthCheckResult(HealthStatus.Healthy, HealthCheckName);
+                    return new HealthCheckResult(HealthStatus.Healthy);
                 }
                 else
                 {
-                    return new HealthCheckResult(HealthStatus.Unhealthy, HealthCheckName);
+                    return new HealthCheckResult(HealthStatus.Unhealthy);
                 }
 
                 /*
@@ -59,7 +57,7 @@ namespace AlwaysOn.HealthService.ComponentHealthChecks
                 // If the file does not exist or we cannot reach our storage at all, we treat this a an unhealthy state
                 // as well as it might very well mean that storage in that region has an issue.
                 _log.LogError(e, "Could not check health state blob. Responding with UNHEALTHY state");
-                return new HealthCheckResult(HealthStatus.Unhealthy, HealthCheckName, e);
+                return new HealthCheckResult(HealthStatus.Unhealthy, exception: e);
             }
         }
     }

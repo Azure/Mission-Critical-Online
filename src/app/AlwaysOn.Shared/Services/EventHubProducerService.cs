@@ -33,13 +33,11 @@ namespace AlwaysOn.Shared.Services
         /// <returns></returns>
         public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
         {
-            const string HealthCheckName = "EventHubProduerHealthCheck";
-
             _logger.LogDebug("Event Hub health probe requested");
             if (_eventHubProducerClient.IsClosed)
             {
                 _logger.LogError($"Unexpected 'Closed' status of Event Hub in {nameof(CheckHealthAsync)}");
-                return new HealthCheckResult(HealthStatus.Unhealthy, HealthCheckName);
+                return new HealthCheckResult(HealthStatus.Unhealthy);
             }
 
             try
@@ -48,12 +46,12 @@ namespace AlwaysOn.Shared.Services
                 message.Properties.Add("HEALTHCHECK", "TRUE");
                 message.MessageId = Guid.NewGuid().ToString();
                 await SendSingleEventAsync(message, cancellationToken);
-                return new HealthCheckResult(HealthStatus.Healthy, HealthCheckName);
+                return new HealthCheckResult(HealthStatus.Healthy);
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "Exception on sending health probe message to Event Hub");
-                return new HealthCheckResult(HealthStatus.Unhealthy, HealthCheckName, e);
+                return new HealthCheckResult(HealthStatus.Unhealthy, exception: e);
             }
         }
 

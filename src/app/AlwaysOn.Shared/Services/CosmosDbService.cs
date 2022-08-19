@@ -77,8 +77,6 @@ namespace AlwaysOn.Shared.Services
         /// <returns></returns>
         public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
         {
-            const string HealthCheckName = "CosmosDbHealthCheck";
-
             try
             {
                 _logger.LogDebug("Testing Read query to Cosmos DB");
@@ -88,7 +86,7 @@ namespace AlwaysOn.Shared.Services
             catch (Exception e)
             {
                 _logger.LogError(e, "Exception on health probe read query towards Cosmos DB");
-                return new HealthCheckResult(HealthStatus.Unhealthy, HealthCheckName, e);
+                return new HealthCheckResult(HealthStatus.Unhealthy, exception: e);
             }
 
             try
@@ -109,10 +107,10 @@ namespace AlwaysOn.Shared.Services
             catch (Exception e)
             {
                 _logger.LogError(e, "Exception on health probe document write towards Cosmos DB");
-                return new HealthCheckResult(HealthStatus.Unhealthy, HealthCheckName, e);
+                return new HealthCheckResult(HealthStatus.Unhealthy, exception: e);
             }
 
-            return new HealthCheckResult(HealthStatus.Healthy, HealthCheckName);
+            return new HealthCheckResult(HealthStatus.Healthy);
         }
 
         public async Task DeleteItemAsync<T>(string objectId, string partitionKey)
@@ -198,7 +196,7 @@ namespace AlwaysOn.Shared.Services
         {
             var requestOptions = CreateRequestOptionsWithOperation<ItemRequestOptions>();
             ResponseMessage responseMessage = null;
-            
+
             try
             {
                 // Read the item as a stream for higher performance.
@@ -245,7 +243,7 @@ namespace AlwaysOn.Shared.Services
                 // Read the item as a stream for higher performance.
                 // See: https://github.com/Azure/azure-cosmos-dotnet-v3/blob/master/Exceptions.md#stream-api
                 responseMessage = await _ratingsContainer.ReadItemStreamAsync(ratingId.ToString(), new PartitionKey(itemId.ToString()), requestOptions);
-                    
+
                 // Item stream operations do not throw exceptions for better performance
                 if (responseMessage.IsSuccessStatusCode)
                 {
@@ -375,11 +373,11 @@ namespace AlwaysOn.Shared.Services
             var requestOptions = CreateRequestOptionsWithOperation<QueryRequestOptions>();
 
             var queryable = _catalogItemsContainer.GetItemLinqQueryable<CatalogItem>(linqSerializerOptions: _cosmosSerializationOptions, requestOptions: requestOptions)
-                .Select(i => new CatalogItem() 
-                { 
-                    Id = i.Id, 
-                    Name = i.Name, 
-                    ImageUrl = i.ImageUrl, 
+                .Select(i => new CatalogItem()
+                {
+                    Id = i.Id,
+                    Name = i.Name,
+                    ImageUrl = i.ImageUrl,
                     Price = i.Price,
                     LastUpdated = i.LastUpdated
                 })
@@ -429,7 +427,7 @@ namespace AlwaysOn.Shared.Services
             var requestOptions = CreateRequestOptionsWithOperation<QueryRequestOptions>();
 
             FeedResponse<RatingDto> response;
-            
+
             try
             {
                 var queryDefintion = new QueryDefinition("SELECT AVG(c.rating) as averageRating, count(1) as numberOfVotes FROM c WHERE c.catalogItemId = @itemId")

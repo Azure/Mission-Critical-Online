@@ -36,8 +36,6 @@ namespace AlwaysOn.HealthService.ComponentHealthChecks
         /// <returns></returns>
         public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
         {
-            const string HealthCheckName = "AzMonitorHealthScoreCheck";
-
             try
             {
                 Response<LogsQueryResult> response = await _logsQueryClient.QueryWorkspaceAsync(
@@ -56,16 +54,16 @@ namespace AlwaysOn.HealthService.ComponentHealthChecks
                     if (healthScore <= _sysConfig.HealthServiceAzMonitorHealthScoreThreshold)
                     {
                         _log.LogInformation($"HealthScore of {healthScore} is <= {_sysConfig.HealthServiceAzMonitorHealthScoreThreshold}. Reporting stamp as unhealty!");
-                        return new HealthCheckResult(HealthStatus.Unhealthy, HealthCheckName);
+                        return new HealthCheckResult(HealthStatus.Unhealthy);
                     }
                 }
             }
             catch (Exception e)
             {
                 _log.LogError(e, "Could not query Log Analytics health score. Responding with UNHEALTHY state");
-                return new HealthCheckResult(HealthStatus.Unhealthy, HealthCheckName, e);
+                return new HealthCheckResult(HealthStatus.Unhealthy, exception: e);
             }
-            return new HealthCheckResult(HealthStatus.Healthy, HealthCheckName);
+            return new HealthCheckResult(HealthStatus.Healthy);
         }
     }
 }

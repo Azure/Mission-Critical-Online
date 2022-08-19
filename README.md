@@ -20,7 +20,7 @@ This repository contains the reference implementation for an Mission-Critical "o
 
 ## Azure Mission-Critical overview
 
-The following articles provides more information about the Azure Mission-Critical design guidelines and design areas:
+The following articles provide more information about the Azure Mission-Critical design guidelines and design areas:
 
 - [What is Azure Mission-Critical?](https://docs.microsoft.com/azure/architecture/framework/mission-critical/mission-critical-overview) (➡️ `docs.microsoft.com`) - Detailed introduction into Mission-Critical, the problem it is intended to solve and the value it can provide.
 - [Design Methodology](https://docs.microsoft.com/azure/architecture/framework/mission-critical/mission-critical-design-methodology) (➡️ `docs.microsoft.com`) - The design methodology strives to provide an easy to follow design path to help to produce an optimal target architecture.

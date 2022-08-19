@@ -83,7 +83,7 @@ namespace AlwaysOn.Shared.Services
             {
                 _logger.LogDebug("Testing Read query to Cosmos DB");
                 var iterator = _catalogItemsContainer.GetItemQueryIterator<object>("SELECT GetCurrentDateTime ()");
-                var readResult = await iterator.ReadNextAsync(cancellationToken);
+                _ = await iterator.ReadNextAsync(cancellationToken);
             }
             catch (Exception e)
             {

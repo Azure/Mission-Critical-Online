@@ -23,7 +23,6 @@ namespace AlwaysOn.HealthService.ComponentHealthChecks
         /// <summary>
         /// Checks whether the state file on blob storage exists. File exists means: Healthy
         /// </summary>
-        /// <returns>True=HEALTHY, False=UNHEALTHY</returns>
         public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
         {
             const string HealthCheckName = "BlobStorageHealthCheck";

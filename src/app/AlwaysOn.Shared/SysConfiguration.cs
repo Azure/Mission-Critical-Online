@@ -25,9 +25,9 @@ namespace AlwaysOn.Shared
 
         // Names of the health checks for the health service
         public const string HealthCheckName_AzMonitorHealthScore = "AzMonitorHealthScore";
-        public const string HealthCheckName_BlobStorageHealthCheck = "BlobStorageHealthCheck";
-        public const string HealthCheckName_DatabaseService = "DatabaseHealthCheck";
-        public const string HealthCheckName_MessageProducerService = "MessageProducerHealthCheck";
+        public const string HealthCheckName_BlobStorageHealthCheck = "BlobStorage";
+        public const string HealthCheckName_DatabaseService = "Database";
+        public const string HealthCheckName_MessageProducerService = "MessageProducer";
 
         #endregion
 

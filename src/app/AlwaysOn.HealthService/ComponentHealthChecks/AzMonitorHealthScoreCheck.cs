@@ -13,9 +13,6 @@ namespace AlwaysOn.HealthService.ComponentHealthChecks
 {
     public class AzMonitorHealthScoreCheck : IHealthCheck
     {
-        // If the HealthScore as returned by the Az Monitor query is equal or less than this, the stamp is considered unhealthy
-        private const double HEALTHSCORE_THRESHOLD = 0.5;
-
         private readonly ILogger<AzMonitorHealthScoreCheck> _log;
         private readonly SysConfiguration _sysConfig;
         private readonly LogsQueryClient _logsQueryClient;
@@ -45,7 +42,7 @@ namespace AlwaysOn.HealthService.ComponentHealthChecks
             {
                 Response<LogsQueryResult> response = await _logsQueryClient.QueryWorkspaceAsync(
                     _sysConfig.RegionalLogAnalyticsWorkspaceId,
-                    "StampHealthScore | project TimeGenerated,HealthScore | order by TimeGenerated desc | take 1",
+                    _sysConfig.HealthServiceAzMonitorHealthScoreQuery,
                     new QueryTimeRange(TimeSpan.FromMinutes(10)),
                     cancellationToken: cancellationToken);
 
@@ -56,9 +53,9 @@ namespace AlwaysOn.HealthService.ComponentHealthChecks
                     var healthScore = row.GetDouble("HealthScore");
                     _log.LogDebug($"TimeGenerated: [{row["TimeGenerated"]}] HealthScore: {healthScore}");
                     // If the healthscore indicates red, return false
-                    if (healthScore <= HEALTHSCORE_THRESHOLD)
+                    if (healthScore <= _sysConfig.HealthServiceAzMonitorHealthScoreThreshold)
                     {
-                        _log.LogInformation($"HealthScore of {healthScore} is <= {HEALTHSCORE_THRESHOLD}. Reporting stamp as unhealty!");
+                        _log.LogInformation($"HealthScore of {healthScore} is <= {_sysConfig.HealthServiceAzMonitorHealthScoreThreshold}. Reporting stamp as unhealty!");
                         return new HealthCheckResult(HealthStatus.Unhealthy, HealthCheckName);
                     }
                 }

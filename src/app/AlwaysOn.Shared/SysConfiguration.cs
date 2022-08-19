@@ -201,6 +201,32 @@ namespace AlwaysOn.Shared
         }
 
         /// <summary>
+        /// Kql Query which is used for the Az Monitor Health Score query
+        /// Default: "StampHealthScore | project TimeGenerated,HealthScore | order by TimeGenerated desc | take 1"
+        /// </summary>
+        public string HealthServiceAzMonitorHealthScoreQuery
+        {
+            get
+            {
+                var value = Configuration["HEALTHSERVICE_AZMONITOR_HEALTHSCORE_QUERY"];
+                return !string.IsNullOrEmpty(value) ? value : "StampHealthScore | project TimeGenerated,HealthScore | order by TimeGenerated desc | take 1";
+            }
+        }
+
+        /// <summary>
+        /// Threshold (equal or lower) at which the HealthScore is considered unhealthy
+        /// Default: 0.5
+        /// </summary>
+        public double HealthServiceAzMonitorHealthScoreThreshold
+        {
+            get
+            {
+                var value = Configuration["HEALTHSERVICE_AZMONITOR_HEALTHSCORE_THRESHOLD"];
+                return double.TryParse(value, out double result) ? result : 0.5;
+            }
+        }
+
+        /// <summary>
         /// Enable Swagger endpoint on the service?
         /// Defaults to true
         /// </summary>

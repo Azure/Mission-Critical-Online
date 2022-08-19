@@ -6,37 +6,28 @@
 
 ## Introduction to Azure Mission-Critical
 
-- [Introduction](https://docs.microsoft.com/azure/architecture/framework/mission-critical/mission-critical-overview) (➡️ `Azure/Mission-Critical`)
+- [Introduction](https://docs.microsoft.com/azure/architecture/framework/mission-critical/mission-critical-overview) (➡️ `docs.microsoft.com`)
 
 ## Azure Mission-Critical Reference Implementation Guide
 
 - [Overview](./reference-implementation/README.md)
-- [Getting started](./reference-implementation/Getting-Started.md)
-  - [Getting Started using CLI](./reference-implementation/Getting-Started-CLI.md)
-- [Frequently Asked Questions (FAQs)](./reference-implementation/FAQ.md)
-- [Critical Design Areas](./reference-implementation/README.md#Critical-Design-Areas)
-  - Application Design
-    - [Application Design](./reference-implementation/AppDesign-Application-Design.md)
-    - [Business Continuity / Disaster Recovery](./reference-implementation/AppDesign-BCDR-Global.md)
-    - [SLO and Availability](./reference-implementation/AppDesign-SLO-Availability.md)
-  - Data Platform
-    - [Data Platform Design Decisions](./reference-implementation/DataPlatform-Design-Decisions.md)
-  - Health Modelling
-    - [Monitoring](./reference-implementation/Health-Monitoring.md)
-    - [Alerting](./reference-implementation/Health-Alerting.md)
-    - [Failure Analysis](./reference-implementation/Health-Failure-Analysis.md)
-  - Deployment and Testing
-    - [Deployment - DevOps Design Decisions](./reference-implementation/DeployAndTest-DevOps-Design-Decisions.md)
-    - [Deployment - Zero Downtime Update Strategy](./reference-implementation/DeployAndTest-DevOps-Zero-Downtime-Update-Strategy.md)
-    - [Testing - Failure Injection](./reference-implementation/DeployAndTest-Testing-FailureInjection.md)
-  - Networking and Connectivity
-    - [Networking Design Decisions](./reference-implementation/Networking-Design-Decisions.md)
-    - [Custom Domains](./reference-implementation/Networking-Custom-Domains.md)
-  - Operational Procedures
-    - [Operational Procedures](./reference-implementation/OpProcedures-Operational-Procedures.md)
-    - [Key and Secret Rotation](./reference-implementation/OpProcedures-KeyRotation.md)
-- [ESLZ Alignment](./reference-implementation/ESLZ-Alignment.md)
-- [Troubleshooting](./reference-implementation/Troubleshooting.md)
+  - [Getting started](./reference-implementation/Getting-Started.md) ([using CLI](./reference-implementation/Getting-Started-CLI.md))
+  - [Troubleshooting](./reference-implementation/Troubleshooting.md)
+  - [Frequently Asked Questions (FAQs)](./reference-implementation/FAQ.md)
+- Design Areas (➡️ `docs.microsoft.com`)
+  - [Application Design](https://docs.microsoft.com/azure/architecture/reference-architectures/containers/aks-mission-critical/mission-critical-app-design)
+  - [Application platform](https://docs.microsoft.com/azure/architecture/reference-architectures/containers/aks-mission-critical/mission-critical-app-platform)
+  - [Networking and connectivity](https://docs.microsoft.com/azure/architecture/reference-architectures/containers/aks-mission-critical/mission-critical-networking)
+  - [Data platform](https://docs.microsoft.com/azure/architecture/reference-architectures/containers/aks-mission-critical/mission-critical-data-platform)
+  - [Deployment and Testing](https://docs.microsoft.com/azure/architecture/reference-architectures/containers/aks-mission-critical/mission-critical-deploy-test)
+  - [Health Modeling](https://docs.microsoft.com/azure/architecture/reference-architectures/containers/aks-mission-critical/mission-critical-health-modeling)
+- Additional content
+  - [Business Continuity / Disaster Recovery](./reference-implementation/AppDesign-BCDR-Global.md)
+  - [SLO and Availability](./reference-implementation/AppDesign-SLO-Availability.md)
+  - [Custom Domains](./reference-implementation/Networking-Custom-Domains.md)
+  - [Operational Procedures](./reference-implementation/OpProcedures-Operational-Procedures.md)
+  - [Key and Secret Rotation](./reference-implementation/OpProcedures-KeyRotation.md)
+  - [ESLZ Alignment](./reference-implementation/ESLZ-Alignment.md)
 
 ## Source Code README Files
 

@@ -1,6 +1,6 @@
 # Catalog Service
 
-As described in the [conceptual description](/docs/reference-implementation/AppDesign-Application-Design.md), the CatalogService provides APIs that the UI, and all other users of the service, interact with.
+As described in the [Application design](https://docs.microsoft.com/azure/architecture/reference-architectures/containers/aks-mission-critical/mission-critical-app-design), the CatalogService provides APIs that the UI, and all other users of the service, interact with.
 
 ## Deployment
 

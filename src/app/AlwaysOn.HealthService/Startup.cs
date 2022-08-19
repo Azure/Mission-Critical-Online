@@ -45,18 +45,29 @@ namespace AlwaysOn.HealthService
 
             services.AddSingleton<AppInsightsCosmosRequestHandler>();
 
-            // Register services for the healthchecks
+            // Register services
             services.AddSingleton<IDatabaseService, CosmosDbService>();
             services.AddSingleton<IMessageProducerService, EventHubProducerService>();
 
-            services.AddHealthChecks()
-                .AddCheck<AzMonitorHealthScoreCheck>(nameof(AzMonitorHealthScoreCheck))
-                .AddCheck<BlobStorageHealthCheck>(nameof(BlobStorageHealthCheck))
-                .AddCheck<IDatabaseService>(nameof(IDatabaseService))
-                .AddCheck<IMessageProducerService>(nameof(IMessageProducerService));
+            // Register health checks - except for the ones which have been explicitly disabled
+            if (Configuration[$"HEALTHSERVICE_CHECK_{SysConfiguration.HealthCheckName_AzMonitorHealthScore}_DISABLED"]?.ToUpper() != "TRUE")
+            {
+                services.AddHealthChecks().AddCheck<AzMonitorHealthScoreCheck>(SysConfiguration.HealthCheckName_AzMonitorHealthScore);
+            }
+            if (Configuration[$"HEALTHSERVICE_CHECK_{SysConfiguration.HealthCheckName_BlobStorageHealthCheck}_DISABLED"]?.ToUpper() != "TRUE")
+            {
+                services.AddHealthChecks().AddCheck<BlobStorageHealthCheck>(SysConfiguration.HealthCheckName_BlobStorageHealthCheck);
+            }
+            if (Configuration[$"HEALTHSERVICE_CHECK_{SysConfiguration.HealthCheckName_DatabaseService}_DISABLED"]?.ToUpper() != "TRUE")
+            {
+                services.AddHealthChecks().AddCheck<IDatabaseService>(SysConfiguration.HealthCheckName_DatabaseService);
+            }
+            if (Configuration[$"HEALTHSERVICE_CHECK_{SysConfiguration.HealthCheckName_MessageProducerService}_DISABLED"]?.ToUpper() != "TRUE")
+            {
+                services.AddHealthChecks().AddCheck<IMessageProducerService>(SysConfiguration.HealthCheckName_MessageProducerService);
+            }
 
-            //services.AddHealthChecks().AddCheck<AlwaysOnHealthCheck>(nameof(AlwaysOnHealthCheck));
-
+            // Register background job which calls the health checks
             services.AddHostedService<HealthJob>();
 
             services.AddControllers().AddJsonOptions(options =>

@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Newtonsoft.Json;
 using System.Linq;
 using System.Net;
 
@@ -29,11 +28,16 @@ namespace AlwaysOn.HealthService.Controllers
         public IActionResult GetStampLiveness()
         {
             var latestHealthReport = HealthJob.LastReport;
+            
+            // Create a simple summary report since we do not want to return the entire detailed report
+            var summaryReport = latestHealthReport?.Entries.Select(e => new
+            {
+                Component = e.Key,
+                Status = e.Value.Status.ToString(),
+                Duration = e.Value.Duration
+            }).ToList();
 
-            var summaryReport = latestHealthReport?.Entries.Select(e => new { Component = e.Key, Status = e.Value.Status.ToString(), Duration = e.Value.Duration }).ToList();
-
-            var json = JsonConvert.SerializeObject(latestHealthReport);
-            if(latestHealthReport?.Status == HealthStatus.Healthy)
+            if (latestHealthReport?.Status == HealthStatus.Healthy)
             {
                 return Ok(summaryReport);
             }

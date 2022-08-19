@@ -23,6 +23,12 @@ namespace AlwaysOn.Shared
         /// </summary>
         public const string GlobalImagesPathSegment = "images";
 
+        // Names of the health checks for the health service
+        public const string HealthCheckName_AzMonitorHealthScore = "AzMonitorHealthScore";
+        public const string HealthCheckName_BlobStorageHealthCheck = "BlobStorageHealthCheck";
+        public const string HealthCheckName_DatabaseService = "DatabaseHealthCheck";
+        public const string HealthCheckName_MessageProducerService = "MessageProducerHealthCheck";
+
         #endregion
 
         private readonly IConfiguration Configuration;
@@ -164,39 +170,6 @@ namespace AlwaysOn.Shared
             {
                 var value = Configuration["HEALTHSERVICE_OVERALL_TIMEOUT_SECONDS"];
                 return int.TryParse(value, out int result) ? result : 20;
-            }
-        }
-
-        public bool HealthServiceDatabaseHealthCheckEnabled
-        {
-            get
-            {
-                var value = Configuration["HEALTHSERVICE_DATABASE_HEALTHCHECK_ENABLED"];
-                return bool.TryParse(value, out bool result) ? result : true;
-            }
-        }
-        public bool HealthServiceMessageProducerHealthCheckEnabled
-        {
-            get
-            {
-                var value = Configuration["HEALTHSERVICE_MESSAGEPRODUCER_HEALTHCHECK_ENABLED"];
-                return bool.TryParse(value, out bool result) ? result : true;
-            }
-        }
-        public bool HealthServiceBlobStorageHealthCheckEnabled
-        {
-            get
-            {
-                var value = Configuration["HEALTHSERVICE_BLOBSTORAGE_HEALTHCHECK_ENABLED"];
-                return bool.TryParse(value, out bool result) ? result : true;
-            }
-        }
-        public bool HealthServiceAzMonitorHealthScoreHealthCheckEnabled
-        {
-            get
-            {
-                var value = Configuration["HEALTHSERVICE_AZMONITOR_HEALTHSCORE_HEALTHCHECK_ENABLED"];
-                return bool.TryParse(value, out bool result) ? result : true;
             }
         }
 

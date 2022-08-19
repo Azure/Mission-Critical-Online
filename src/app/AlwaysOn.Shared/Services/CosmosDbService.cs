@@ -5,7 +5,6 @@ using AlwaysOn.Shared.Models;
 using AlwaysOn.Shared.Models.DataTransfer;
 using AlwaysOn.Shared.TelemetryExtensions;
 using Microsoft.ApplicationInsights;
-using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Fluent;
 using Microsoft.Azure.Cosmos.Linq;
@@ -32,9 +31,6 @@ namespace AlwaysOn.Shared.Services
         private readonly TelemetryClient _telemetryClient;
 
         private readonly CosmosLinqSerializerOptions _cosmosSerializationOptions = new CosmosLinqSerializerOptions() { PropertyNamingPolicy = CosmosPropertyNamingPolicy.CamelCase };
-
-        // Source: https://github.com/microsoft/ApplicationInsights-dotnet/blob/3822ab1c591298b4c0c00eb6a853265a180e8d70/WEB/Src/DependencyCollector/DependencyCollector/Implementation/RemoteDependencyConstants.cs#L3
-        private const string AppInsightsDependencyType = "Azure DocumentDB";
 
         // Expects to find the following in SysConfiguration:
         // - AzureRegion

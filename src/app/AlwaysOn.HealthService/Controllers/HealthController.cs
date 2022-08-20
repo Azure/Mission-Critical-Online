@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 
@@ -25,17 +27,23 @@ namespace AlwaysOn.HealthService.Controllers
         /// <remarks>Provides an indication about the health of the API</remarks>
         [HttpGet("stamp")]
         [HttpHead("stamp")]
+        [ProducesResponseType(typeof(SummaryHealthReport), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(SummaryHealthReport), (int)HttpStatusCode.ServiceUnavailable)]
         public IActionResult GetStampLiveness()
         {
             var latestHealthReport = HealthJob.LastReport;
-            
+
             // Create a simple summary report since we do not want to return the entire detailed report
-            var summaryReport = latestHealthReport?.Entries.Select(e => new
+            var summaryReport = new SummaryHealthReport()
             {
-                Component = e.Key,
-                Status = e.Value.Status.ToString(),
-                Duration = e.Value.Duration
-            }).ToList();
+                LastExecution = HealthJob.LastExecution,
+                Checks = latestHealthReport?.Entries.Select(e => new Check()
+                {
+                    Component = e.Key,
+                    Status = e.Value.Status.ToString(),
+                    Duration = e.Value.Duration
+                }).ToList()
+            };
 
             if (latestHealthReport?.Status == HealthStatus.Healthy)
             {
@@ -46,5 +54,18 @@ namespace AlwaysOn.HealthService.Controllers
                 return StatusCode((int)HttpStatusCode.ServiceUnavailable, summaryReport);
             }
         }
+    }
+
+    public class SummaryHealthReport
+    {
+        public DateTime LastExecution { get; set; }
+        public List<Check> Checks { get; set; }
+    }
+
+    public class Check
+    {
+        public string Component { get; set; }
+        public string Status { get; set; }
+        public TimeSpan Duration { get; set; }
     }
 }

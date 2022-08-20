@@ -8,7 +8,10 @@ using System.Threading.Tasks;
 
 namespace AlwaysOn.HealthService
 {
-    // Initial source: https://stackoverflow.com/a/68630985/1537195
+    /// <summary>
+    /// Background job that performs the health checks on a regular interval and caches the result in memory
+    /// Initial source: https://stackoverflow.com/a/68630985/1537195
+    /// </summary>
     public class HealthJob : BackgroundService
     {
         private readonly TimeSpan _checkInterval;

@@ -55,7 +55,6 @@ This will result in a new project, `<your-project>` in your Azure DevOps organiz
 
 ![New ADO Project](/docs/media/AlwaysOnGettingStarted1.png)
 
-
 ### 2) Generate your own repository based on the Azure Mission-Critical GitHub template
 
 Azure DevOps Repos would allow us to import the Azure Mission-Critical reference implementation GitHub repository into Azure DevOps as well. For this guide we have decided to generate our own repository based on the template on GitHub and use it from there.

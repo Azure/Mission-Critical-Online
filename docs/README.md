@@ -1,14 +1,9 @@
 # Azure Mission-Critical - Full List of Documentation
 
-## Azure Mission-Critical Landing Page
+- [Azure Mission-Critical Landing Page](../README.md)
+- [Introduction to Azure Mission-Critical](https://docs.microsoft.com/azure/architecture/framework/mission-critical/mission-critical-overview) (➡️ `docs.microsoft.com`)
 
-- [Landing Page](../README.md)
-
-## Introduction to Azure Mission-Critical
-
-- [Introduction](https://docs.microsoft.com/azure/architecture/framework/mission-critical/mission-critical-overview) (➡️ `docs.microsoft.com`)
-
-## Azure Mission-Critical Reference Implementation Guide
+## Reference Implementation Guide
 
 - [Overview](./reference-implementation/README.md)
   - [Getting started](./reference-implementation/Getting-Started.md) ([using CLI](./reference-implementation/Getting-Started-CLI.md))
@@ -43,8 +38,6 @@
 - [Deployment Pipelines](/.ado/pipelines/README.md)
 - [Configuration](/src/infra/README.md)
 - [Testing](/src/testing/README.md)
-
----
 
 ## Documentation Conventions
 

@@ -51,6 +51,7 @@ jobs:
                        --set controller.service.loadBalancerIP="$aksIngressIp" `
                        --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-resource-group"="$aksClusterResourceGroup" `
                        --version "$(ingressNginxVersion)" `
+                       --timeout 15m0s `
                        --wait
 
           if ($LastExitCode -ne 0) {

@@ -39,7 +39,7 @@ This will surface any traces, metrics and dependency calls that were made as par
 
 ## Transient Pipeline Failures
 
-See [Troubleshooting](Troubleshooting.md) for more details about known, transient pipeline issues.
+See [Troubleshooting](./Troubleshooting.md) for more details about known, transient pipeline issues.
 
 ## Package / Dependency updates
 

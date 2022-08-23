@@ -40,19 +40,18 @@ jobs:
           $aksIngressIp = $stamp.aks_cluster_ingress_ip_address
 
           # Deploy ingress-nginx (helm) configuration
-          echo "*** Installing nginx ingress controller ($aksIngressIp) on $aksClusterName in $aksClusterResourceGroup"
+          echo "*** Installing nginx ingress controller ($aksIngressIp) in namespace $(ingressNamespace) on $aksClusterName in $aksClusterResourceGroup"
           helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
           helm repo update
 
-          $ingressNamespace = "ingress-nginx"
-
           # Deploy helm chart for ingress-nginx using a custom load balancer ip and resource group (RG in which the Public IP sits in)
           helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx `
-                       --namespace $ingressNamespace --create-namespace `
+                       --namespace $(ingressNamespace) --create-namespace `
                        --values src/config/ingress-nginx/values.helm.yaml `
                        --set controller.service.loadBalancerIP="$aksIngressIp" `
                        --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-resource-group"="$aksClusterResourceGroup" `
                        --version "$(ingressNginxVersion)" `
+                       --timeout 15m0s `
                        --wait
 
           if ($LastExitCode -ne 0) {

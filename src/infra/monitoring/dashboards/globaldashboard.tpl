@@ -1833,12 +1833,12 @@
           "MsPortalFx_TimeRange": {
             "model": {
               "format": "utc",
-              "granularity": "auto",
-              "relative": "1h"
+              "granularity": "30m",
+              "relative": "4320m"
             },
             "displayCache": {
               "name": "UTC Time",
-              "value": "Past hour"
+              "value": "Past 3 days"
             },
             "filteredPartIds": [
               "StartboardPart-MonitorChartPart-1b4b7d17-c58b-450f-9198-09da3c59949c",

@@ -104,28 +104,6 @@ stages:
             echo "*** Reading image name from file $($path): $($imageNameWithTag)"
             echo "##vso[task.setvariable variable=ImageName-alwayson_grafana]$imageNameWithTag"
 
-      - task: PowerShell@2
-        displayName: 'Prepare stamp input variables'
-        inputs:
-          targetType: inline
-          script: |
-
-            $locations = '$(stampLocationsGrafana)' | ConvertFrom-Json
-
-            $stamps = @{
-              primary = @{
-                location           = $locations[0]
-                vnet_address_space = "10.1.0.0/16"
-              };
-              secondary = @{
-                location           = $locations[1]
-                vnet_address_space = "10.2.0.0/16"
-              };
-            }
-
-            $stamps = $stamps | ConvertTo-Json -Compress
-            echo "##vso[task.setvariable variable=grafanaStamps]$stamps"
-
       # Deploy the stamp resources for both regions
       - template: templates/steps-terraform-apply.yaml
         parameters:
@@ -138,6 +116,6 @@ stages:
                                       -var=environment="$(environment)"
                                       -var=wapp_container_image="$(ImageName-alwayson_grafana)"
                                       -var=acr_resource_id="$(acr_resource_id)"
-                                      -var=''stamps=$(grafanaStamps)''
+                                      -var=''stamps=$(stampLocationsGrafana)''
                                       -var=frontdoor_fqdn="$(frontdoor_fqdn)"
                                       -var=frontdoor_header_id="$(frontdoor_header_id)"'

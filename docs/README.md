@@ -36,9 +36,16 @@ As with the Azure Mission-Critical Design Guidelines, the Reference Implementati
   - [Background Processor](/src/app/AlwaysOn.BackgroundProcessor/README.md)
   - [UI Application](/src/app/AlwaysOn.UI/README.md)
   - [Unit Tests](/src/app/AlwaysOn.Tests/README.md)
+  - [Unit Tests](/src/app/AlwaysOn.Tests/README.md)
 - [Deployment Pipelines](/.ado/pipelines/README.md)
 - [Configuration](/src/infra/README.md)
 - [Testing](/src/testing/README.md)
+
+## Helpful Information
+
+- [Getting started](./reference-implementation/Getting-Started.md) (or using [CLI](./reference-implementation/Getting-Started-CLI.md)) outlines the process and required steps to deploy Azure Mission-Critical in your environment, including preparing Azure DevOps pipelines. It should be read in tandem with the Reference Implementation guidance.
+- [SLO and Availability](./reference-implementation/AppDesign-SLO-Availability.md) outlines the SLO for Azure Mission-Critical (99.95%) and how this figure was calculated.
+- [Troubleshooting](./reference-implementation/Troubleshooting.md) collects solutions to known issues during development and deployment.
 
 ## Helpful Information
 
@@ -52,6 +59,10 @@ As with the Azure Mission-Critical Design Guidelines, the Reference Implementati
 
 - Each source code component for the reference implementation has it's own `README.md` file which explains how that particular component works, how it is supposed to be used, and how it may interact with other aspects of the Azure Mission-Critical solution.
   - Within the `main` branch, each `README.md` file must accurately represent the state of the associated component which will serve as a core aspect of PR reviews. Any modifications to source components must therefore be reflected in the documentation as well.
+
+---
+
+[Azure Mission-Critical - Full List of Documentation](/docs/README.md)
 
 ---
 

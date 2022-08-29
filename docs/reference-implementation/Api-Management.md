@@ -53,7 +53,8 @@ Also in the same folder the globally applicable policies ([apim-api-policy.xml](
 ### Change Kubernetes service for the ingress controller to an internal load balancer
 
 Converting the ingress controller service to a private load balancer is done via two annotations on the Nginx configuration in [jobs-configuration.yaml](/.ado/pipelines/templates/jobs-configuration.yaml):
-```
+
+```console
 --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-internal"="true" `
 --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-internal-subnet"="aks-lb-snet"
 ```

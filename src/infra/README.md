@@ -48,7 +48,7 @@ Aside from the database, a geo-replicated **Azure Container Registry** (ACR) is 
 
 Stamps can be added and removed dynamically as needed to provide more resiliency, scale and proximity to users.
 
-A global load balancer is used to distribute and load balance incoming traffic to the stamps (see [Networking](/docs/reference-implementation/Networking-Design-Decisions.md) for details).
+A global load balancer is used to distribute and load balance incoming traffic to the stamps (see [Networking and connectivity](https://docs.microsoft.com/azure/architecture/reference-architectures/containers/aks-mission-critical/mission-critical-networking) for details).
 
 ### Stateless compute clusters
 
@@ -200,7 +200,7 @@ This Azure Mission-Critical reference implementation uses Linux-only clusters as
 - Separate "workload" (aka user) node pool with same settings as "system" node pool but different VM SKUs and auto-scale settings.
   - The user node pool is configured with a taint `workload=true:NoSchedule` to prevent non-workload pods from being scheduled. The `node_label` set to `role=workload` can be used to target this node pool when deploying a workload (see [charts/catalogservice](/src/app/charts/catalogservice/) for an example).
 
-Individual stamps are considered ephemeral and stateless. Updates to the infrastructure and application are following a [Zero-downtime Update Strategy](/docs/reference-implementation/DeployAndTest-DevOps-Zero-Downtime-Update-Strategy.md) and do not touch existing stamps. Updates to Kubernetes are therefore primarily rolled out by releasing new versions and replacing existing stamps. To update node images between two releases, the `automatic_channel_upgrade` in combination with `maintenance_window` is used:
+Individual stamps are considered ephemeral and stateless. Updates to the infrastructure and application are following a [Zero-downtime Update Strategy](https://docs.microsoft.com/azure/architecture/reference-architectures/containers/aks-mission-critical/mission-critical-deploy-test#deployment-zero-downtime-updates) and do not touch existing stamps. Updates to Kubernetes are therefore primarily rolled out by releasing new versions and replacing existing stamps. To update node images between two releases, the `automatic_channel_upgrade` in combination with `maintenance_window` is used:
 
 - `automatic_channel_upgrade` is set to `node-image` to [automatically upgrade node pools](https://docs.microsoft.com/azure/aks/upgrade-cluster#set-auto-upgrade-channel) with the most recent AKS node image.
 - `maintenance_window` contains the allowed window to run `automatic_channel_upgrade` upgrades. It is currently set to `allowed` on `Sunday` between 0 and 2 AM.

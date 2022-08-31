@@ -14,7 +14,7 @@ Azure Mission-Critical is using [Azure Log Analytics](https://docs.microsoft.com
 
 ![Monitoring overview](/docs/media/MonitoringOverview.png)
 
-As all stamps are short-lived and continuously replaced with each new release (see [Zero-downtime Update Strategy](/docs/reference-implementation/DeployAndTest-DevOps-Zero-Downtime-Update-Strategy.md) for more), the per-stamp Log Analytics workspaces are deployed in a separate monitoring resource group as the stamp Log Analytics resources, and do not share the lifecycle of a stamp. This is necessary to decouple the lifecycle of log data from the lifetime of a stamp.
+As all stamps are short-lived and continuously replaced with each new release (see [Zero-downtime Update Strategy](https://docs.microsoft.com/azure/architecture/reference-architectures/containers/aks-mission-critical/mission-critical-deploy-test#deployment-zero-downtime-updates) for more), the per-stamp Log Analytics workspaces are deployed in a separate monitoring resource group as the stamp Log Analytics resources, and do not share the lifecycle of a stamp. This is necessary to decouple the lifecycle of log data from the lifetime of a stamp.
 
 ## Monitoring data sources
 

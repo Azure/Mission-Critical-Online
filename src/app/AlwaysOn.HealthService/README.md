@@ -27,8 +27,7 @@ Apart from the configuration settings which are common between components, such 
 - `HealthServiceBlobContainerName`: Storage Container where the status file should be present.
 - `HealthServiceBlobName`: Name of the status file - health check will look for this.
 - `HealthServiceOverallTimeoutSeconds`: Timeout for the whole check - defaults to 3 seconds. If the check doesn't finish in this interval, the service reports unhealthy.
-- `HealthServiceAzMonitorHealthScoreQuery`: Kusto query which is used to retrieve the HealthScore. See below for default.
-- `HealthServiceAzMonitorHealthScoreThreshold`: Threshold (equal or lower) at which the HealthScore is considered unhealthy. See below for default.
+- `HealthServiceAzMonitorHealthStatusQuery`: Kusto query which is used to retrieve the Health Status. See below for default.
 
 Individual health checks can be disabled by adding an application setting like:
 
@@ -111,16 +110,16 @@ var testRating = new ItemRating()
 await AddNewRatingAsync(testRating);
 ```
 
-### Azure Monitor HealthScore Query
+### Azure Monitor Health Status Query
 
-The regional Azure Monitor Log Analytics workspace is queried for the latest HealthScore. If that is equal or below a certain threshold (default: 0.5, configurable through `HEALTHSERVICE_AZMONITOR_HEALTHSCORE_THRESHOLD` setting), it is considered unhealthy.
-The query can also be configured (`HEALTHSERVICE_AZMONITOR_HEALTHSCORE_QUERY`) currently it uses the following KQL query:
+The regional Azure Monitor Log Analytics workspace is queried for the latest Health Status. If that is equal or below a certain threshold, it is considered unhealthy.
+The query can also be configured (`HEALTHSERVICE_AZMONITOR_HEALTHSTATUS_QUERY`) currently it uses the following KQL query:
 
 ```kql
-StampHealthScore
-| project TimeGenerated,HealthScore
-| order by TimeGenerated desc
-| take 1
+StampHealthScore 
+| order by TimeGenerated desc 
+| take 1 
+| project TimeGenerated, Healthy=tobool(1-RedScore)
 ```
 
 ---

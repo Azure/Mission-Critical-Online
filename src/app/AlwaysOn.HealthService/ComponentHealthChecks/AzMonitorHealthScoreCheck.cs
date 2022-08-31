@@ -28,7 +28,7 @@ namespace AlwaysOn.HealthService.ComponentHealthChecks
         }
 
         /// <summary>
-        /// Query regional Log Analytics workspace to fetch the latest HealthScore
+        /// Query regional Log Analytics workspace to fetch the latest HealthStatus
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
@@ -38,27 +38,28 @@ namespace AlwaysOn.HealthService.ComponentHealthChecks
             {
                 var response = await _logsQueryClient.QueryWorkspaceAsync(
                     _sysConfig.RegionalLogAnalyticsWorkspaceId,
-                    _sysConfig.HealthServiceAzMonitorHealthScoreQuery,
+                    _sysConfig.HealthServiceAzMonitorHealthStatusQuery,
                     new QueryTimeRange(TimeSpan.FromMinutes(10)),
                     cancellationToken: cancellationToken);
 
-                var table = response.Value.Table;
-
-                foreach (var row in table.Rows) // there will be only one row (take 1)
+                foreach (var row in response.Value.Table.Rows)
                 {
-                    var healthScore = row.GetDouble("HealthScore");
-                    _logger.LogDebug($"TimeGenerated: [{row["TimeGenerated"]}] HealthScore: {healthScore}");
-                    // If the healthscore indicates red, return false
-                    if (healthScore <= _sysConfig.HealthServiceAzMonitorHealthScoreThreshold)
+                    var isHealthy = row.GetBoolean("Healthy");
+                    if(isHealthy == null)
                     {
-                        _logger.LogInformation($"HealthScore of {healthScore} is <= {_sysConfig.HealthServiceAzMonitorHealthScoreThreshold}. Reporting stamp as unhealty!");
+                        throw new Exception("HealthStatus query does not contain a column 'Healthy'. Please fix the query!");
+                    }
+                    _logger.LogDebug($"TimeGenerated: [{row["TimeGenerated"]}] Healthy: {isHealthy}");
+                    if (!(bool)isHealthy)
+                    {
+                        _logger.LogInformation($"Health query returned unhealthy. Reporting stamp as unhealty!");
                         return new HealthCheckResult(HealthStatus.Unhealthy);
                     }
                 }
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Could not query Log Analytics health score. Responding with UNHEALTHY state");
+                _logger.LogError(e, "Could not query Log Analytics health status. Responding with UNHEALTHY state");
                 return new HealthCheckResult(HealthStatus.Unhealthy, exception: e);
             }
             return new HealthCheckResult(HealthStatus.Healthy);

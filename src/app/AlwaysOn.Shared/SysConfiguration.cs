@@ -174,28 +174,17 @@ namespace AlwaysOn.Shared
         }
 
         /// <summary>
-        /// Kql Query which is used for the Az Monitor Health Score query
-        /// Default: "StampHealthScore | project TimeGenerated,HealthScore | order by TimeGenerated desc | take 1"
+        /// Kql Query which is used for the Az Monitor Health Status query
+        /// This query result has to contain the columns "TimeGenerated" and "Healthy"
+        /// By default it expects to only get one row returned (take 1) but you can change this if you understand (or change) the evauluation logic inside the HealthService
+        /// Default: "StampHealthScore  | order by TimeGenerated desc | take 1 | project TimeGenerated, Healthy=tobool(1-RedScore)"
         /// </summary>
-        public string HealthServiceAzMonitorHealthScoreQuery
+        public string HealthServiceAzMonitorHealthStatusQuery
         {
             get
             {
-                var value = Configuration["HEALTHSERVICE_AZMONITOR_HEALTHSCORE_QUERY"];
-                return !string.IsNullOrEmpty(value) ? value : "StampHealthScore | project TimeGenerated,HealthScore | order by TimeGenerated desc | take 1";
-            }
-        }
-
-        /// <summary>
-        /// Threshold (equal or lower) at which the HealthScore is considered unhealthy
-        /// Default: 0.5
-        /// </summary>
-        public double HealthServiceAzMonitorHealthScoreThreshold
-        {
-            get
-            {
-                var value = Configuration["HEALTHSERVICE_AZMONITOR_HEALTHSCORE_THRESHOLD"];
-                return double.TryParse(value, out double result) ? result : 0.5;
+                var value = Configuration["HEALTHSERVICE_AZMONITOR_HEALTHSTATUS_QUERY"];
+                return !string.IsNullOrEmpty(value) ? value : "StampHealthScore | order by TimeGenerated desc | take 1 | project TimeGenerated, Healthy=tobool(1-RedScore)";
             }
         }
 

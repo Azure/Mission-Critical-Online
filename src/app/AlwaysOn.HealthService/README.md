@@ -114,7 +114,7 @@ await AddNewRatingAsync(testRating);
 ### Azure Monitor HealthScore Query
 
 The regional Azure Monitor Log Analytics workspace is queried for the latest HealthScore. If that is equal or below a certain threshold (default: 0.5, configurable through `HEALTHSERVICE_AZMONITOR_HEALTHSCORE_THRESHOLD` setting), it is considered unhealthy.
-The query can also be configured (`HEALTHSERVICE_AZMONITOR_HEALTHSCORE_QUERY`) currently it uses the follow KQL query:
+The query can also be configured (`HEALTHSERVICE_AZMONITOR_HEALTHSCORE_QUERY`) currently it uses the following KQL query:
 
 ```kql
 StampHealthScore

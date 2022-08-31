@@ -45,12 +45,8 @@ namespace AlwaysOn.HealthService.ComponentHealthChecks
                 foreach (var row in response.Value.Table.Rows)
                 {
                     var isHealthy = row.GetBoolean("Healthy");
-                    if(isHealthy == null)
-                    {
-                        throw new Exception("HealthStatus query does not contain a column 'Healthy'. Please fix the query!");
-                    }
                     _logger.LogDebug($"TimeGenerated: [{row["TimeGenerated"]}] Healthy: {isHealthy}");
-                    if (!(bool)isHealthy)
+                    if (isHealthy == null || !(bool)isHealthy)
                     {
                         _logger.LogInformation($"Health query returned unhealthy. Reporting stamp as unhealty!");
                         return new HealthCheckResult(HealthStatus.Unhealthy);
@@ -59,7 +55,7 @@ namespace AlwaysOn.HealthService.ComponentHealthChecks
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Could not query Log Analytics health status. Responding with UNHEALTHY state");
+                _logger.LogError(e, "Could not query Log Analytics health status. Ensure your query returns columns 'TimeGenerated' and 'Healthy' and that the Log Analytics workspace is available. Responding with UNHEALTHY state");
                 return new HealthCheckResult(HealthStatus.Unhealthy, exception: e);
             }
             return new HealthCheckResult(HealthStatus.Healthy);

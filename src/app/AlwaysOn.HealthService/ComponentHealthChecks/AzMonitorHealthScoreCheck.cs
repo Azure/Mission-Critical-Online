@@ -1,8 +1,6 @@
 ﻿using AlwaysOn.Shared;
-using Azure;
 using Azure.Identity;
 using Azure.Monitor.Query;
-using Azure.Monitor.Query.Models;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using System;
@@ -13,14 +11,14 @@ namespace AlwaysOn.HealthService.ComponentHealthChecks
 {
     public class AzMonitorHealthScoreCheck : IHealthCheck
     {
-        private readonly ILogger<AzMonitorHealthScoreCheck> _log;
+        private readonly ILogger<AzMonitorHealthScoreCheck> _logger;
         private readonly SysConfiguration _sysConfig;
         private readonly LogsQueryClient _logsQueryClient;
 
-        public AzMonitorHealthScoreCheck(ILogger<AzMonitorHealthScoreCheck> log,
+        public AzMonitorHealthScoreCheck(ILogger<AzMonitorHealthScoreCheck> logger,
             SysConfiguration sysConfig)
         {
-            _log = log;
+            _logger = logger;
             _sysConfig = sysConfig;
 
             _logsQueryClient = new LogsQueryClient(new DefaultAzureCredential(new DefaultAzureCredentialOptions()
@@ -38,29 +36,29 @@ namespace AlwaysOn.HealthService.ComponentHealthChecks
         {
             try
             {
-                Response<LogsQueryResult> response = await _logsQueryClient.QueryWorkspaceAsync(
+                var response = await _logsQueryClient.QueryWorkspaceAsync(
                     _sysConfig.RegionalLogAnalyticsWorkspaceId,
                     _sysConfig.HealthServiceAzMonitorHealthScoreQuery,
                     new QueryTimeRange(TimeSpan.FromMinutes(10)),
                     cancellationToken: cancellationToken);
 
-                LogsTable table = response.Value.Table;
+                var table = response.Value.Table;
 
                 foreach (var row in table.Rows) // there will be only one row (take 1)
                 {
                     var healthScore = row.GetDouble("HealthScore");
-                    _log.LogDebug($"TimeGenerated: [{row["TimeGenerated"]}] HealthScore: {healthScore}");
+                    _logger.LogDebug($"TimeGenerated: [{row["TimeGenerated"]}] HealthScore: {healthScore}");
                     // If the healthscore indicates red, return false
                     if (healthScore <= _sysConfig.HealthServiceAzMonitorHealthScoreThreshold)
                     {
-                        _log.LogInformation($"HealthScore of {healthScore} is <= {_sysConfig.HealthServiceAzMonitorHealthScoreThreshold}. Reporting stamp as unhealty!");
+                        _logger.LogInformation($"HealthScore of {healthScore} is <= {_sysConfig.HealthServiceAzMonitorHealthScoreThreshold}. Reporting stamp as unhealty!");
                         return new HealthCheckResult(HealthStatus.Unhealthy);
                     }
                 }
             }
             catch (Exception e)
             {
-                _log.LogError(e, "Could not query Log Analytics health score. Responding with UNHEALTHY state");
+                _logger.LogError(e, "Could not query Log Analytics health score. Responding with UNHEALTHY state");
                 return new HealthCheckResult(HealthStatus.Unhealthy, exception: e);
             }
             return new HealthCheckResult(HealthStatus.Healthy);

@@ -10,13 +10,13 @@ namespace AlwaysOn.HealthService.ComponentHealthChecks
 {
     public class BlobStorageHealthCheck : IHealthCheck
     {
-        private readonly ILogger<BlobStorageHealthCheck> _log;
+        private readonly ILogger<BlobStorageHealthCheck> _logger;
         private readonly SysConfiguration _sysConfig;
 
-        public BlobStorageHealthCheck(ILogger<BlobStorageHealthCheck> log,
+        public BlobStorageHealthCheck(ILogger<BlobStorageHealthCheck> logger,
             SysConfiguration sysConfig)
         {
-            _log = log;
+            _logger = logger;
             _sysConfig = sysConfig;
         }
 
@@ -28,7 +28,7 @@ namespace AlwaysOn.HealthService.ComponentHealthChecks
             try
             {
                 var blobContainerClient = new BlobContainerClient(_sysConfig.HealthServiceStorageConnectionString, _sysConfig.HealthServiceBlobContainerName);
-                _log.LogDebug("Initiated health state blob container client at {HealthBlobContainerUrl}", blobContainerClient.Uri.ToString());
+                _logger.LogDebug("Initiated health state blob container client at {HealthBlobContainerUrl}", blobContainerClient.Uri.ToString());
 
                 var stateBlobClient = blobContainerClient.GetBlobClient(_sysConfig.HealthServiceBlobName);
                 if (await stateBlobClient.ExistsAsync(cancellationToken))
@@ -56,7 +56,7 @@ namespace AlwaysOn.HealthService.ComponentHealthChecks
             {
                 // If the file does not exist or we cannot reach our storage at all, we treat this a an unhealthy state
                 // as well as it might very well mean that storage in that region has an issue.
-                _log.LogError(e, "Could not check health state blob. Responding with UNHEALTHY state");
+                _logger.LogError(e, "Could not check health state blob. Responding with UNHEALTHY state");
                 return new HealthCheckResult(HealthStatus.Unhealthy, exception: e);
             }
         }

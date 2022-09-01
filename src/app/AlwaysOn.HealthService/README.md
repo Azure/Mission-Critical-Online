@@ -10,8 +10,7 @@ The idea is, first of all, if the cluster itself is down, the health service won
 - It attempts to send a message to Event Hub (the message will be filtered out by the background worker)
 - It looks up a state file on the storage account. This file can be used to turn off a region, even while the other checks are still working ok.
 
-In addition to the direct "pings" to the downstream services, the HealthService also queries Azure Monitor for the current HealthScore (as defined in the Health Model).
-While there is an ingestion latency with Azure Monitor (typically a few minutes), the HealthScore does also take into account additional signals which are not covered by the pings of the HealthService.
+In addition to the direct "pings" to the downstream services, the HealthService also queries Azure Monitor for the current HealthScore (as defined in the Health Model). While there is an ingestion latency with Azure Monitor (typically a few minutes), the HealthScore does also take into account additional signals which are not covered by the pings of the HealthService.
 
 Hence, the combination of both enables the HealthService to get a real-time picture of the most critical dependencies of the API, as well as a holistic view of the entire stamp as defined in the health model.
 

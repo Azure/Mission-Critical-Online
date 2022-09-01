@@ -1,4 +1,5 @@
 # Add any secrets that should go into Key Vault to this list. Key is the name of the secret in Key Vault
+# Mind that secret names can only contain hyphens, no underscores.
 locals {
   secrets = {
     "Frontend-SenderEventHubConnectionString"    = azurerm_eventhub_authorization_rule.frontend_sender.primary_connection_string
@@ -10,12 +11,14 @@ locals {
     "StorageAccount-Healthservice-ContainerName" = azurerm_storage_container.deployment_healthservice.name
     "StorageAccount-Healthservice-BlobName"      = local.health_blob_name
     "Global-StorageAccount-ConnectionString"     = data.azurerm_storage_account.global.primary_connection_string
-    "APPLICATIONINSIGHTS-CONNECTION-STRING"      = data.azurerm_application_insights.stamp.connection_string
-    "APPLICATIONINSIGHTS-ADAPTIVE-SAMPLING"      = var.ai_adaptive_sampling,
+    "ApplicationInsights-Connection-String"      = data.azurerm_application_insights.stamp.connection_string
+    "ApplicationInsights-Adaptive-Sampling"      = var.ai_adaptive_sampling,
     "CosmosDb-Endpoint"                          = data.azurerm_cosmosdb_account.global.endpoint
     "CosmosDb-ApiKey"                            = data.azurerm_cosmosdb_account.global.primary_key
     "CosmosDb-DatabaseName"                      = var.cosmosdb_database_name
-    "API-Key"                                    = var.api_key
+    "Api-Key"                                    = var.api_key
+    "LogAnalytics-WorkspaceId"                   = data.azurerm_log_analytics_workspace.stamp.workspace_id
+    "Managed-Identity-ClientId"                  = azurerm_kubernetes_cluster.stamp.kubelet_identity.0.client_id
   }
 }
 

@@ -1,12 +1,9 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
-using AlwaysOn.Shared;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace AlwaysOn.HealthService.Controllers
 {
@@ -14,23 +11,14 @@ namespace AlwaysOn.HealthService.Controllers
     [Route("[controller]")]
     public class HealthController : ControllerBase
     {
-        private readonly HealthCheckService _healthCheckService;
-        private readonly SysConfiguration _sysConfig;
-
-        public HealthController(SysConfiguration sysConfig, HealthCheckService healthCheckService)
-        {
-            _sysConfig = sysConfig;
-            _healthCheckService = healthCheckService;
-        }
-
         /// <summary>
         ///     Get Health status of the healthservice itself. Just for Kubernetes
         /// </summary>
         /// <remarks>Provides an indication about the health of the API</remarks>
         [HttpGet("liveness")]
-        public async Task<IActionResult> GetPodLiveness()
+        public IActionResult GetPodLiveness()
         {
-            return await Task.FromResult(Ok());
+            return Ok();
         }
 
         /// <summary>
@@ -39,23 +27,45 @@ namespace AlwaysOn.HealthService.Controllers
         /// <remarks>Provides an indication about the health of the API</remarks>
         [HttpGet("stamp")]
         [HttpHead("stamp")]
-        public async Task<IActionResult> GetStampLiveness()
+        [ProducesResponseType(typeof(SummaryHealthReport), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(SummaryHealthReport), (int)HttpStatusCode.ServiceUnavailable)]
+        public IActionResult GetStampLiveness()
         {
-            var cts = new CancellationTokenSource();
-            try
+            var latestHealthReport = HealthJob.LastReport;
+
+            // Create a simple summary report since we do not want to return the entire detailed report
+            var summaryReport = new SummaryHealthReport()
             {
-                cts.CancelAfter(TimeSpan.FromSeconds(_sysConfig.HealthServiceOverallTimeoutSeconds));
-                var report = await _healthCheckService.CheckHealthAsync(cts.Token);
-                return report.Status == HealthStatus.Healthy ? Ok(report) : StatusCode((int)HttpStatusCode.ServiceUnavailable, report);
+                LastExecution = HealthJob.LastExecution,
+                Checks = latestHealthReport?.Entries.Select(e => new Check()
+                {
+                    Component = e.Key,
+                    Status = e.Value.Status.ToString(),
+                    Duration = e.Value.Duration
+                }).ToList()
+            };
+
+            if (latestHealthReport?.Status == HealthStatus.Healthy)
+            {
+                return Ok(summaryReport);
             }
-            catch (TaskCanceledException)
+            else
             {
-                return StatusCode((int)HttpStatusCode.ServiceUnavailable);
-            }
-            finally
-            {
-                cts.Dispose();
+                return StatusCode((int)HttpStatusCode.ServiceUnavailable, summaryReport);
             }
         }
+    }
+
+    public class SummaryHealthReport
+    {
+        public DateTime LastExecution { get; set; }
+        public List<Check> Checks { get; set; }
+    }
+
+    public class Check
+    {
+        public string Component { get; set; }
+        public string Status { get; set; }
+        public TimeSpan Duration { get; set; }
     }
 }

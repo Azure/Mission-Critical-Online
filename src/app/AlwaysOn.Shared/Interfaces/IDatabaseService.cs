@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using AlwaysOn.Shared.Models;
+﻿using AlwaysOn.Shared.Models;
 using AlwaysOn.Shared.Models.DataTransfer;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace AlwaysOn.Shared.Interfaces
 {
-    public interface IDatabaseService
+    public interface IDatabaseService : IHealthCheck
     {
         /// <summary>
         /// Get a specific catalogItem by its ID
@@ -89,12 +89,5 @@ namespace AlwaysOn.Shared.Interfaces
         /// <param name="partitionKey">partition key for the given object. Can be null for database engines which don't use partition keys.</param>
         /// <returns></returns>
         Task DeleteItemAsync<T>(string objectId, string partitionKey = null);
-
-        /// <summary>
-        /// Health check for the database service
-        /// </summary>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        Task<bool> IsHealthy(CancellationToken cancellationToken = default(CancellationToken));
     }
 }

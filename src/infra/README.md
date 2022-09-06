@@ -28,7 +28,7 @@ The Azure Mission-Critical reference implementations are composed of three disti
 
 Infrastructure layer contains all infrastructure components and underlying foundational services required for Azure Mission-Critical reference implementation. It is deployed using [Terraform](./workload/README.md).
 
-> Note: Bicep (ARM DSL) was considered during the early stages as part of a proof-of-concept. Please refer to the following [(archived stub)](/docs/reference-implementation/ZZZ-Archived-Bicep.md) for more details.
+> Note: Bicep (ARM DSL) was considered during the early stages as part of a proof-of-concept, but discontinued for the time being.
 
 [Configuration layer](/src/config/README.md) applies the initial configuration and additional services on top of the infrastructure components deployed as part of infrastructure layer.
 
@@ -48,7 +48,7 @@ Aside from the database, a geo-replicated **Azure Container Registry** (ACR) is 
 
 Stamps can be added and removed dynamically as needed to provide more resiliency, scale and proximity to users.
 
-A global load balancer is used to distribute and load balance incoming traffic to the stamps (see [Networking](/docs/reference-implementation/Networking-Design-Decisions.md) for details).
+A global load balancer is used to distribute and load balance incoming traffic to the stamps (see [Networking and connectivity](https://docs.microsoft.com/azure/architecture/reference-architectures/containers/aks-mission-critical/mission-critical-networking) for details).
 
 ### Stateless compute clusters
 
@@ -61,21 +61,23 @@ In addition to [stamp independence](#stamp-independence) and [stateless compute 
 An example Scale Unit design in Azure Mission-Critical consists of scalability requirements i.e. minimum values / the expected capacity:
 
 **Scalability requirements**
+
 | Metric | max |
 | --- | --- |
 | Users | 25k |
-| New games/sec. | 200 |
-| Get games/sec. | 5000 |
+| New records/sec. | 200 |
+| Get records/sec. | 5000 |
 
 This definition is used to evaluate the capabilities of a SU on a regular basis, which later then needs to be translated into a Capacity Model. This in turn will inform the configuration of a SU which is able to serve the expected demand:
 
 **Configuration**
+
 | Component | min | max |
 | --- | --- | --- |
 | AKS nodes | 3 | 12 |
 | Ingress controller replicas | 3 | 24 |
-| Game Service replicas | 3 | 24 |
-| Result Worker replicas | 3 | 12 |
+| CatalogService replicas | 3 | 24 |
+| BackgroundProcessor replicas | 3 | 12 |
 | Event Hub throughput units | 1 | 10 |
 | Cosmos DB RUs | 4000 | 40000 |
 
@@ -120,6 +122,7 @@ As of May 2022, following regions have been successfully tested with the referen
 - eastasia
 - japaneast
 - koreacentral
+- centralindia
 
 > Note: Depending on which regions you select, you might need to first request quota with Azure Support for some of the services (mostly for AKS VMs and Cosmos DB).
 
@@ -140,7 +143,7 @@ As regional availability of services used in reference implementation and AZs ra
 #### Azure Cosmos DB
 
 - SQL-API (Cosmos DB API) is being used
-- `Multi-master write` is enabled
+- `Multi-region write` is enabled
 - The account is replicated to every region in which there is a stamp deployed.
 - `zone_redundancy` is enabled for each replicated region.
 - Request Unit `autoscaling` is enabled on container-level.
@@ -197,7 +200,7 @@ This Azure Mission-Critical reference implementation uses Linux-only clusters as
 - Separate "workload" (aka user) node pool with same settings as "system" node pool but different VM SKUs and auto-scale settings.
   - The user node pool is configured with a taint `workload=true:NoSchedule` to prevent non-workload pods from being scheduled. The `node_label` set to `role=workload` can be used to target this node pool when deploying a workload (see [charts/catalogservice](/src/app/charts/catalogservice/) for an example).
 
-Individual stamps are considered ephemeral and stateless. Updates to the infrastructure and application are following a [Zero-downtime Update Strategy](/docs/reference-implementation/DeployAndTest-DevOps-Zero-Downtime-Update-Strategy.md) and do not touch existing stamps. Updates to Kubernetes are therefore primarily rolled out by releasing new versions and replacing existing stamps. To update node images between two releases, the `automatic_channel_upgrade` in combination with `maintenance_window` is used:
+Individual stamps are considered ephemeral and stateless. Updates to the infrastructure and application are following a [Zero-downtime Update Strategy](https://docs.microsoft.com/azure/architecture/reference-architectures/containers/aks-mission-critical/mission-critical-deploy-test#deployment-zero-downtime-updates) and do not touch existing stamps. Updates to Kubernetes are therefore primarily rolled out by releasing new versions and replacing existing stamps. To update node images between two releases, the `automatic_channel_upgrade` in combination with `maintenance_window` is used:
 
 - `automatic_channel_upgrade` is set to `node-image` to [automatically upgrade node pools](https://docs.microsoft.com/azure/aks/upgrade-cluster#set-auto-upgrade-channel) with the most recent AKS node image.
 - `maintenance_window` contains the allowed window to run `automatic_channel_upgrade` upgrades. It is currently set to `allowed` on `Sunday` between 0 and 2 AM.
@@ -240,8 +243,10 @@ Azure Policy is used to monitor and enforce certain baselines. All policies are 
 
 This repository also contains a couple of supporting services for the Azure Mission-Critical project:
 
-- [Self-hosted Agents](./build-agents/README.md)
+- [Chaos Testing](../testing/chaos-testing/README.md)
 - [Locust Load Testing](../testing/loadtest-locust/README.md)
+- [Azure Load Test](../testing/loadtest-azure/README.md)
+- [Userload generator](../testing/userload-generator/README.md)
 
 These supporting services are required / optional based on how you chose to use Azure Mission-Critical.
 

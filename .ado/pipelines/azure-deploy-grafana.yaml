@@ -88,33 +88,21 @@ stages:
         parameters:
           workingDirectory: '$(pipeline.workspace)/terraformOutputGlobalInfra'
 
-      # Get the full image name/tags from the artefact created during build
-      - template: templates/steps-parse-containerimagename.yaml
-        parameters:
-          workingDirectory:           '$(pipeline.workspace)'
-          imageName:                  'alwayson_grafana'
-
+      # Get the full image name/tags from the artifact created during build
       - task: PowerShell@2
-        displayName: 'Prepare stamp input variables'
+        displayName: 'Parse Container Image Name'
         inputs:
           targetType: inline
           script: |
+            # This is the full path to the artifact published by the container build stage:
+            $path = "$(pipeline.workspace)/alwayson_grafana-containerImageName/alwayson_grafana.txt"
 
-            $locations = '$(stampLocationsGrafana)' | ConvertFrom-Json
+            # The image name with tag is in the file:
+            $imageNameWithTag = Get-Content $path
 
-            $stamps = @{
-              primary = @{
-                location           = $locations[0]
-                vnet_address_space = "10.1.0.0/16"
-              };
-              secondary = @{
-                location           = $locations[1]
-                vnet_address_space = "10.2.0.0/16"
-              };
-            }
-
-            $stamps = $stamps | ConvertTo-Json -Compress
-            echo "##vso[task.setvariable variable=grafanaStamps]$stamps"
+            # Return the image name with tag we found into a pipeline variable:
+            echo "*** Reading image name from file $($path): $($imageNameWithTag)"
+            echo "##vso[task.setvariable variable=ImageName-alwayson_grafana]$imageNameWithTag"
 
       # Deploy the stamp resources for both regions
       - template: templates/steps-terraform-apply.yaml
@@ -128,5 +116,6 @@ stages:
                                       -var=environment="$(environment)"
                                       -var=wapp_container_image="$(ImageName-alwayson_grafana)"
                                       -var=acr_resource_id="$(acr_resource_id)"
-                                      -var=''stamps=$(grafanaStamps)''
+                                      -var=''stamps=$(stampLocationsGrafana)''
+                                      -var=frontdoor_fqdn="$(frontdoor_fqdn)"
                                       -var=frontdoor_header_id="$(frontdoor_header_id)"'

@@ -5,24 +5,26 @@ variables:
   value: 'foundational-online'
 
 - name: 'terraformVersion'    # Terraform Version
-  value: '1.2.4'
+  value: '1.2.8'
 - name: 'kubernetesVersion'   # kubernetes version used for aks clusters
   value: '1.23.5'
 - name: 'helmVersion'         # helm package manager version
-  value: 'v3.9.0'
+  value: 'v3.9.4'
 - name: 'ingressNginxVersion' # nginx ingress controller helm chart version
-  value: '4.1.4'
+  value: '4.2.3'
 - name: 'certManagerVersion'  # cert-manager helm chart version
-  value: 'v1.8.2'
+  value: 'v1.9.1'
 - name: 'dotnetSdkVersion'    # dotnet sdk version
-  value: '6.0.301'
+  value: '6.0.400'
 - name: 'chaosMeshVersion'    #  chaos-mesh chart version
-  value: '2.2.1'
+  value: '2.2.3'
 - name: 'uiAppNodeVersion'    # nodejs version for the UI app
   value: '16.x'
 
 - name: 'workloadNamespace'   # K8s namespace for workload deployment
   value: 'workload'
+- name: 'ingressNamespace'    # K8s namespace for ingress deployment
+  value: 'ingress-nginx'
 
 # Docker image names and paths to the Dockerfiles for the different components
 - name: 'catalogserviceDockerfile'
@@ -38,32 +40,25 @@ variables:
 - name: 'healthserviceImageName'
   value: 'alwayson/healthservice'
 
-# Embedded load testing configuration
-# Make sure that these parameters are aligned with the loadtest-baseline.yaml
-- name: 'loadTestNumberOfWorkerNodes' # number of worker nodes
-  value: 10
-- name: 'loadTestDurationInSeconds' # load test duration
-  value: 600
-- name: 'loadTestNumberOfUsers' # number of simulated users in the load test
-  value: 500
-- name: 'loadTestUserSpawnRate' # load test spawn rate users / per second
-  value: 10
-
 # Microsoft Azure Load Test (MALT) configuration
 - name: 'azureLoadTestEngineInstances'
-  value: 1
+  value: 2
 - name: 'azureLoadTestVUsers'
-  value: 10
+  value: 100
 - name: 'azureLoadTestDurationSeconds'
   value: 660
 - name: 'azureLoadTestUserThreads'
-  value: 50
+  value: 500
+- name: 'azureLoadTestBaseline'
+  value: './.ado/pipelines/config/loadtest-baseline-normal.json'
 
 # Chaos studio configuration
 - name: 'chaosExperimentDurationSeconds'
   value: 180
 - name: 'chaosStartDelaySeconds'
   value: 300
+- name: 'chaosLoadTestBaseline'
+  value: './.ado/pipelines/config/loadtest-baseline-chaos.json'
 
 # Others
 - name: 'smokeTestRetryCount' # How many times a request in the smoke tests is retried before declared as failed (retries HTTP response codes from 400-599 as well as issues like certificate errors)

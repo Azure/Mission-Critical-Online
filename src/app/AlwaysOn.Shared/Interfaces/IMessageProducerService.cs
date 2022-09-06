@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.Extensions.Diagnostics.HealthChecks;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace AlwaysOn.Shared.Interfaces
 {
-    public interface IMessageProducerService
+    public interface IMessageProducerService : IHealthCheck
     {
         /// <summary>
         /// Sends a single message to the message bus
@@ -22,12 +23,5 @@ namespace AlwaysOn.Shared.Interfaces
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         Task SendMessageBatchAsync(IEnumerable<(string messageBody, string action)> messages, CancellationToken cancellationToken = default(CancellationToken));
-
-        /// <summary>
-        /// Healthcheck for the message bus. Attempts to send a dummy message
-        /// </summary>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        Task<bool> IsHealthy(CancellationToken cancellationToken = default(CancellationToken));
     }
 }

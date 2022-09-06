@@ -1,10 +1,10 @@
 # Azure DevOps Workflows
 
-As explained in the [DevOps design decisions](/docs/reference-implementation/DeployAndTest-DevOps-Design-Decisions.md) section, the Azure Mission-Critical online reference implementation is using Azure Pipelines to implement CI/CD pipelines. Azure Pipelines is part of the Azure DevOps (ADO) service and used to automate all build and release tasks.
+As explained in the [DevOps design decisions](https://docs.microsoft.com/azure/architecture/reference-architectures/containers/aks-mission-critical/mission-critical-deploy-test#deployment-devops) section, the Azure Mission-Critical online reference implementation is using Azure Pipelines to implement CI/CD pipelines. Azure Pipelines is part of the Azure DevOps (ADO) service and used to automate all build and release tasks.
 
 ## Pipelines
 
-The Azure Mission-Critical project consists of multiple pipelines automating various aspects and tasks needed to deploy and operate Azure Mission-Critical. The pipelines to release INT, PROD and E2E are basically identical (with a few different parameters). They are the implementation of the [Zero-downtime deployment strategy](/docs/reference-implementation/DeployAndTest-DevOps-Zero-Downtime-Update-Strategy.md):
+The Azure Mission-Critical project consists of multiple pipelines automating various aspects and tasks needed to deploy and operate Azure Mission-Critical. The pipelines to release INT, PROD and E2E are basically identical (with a few different parameters). They are the implementation of the [Zero-downtime deployment strategy](https://docs.microsoft.com/azure/architecture/reference-architectures/containers/aks-mission-critical/mission-critical-deploy-test#deployment-zero-downtime-updates):
 
 - **Azure.AlwaysOn INT Release** (`azure-release-int.yaml`) deploys and updates the entire solution for the INT environment.
 

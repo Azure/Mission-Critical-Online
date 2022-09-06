@@ -52,14 +52,17 @@ variable "wapp_container_image" {
   default     = "grafana/grafana:latest"
 }
 
+variable "frontdoor_fqdn" {
+  description = "This is required to add the Front Door FQDN to the allowed origins."
+  type        = string
+}
+
 variable "frontdoor_header_id" {
   description = "This is required to configure Frontdoor header ID and restrict access to app via AFD only."
   type        = string
 }
 
 variable "stamps" {
-  type = map(object({
-    location           = string
-    vnet_address_space = string
-  }))
+  description = "List of Azure regions into which stamps are deployed. Important: The first location in this list will be used as the main location for this deployment."
+  type        = list(string)
 }

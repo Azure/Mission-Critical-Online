@@ -39,7 +39,7 @@ This will surface any traces, metrics and dependency calls that were made as par
 
 ## Transient Pipeline Failures
 
-See [Troubleshooting](Troubleshooting.md) for more details about known, transient pipeline issues.
+See [Troubleshooting](./Troubleshooting.md) for more details about known, transient pipeline issues.
 
 ## Package / Dependency updates
 
@@ -65,4 +65,5 @@ In Azure DevOps a notification subscription can, for example, look like this (Pr
 The topic of Key / Secret rotation is covered in a [separate article](./OpProcedures-KeyRotation.md).
 
 ---
+
 [Azure Mission-Critical - Full List of Documentation](/docs/README.md)

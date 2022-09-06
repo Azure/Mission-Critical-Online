@@ -12,4 +12,6 @@ locals {
 
   prefix = "${lower(var.prefix)}grafana"
 
+  stamps = { for i, location in var.stamps : i => location }
+
 }

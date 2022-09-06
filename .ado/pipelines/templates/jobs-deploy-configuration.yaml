@@ -57,6 +57,7 @@ jobs:
                 --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-internal"="true" `
                 --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-internal-subnet"="aks-lb-snet" `
                 --version "$(ingressNginxVersion)" `
+                --timeout 15m0s `
                 --wait
 
           if ($LastExitCode -ne 0) {

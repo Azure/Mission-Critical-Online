@@ -23,6 +23,12 @@ namespace AlwaysOn.Shared
         /// </summary>
         public const string GlobalImagesPathSegment = "images";
 
+        // Names of the health checks for the health service
+        public const string HealthCheckName_AzMonitorHealthScore = "AzMonitorHealthScore";
+        public const string HealthCheckName_BlobStorageHealthCheck = "BlobStorage";
+        public const string HealthCheckName_DatabaseService = "Database";
+        public const string HealthCheckName_MessageProducerService = "MessageProducer";
+
         #endregion
 
         private readonly IConfiguration Configuration;
@@ -40,6 +46,11 @@ namespace AlwaysOn.Shared
         /// Short form of the AzureRegion setting. The format of this is like "eastus2"
         /// </summary>
         public string AzureRegionShort => AzureRegion.Replace(" ", "").ToLower();
+
+        /// <summary>
+        /// Client ID of the User-defined Managed Identity to be used for any MSI-based authentication
+        /// </summary>
+        public string ManagedIdentityClientId => Configuration["MANAGED_IDENTITY_CLIENTID"];
 
         /// <summary>
         /// API Key for restricted APIs
@@ -61,6 +72,7 @@ namespace AlwaysOn.Shared
         public string BackendReaderEventHubConsumergroup => Configuration["BACKEND_READEREVENTHUBCONSUMERGROUPNAME"];
         public string BackendStorageConnectionString => Configuration["STORAGEACCOUNT_CONNECTIONSTRING"];
         public string BackendCheckpointBlobContainerName => Configuration["STORAGEACCOUNT_EHCHECKPOINTCONTAINERNAME"];
+        public string RegionalLogAnalyticsWorkspaceId => Configuration["LOGANALYTICS_WORKSPACEID"];
 
         /// <summary>
         /// Controls how often checkpointing on Blob Storage is executed. The more often this happens, the more overhead and thus slower the processing.
@@ -158,6 +170,21 @@ namespace AlwaysOn.Shared
             {
                 var value = Configuration["HEALTHSERVICE_OVERALL_TIMEOUT_SECONDS"];
                 return int.TryParse(value, out int result) ? result : 20;
+            }
+        }
+
+        /// <summary>
+        /// Kql Query which is used for the Az Monitor Health Status query
+        /// This query result has to contain the columns "TimeGenerated" and "Healthy"
+        /// By default it expects to only get one row returned (take 1) but you can change this if you understand (or change) the evauluation logic inside the HealthService
+        /// Default: "StampHealthScore  | order by TimeGenerated desc | take 1 | project TimeGenerated, Healthy=tobool(1-RedScore)"
+        /// </summary>
+        public string HealthServiceAzMonitorHealthStatusQuery
+        {
+            get
+            {
+                var value = Configuration["HEALTHSERVICE_AZMONITOR_HEALTHSTATUS_QUERY"];
+                return !string.IsNullOrEmpty(value) ? value : "StampHealthScore | order by TimeGenerated desc | take 1 | project TimeGenerated, Healthy=tobool(1-RedScore)";
             }
         }
 

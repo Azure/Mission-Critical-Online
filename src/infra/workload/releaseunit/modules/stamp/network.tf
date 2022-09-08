@@ -100,7 +100,7 @@ resource "azurerm_monitor_diagnostic_setting" "vnet" {
 
   dynamic "log" {
     iterator = entry
-    for_each = data.azurerm_monitor_diagnostic_categories.vnet.logs
+    for_each = data.azurerm_monitor_diagnostic_categories.vnet.log_category_types
 
     content {
       category = entry.value

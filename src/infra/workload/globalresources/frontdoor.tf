@@ -219,7 +219,7 @@ resource "azurerm_monitor_diagnostic_setting" "frontdoor" {
 
   dynamic "log" {
     iterator = entry
-    for_each = data.azurerm_monitor_diagnostic_categories.frontdoor.logs
+    for_each = data.azurerm_monitor_diagnostic_categories.frontdoor.log_category_types
 
     content {
       category = entry.value

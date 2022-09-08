@@ -71,7 +71,7 @@ resource "azurerm_monitor_diagnostic_setting" "eventhub" {
 
   dynamic "log" {
     iterator = entry
-    for_each = data.azurerm_monitor_diagnostic_categories.eventhub.logs
+    for_each = data.azurerm_monitor_diagnostic_categories.eventhub.log_category_types
 
     content {
       category = entry.value

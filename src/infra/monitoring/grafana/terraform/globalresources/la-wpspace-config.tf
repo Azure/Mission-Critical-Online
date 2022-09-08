@@ -7,7 +7,7 @@ resource "azurerm_monitor_diagnostic_setting" "diag_settings_afd" {
 
   dynamic "log" {
     iterator = entry
-    for_each = data.azurerm_monitor_diagnostic_categories.frontdoor.logs
+    for_each = data.azurerm_monitor_diagnostic_categories.frontdoor.log_category_types
 
     content {
       category = entry.value
@@ -46,7 +46,7 @@ resource "azurerm_monitor_diagnostic_setting" "acr" {
 
   dynamic "log" {
     iterator = entry
-    for_each = data.azurerm_monitor_diagnostic_categories.acr.logs
+    for_each = data.azurerm_monitor_diagnostic_categories.acr.log_category_types
 
     content {
       category = entry.value

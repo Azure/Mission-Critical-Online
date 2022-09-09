@@ -5,10 +5,10 @@ using AlwaysOn.Shared.Models;
 using AlwaysOn.Shared.Models.DataTransfer;
 using AlwaysOn.Shared.TelemetryExtensions;
 using Microsoft.ApplicationInsights;
-using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Fluent;
 using Microsoft.Azure.Cosmos.Linq;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -31,9 +31,6 @@ namespace AlwaysOn.Shared.Services
         private readonly TelemetryClient _telemetryClient;
 
         private readonly CosmosLinqSerializerOptions _cosmosSerializationOptions = new CosmosLinqSerializerOptions() { PropertyNamingPolicy = CosmosPropertyNamingPolicy.CamelCase };
-
-        // Source: https://github.com/microsoft/ApplicationInsights-dotnet/blob/3822ab1c591298b4c0c00eb6a853265a180e8d70/WEB/Src/DependencyCollector/DependencyCollector/Implementation/RemoteDependencyConstants.cs#L3
-        private const string AppInsightsDependencyType = "Azure DocumentDB";
 
         // Expects to find the following in SysConfiguration:
         // - AzureRegion
@@ -78,18 +75,18 @@ namespace AlwaysOn.Shared.Services
         /// - Attempt to write a dummy document to the database
         /// </summary>
         /// <returns></returns>
-        public async Task<bool> IsHealthy(CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
         {
             try
             {
                 _logger.LogDebug("Testing Read query to Cosmos DB");
                 var iterator = _catalogItemsContainer.GetItemQueryIterator<object>("SELECT GetCurrentDateTime ()");
-                var readResult = await iterator.ReadNextAsync(cancellationToken);
+                _ = await iterator.ReadNextAsync(cancellationToken);
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "Exception on health probe read query towards Cosmos DB");
-                return false;
+                return new HealthCheckResult(HealthStatus.Unhealthy, exception: e);
             }
 
             try
@@ -110,10 +107,10 @@ namespace AlwaysOn.Shared.Services
             catch (Exception e)
             {
                 _logger.LogError(e, "Exception on health probe document write towards Cosmos DB");
-                return false;
+                return new HealthCheckResult(HealthStatus.Unhealthy, exception: e);
             }
 
-            return true;
+            return new HealthCheckResult(HealthStatus.Healthy);
         }
 
         public async Task DeleteItemAsync<T>(string objectId, string partitionKey)
@@ -199,7 +196,7 @@ namespace AlwaysOn.Shared.Services
         {
             var requestOptions = CreateRequestOptionsWithOperation<ItemRequestOptions>();
             ResponseMessage responseMessage = null;
-            
+
             try
             {
                 // Read the item as a stream for higher performance.
@@ -246,7 +243,7 @@ namespace AlwaysOn.Shared.Services
                 // Read the item as a stream for higher performance.
                 // See: https://github.com/Azure/azure-cosmos-dotnet-v3/blob/master/Exceptions.md#stream-api
                 responseMessage = await _ratingsContainer.ReadItemStreamAsync(ratingId.ToString(), new PartitionKey(itemId.ToString()), requestOptions);
-                    
+
                 // Item stream operations do not throw exceptions for better performance
                 if (responseMessage.IsSuccessStatusCode)
                 {
@@ -376,11 +373,11 @@ namespace AlwaysOn.Shared.Services
             var requestOptions = CreateRequestOptionsWithOperation<QueryRequestOptions>();
 
             var queryable = _catalogItemsContainer.GetItemLinqQueryable<CatalogItem>(linqSerializerOptions: _cosmosSerializationOptions, requestOptions: requestOptions)
-                .Select(i => new CatalogItem() 
-                { 
-                    Id = i.Id, 
-                    Name = i.Name, 
-                    ImageUrl = i.ImageUrl, 
+                .Select(i => new CatalogItem()
+                {
+                    Id = i.Id,
+                    Name = i.Name,
+                    ImageUrl = i.ImageUrl,
                     Price = i.Price,
                     LastUpdated = i.LastUpdated
                 })
@@ -430,7 +427,7 @@ namespace AlwaysOn.Shared.Services
             var requestOptions = CreateRequestOptionsWithOperation<QueryRequestOptions>();
 
             FeedResponse<RatingDto> response;
-            
+
             try
             {
                 var queryDefintion = new QueryDefinition("SELECT AVG(c.rating) as averageRating, count(1) as numberOfVotes FROM c WHERE c.catalogItemId = @itemId")

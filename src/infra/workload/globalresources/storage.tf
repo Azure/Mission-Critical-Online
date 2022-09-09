@@ -41,7 +41,7 @@ resource "azurerm_monitor_diagnostic_setting" "storage_global" {
 
   dynamic "log" {
     iterator = entry
-    for_each = data.azurerm_monitor_diagnostic_categories.global_public.logs
+    for_each = data.azurerm_monitor_diagnostic_categories.global_public.log_category_types
 
     content {
       category = entry.value

@@ -65,7 +65,7 @@ The maximum availability (based on the underlying Azure infrastructure) is 99.97
 - Maximum infrastructure SLA = 99.979% = 9.52 minutes of allowed downtime per month
 - AlwaysOn SLO = 99.95% = 21.6 minutes of allowed downtime per month
 
-https://docs.microsoft.com/azure/architecture/framework/resiliency/business-metrics
+See [Using business metrics to design resilient Azure applications](https://docs.microsoft.com/azure/architecture/framework/resiliency/business-metrics) for more information.
 
 ## Observability
 
@@ -82,4 +82,5 @@ Availability can also be observed via Front Door backend monitoring which is bas
 ![Front Door backend health](/docs/media/SLA-backend-health-fd.png)
 
 ---
+
 [Azure Mission-Critical - Full List of Documentation](/docs/README.md)

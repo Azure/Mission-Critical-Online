@@ -1,3 +1,4 @@
+using AlwaysOn.HealthService.ComponentHealthChecks;
 using AlwaysOn.Shared;
 using AlwaysOn.Shared.Interfaces;
 using AlwaysOn.Shared.Services;
@@ -44,11 +45,30 @@ namespace AlwaysOn.HealthService
 
             services.AddSingleton<AppInsightsCosmosRequestHandler>();
 
+            // Register services
             services.AddSingleton<IDatabaseService, CosmosDbService>();
-
             services.AddSingleton<IMessageProducerService, EventHubProducerService>();
 
-            services.AddHealthChecks().AddCheck<AlwaysOnHealthCheck>(nameof(AlwaysOnHealthCheck));
+            // Register health checks - except for the ones which have been explicitly disabled
+            if (Configuration[$"HEALTHSERVICE_CHECK_{SysConfiguration.HealthCheckName_AzMonitorHealthScore}_DISABLED"]?.ToUpper() != "TRUE")
+            {
+                services.AddHealthChecks().AddCheck<AzMonitorHealthScoreCheck>(SysConfiguration.HealthCheckName_AzMonitorHealthScore);
+            }
+            if (Configuration[$"HEALTHSERVICE_CHECK_{SysConfiguration.HealthCheckName_BlobStorageHealthCheck}_DISABLED"]?.ToUpper() != "TRUE")
+            {
+                services.AddHealthChecks().AddCheck<BlobStorageHealthCheck>(SysConfiguration.HealthCheckName_BlobStorageHealthCheck);
+            }
+            if (Configuration[$"HEALTHSERVICE_CHECK_{SysConfiguration.HealthCheckName_DatabaseService}_DISABLED"]?.ToUpper() != "TRUE")
+            {
+                services.AddHealthChecks().AddCheck<IDatabaseService>(SysConfiguration.HealthCheckName_DatabaseService);
+            }
+            if (Configuration[$"HEALTHSERVICE_CHECK_{SysConfiguration.HealthCheckName_MessageProducerService}_DISABLED"]?.ToUpper() != "TRUE")
+            {
+                services.AddHealthChecks().AddCheck<IMessageProducerService>(SysConfiguration.HealthCheckName_MessageProducerService);
+            }
+
+            // Register background job which calls the health checks
+            services.AddHostedService<HealthJob>();
 
             services.AddControllers().AddJsonOptions(options =>
             {

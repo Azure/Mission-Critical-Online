@@ -1,6 +1,6 @@
 # Sample Application
 
-The Azure Mission-Critical online reference implementation uses a simple web shop catalog application where end users can browse through a catalog of items, see details of an item, and post ratings and comments for items. Although fairly straight forward, this application enables the [Reference Implementation](/docs/reference-implementation/README.md) to demonstrate the asynchronous processing of requests and how to achieve high throughput within a solution. The application consists of three components and is implemented in .NET Core and hosted on Azure Kubernetes Service.
+The Azure Mission-Critical online reference implementation uses a simple web shop catalog application where end users can browse through a catalog of items, see details of an item, and post ratings and comments for items. Although fairly straight forward, this application enables the reference implementation to demonstrate the asynchronous processing of requests and how to achieve high throughput within a solution. The application consists of three backend components implemented in .NET Core and hosted on Azure Kubernetes Service, and one frontend single-page web application.
 
 See [Application Design](https://docs.microsoft.com/azure/architecture/reference-architectures/containers/aks-mission-critical/mission-critical-app-design) for more details about the application.
 

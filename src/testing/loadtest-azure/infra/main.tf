@@ -45,6 +45,8 @@ output "azureLoadTestDataPlaneURI" {
   value = azapi_resource.azurerm_load_test.dataPlaneURI
 }
 
+### Currently deployed via AzAPI ### 
+#
 # resource "azurerm_load_test" "deployment" {
 #   name                = "${local.prefix}-azloadtest"
 #   resource_group_name = azurerm_resource_group.deployment.name

@@ -42,7 +42,7 @@ output "azureLoadTestName" {
 }
 
 output "azureLoadTestDataPlaneURI" {
-  value = azapi_resource.azurerm_load_test.dataPlaneURI
+  value = jsondecode(azapi_resource.azurerm_load_test.output).properties.dataPlaneURI
 }
 
 ### Currently deployed via AzAPI ### 

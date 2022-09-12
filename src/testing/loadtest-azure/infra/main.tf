@@ -26,7 +26,7 @@ resource "azurerm_resource_group" "deployment" {
 }
 
 resource "azapi_resource" "azurerm_load_test" {
-  type      = "Microsoft.LoadTestService/loadTests@2022-06-01-preview"
+  type      = "Microsoft.LoadTestService/loadTests@2022-04-15-preview"
   name      = "${local.prefix}-azloadtest"
   parent_id = azurerm_resource_group.deployment.id
 

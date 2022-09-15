@@ -1,6 +1,6 @@
 # Catalog Service
 
-As described in the [conceptual description](/docs/reference-implementation/AppDesign-Application-Design.md), the CatalogService provides APIs that the UI, and all other users of the service, interact with.
+As described in the [conceptual description](https://docs.microsoft.com/azure/architecture/reference-architectures/containers/aks-mission-critical/mission-critical-app-design), the CatalogService provides APIs that the UI, and all other users of the service, interact with.
 
 ## Deployment
 
@@ -23,7 +23,7 @@ The CatalogService container is running its workload with the non-privileged use
 
 ## Configuration
 
-Configuration settings are maintained in the `AlwaysOn.Shared/SysConfig.cs` file and either defined with default values there or loaded through the .NET IConfiguration provider. When running inside AKS, settings get injected via environment variables as well as through key-value files (by the [CSI secret driver for Key Vault](/src/config/charts/csi-secrets-driver)). While ENV variables are loaded automatically, to read settings from the files, we need to add this line in the `CreateHostBuilder()` method:
+Configuration settings are maintained in the `AlwaysOn.Shared/SysConfig.cs` file and either defined with default values there or loaded through the .NET IConfiguration provider. When running inside AKS, settings get injected via environment variables as well as through key-value files (by the [CSI secret driver for Key Vault](/src/config/csi-secrets-driver/chart/csi-secrets-driver-config). While ENV variables are loaded automatically, to read settings from the files, we need to add this line in the `CreateHostBuilder()` method:
 
 ```csharp
 config.AddKeyPerFile(directoryPath: "/mnt/secrets-store/", optional: true, reloadOnChange: true);

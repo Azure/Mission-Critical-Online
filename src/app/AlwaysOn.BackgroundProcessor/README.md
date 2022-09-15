@@ -149,7 +149,7 @@ Currently, there is no correlation between sending and receiving of Event Hub me
 
 ## Kubernetes Liveness health probe
 
-Since the BackgroundProcessor does not expose a HTTP interface, it needs a different mechanism for Kubernetes to probe for the pod's liveness. For this, it uses a [custom Health Check implementation](/src/app/AlwaysOn.BackgroundProcessor/HealthCheckPublisher.cs) which writes a temporary file to the container filesystem and deletes it if the application needs to report "unhealthy". Kubernetes then uses the `exec` mode of the livenessProbe to validate if the file is present and was recently modified (see [deployment.yaml](/src/app/charts/BackgroundProcessor/templates/deployment.yaml)).
+Since the BackgroundProcessor does not expose a HTTP interface, it needs a different mechanism for Kubernetes to probe for the pod's liveness. For this, it uses a [custom Health Check implementation](/src/app/AlwaysOn.BackgroundProcessor/HealthCheckPublisher.cs) which writes a temporary file to the container filesystem and deletes it if the application needs to report "unhealthy". Kubernetes then uses the `exec` mode of the livenessProbe to validate if the file is present and was recently modified (see [deployment.yaml](/src/app/charts/backgroundprocessor/templates/deployment.yaml)).
 
 The health check currently does not implement any special logic, for now it mostly serves as an example how to implement such probes on headless (no HTTP interface) services.
 

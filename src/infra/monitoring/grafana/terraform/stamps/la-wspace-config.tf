@@ -9,7 +9,7 @@ resource "azurerm_monitor_diagnostic_setting" "appservice" {
 
   dynamic "log" {
     iterator = entry
-    for_each = data.azurerm_monitor_diagnostic_categories.appservice[each.key].logs
+    for_each = data.azurerm_monitor_diagnostic_categories.appservice[each.key].log_category_types
 
     content {
       category = entry.value
@@ -47,7 +47,7 @@ resource "azurerm_monitor_diagnostic_setting" "pgprimary" {
 
   dynamic "log" {
     iterator = entry
-    for_each = data.azurerm_monitor_diagnostic_categories.pgprimary.logs
+    for_each = data.azurerm_monitor_diagnostic_categories.pgprimary.log_category_types
 
     content {
       category = entry.value
@@ -85,7 +85,7 @@ resource "azurerm_monitor_diagnostic_setting" "pgreplica" {
 
   dynamic "log" {
     iterator = entry
-    for_each = data.azurerm_monitor_diagnostic_categories.pgreplica[each.key].logs
+    for_each = data.azurerm_monitor_diagnostic_categories.pgreplica[each.key].log_category_types
 
     content {
       category = entry.value
@@ -124,7 +124,7 @@ resource "azurerm_monitor_diagnostic_setting" "vnet" {
 
   dynamic "log" {
     iterator = entry
-    for_each = data.azurerm_monitor_diagnostic_categories.vnet[each.key].logs
+    for_each = data.azurerm_monitor_diagnostic_categories.vnet[each.key].log_category_types
 
     content {
       category = entry.value
@@ -163,7 +163,7 @@ resource "azurerm_monitor_diagnostic_setting" "asp" {
 
   dynamic "log" {
     iterator = entry
-    for_each = data.azurerm_monitor_diagnostic_categories.asp[each.key].logs
+    for_each = data.azurerm_monitor_diagnostic_categories.asp[each.key].log_category_types
 
     content {
       category = entry.value
@@ -202,7 +202,7 @@ resource "azurerm_monitor_diagnostic_setting" "akv" {
 
   dynamic "log" {
     iterator = entry
-    for_each = data.azurerm_monitor_diagnostic_categories.akv[each.key].logs
+    for_each = data.azurerm_monitor_diagnostic_categories.akv[each.key].log_category_types
 
     content {
       category = entry.value

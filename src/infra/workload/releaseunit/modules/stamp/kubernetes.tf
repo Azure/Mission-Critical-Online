@@ -42,7 +42,7 @@ resource "azurerm_kubernetes_cluster" "stamp" {
   network_profile {
     network_plugin = "azure"
     network_mode   = "transparent"
-    network_policy = "azure"
+    network_policy = "calico"
   }
 
   identity {

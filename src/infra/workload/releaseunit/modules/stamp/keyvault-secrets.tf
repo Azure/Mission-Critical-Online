@@ -18,7 +18,6 @@ locals {
     "CosmosDb-DatabaseName"                      = var.cosmosdb_database_name
     "Api-Key"                                    = var.api_key
     "LogAnalytics-WorkspaceId"                   = data.azurerm_log_analytics_workspace.stamp.workspace_id
-    "Managed-Identity-ClientId"                  = azurerm_kubernetes_cluster.stamp.kubelet_identity.0.client_id
   }
 }
 

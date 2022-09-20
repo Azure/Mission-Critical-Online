@@ -1,5 +1,5 @@
 # Static Public IP which will later be used for ingress traffic.
-resource "azurerm_public_ip" "aks_ingress" {
+resource "azurerm_public_ip" "ingress" {
   name                = "${local.prefix}-${local.location_short}-ingress-pip"
   location            = azurerm_resource_group.stamp.location
   resource_group_name = azurerm_resource_group.stamp.name

@@ -37,8 +37,8 @@ module "stamp" {
   frontdoor_id_header                    = var.frontdoor_id_header
 
   vmss_sku_size                   = var.vmss_sku_size
-  vmss_replicas_autoscale_minimum = var.aks_system_node_pool_autoscale_minimum
-  vmss_replicas_autoscale_maximum = var.aks_system_node_pool_autoscale_maximum
+  vmss_replicas_autoscale_minimum = var.vmss_replicas_autoscale_minimum
+  vmss_replicas_autoscale_maximum = var.vmss_replicas_autoscale_minimum
 
   event_hub_thoughput_units         = var.event_hub_thoughput_units
   event_hub_enable_auto_inflate     = var.event_hub_enable_auto_inflate

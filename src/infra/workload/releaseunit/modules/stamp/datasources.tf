@@ -5,11 +5,6 @@ data "azurerm_cosmosdb_account" "global" {
   resource_group_name = var.global_resource_group_name
 }
 
-data "azurerm_container_registry" "global" {
-  name                = var.acr_name
-  resource_group_name = var.global_resource_group_name
-}
-
 data "azurerm_log_analytics_workspace" "stamp" {
   name                = "${local.global_resource_prefix}-${local.location_short}-log"
   resource_group_name = var.monitoring_resource_group_name

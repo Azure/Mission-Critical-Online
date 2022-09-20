@@ -18,7 +18,7 @@ resource "azurerm_application_insights_web_test" "cluster_ping" {
   configuration = <<XML
 <WebTest Name="${local.prefix}-appinsights-webtest-cluster-${local.location_short}" Id="00000000-0000-0000-0000-000000000000" Enabled="True" CssProjectStructure="" CssIteration="" Timeout="30" WorkItemIds="" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010" Description="" CredentialUserName="" CredentialPassword="" PreAuthenticate="True" Proxy="default" StopOnError="False" RecordedResultFile="" ResultsLocale="">
   <Items>
-    <Request Method="GET" Guid="00000000-0000-0000-0000-000000000000" Version="1.1" Url="https://${azurerm_public_ip.aks_ingress.fqdn}/healthservice/health/stamp" ThinkTime="0" Timeout="30" ParseDependentRequests="False" FollowRedirects="False" RecordResult="True" Cache="False" ResponseTimeGoal="0" Encoding="utf-8" ExpectedHttpStatusCode="200" ExpectedResponseUrl="" ReportingName="" IgnoreHttpStatusCode="False">
+    <Request Method="GET" Guid="00000000-0000-0000-0000-000000000000" Version="1.1" Url="https://${azurerm_public_ip.ingress.fqdn}/healthservice/health/stamp" ThinkTime="0" Timeout="30" ParseDependentRequests="False" FollowRedirects="False" RecordResult="True" Cache="False" ResponseTimeGoal="0" Encoding="utf-8" ExpectedHttpStatusCode="200" ExpectedResponseUrl="" ReportingName="" IgnoreHttpStatusCode="False">
       <Headers>
         <Header Name="X-Azure-FDID" Value="${var.frontdoor_id_header}" />
       </Headers>

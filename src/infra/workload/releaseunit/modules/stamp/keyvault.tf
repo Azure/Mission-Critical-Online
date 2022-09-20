@@ -21,15 +21,14 @@ resource "azurerm_key_vault_access_policy" "devops_pipeline_all" {
   ]
 }
 
-# Give KV secret read permissions to the Managed Identity of AKS for CSI driver access
-resource "azurerm_key_vault_access_policy" "aks_msi" {
+# Storage ssh private key for vmss in azure key vault
+resource "azurerm_key_vault_secret" "vmss_privatekey" {
+  name         = "vmss-adminuser-privatekey"
+  value        = trimspace(tls_private_key.vmss_private_key.private_key_openssh)
   key_vault_id = azurerm_key_vault.stamp.id
 
-  tenant_id = data.azurerm_client_config.current.tenant_id
-  object_id = azurerm_kubernetes_cluster.stamp.kubelet_identity.0.object_id
-
-  secret_permissions = [
-    "Get", "List"
+  depends_on = [
+    azurerm_key_vault_access_policy.devops_pipeline_all
   ]
 }
 

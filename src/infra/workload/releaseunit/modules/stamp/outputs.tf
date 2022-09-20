@@ -12,23 +12,13 @@ output "key_vault_name" {
 }
 
 # Ingress Controller PublicIP Address
-output "aks_ingress_publicip_address" {
-  value = azurerm_public_ip.aks_ingress.ip_address
+output "ingress_publicip_address" {
+  value = azurerm_public_ip.ingress.ip_address
 }
 
 # Ingress Controller PublicIP FQDN
-output "aks_ingress_fqdn" {
-  value = azurerm_public_ip.aks_ingress.fqdn
-}
-
-# AKS Cluster (Azure Resource Manager) ResourceId
-output "aks_cluster_id" {
-  value = azurerm_kubernetes_cluster.stamp.id
-}
-
-# Name of the AKS Cluster
-output "aks_cluster_name" {
-  value = azurerm_kubernetes_cluster.stamp.name
+output "ingress_fqdn" {
+  value = azurerm_public_ip.ingress.fqdn
 }
 
 # Name of the public Storage Account

@@ -6,16 +6,6 @@ output "monitoring_resource_group_name" {
   value = azurerm_resource_group.monitoring.name
 }
 
-# Azure Container Registry (Global) Login Server
-output "acr_login_server" {
-  value       = azurerm_container_registry.main.login_server
-  description = "URL of the ACR. Sample: myacr.azurecr.io"
-}
-
-output "acr_name" {
-  value = azurerm_container_registry.main.name
-}
-
 output "cosmosdb_account_name" {
   value = azurerm_cosmosdb_account.main.name
 }

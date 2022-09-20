@@ -23,8 +23,6 @@ module "stamp" {
 
   vnet_address_space = module.stamp_addresses.network_cidr_blocks[each.value]
 
-  aks_kubernetes_version = var.aks_kubernetes_version # kubernetes version
-
   prefix       = local.prefix       # handing over the resource prefix
   default_tags = local.default_tags # handing over the resource tags
   queued_by    = var.queued_by
@@ -37,16 +35,10 @@ module "stamp" {
 
   azure_monitor_action_group_resource_id = var.azure_monitor_action_group_resource_id
   frontdoor_id_header                    = var.frontdoor_id_header
-  acr_name                               = var.acr_name
 
-  aks_system_node_pool_sku_size          = var.aks_system_node_pool_sku_size
-  aks_system_node_pool_autoscale_minimum = var.aks_system_node_pool_autoscale_minimum
-  aks_system_node_pool_autoscale_maximum = var.aks_system_node_pool_autoscale_maximum
-
-  aks_user_node_pool_sku_size          = var.aks_user_node_pool_sku_size
-  aks_user_node_pool_autoscale_minimum = var.aks_user_node_pool_autoscale_minimum
-  aks_user_node_pool_autoscale_maximum = var.aks_user_node_pool_autoscale_maximum
-
+  vmss_sku_size                   = var.vmss_sku_size
+  vmss_replicas_autoscale_minimum = var.aks_system_node_pool_autoscale_minimum
+  vmss_replicas_autoscale_maximum = var.aks_system_node_pool_autoscale_maximum
 
   event_hub_thoughput_units         = var.event_hub_thoughput_units
   event_hub_enable_auto_inflate     = var.event_hub_enable_auto_inflate

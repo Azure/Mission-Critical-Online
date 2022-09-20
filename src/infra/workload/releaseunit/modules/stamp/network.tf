@@ -10,8 +10,8 @@ module "subnet_addrs" {
   base_cidr_block = var.vnet_address_space
   networks = [
     {
-      name     = "kubernetes"
-      new_bits = 22 - local.netmask # For AKS we want a /22 sized subnet. So we calculate based on the provided input address space
+      name     = "compute"
+      new_bits = 22 - local.netmask # For compute we want a /22 sized subnet. So we calculate based on the provided input address space
     }
     # More subnets can be added here and terraform will dynamically calculate their CIDR ranges
   ]
@@ -60,29 +60,28 @@ resource "azurerm_network_security_rule" "allow_inbound_https" {
   source_port_range           = "*"
   destination_port_ranges     = ["80", "443"]
   source_address_prefix       = "*"
-  destination_address_prefix  = azurerm_public_ip.aks_ingress.ip_address
+  destination_address_prefix  = azurerm_public_ip.ingress.ip_address
   resource_group_name         = azurerm_resource_group.stamp.name
   network_security_group_name = azurerm_network_security_group.default.name
 }
 
-# Subnet for Kubernetes nodes and pods
-resource "azurerm_subnet" "kubernetes" {
-  name                 = "kubernetes-snet"
+# Subnet for compute nodes
+resource "azurerm_subnet" "compute" {
+  name                 = "compute-snet"
   resource_group_name  = azurerm_resource_group.stamp.name
   virtual_network_name = azurerm_virtual_network.stamp.name
-  address_prefixes     = [module.subnet_addrs.network_cidr_blocks["kubernetes"]]
+  address_prefixes     = [module.subnet_addrs.network_cidr_blocks["compute"]]
   service_endpoints = [
     "Microsoft.Storage",
     "Microsoft.AzureCosmosDB",
     "Microsoft.KeyVault",
-    "Microsoft.ContainerRegistry",
     "Microsoft.EventHub"
   ]
 }
 
-# NSG - Assign default nsg to kubernetes-snet subnet
-resource "azurerm_subnet_network_security_group_association" "kubernetes_default_nsg" {
-  subnet_id                 = azurerm_subnet.kubernetes.id
+# NSG - Assign default nsg to compute-snet subnet
+resource "azurerm_subnet_network_security_group_association" "compute_default_nsg" {
+  subnet_id                 = azurerm_subnet.compute.id
   network_security_group_id = azurerm_network_security_group.default.id
 }
 

@@ -21,11 +21,6 @@ variable "vnet_address_space" {
   type        = string
 }
 
-variable "acr_name" {
-  description = "Azure Container Registry name used for AcrPull role assignment"
-  type        = string
-}
-
 variable "azure_monitor_action_group_resource_id" {
   description = "Resource ID of a Azure Monitor action group to send alerts to"
   type        = string

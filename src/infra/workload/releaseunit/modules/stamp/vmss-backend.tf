@@ -12,7 +12,7 @@ resource "azurerm_linux_virtual_machine_scale_set" "stamp_backend" {
 
   admin_ssh_key {
     username   = "adminuser"
-    public_key = trimspace(tls_private_key.vmss_private_key_backend.public_key_openssh)
+    public_key = trimspace(tls_private_key.vmss_backend_private_key.public_key_openssh)
   }
 
   source_image_reference {
@@ -59,7 +59,7 @@ data "template_file" "cloudinit_backend" {
 }
 
 # generate private key for vmss ssh access
-resource "tls_private_key" "vmss_private_key_backend" {
+resource "tls_private_key" "vmss_backend_private_key" {
   algorithm = "RSA"
   rsa_bits  = 4096
 }

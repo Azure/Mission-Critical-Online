@@ -22,9 +22,20 @@ resource "azurerm_key_vault_access_policy" "devops_pipeline_all" {
 }
 
 # Storage ssh private key for vmss in azure key vault
-resource "azurerm_key_vault_secret" "vmss_privatekey" {
-  name         = "vmss-adminuser-privatekey"
-  value        = trimspace(tls_private_key.vmss_private_key.private_key_openssh)
+resource "azurerm_key_vault_secret" "vmss_frontend_privatekey" {
+  name         = "vmss-frontend-adminuser-privatekey"
+  value        = trimspace(tls_private_key.vmss_frontend_private_key.private_key_openssh)
+  key_vault_id = azurerm_key_vault.stamp.id
+
+  depends_on = [
+    azurerm_key_vault_access_policy.devops_pipeline_all
+  ]
+}
+
+# Storage ssh private key for vmss in azure key vault
+resource "azurerm_key_vault_secret" "vmss_backend_privatekey" {
+  name         = "vmss-backend-adminuser-privatekey"
+  value        = trimspace(tls_private_key.vmss_backend_private_key.private_key_openssh)
   key_vault_id = azurerm_key_vault.stamp.id
 
   depends_on = [

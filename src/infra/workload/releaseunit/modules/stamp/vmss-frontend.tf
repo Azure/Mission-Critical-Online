@@ -40,7 +40,7 @@ resource "azurerm_linux_virtual_machine_scale_set" "stamp_frontend" {
     ip_configuration {
       name      = "internal"
       primary   = true
-      subnet_id = azurerm_subnet.compute.id
+      subnet_id = azurerm_subnet.compute_frontend.id
     }
   }
 

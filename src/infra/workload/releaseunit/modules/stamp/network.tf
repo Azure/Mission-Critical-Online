@@ -10,7 +10,19 @@ module "subnet_addrs" {
   base_cidr_block = var.vnet_address_space
   networks = [
     {
-      name     = "compute"
+      name     = "appgwfe"
+      new_bits = 22 - local.netmask # For compute we want a /22 sized subnet. So we calculate based on the provided input address space
+    },
+        {
+      name     = "appgwbe"
+      new_bits = 22 - local.netmask # For compute we want a /22 sized subnet. So we calculate based on the provided input address space
+    },
+        {
+      name     = "computefe"
+      new_bits = 22 - local.netmask # For compute we want a /22 sized subnet. So we calculate based on the provided input address space
+    },    
+    {
+      name     = "computebe"
       new_bits = 22 - local.netmask # For compute we want a /22 sized subnet. So we calculate based on the provided input address space
     }
     # More subnets can be added here and terraform will dynamically calculate their CIDR ranges
@@ -65,12 +77,42 @@ resource "azurerm_network_security_rule" "allow_inbound_https" {
   network_security_group_name = azurerm_network_security_group.default.name
 }
 
-# Subnet for compute nodes
-resource "azurerm_subnet" "compute" {
-  name                 = "compute-snet"
+# Subnet for AppGw frontend
+resource "azurerm_subnet" "appgw_frontend" {
+  name                 = "appgw-frontend"
   resource_group_name  = azurerm_resource_group.stamp.name
   virtual_network_name = azurerm_virtual_network.stamp.name
-  address_prefixes     = [module.subnet_addrs.network_cidr_blocks["compute"]]
+  address_prefixes     = [module.subnet_addrs.network_cidr_blocks["appgwfe"]]
+}
+
+# Subnet for AppGw backend
+resource "azurerm_subnet" "appwgw_backend" {
+  name                 = "appgw-backend"
+  resource_group_name  = azurerm_resource_group.stamp.name
+  virtual_network_name = azurerm_virtual_network.stamp.name
+  address_prefixes     = [module.subnet_addrs.network_cidr_blocks["appgwbe"]]
+}
+
+# Subnet for compute frontend (vmss) nodes
+resource "azurerm_subnet" "compute_frontend" {
+  name                 = "compute-frontend-snet"
+  resource_group_name  = azurerm_resource_group.stamp.name
+  virtual_network_name = azurerm_virtual_network.stamp.name
+  address_prefixes     = [module.subnet_addrs.network_cidr_blocks["computefe"]]
+  service_endpoints = [
+    "Microsoft.Storage",
+    "Microsoft.AzureCosmosDB",
+    "Microsoft.KeyVault",
+    "Microsoft.EventHub"
+  ]
+}
+
+# Subnet for compute nodes
+resource "azurerm_subnet" "compute_backend" {
+  name                 = "compute-backend-snet"
+  resource_group_name  = azurerm_resource_group.stamp.name
+  virtual_network_name = azurerm_virtual_network.stamp.name
+  address_prefixes     = [module.subnet_addrs.network_cidr_blocks["computebe"]]
   service_endpoints = [
     "Microsoft.Storage",
     "Microsoft.AzureCosmosDB",

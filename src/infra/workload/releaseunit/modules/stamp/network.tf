@@ -121,9 +121,15 @@ resource "azurerm_subnet" "compute_backend" {
   ]
 }
 
-# NSG - Assign default nsg to compute-snet subnet
-resource "azurerm_subnet_network_security_group_association" "compute_default_nsg" {
-  subnet_id                 = azurerm_subnet.compute.id
+# NSG - Assign default nsg to compute-frontend subnet
+resource "azurerm_subnet_network_security_group_association" "compute_fe_default_nsg" {
+  subnet_id                 = azurerm_subnet.compute_frontend.id
+  network_security_group_id = azurerm_network_security_group.default.id
+}
+
+# NSG - Assign default nsg to compute-backend subnet
+resource "azurerm_subnet_network_security_group_association" "compute_be_default_nsg" {
+  subnet_id                 = azurerm_subnet.compute_backend.id
   network_security_group_id = azurerm_network_security_group.default.id
 }
 

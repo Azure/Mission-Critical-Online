@@ -23,7 +23,7 @@ resource "azurerm_storage_account" "private" {
   location                 = azurerm_resource_group.stamp.location
   account_kind             = "StorageV2"
   account_tier             = "Standard"
-  account_replication_type = "ZRS"
+  account_replication_type = "GRS"
   min_tls_version          = "TLS1_2"
 
   network_rules {

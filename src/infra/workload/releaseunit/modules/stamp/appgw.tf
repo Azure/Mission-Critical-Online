@@ -15,7 +15,7 @@ resource "azurerm_application_gateway" "network" {
   }
 
   frontend_port {
-    name = "${azurerm_virtual_network.example.name}-feport"
+    name = "${azurerm_virtual_network.stamp.name}-feport"
     port = 80
   }
 

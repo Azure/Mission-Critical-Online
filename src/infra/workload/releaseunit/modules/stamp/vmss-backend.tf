@@ -27,7 +27,7 @@ resource "azurerm_linux_virtual_machine_scale_set" "stamp_backend" {
     caching              = "ReadWrite"
   }
 
-  custom_data = base64encode(data.template_file.cloudinit.rendered)
+  custom_data = base64encode(data.template_file.cloudinit_backend.rendered)
 
   boot_diagnostics {
     storage_account_uri = azurerm_storage_account.private.primary_blob_endpoint
@@ -52,8 +52,8 @@ resource "azurerm_linux_virtual_machine_scale_set" "stamp_backend" {
 }
 
 # load cloudinit.conf
-data "template_file" "cloudinit" {
-  template = file("${path.module}/cloudinit.conf")
+data "template_file" "cloudinit_backend" {
+  template = file("${path.module}/cloudinit-backend.conf")
 
   vars = {}
 }

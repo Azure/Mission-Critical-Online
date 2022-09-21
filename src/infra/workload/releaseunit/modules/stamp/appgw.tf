@@ -39,8 +39,8 @@ resource "azurerm_application_gateway" "network" {
 
   http_listener {
     name                           = "${azurerm_virtual_network.stamp.name}-httplstn"
-    frontend_ip_configuration_name = local.frontend_ip_configuration_name
-    frontend_port_name             = local.frontend_port_name
+    frontend_ip_configuration_name = "${azurerm_virtual_network.stamp.name}-feip"
+    frontend_port_name             = "${azurerm_virtual_network.example.name}-feport"
     protocol                       = "Http"
   }
 

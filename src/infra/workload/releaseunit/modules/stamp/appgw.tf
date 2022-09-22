@@ -50,5 +50,7 @@ resource "azurerm_application_gateway" "network" {
     http_listener_name         = "${azurerm_virtual_network.stamp.name}-httplstn"
     backend_address_pool_name  = "${azurerm_virtual_network.stamp.name}-beap"
     backend_http_settings_name = "${azurerm_virtual_network.stamp.name}-be-htst"
+
+    priority = 1
   }
 }

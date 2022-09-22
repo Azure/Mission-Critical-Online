@@ -182,14 +182,6 @@ stages:
                                     -var=global_storage_account_name="$(global_storage_account_name)"
                                     -var=azure_monitor_action_group_resource_id="$(azure_monitor_action_group_resource_id)"'
 
-- stage: deployconfiguration
-  displayName: 'Deploy Configuration' # Apply configuration to Azure Infrastructure
-  dependsOn: deployreleaseinfrastructure
-  jobs:
-  - template: jobs-deploy-configuration.yaml
-    parameters:
-      prepareForChaosTesting: ${{ parameters.runChaosTesting }}
-
 - stage: testcode
   displayName: 'Test Application Code'
   dependsOn: [] # can run in parallel to the global infra deployment at the very start
@@ -232,7 +224,6 @@ stages:
 - stage: deployworkload # Deploy workload to previously created infrastructure
   displayName: 'Deploy Workload'
   dependsOn:
-  - deployconfiguration
   - testcode
   - buildapplication
   jobs:

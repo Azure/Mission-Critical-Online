@@ -33,7 +33,7 @@ jobs:
         tar -czf  ${{ parameters.componentName }}-linux.tar.gz output
 
         az storage blob upload -f ${{ parameters.componentName }}-linux.tar.gz `
-            --container-name application `
+            --container-name applications `
             --name ${{ parameters.componentName }}-linux.tar.gz `
             --account-name $(global_storage_account_name) `
             --auth-mode login

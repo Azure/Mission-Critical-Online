@@ -45,3 +45,5 @@ resource "azurerm_resource_group" "monitoring" {
     }
   )
 }
+
+data "azurerm_client_config" "current" {}

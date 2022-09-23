@@ -198,23 +198,20 @@ stages:
    - deployglobalinfrastructure # requires the global infra to be deployed which contains the Container Registry
   jobs: # using jobs so they each runs in parallel
 
-  - template: jobs-container-build.yaml
+  - template: jobs-build-appcode.yaml
     parameters:
-      jobName:                  'catalogservice' # unique pipeline job name
-      containerImageName:       '$(catalogserviceImageName)'  # container image name for CatalogService
-      containerImageDockerFile: '$(catalogserviceDockerfile)' # dockerfile used to build the CatalogService
+      jobName:       'catalogservice' # unique pipeline job name
+      componentName: '$(catalogserviceImageName)'  # container image name for CatalogService
 
-  - template: jobs-container-build.yaml
+  - template: jobs-build-appcode.yaml
     parameters:
-      jobName:                  'backgroundprocessor' # unique pipeline job name
-      containerImageName:       '$(backgroundprocessorImageName)'   # container image name for BackgroundProcessor
-      containerImageDockerFile: '$(backgroundprocessorDockerfile)'  # dockerfile used to build the BackgroundProcessor
+      jobName:       'backgroundprocessor' # unique pipeline job name
+      componentName: '$(backgroundprocessorImageName)'   # container image name for BackgroundProcessor
 
-  - template: jobs-container-build.yaml
+  - template: jobs-build-appcode.yaml
     parameters:
-      jobName:                  'healthservice' # unique pipeline job name
-      containerImageName:       '$(healthserviceImageName)'  # container image name for healthservice
-      containerImageDockerFile: '$(healthserviceDockerfile)' # dockerfile used to build the healthservice
+      jobName:       'healthservice' # unique pipeline job name
+      componentName: '$(healthserviceImageName)'  # container image name for healthservice
 
   - template: jobs-ui-app-build.yaml
     parameters:

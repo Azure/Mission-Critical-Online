@@ -27,6 +27,13 @@ resource "azurerm_storage_blob" "healthcheck" {
   source_content         = "" # empty file
 }
 
+# Create a container to store application code
+resource "azurerm_storage_container" "applications" {
+  name                  = "applications"
+  storage_account_name  = azurerm_storage_account.global.name
+  container_access_type = "private"
+}
+
 ####################################### PUBLIC STORAGE DIAGNOSTIC SETTINGS #######################################
 
 # Use this data source to fetch all available log and metrics categories. We then enable all of them

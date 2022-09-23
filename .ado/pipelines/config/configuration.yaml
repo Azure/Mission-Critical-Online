@@ -25,18 +25,12 @@ variables:
   value: 'ingress-nginx'
 
 # Docker image names and paths to the Dockerfiles for the different components
-- name: 'catalogserviceDockerfile'
-  value: 'AlwaysOn.CatalogService/Dockerfile'
 - name: 'catalogserviceImageName'
-  value: 'alwayson/catalogservice'
-- name: 'backgroundprocessorDockerfile'
-  value: 'AlwaysOn.BackgroundProcessor/Dockerfile'
+  value: 'AlwaysOn.CatalogService'
 - name: 'backgroundprocessorImageName'
-  value: 'alwayson/backgroundprocessor'
-- name: 'healthserviceDockerfile'
-  value: 'AlwaysOn.HealthService/Dockerfile'
+  value: 'AlwaysOn.BackgroundProcessor'
 - name: 'healthserviceImageName'
-  value: 'alwayson/healthservice'
+  value: 'AlwaysOn.HealthService'
 
 # Microsoft Azure Load Test (MALT) configuration
 - name: 'azureLoadTestEngineInstances'

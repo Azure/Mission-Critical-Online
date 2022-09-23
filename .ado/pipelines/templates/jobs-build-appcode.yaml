@@ -1,0 +1,38 @@
+parameters:
+  componentName:       '' # container image name e.g. alwayson/backgroundprocessor/dotnet
+  workingDirectory:    'src/app'
+  jobName:             '' # name for each build job - needs to be unique within a given stage/pipeline
+
+jobs:
+- job: ${{ parameters.jobName }}
+  displayName: 'Build and package ${{ parameters.jobName }}'
+  steps:
+
+  - download: current # download pipeline artifacts
+
+  - template: steps-parse-terraform-output.yaml # parse global configuration settings from terraform deployment output
+    parameters:
+      workingDirectory: '$(Pipeline.Workspace)/terraformOutputGlobalInfra'  # Global infra deploy output directory
+
+  - task: AzureCLI@2
+    displayName: 'Build and package ${{ parameters.componentName }}'
+    retryCountOnTaskFailure: 1
+    inputs:
+      azureSubscription: $(azureServiceConnection)
+      scriptType: pscore
+      scriptLocation: inlineScript
+      inlineScript: |
+
+        dotnet publish ${{ parameters.componentName }} `
+          -r linux-x64 `
+          -p:PublishSingleFile=true `
+          --self-contained:true `
+          -o output
+
+        tar -czf  ${{ parameters.componentName }}-linux.tar.gz output
+
+        az storage blob upload -f ${{ parameters.componentName }}-linux.tar.gz `
+            --container-name application `
+            --name ${{ parameters.componentName }}-linux.tar.gz `
+            --account-name $(global_storage_account_name) `
+            --auth-mode login

@@ -33,7 +33,7 @@ jobs:
 
         tar -czf  ${{ parameters.componentName }}-$(Build.BuildId)-${{ parameters.targetPlatform }}.tar.gz output
 
-        az storage blob upload -f ${{ parameters.componentName }}-${{ parameters.targetPlatform }}.tar.gz `
+        az storage blob upload -f ${{ parameters.componentName }}-$(Build.BuildId)-${{ parameters.targetPlatform }}.tar.gz `
             --container-name applications `
             --name ${{ parameters.componentName }}-$(Build.BuildId)-${{ parameters.targetPlatform }}.tar.gz `
             --account-name $(global_storage_account_name) `

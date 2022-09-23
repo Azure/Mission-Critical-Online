@@ -137,9 +137,38 @@ stages:
                                           $(tfParameterFrontDoorStaticStorage)
                                           $(terraformAdditionalParametersCustomDomains)'
 
+- stage: buildapplication
+  displayName: 'Build Application Code'
+  dependsOn:
+   - testcode
+   - deployglobalinfrastructure # requires the global infra to be deployed which contains the Container Registry
+  jobs: # using jobs so they each runs in parallel
+
+  - template: jobs-build-appcode.yaml
+    parameters:
+      jobName:       'catalogservice' # unique pipeline job name
+      componentName: '$(catalogserviceImageName)'  # container image name for CatalogService
+
+  - template: jobs-build-appcode.yaml
+    parameters:
+      jobName:       'backgroundprocessor' # unique pipeline job name
+      componentName: '$(backgroundprocessorImageName)'   # container image name for BackgroundProcessor
+
+  - template: jobs-build-appcode.yaml
+    parameters:
+      jobName:       'healthservice' # unique pipeline job name
+      componentName: '$(healthserviceImageName)'  # container image name for healthservice
+
+  - template: jobs-ui-app-build.yaml
+    parameters:
+      jobName:          'buildui'
+      workingDirectory: 'src/app/AlwaysOn.UI'
+
 - stage: deployreleaseinfrastructure
   displayName: 'Deploy Release Unit Infrastructure' # Deploy Release Unit Azure Infrastructure
-  dependsOn: deployglobalinfrastructure
+  dependsOn: 
+  - deployglobalinfrastructure
+  - buildapplication
   jobs:
   - job: deployterraform
     displayName: 'Deploy Terraform Release Unit Resources'
@@ -190,33 +219,6 @@ stages:
     parameters:
       jobName:          'CodeTests'
       workingDirectory: 'src/app'
-
-- stage: buildapplication
-  displayName: 'Build Application Code'
-  dependsOn:
-   - testcode
-   - deployglobalinfrastructure # requires the global infra to be deployed which contains the Container Registry
-  jobs: # using jobs so they each runs in parallel
-
-  - template: jobs-build-appcode.yaml
-    parameters:
-      jobName:       'catalogservice' # unique pipeline job name
-      componentName: '$(catalogserviceImageName)'  # container image name for CatalogService
-
-  - template: jobs-build-appcode.yaml
-    parameters:
-      jobName:       'backgroundprocessor' # unique pipeline job name
-      componentName: '$(backgroundprocessorImageName)'   # container image name for BackgroundProcessor
-
-  - template: jobs-build-appcode.yaml
-    parameters:
-      jobName:       'healthservice' # unique pipeline job name
-      componentName: '$(healthserviceImageName)'  # container image name for healthservice
-
-  - template: jobs-ui-app-build.yaml
-    parameters:
-      jobName:          'buildui'
-      workingDirectory: 'src/app/AlwaysOn.UI'
 
 - stage: deployworkload # Deploy workload to previously created infrastructure
   displayName: 'Deploy Workload'

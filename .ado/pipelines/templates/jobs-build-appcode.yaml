@@ -18,6 +18,7 @@ jobs:
     displayName: 'Build and package ${{ parameters.componentName }}'
     retryCountOnTaskFailure: 1
     inputs:
+      workingDirectory: ${{ parameters.workingDirectory }}
       azureSubscription: $(azureServiceConnection)
       scriptType: pscore
       scriptLocation: inlineScript

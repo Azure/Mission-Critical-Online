@@ -38,9 +38,12 @@ resource "azurerm_linux_virtual_machine_scale_set" "stamp_frontend" {
     primary = true
 
     ip_configuration {
-      name      = "internal"
+      name      = "internal-fe"
       primary   = true
       subnet_id = azurerm_subnet.compute_frontend.id
+      application_gateway_backend_address_pool_ids = [
+        "${azurerm_application_gateway.stamp.id}/backendAddressPools/${azurerm_virtual_network.stamp.name}-beap"
+      ]
     }
   }
 

@@ -2,6 +2,7 @@ parameters:
   componentName:       '' # container image name e.g. alwayson/backgroundprocessor/dotnet
   workingDirectory:    'src/app'
   jobName:             '' # name for each build job - needs to be unique within a given stage/pipeline
+  targetPlatform:      'linux-x64'
 
 jobs:
 - job: ${{ parameters.jobName }}
@@ -25,15 +26,15 @@ jobs:
       inlineScript: |
 
         dotnet publish ${{ parameters.componentName }} `
-          -r linux-x64 `
+          -r ${{ parameters.targetPlatform }} `
           -p:PublishSingleFile=true `
           --self-contained:true `
           -o output
 
-        tar -czf  ${{ parameters.componentName }}-linux.tar.gz output
+        tar -czf  ${{ parameters.componentName }}-$(Build.BuildId)-${{ parameters.targetPlatform }}.tar.gz output
 
-        az storage blob upload -f ${{ parameters.componentName }}-linux.tar.gz `
+        az storage blob upload -f ${{ parameters.componentName }}-${{ parameters.targetPlatform }}.tar.gz `
             --container-name applications `
-            --name ${{ parameters.componentName }}-linux.tar.gz `
+            --name ${{ parameters.componentName }}-$(Build.BuildId)-${{ parameters.targetPlatform }}.tar.gz `
             --account-name $(global_storage_account_name) `
             --auth-mode login

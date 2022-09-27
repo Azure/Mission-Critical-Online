@@ -384,7 +384,7 @@ stages:
               displayName: 'Delete application deployments on AKS prior to destroy'
               retryCountOnTaskFailure: 1
               inputs:
-                azureSubscription: $(azureServiceConnection)
+                azureSubscription: '$(azureServiceConnection)'
                 scriptType: pscore
                 scriptLocation: inlineScript
                 inlineScript: |
@@ -401,7 +401,9 @@ stages:
                     $aksClusterResourceGroup = $cluster.resourceGroup
 
                     echo "*** Load credentials for AKS Cluster $aksClusterName in $aksClusterResourceGroup"
-                    az aks get-credentials --name $aksClusterName --resource-group $aksClusterResourceGroup --overwrite-existing
+                    az aks get-credentials --name $aksClusterName `
+                                           --resource-group $aksClusterResourceGroup `
+                                           --overwrite-existing --admin
 
                     # First delete the ingress controllers
                     echo "*** Deleting all deployments in namespace $(ingressNamespace)"

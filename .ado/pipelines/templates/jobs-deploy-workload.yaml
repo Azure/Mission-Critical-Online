@@ -39,7 +39,9 @@ jobs: # using jobs so they each run in parallel
             echo "*** Using Azure Region display name $region"
 
             echo "*** Load credentials for AKS Cluster $aksClusterName in $aksClusterResourceGroup"
-            az aks get-credentials --name $aksClusterName --resource-group $aksClusterResourceGroup --overwrite-existing
+            az aks get-credentials --name $aksClusterName `
+                                   --resource-group $aksClusterResourceGroup `
+                                   --overwrite-existing --admin
 
             $fullContainerImageName = Get-Content -Path "$(Pipeline.Workspace)/healthservice-containerImageName/healthservice.txt"
             echo "*** Retrieved container image name from artifact - $fullContainerImageName"
@@ -129,7 +131,9 @@ jobs: # using jobs so they each run in parallel
 
             # load AKS cluster credentials
             echo "*** Load credentials for AKS Cluster $aksClusterName in $aksClusterResourceGroup"
-            az aks get-credentials --name $aksClusterName --resource-group $aksClusterResourceGroup --overwrite-existing
+            az aks get-credentials --name $aksClusterName `
+                                   --resource-group $aksClusterResourceGroup `
+                                   --overwrite-existing --admin
 
             $fqdn = $stamp.aks_cluster_ingress_fqdn
             echo "*** Retrieved Ingress Controller FQDN $fqdn for AKS cluster $aksClusterName"
@@ -187,7 +191,9 @@ jobs: # using jobs so they each run in parallel
 
             # Load AKS / K8s cluster credentials via az aks get-credentials (using IAM permissions)
             echo "*** Load credentials for AKS Cluster $aksClusterName in $aksClusterResourceGroup"
-            az aks get-credentials --name $aksClusterName --resource-group $aksClusterResourceGroup --overwrite-existing
+            az aks get-credentials --name $aksClusterName `
+                                   --resource-group $aksClusterResourceGroup `
+                                   --overwrite-existing --admin
 
             $fullContainerImageName = Get-Content -Path "$(Pipeline.Workspace)/backgroundprocessor-containerImageName/backgroundprocessor.txt"
             echo "*** Retrieved full container image name from artifact - $fullContainerImageName"

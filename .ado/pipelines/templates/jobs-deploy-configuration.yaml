@@ -34,7 +34,9 @@ jobs:
           echo "*** Load credentials for AKS Cluster $aksClusterName in $aksClusterResourceGroup"
 
           # Load AKS credentials
-          az aks get-credentials --name $aksClusterName --resource-group $aksClusterResourceGroup --overwrite-existing
+          az aks get-credentials --name $aksClusterName `
+                                 --resource-group $aksClusterResourceGroup `
+                                 --overwrite-existing --admin
 
           # Gather Ingress Load Balancer IP from pipeline artifact json
           $aksIngressIp = $stamp.aks_cluster_ingress_ip_address
@@ -80,7 +82,9 @@ jobs:
           echo "*** Load credentials for AKS Cluster $aksClusterName in $aksClusterResourceGroup"
 
           # load AKS cluster credentials
-          az aks get-credentials --name $aksClusterName --resource-group $aksClusterResourceGroup --overwrite-existing
+          az aks get-credentials --name $aksClusterName `
+                                 --resource-group $aksClusterResourceGroup `
+                                 --overwrite-existing --admin
 
           # Apply ConfigMap which configures OMS Agent's log and metric collection. Take a look at the reference file to understand what is being collected/excluded
           echo "*** Apply configmap for OMSAgent (Container Insights) on $aksClusterName"
@@ -112,7 +116,9 @@ jobs:
           echo "*** Load credentials for AKS Cluster $aksClusterName in $aksClusterResourceGroup"
 
           # load AKS cluster credentials
-          az aks get-credentials --name $aksClusterName --resource-group $aksClusterResourceGroup --overwrite-existing
+          az aks get-credentials --name $aksClusterName `
+                                 --resource-group $aksClusterResourceGroup `
+                                 --overwrite-existing --admin
 
           # Deploy required custom resource definitions needed for cert-manager
           echo "*** Apply cert-manager CRDs on $aksClusterName"
@@ -169,7 +175,9 @@ jobs:
           echo "*** Load credentials for AKS Cluster $aksClusterName in $aksClusterResourceGroup"
 
           # load AKS cluster credentials
-          az aks get-credentials --name $aksClusterName --resource-group $aksClusterResourceGroup --overwrite-existing
+          az aks get-credentials --name $aksClusterName `
+                                 --resource-group $aksClusterResourceGroup `
+                                 --overwrite-existing --admin
 
           # Gather Azure KeyVault name from terraform artifact
           $keyVaultName = $stamp.key_vault_name
@@ -222,7 +230,9 @@ jobs:
           echo "*** Load credentials for AKS Cluster $aksClusterName in $aksClusterResourceGroup"
 
           # load AKS cluster credentials
-          az aks get-credentials --name $aksClusterName --resource-group $aksClusterResourceGroup --overwrite-existing
+          az aks get-credentials --name $aksClusterName `
+                                 --resource-group $aksClusterResourceGroup `
+                                 --overwrite-existing --admin
 
           $chaosTestingNamespace = "chaos-testing"
 

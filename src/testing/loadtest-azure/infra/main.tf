@@ -4,6 +4,10 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "3.25.0"
     }
+    azapi = {
+      source  = "azure/azapi"
+      version = "0.5.0"
+    }
   }
 
   backend "azurerm" {}
@@ -21,22 +25,44 @@ resource "azurerm_resource_group" "deployment" {
   tags     = merge(local.default_tags, { "LastDeployedAt" = timestamp() })
 }
 
-resource "azurerm_load_test" "deployment" {
-  name                = "${local.prefix}-azloadtest"
-  resource_group_name = azurerm_resource_group.deployment.name
-  location            = azurerm_resource_group.deployment.location
+resource "azapi_resource" "azurerm_load_test" {
+  type      = "Microsoft.LoadTestService/loadTests@2022-04-15-preview"
+  name      = "${local.prefix}-azloadtest"
+  parent_id = azurerm_resource_group.deployment.id
+
+  location = azurerm_resource_group.deployment.location
 
   tags = local.default_tags
+
+  response_export_values = ["properties.dataPlaneURI"]
 }
 
 output "azureLoadTestName" {
-  value = azurerm_load_test.deployment.name
-}
-
-output "azureLoadResourceGroup" {
-  value = azurerm_load_test.deployment.resource_group_name
+  value = azapi_resource.azurerm_load_test.name
 }
 
 output "azureLoadTestDataPlaneURI" {
-  value = azurerm_load_test.deployment.dataplane_uri
+  value = jsondecode(azapi_resource.azurerm_load_test.output).properties.dataPlaneURI
+}
+
+### Currently deployed via AzAPI ### 
+#
+# resource "azurerm_load_test" "deployment" {
+#   name                = "${local.prefix}-azloadtest"
+#   resource_group_name = azurerm_resource_group.deployment.name
+#   location            = azurerm_resource_group.deployment.location
+
+#   tags = local.default_tags
+# }
+
+# output "azureLoadTestName" {
+#   value = azurerm_load_test.deployment.name
+# }
+
+# output "azureLoadTestDataPlaneURI" {
+#   value = azurerm_load_test.deployment.dataplane_uri
+# }
+
+output "azureLoadResourceGroup" {
+  value = azurerm_resource_group.deployment.name
 }

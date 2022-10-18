@@ -20,11 +20,11 @@ jobs:
   #     command: 'install'
   #     workingDir: '${{ parameters.workingDirectory }}'
 
-  - task: PowerShell@2
+  - task: Bash@3
     displayName: 'NPM install'
     inputs:
       workingDirectory: '${{ parameters.workingDirectory }}'
-      targetType: inline
+      targetType: 'inline'
       script: |
         npm install
 

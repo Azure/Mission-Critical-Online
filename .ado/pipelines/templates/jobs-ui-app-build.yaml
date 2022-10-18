@@ -1,6 +1,6 @@
 parameters:
-  workingDirectory:         '' # directory where package.json is located
-  jobName:                  '' # name for each build job - needs to be unique within a given stage/pipeline
+  workingDirectory:  '' # directory where package.json is located
+  jobName:           '' # name for each build job - needs to be unique within a given stage/pipeline
 
 
 jobs:

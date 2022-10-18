@@ -1,6 +1,6 @@
 parameters:
-  workingDirectory:         '' # directory where package.json is located
-  jobName:                  '' # name for each build job - needs to be unique within a given stage/pipeline
+  workingDirectory:  '' # directory where package.json is located
+  jobName:           '' # name for each build job - needs to be unique within a given stage/pipeline
 
 
 jobs:
@@ -17,8 +17,9 @@ jobs:
     displayName: 'NPM install'
     retryCountOnTaskFailure: 1
     inputs:
-      command: 'install'
-      workingDir: ${{ parameters.workingDirectory }}
+      command: 'custom'
+      customCommand: 'install --prefix .' # overriding prefix to not collide with the $(prefix) variable
+      workingDir: '${{ parameters.workingDirectory }}'
 
   - task: Npm@1
     displayName: 'Build the static UI app for deployment'
@@ -26,7 +27,7 @@ jobs:
     inputs:
       command: 'custom'
       customCommand: 'run build'
-      workingDir: ${{ parameters.workingDirectory }}
+      workingDir: '${{ parameters.workingDirectory }}'
 
   - task: PublishPipelineArtifact@1
     displayName: 'Publish built app'

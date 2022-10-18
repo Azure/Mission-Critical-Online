@@ -13,12 +13,20 @@ jobs:
     inputs:
       versionSpec: '$(uiAppNodeVersion)'
 
-  - task: Npm@1
+  # - task: Npm@1
+  #   displayName: 'NPM install'
+  #   retryCountOnTaskFailure: 1
+  #   inputs:
+  #     command: 'install'
+  #     workingDir: '${{ parameters.workingDirectory }}'
+
+  - task: PowerShell@2
     displayName: 'NPM install'
-    retryCountOnTaskFailure: 1
     inputs:
-      command: 'install'
-      workingDir: '${{ parameters.workingDirectory }}'
+      workingDirectory: '${{ parameters.workingDirectory }}'
+      targetType: inline
+      script: |
+        npm install
 
   - task: Npm@1
     displayName: 'Build the static UI app for deployment'

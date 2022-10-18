@@ -18,7 +18,7 @@ jobs:
     retryCountOnTaskFailure: 1
     inputs:
       command: 'install'
-      workingDir: ${{ parameters.workingDirectory }}
+      workingDir: '${{ parameters.workingDirectory }}'
 
   - task: Npm@1
     displayName: 'Build the static UI app for deployment'
@@ -26,7 +26,7 @@ jobs:
     inputs:
       command: 'custom'
       customCommand: 'run build'
-      workingDir: ${{ parameters.workingDirectory }}
+      workingDir: '${{ parameters.workingDirectory }}'
 
   - task: PublishPipelineArtifact@1
     displayName: 'Publish built app'

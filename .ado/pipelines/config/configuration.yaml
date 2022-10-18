@@ -19,7 +19,7 @@ variables:
 - name: 'chaosMeshVersion'    #  chaos-mesh chart version
   value: '2.3.1'
 - name: 'uiAppNodeVersion'    # nodejs version for the UI app
-  value: '18.11'
+  value: '18.x'
 - name: 'testsNodeVersion'    # nodejs version used for smoketests / playwright
   value: '14.x'
 

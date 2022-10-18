@@ -25,4 +25,4 @@ jobs:
       
       - name: Push
         run: |
-          git push --force
+          git push --set-upstream origin component-updates --force

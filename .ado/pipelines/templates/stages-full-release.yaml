@@ -229,7 +229,7 @@ stages:
   - template: jobs-ui-app-build.yaml
     parameters:
       jobName:          'buildui'
-      workingDirectory: 'src/app/AlwaysOn.UI'
+      workingDirectory: 'src/app/AlwaysOn.UI/'
 
 - stage: deployworkload # Deploy workload to previously created infrastructure
   displayName: 'Deploy Workload'

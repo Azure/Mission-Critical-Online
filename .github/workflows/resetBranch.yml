@@ -11,6 +11,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      
       - name: Checkout component-updates
         run: |
           git checkout -b component-updates
@@ -21,4 +25,4 @@ jobs:
       
       - name: Push
         run: |
-          git push --force
+          git push --set-upstream origin component-updates --force

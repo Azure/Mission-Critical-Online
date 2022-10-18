@@ -1,0 +1,24 @@
+name: Reset component-updates branch
+
+on:
+  workflow_dispatch:
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  resetBranch:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout component-updates
+        run: |
+          git checkout -b component-updates
+
+      - name: Reset branch
+        run: |
+          git reset --hard origin/main
+      
+      - name: Push
+        run: |
+          git push --force

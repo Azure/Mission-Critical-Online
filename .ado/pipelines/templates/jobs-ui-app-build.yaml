@@ -13,20 +13,13 @@ jobs:
     inputs:
       versionSpec: '$(uiAppNodeVersion)'
 
-  # - task: Npm@1
-  #   displayName: 'NPM install'
-  #   retryCountOnTaskFailure: 1
-  #   inputs:
-  #     command: 'install'
-  #     workingDir: '${{ parameters.workingDirectory }}'
-
-  - task: Bash@3
+  - task: Npm@1
     displayName: 'NPM install'
+    retryCountOnTaskFailure: 1
     inputs:
-      workingDirectory: '${{ parameters.workingDirectory }}'
-      targetType: 'inline'
-      script: |
-        npm install --prefix .
+      command: 'custom'
+      customCommand: 'install --prefix .'
+      workingDir: '${{ parameters.workingDirectory }}'
 
   - task: Npm@1
     displayName: 'Build the static UI app for deployment'

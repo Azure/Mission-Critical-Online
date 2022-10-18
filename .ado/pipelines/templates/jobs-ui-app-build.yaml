@@ -26,9 +26,7 @@ jobs:
       workingDirectory: '${{ parameters.workingDirectory }}'
       targetType: 'inline'
       script: |
-        npm install
-    env:
-      prefix: ''
+        npm install --prefix .
 
   - task: Npm@1
     displayName: 'Build the static UI app for deployment'

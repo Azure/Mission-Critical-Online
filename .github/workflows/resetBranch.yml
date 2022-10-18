@@ -12,13 +12,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+      
       - name: Checkout component-updates
         run: |
           git checkout -b component-updates
 
       - name: Reset branch
         run: |
-          git reset --hard origin/main
+          git reset --hard main
       
       - name: Push
         run: |

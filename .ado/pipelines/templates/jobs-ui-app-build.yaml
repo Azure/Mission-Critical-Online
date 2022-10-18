@@ -18,7 +18,7 @@ jobs:
     retryCountOnTaskFailure: 1
     inputs:
       command: 'custom'
-      customCommand: 'install --prefix .' # overriding prefix to not use the $(prefix) variable
+      customCommand: 'install --prefix .' # overriding prefix to not collide with the $(prefix) variable
       workingDir: '${{ parameters.workingDirectory }}'
 
   - task: Npm@1

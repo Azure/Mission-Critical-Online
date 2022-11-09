@@ -14,7 +14,7 @@ param
 
 . "$PSScriptRoot/common.ps1"
 
-$urlRoot = "https://" + $apiEndpoint + "/file/" + $testFileName + ":validate"
+$urlRoot = "https://{0}/file/{1}:validate" -f $apiEndpoint, $testFileName
 
 # Secure string to use access token with Invoke-RestMethod in Powershell
 $accessTokenSecure = ConvertTo-SecureString -String $accessToken -AsPlainText -Force

@@ -10,12 +10,15 @@ param
   # Load Test Description shown in Azure Portal
   [string] $loadTestDescription,
   
+  # Load Test target URL
   [Parameter(Mandatory = $true)]
   [string] $loadTestTargetUrl,
 
+  # Number of User threads
   [Parameter(Mandatory = $true)]
   [int] $loadTestUserThreads,
 
+  # Load test run duration
   [Parameter(Mandatory = $true)]
   [int] $loadTestDurationSeconds,
 
@@ -26,11 +29,13 @@ param
   [Parameter(Mandatory=$true)]
   [string] $apiEndpoint,
 
+  # parameter to handover a json file with test criteria
   [string] $passFailCriteria,
 
   # Load Test data plane api version
   [string] $apiVersion = "2022-06-01-preview",
 
+  # optional - expose pipeline variables
   [bool] $pipeline = $false
 )
 
@@ -102,7 +107,7 @@ az rest --url $urlRoot `
   --headers ('@' + $accessTokenFileName) "Content-Type=application/merge-patch+json" `
   --url-parameters testId=$loadTestId api-version=$apiVersion `
   --body ('@' + $testDataFileName) `
-  -o none $verbose 
+  --output none $verbose 
 
 # Outputs and exports for pipeline usage
 if($pipeline) {

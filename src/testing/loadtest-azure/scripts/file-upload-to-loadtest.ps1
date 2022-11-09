@@ -79,3 +79,5 @@ if($wait) {
 }
 
 Remove-Item $accessTokenFileName
+
+Write-Verbose "*** File $($fileStatus.filename) ($($fileStatus.fileId)) successfully uploaded to load test $loadTestId."

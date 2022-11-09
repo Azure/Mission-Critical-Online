@@ -1,7 +1,6 @@
 # file-upload-to-loadtest.ps1 | Upload files (jmx and others) to a load test
 param
 (
-  # Load Test Id
   [Parameter(Mandatory = $true)]
   [string] $loadTestId,
 
@@ -9,7 +8,7 @@ param
   [Parameter(Mandatory = $true)]
   [string] $apiEndpoint,
 
-  # Load Test data plane api version
+  # optional - load test data plane api version
   [string] $apiVersion = "2022-06-01-preview",
 
   # Filename to upload
@@ -19,7 +18,7 @@ param
   # Test File ID is auto-generated when not set (default)
   [string] $testFileId = (New-Guid).toString(),
 
-  # if set to true script will set pipeline variables
+  # optional - expose outputs as pipeline variables
   [bool] $pipeline = $false,
 
   # if set to true script will wait till file was validated

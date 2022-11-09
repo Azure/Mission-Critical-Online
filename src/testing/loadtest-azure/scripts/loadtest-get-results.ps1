@@ -1,6 +1,5 @@
 param
 (
-  # Load Test Id
   [Parameter(Mandatory=$true)]
   [string] $loadTestId,
   
@@ -8,7 +7,7 @@ param
   [Parameter(Mandatory=$true)]
   [string] $apiEndpoint,
 
-  # Load Test data plane api version
+  # optional - load test data plane api version
   [string] $apiVersion = "2022-06-01-preview",
 
   [string] $testRunId

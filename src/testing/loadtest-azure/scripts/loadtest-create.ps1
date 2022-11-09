@@ -10,7 +10,6 @@ param
   # Load Test Description shown in Azure Portal
   [string] $loadTestDescription,
   
-  # Load Test target URL
   [Parameter(Mandatory = $true)]
   [string] $loadTestTargetUrl,
 
@@ -18,7 +17,7 @@ param
   [Parameter(Mandatory = $true)]
   [int] $loadTestUserThreads,
 
-  # Load test run duration
+  # Load test run duration (in seconds)
   [Parameter(Mandatory = $true)]
   [int] $loadTestDurationSeconds,
 
@@ -32,10 +31,10 @@ param
   # parameter to handover a json file with test criteria
   [string] $passFailCriteria,
 
-  # Load Test data plane api version
+  # optional - load test data plane api version
   [string] $apiVersion = "2022-06-01-preview",
 
-  # optional - expose pipeline variables
+  # optional - expose outputs as pipeline variables
   [bool] $pipeline = $false
 )
 

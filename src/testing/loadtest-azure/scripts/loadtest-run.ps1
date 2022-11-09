@@ -1,7 +1,6 @@
 # loadtest-run.ps1 | Execute a load test run
 param
 (
-  # Load Test Id
   [Parameter(Mandatory=$true)]
   [string] $loadTestId,
   
@@ -9,7 +8,7 @@ param
   [Parameter(Mandatory=$true)]
   [string] $apiEndpoint,
 
-  # Load Test data plane api version
+  # optional - load test data plane api version
   [string] $apiVersion = "2022-06-01-preview",
 
   # Load Test run displayname
@@ -18,8 +17,11 @@ param
 
   # Load test run description
   [string] $testRunDescription,
+  
   [int] $testRunVUsers = 1,
-  [bool]$pipeline = $False 
+
+  # optional - expose outputs as pipeline variables
+  [bool] $pipeline = $false
 )
 
 . "$PSScriptRoot/common.ps1"

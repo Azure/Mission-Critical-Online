@@ -206,43 +206,40 @@ stages:
                           -testRunId "$(testRunId)"
               $testRunStatus = ($result).status
 
-              $result
-
-              if ($result.status -eq "DONE") { # other states are FAILED, EXECUTING and CANCELLED
-                # test has successfully finished
-                echo "*** Test Run $(testRunId) was successfully completed. Status: $testRunStatus"
-
-                # processing test data and publish it in azure devops
-                $resultUrl = ($result).testArtifacts.outputArtifacts.resultUrl.url
-
-                $logsUrl = ($result).testArtifacts.outputArtifacts.logsUrl.url
-
-                # download results and logs
-                if ( ($resultUrl) -and ($logsUrl) ) {
-                  New-Item -Path results -ItemType "directory"
-                  echo "*** Download resultsUrl"
-                  Invoke-WebRequest $resultUrl -OutFile "results/results.zip"
-                  echo "*** Download logsUrl"
-                  Invoke-WebRequest $logsUrl -OutFile "results/logs.zip"
-                } else {
-                  throw "*** ERROR: Either logsUrl ($logsUrl) or resultUrl ($resultUrl) is empty."
-                }
-
-                # throw an error when testResult is FAILED
-                if ($result.testResult -eq "FAILED") {
-                  throw "*** ERROR: Test result for run $($result.testRunId) is 'FAILED'. Test did not match the defined test criteria."
-                }
-
-              } elseif ($result.status -in "FAILED","CANCELLED") {
+              if ($result.status -in "FAILED","CANCELLED") {
                 # test ended in failed or cancelled (manually stopped) state
                 throw "*** ERROR: Test run $(testRunId) ended in $($result.status) state."
               } else {
                 # test is still running
                 echo "*** Test Run $(testRunId) is in status $testRunStatus"
+                $result
               }
 
               # todo - timeout?
             } while ($result.status -ne "DONE")
+
+            echo "*** Test Run $(testRunId) was completed. Status: $testRunStatus"
+
+            # throw an error when testResult is FAILED
+            if ($result.testResult -eq "FAILED") {
+              throw "*** ERROR: Test result for run $($result.testRunId) is 'FAILED'. Test did not match the defined test criteria."
+            }
+
+            # processing test data and publish it in azure devops
+            $resultUrl = ($result).testArtifacts.outputArtifacts.resultUrl.url
+            $logsUrl = ($result).testArtifacts.outputArtifacts.logsUrl.url
+
+            # download results and logs
+            if ( ($resultUrl) -and ($logsUrl) ) {
+              New-Item -Path results -ItemType "directory"
+              echo "*** Download resultsUrl"
+              Invoke-WebRequest $resultUrl -OutFile "results/results.zip"
+              echo "*** Download logsUrl"
+              Invoke-WebRequest $logsUrl -OutFile "results/logs.zip"
+            } else {
+              throw "*** ERROR: Either logsUrl ($logsUrl) or resultUrl ($resultUrl) is empty."
+            }
+
 
       - script: |
           wget https://raw.githubusercontent.com/Azure-Samples/jmeter-aci-terraform/main/scripts/jtl_junit_converter.py -O $(System.DefaultWorkingDirectory)/junit-onverter.py

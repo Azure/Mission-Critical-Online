@@ -268,7 +268,7 @@ stages:
 
             if ( ($resultUrl) -and ($logsUrl) ) {
               New-Item -Path results -ItemType "directory" -Force
-              echo "*** Download results file from $resultsUrl"
+              echo "*** Download results file from $resultUrl"
               Invoke-WebRequest $resultUrl -OutFile "results/results.zip"
               echo "*** Download logs from $logsUrl"
               Invoke-WebRequest $logsUrl -OutFile "results/logs.zip"

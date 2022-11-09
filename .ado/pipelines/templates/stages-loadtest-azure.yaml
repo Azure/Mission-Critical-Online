@@ -214,40 +214,57 @@ stages:
                 echo "*** Test Run $(testRunId) is in status $testRunStatus"
               }
 
-            $resultUrl = ($result).testArtifacts.outputArtifacts.resultUrl.url
-            $logsUrl = ($result).testArtifacts.outputArtifacts.logsUrl.url
+              $resultUrl = ($result).testArtifacts.outputArtifacts.resultUrl.url
+              $logsUrl = ($result).testArtifacts.outputArtifacts.logsUrl.url
 
               # todo - timeout?
             } while ($result.status -ne "DONE")
 
             echo "*** Test Run $(testRunId) was completed. Test Run Status: $testRunStatus Test Status: $($result.testResult)"
             echo "*** Portal URL: $($result.portalUrl)"
-            
+
+            # throw an error when testResult is FAILED
+            if ($result.testResult -eq "FAILED") {
+              throw "*** ERROR: Test result for run $($result.testRunId) is 'FAILED'. Test did not match the defined test criteria."
+            }
+
+      - task: AzureCLI@2
+        displayName: 'RESULTS: Download and convert JMeter results'
+        condition: succeeded()
+        inputs:
+          azureSubscription: $(azureServiceConnection)
+          scriptType: pscore
+          scriptLocation: inlineScript
+          inlineScript: |
+
             # processing test data and publish it in azure devops
             # download results and logs - retry if empty
-            if ( (!$resultUrl) -or (!$logsUrl) ) {
-            echo "*** Either logsUrl ($logsUrl) or resultUrl ($resultUrl) is empty. Retrying.."
-            
-              $i = 0
-              do {
-                $outputArtifacts = ($(System.DefaultWorkingDirectory)/src/testing/loadtest-azure/scripts/loadtest-get-run.ps1 `
-                  -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
-                  -apiVersion "$(azureLoadTestApiVersion)" `
-                  -testRunId "$(testRunId)").testArtifacts.outputArtifacts
-                $resultUrl = ($outputArtifacts).resultUrl.url
-                $logsUrl = ($outputArtifacts).logsUrl.url
+            $i = 0
+            do {
+              $result = $(System.DefaultWorkingDirectory)/src/testing/loadtest-azure/scripts/loadtest-get-run.ps1 `
+                -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
+                -apiVersion "$(azureLoadTestApiVersion)" `
+                -testRunId "$(testRunId)")
 
-                if ( (!$resultUrl) -or (!$logsUrl) ) {
-                  echo "*** Either logsUrl ($logsUrl) or resultUrl ($resultUrl) is empty. Retry $i/3"
-                  Start-Sleep -seconds 15
-                } else {
-                  echo "*** Received logsUrl ($logsUrl)"
-                  echo "*** Received resultUrl ($resultUrl)"
-                }
+              $resultUrl = ($result).testArtifacts.outputArtifacts.resultUrl.url
+              $logsUrl = ($result).testArtifacts.outputArtifacts.logsUrl.url
 
-                $i++
-              } while ( $i -le 3 )
-            }
+              if (!$resultUrl) {
+                echo "*** resultUrl ($resultUrl) is empty. Retry $i/3"
+                Start-Sleep -seconds 15
+              } else {
+                echo "*** Received resultUrl ($resultUrl)"
+              }
+
+              if (!$logsUrl) {
+                echo "*** logsUrl ($logsUrl) is empty. Retry $i/3"
+                Start-Sleep -seconds 15
+              } else {
+                echo "*** Received logsUrl ($logsUrl)"
+              }
+
+              $i++
+            } while ( $i -le 3 )
 
             if ( ($resultUrl) -and ($logsUrl) ) {
               New-Item -Path results -ItemType "directory"
@@ -259,17 +276,6 @@ stages:
               throw "*** ERROR: Either logsUrl ($logsUrl) or resultUrl ($resultUrl) is empty."
             }
 
-            # throw an error when testResult is FAILED
-            if ($result.testResult -eq "FAILED") {
-              throw "*** ERROR: Test result for run $($result.testRunId) is 'FAILED'. Test did not match the defined test criteria."
-            }
-
-      - task: PowerShell@2
-        displayName: 'RESULTS: Convert JMeter Results to JUnit Format'
-        condition: succeeded()
-        inputs:
-          targetType: inline
-          script: |
             wget https://raw.githubusercontent.com/Azure-Samples/jmeter-aci-terraform/main/scripts/jtl_junit_converter.py -O $(System.DefaultWorkingDirectory)/junit-converter.py
 
             if (Test-Path results/results.zip) {

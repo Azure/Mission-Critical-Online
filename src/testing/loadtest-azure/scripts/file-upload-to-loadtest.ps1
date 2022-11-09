@@ -68,8 +68,8 @@ if($wait) {
                             -fileId $($result.fileId) `
                             -keepToken $true)
     if ($fileStatus.validationStatus -ne "VALIDATION_SUCCESS") {
-      Write-Verbose "*** Waiting another 30s for file validation to complete $($fileStatus.validationStatus)"
-      Start-Sleep -seconds 30
+      Write-Verbose "*** Waiting another 10s for file validation to complete $($fileStatus.validationStatus)"
+      Start-Sleep -seconds 10
     } else {
        Write-Verbose "*** File $($fileStatus.fileId) was successfully validated."
     }

@@ -226,11 +226,12 @@ stages:
             $logsUrl = ($result).testArtifacts.outputArtifacts.logsUrl.url
 
             # download results and logs - retry if empty
+            $i = 0
             do {
               echo "*** Either logsUrl ($logsUrl) or resultUrl ($resultUrl) is empty. Retry $i/3"
               Start-Sleep -seconds 15
               $i++
-            } while ( (!$resultUrl) -or (!$logsUrl) -or ($i -le 3) )
+            } while ( $i -le 3 )
 
             if ( ($resultUrl) -and ($logsUrl) ) {
               New-Item -Path results -ItemType "directory"

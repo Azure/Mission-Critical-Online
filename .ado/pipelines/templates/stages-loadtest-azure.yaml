@@ -221,11 +221,6 @@ stages:
             echo "*** Test Run $(testRunId) was completed. Status: $testRunStatus"
             echo "*** Portal URL: $($result.portalUrl)"
 
-            # throw an error when testResult is FAILED
-            if ($result.testResult -eq "FAILED") {
-              throw "*** ERROR: Test result for run $($result.testRunId) is 'FAILED'. Test did not match the defined test criteria."
-            }
-
             # processing test data and publish it in azure devops
             $resultUrl = ($result).testArtifacts.outputArtifacts.resultUrl.url
             $logsUrl = ($result).testArtifacts.outputArtifacts.logsUrl.url
@@ -245,6 +240,11 @@ stages:
               Invoke-WebRequest $logsUrl -OutFile "results/logs.zip"
             } else {
               throw "*** ERROR: Either logsUrl ($logsUrl) or resultUrl ($resultUrl) is empty."
+            }
+
+            # throw an error when testResult is FAILED
+            if ($result.testResult -eq "FAILED") {
+              throw "*** ERROR: Test result for run $($result.testRunId) is 'FAILED'. Test did not match the defined test criteria."
             }
 
       - task: PowerShell@2

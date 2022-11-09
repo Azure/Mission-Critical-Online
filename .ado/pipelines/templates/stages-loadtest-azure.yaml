@@ -212,19 +212,77 @@ stages:
               } else {
                 # test is still running
                 echo "*** Test Run $(testRunId) is in status $testRunStatus"
-                $result
               }
+
+              # download results and logs - retry if empty
+              $i = 0
+              do {
+                $resultUrl = ($result).testArtifacts.outputArtifacts.resultUrl.url
+                $logsUrl = ($result).testArtifacts.outputArtifacts.logsUrl.url
+
+                if ( (!$resultUrl) -or (!$logsUrl) ) {
+                  echo "*** Either logsUrl ($logsUrl) or resultUrl ($resultUrl) is empty. Retry $i/3"
+                  Start-Sleep -seconds 15
+                } 
+
+                $i++
+              } while ( ((!$resultUrl) -or (!$logsUrl) -or ($i -le 3) )
 
               # todo - timeout?
             } while ($result.status -ne "DONE")
 
             echo "*** Test Run $(testRunId) was completed. Status: $testRunStatus"
             echo "*** Portal URL: $($result.portalUrl)"
+            
+            # processing test data and publish it in azure devops
+
+            if ( ($resultUrl) -and ($logsUrl) ) {
+              New-Item -Path results -ItemType "directory"
+              echo "*** Download resultsUrl"
+              Invoke-WebRequest $resultUrl -OutFile "results/results.zip"
+              echo "*** Download logsUrl"
+              Invoke-WebRequest $logsUrl -OutFile "results/logs.zip"
+            } else {
+              throw "*** ERROR: Either logsUrl ($logsUrl) or resultUrl ($resultUrl) is empty."
+            }
 
             # throw an error when testResult is FAILED
             if ($result.testResult -eq "FAILED") {
               throw "*** ERROR: Test result for run $($result.testRunId) is 'FAILED'. Test did not match the defined test criteria."
             }
+
+      - task: PowerShell@2
+        displayName: 'RESULTS: Convert JMeter Results to JUnit Format'
+        condition: succeeded()
+        inputs:
+          targetType: inline
+          script: |
+            wget https://raw.githubusercontent.com/Azure-Samples/jmeter-aci-terraform/main/scripts/jtl_junit_converter.py -O $(System.DefaultWorkingDirectory)/junit-converter.py
+
+            if (Test-Path results/results.zip) {
+              Expand-Archive -Path results/results.zip -DestinationPath results
+              $JMETER_RESULTS=results/testreport.csv
+              $JUNIT_RESULTS=output.xml
+              python3 junit-converter.py $JMETER_RESULTS $JUNIT_RESULTS
+            } else {
+              echo "Skipping result data conversion. results.zip was not found."
+            }
+            
+        
+      - task: PublishTestResults@2
+        displayName: 'RESULTS: Publish Load Testing Results'
+        condition: succeeded()
+        inputs:
+          testResultsFormat: 'JUnit'
+          testResultsFiles: 'output.xml'
+          failTaskOnFailedTests: false
+
+      # publish load test results as pipeline artifacts in azure devops
+      - task: PublishBuildArtifacts@1
+        condition: succeeded() 
+        inputs:
+          artifactName: 'loadtest'
+          pathToPublish: '$(System.DefaultWorkingDirectory)/results'
 
     # All of the next tasks are only applicable in headless mode
     - ${{ if eq(parameters.destroyInfra, 'true') }}:

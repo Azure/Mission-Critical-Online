@@ -226,7 +226,7 @@ stages:
                 } 
 
                 $i++
-              } while ( ((!$resultUrl) -or (!$logsUrl) -or ($i -le 3) )
+              } while ( (!$resultUrl) -or (!$logsUrl) -or ($i -le 3) )
 
               # todo - timeout?
             } while ($result.status -ne "DONE")

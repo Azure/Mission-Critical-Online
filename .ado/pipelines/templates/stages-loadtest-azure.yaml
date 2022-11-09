@@ -263,8 +263,8 @@ stages:
 
             if (Test-Path results/results.zip) {
               Expand-Archive -Path results/results.zip -DestinationPath results
-              $JMETER_RESULTS=results/testreport.csv
-              $JUNIT_RESULTS=output.xml
+              $JMETER_RESULTS="results/testreport.csv"
+              $JUNIT_RESULTS="output.xml"
               python3 junit-converter.py $JMETER_RESULTS $JUNIT_RESULTS
             } else {
               echo "Skipping result data conversion. results.zip was not found."

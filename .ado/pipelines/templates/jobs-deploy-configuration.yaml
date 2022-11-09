@@ -31,7 +31,6 @@ jobs:
           echo "*** Configuring stamp in region $($stamp.location)"
           $aksClusterName = $stamp.aks_cluster_name
           $aksClusterResourceGroup = $stamp.resource_group_name
-          echo "*** Load credentials for AKS Cluster $aksClusterName in $aksClusterResourceGroup"
 
           # Load AKS credentials using --admin to bypass RBAC and interactive logins
           echo "*** Load credentials for AKS Cluster $aksClusterName in $aksClusterResourceGroup"
@@ -80,7 +79,6 @@ jobs:
 
           $aksClusterName = $stamp.aks_cluster_name
           $aksClusterResourceGroup = $stamp.resource_group_name
-          echo "*** Load credentials for AKS Cluster $aksClusterName in $aksClusterResourceGroup"
 
           # Load AKS credentials using --admin to bypass RBAC and interactive logins
           echo "*** Load credentials for AKS Cluster $aksClusterName in $aksClusterResourceGroup"
@@ -115,7 +113,6 @@ jobs:
 
           $aksClusterName = $stamp.aks_cluster_name
           $aksClusterResourceGroup = $stamp.resource_group_name
-          echo "*** Load credentials for AKS Cluster $aksClusterName in $aksClusterResourceGroup"
 
           # Load AKS credentials using --admin to bypass RBAC and interactive logins
           echo "*** Load credentials for AKS Cluster $aksClusterName in $aksClusterResourceGroup"
@@ -175,7 +172,6 @@ jobs:
 
           $aksClusterName = $stamp.aks_cluster_name
           $aksClusterResourceGroup = $stamp.resource_group_name
-          echo "*** Load credentials for AKS Cluster $aksClusterName in $aksClusterResourceGroup"
 
           # Load AKS credentials using --admin to bypass RBAC and interactive logins
           echo "*** Load credentials for AKS Cluster $aksClusterName in $aksClusterResourceGroup"
@@ -231,7 +227,6 @@ jobs:
 
           $aksClusterName = $stamp.aks_cluster_name
           $aksClusterResourceGroup = $stamp.resource_group_name
-          echo "*** Load credentials for AKS Cluster $aksClusterName in $aksClusterResourceGroup"
 
           # Load AKS credentials using --admin to bypass RBAC and interactive logins
           echo "*** Load credentials for AKS Cluster $aksClusterName in $aksClusterResourceGroup"

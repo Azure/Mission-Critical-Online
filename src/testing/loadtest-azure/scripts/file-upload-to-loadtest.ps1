@@ -64,7 +64,7 @@ if($wait) {
 
   do {
 
-    $fileStatus = (./loadtest-get-files.ps1 -apiEndpoint $apiEndpoint `
+    $fileStatus = (& $PSScriptRoot\loadtest-get-files.ps1 -apiEndpoint $apiEndpoint `
                             -loadTestId $loadTestId `
                             -fileId $($result.fileId) `
                             -keepToken $true)

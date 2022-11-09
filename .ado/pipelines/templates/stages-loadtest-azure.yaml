@@ -215,18 +215,20 @@ stages:
               }
 
               # download results and logs - retry if empty
-              $i = 0
-              do {
-                $resultUrl = ($result).testArtifacts.outputArtifacts.resultUrl.url
-                $logsUrl = ($result).testArtifacts.outputArtifacts.logsUrl.url
+              if ($result.status -eq "DONE") {
+                $i = 0
+                do {
+                  $resultUrl = ($result).testArtifacts.outputArtifacts.resultUrl.url
+                  $logsUrl = ($result).testArtifacts.outputArtifacts.logsUrl.url
 
-                if ( (!$resultUrl) -or (!$logsUrl) ) {
-                  echo "*** Either logsUrl ($logsUrl) or resultUrl ($resultUrl) is empty. Retry $i/3"
-                  Start-Sleep -seconds 15
-                } 
+                  if ( (!$resultUrl) -or (!$logsUrl) ) {
+                    echo "*** Either logsUrl ($logsUrl) or resultUrl ($resultUrl) is empty. Retry $i/3"
+                    Start-Sleep -seconds 15
+                  } 
 
-                $i++
-              } while ( (!$resultUrl) -or (!$logsUrl) -or ($i -le 3) )
+                  $i++
+                } while ( ((!$resultUrl) -or (!$logsUrl)) -or ($i -le 3) )
+              }
 
               # todo - timeout?
             } while ($result.status -ne "DONE")

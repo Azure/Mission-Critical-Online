@@ -212,13 +212,21 @@ stages:
 
                 # processing test data and publish it in azure devops
                 $resultUrl = ($result).testArtifacts.outputArtifacts.resultUrl.url
-                $logsUrl = ($result).testArtifacts.outputArtifacts.logsUrl.url
-                New-Item -Path results -ItemType "directory"
-                echo "*** Download resultsUrl"
-                Invoke-WebRequest $resultUrl -OutFile "results/results.zip"
-                echo "*** Download logsUrl"
-                Invoke-WebRequest $logsUrl -OutFile "results/logs.zip"
 
+                $logsUrl = ($result).testArtifacts.outputArtifacts.logsUrl.url
+
+                # download results and logs
+                if ( ($resultUrl) -and ($logsUrl) ) {
+                  New-Item -Path results -ItemType "directory"
+                  echo "*** Download resultsUrl"
+                  Invoke-WebRequest $resultUrl -OutFile "results/results.zip"
+                  echo "*** Download logsUrl"
+                  Invoke-WebRequest $logsUrl -OutFile "results/logs.zip"
+                } else {
+                  throw "*** ERROR: Either logsUrl ($logsUrl) or resultUrl ($resultUrl) is empty."
+                }
+
+                # throw an error when testResult is FAILED
                 if ($result.testResult -eq "FAILED") {
                   throw "*** ERROR: Test result for run $($result.testRunId) is 'FAILED'. Test did not match the defined test criteria."
                 }

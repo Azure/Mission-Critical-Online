@@ -240,9 +240,9 @@ stages:
 
             if ( ($resultUrl) -and ($logsUrl) ) {
               New-Item -Path results -ItemType "directory"
-              echo "*** Download resultsUrl"
+              echo "*** Download results file from $resultsUrl"
               Invoke-WebRequest $resultUrl -OutFile "results/results.zip"
-              echo "*** Download logsUrl"
+              echo "*** Download logs from $logsUrl"
               Invoke-WebRequest $logsUrl -OutFile "results/logs.zip"
             } else {
               throw "*** ERROR: Either logsUrl ($logsUrl) or resultUrl ($resultUrl) is empty."

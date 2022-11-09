@@ -249,18 +249,12 @@ stages:
               $resultUrl = ($result).testArtifacts.outputArtifacts.resultUrl.url
               $logsUrl = ($result).testArtifacts.outputArtifacts.logsUrl.url
 
-              if (!$resultUrl) {
-                echo "*** resultUrl ($resultUrl) is empty. Retry $i/3"
+              if ( (!$resultUrl) -and (!$logsUrl) ) {
+                echo "*** Either resultUrl ($resultUrl) or logsUrl ($logsUrl) is empty. Retry $i/3"
                 Start-Sleep -seconds 15
               } else {
-                echo "*** Received resultUrl ($resultUrl)"
-              }
-
-              if (!$logsUrl) {
-                echo "*** logsUrl ($logsUrl) is empty. Retry $i/3"
-                Start-Sleep -seconds 15
-              } else {
-                echo "*** Received logsUrl ($logsUrl)"
+                echo "*** Received resultUrl ($resultUrl) and logsUrl ($logsUrl)"
+                $i=3 # set to 3 to end the loop
               }
 
               $i++

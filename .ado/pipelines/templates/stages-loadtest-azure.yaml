@@ -241,7 +241,7 @@ stages:
                   echo "*** Either logsUrl ($logsUrl) or resultUrl ($resultUrl) is empty. Retry $i/3"
                   Start-Sleep -seconds 15
                 } else {
-                  echo "*** Received logsUrl ($logsUrl)
+                  echo "*** Received logsUrl ($logsUrl)"
                   echo "*** Received resultUrl ($resultUrl)"
                 }
 

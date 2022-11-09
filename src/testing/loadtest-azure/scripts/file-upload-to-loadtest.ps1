@@ -64,10 +64,10 @@ if($wait) {
 
   do {
 
-    $fileStatus = ./loadtest-get-files.ps1 -apiEndpoint $apiEndpoint `
+    $fileStatus = (./loadtest-get-files.ps1 -apiEndpoint $apiEndpoint `
                             -loadTestId $loadTestId `
                             -fileId $($result.fileId) `
-                            -keepToken $true
+                            -keepToken $true)
     if ($fileStatus.validationStatus -ne "VALIDATION_SUCCESS") {
       Write-Verbose "*** Waiting another 30s for file validation to complete $($fileStatus.validationStatus)"
       Start-Sleep -seconds 30

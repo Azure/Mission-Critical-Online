@@ -113,6 +113,7 @@ stages:
         scriptPath: '$(System.DefaultWorkingDirectory)/src/testing/loadtest-azure/scripts/loadtest-create.ps1'
         arguments:
           -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
+          -apiVersion "$(azureLoadTestApiVersion)" `
           -loadTestDisplayName "$(get-date -f "yyyy-MM-dd hh:ss") load test for build $(Build.BuildId)" `
           -loadTestDescription "Pipeline-embedded load test for $(Build.BuildId) ($(get-date -f "dd/MM/yyyy hh:ss"))" `
           -loadTestTargetUrl "$(azureLoadTestTargetFQDN)" `
@@ -145,6 +146,7 @@ stages:
               ./src/testing/loadtest-azure/scripts/appcomponents-add-to-loadtest.ps1 `
                 -loadTestId "$(loadTestId)" `
                 -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
+                -apiVersion "$(azureLoadTestApiVersion)" `
                 -resourceId "$($stamp.aks_cluster_id)"
 
               echo "*** Adding $($stamp.aks_cluster_id)"
@@ -162,6 +164,7 @@ stages:
           arguments:
             -loadTestId "$(loadTestId)" `
             -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
+            -apiVersion "$(azureLoadTestApiVersion)" `
             -testFileName "$(System.DefaultWorkingDirectory)/src/testing/loadtest-azure/scripts/catalog-test.jmx" `
             -verbose:$true `
             -wait:$true
@@ -177,6 +180,7 @@ stages:
           arguments:
             -loadTestId "$(loadTestId)" `
             -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
+            -apiVersion "$(azureLoadTestApiVersion)" `
             -testRunName "$(get-date -f "yyyy-MM-dd hh:ss") Load Test run triggered by ADO" `
             -testRunDescription "Pipeline executed load test run" `
             -testRunVUsers "$(azureLoadTestVUsers)" `
@@ -198,6 +202,7 @@ stages:
               start-sleep -seconds 90
               $result = $(System.DefaultWorkingDirectory)/src/testing/loadtest-azure/scripts/loadtest-get-run.ps1 `
                           -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
+                          -apiVersion "$(azureLoadTestApiVersion)" `
                           -testRunId "$(testRunId)"
               $testRunStatus = ($result).status
 

@@ -206,6 +206,8 @@ stages:
                           -testRunId "$(testRunId)"
               $testRunStatus = ($result).status
 
+              $result
+
               if ($result.status -eq "DONE") { # other states are FAILED, EXECUTING and CANCELLED
                 # test has successfully finished
                 echo "*** Test Run $(testRunId) was successfully completed. Status: $testRunStatus"

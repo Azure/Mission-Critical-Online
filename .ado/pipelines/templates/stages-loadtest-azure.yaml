@@ -219,6 +219,7 @@ stages:
             } while ($result.status -ne "DONE")
 
             echo "*** Test Run $(testRunId) was completed. Status: $testRunStatus"
+            echo "*** Portal URL: $($result.portalUrl)"
 
             # throw an error when testResult is FAILED
             if ($result.testResult -eq "FAILED") {
@@ -229,7 +230,13 @@ stages:
             $resultUrl = ($result).testArtifacts.outputArtifacts.resultUrl.url
             $logsUrl = ($result).testArtifacts.outputArtifacts.logsUrl.url
 
-            # download results and logs
+            # download results and logs - retry if empty
+            do {
+              echo "*** Either logsUrl ($logsUrl) or resultUrl ($resultUrl) is empty. Retry $i/3"
+              Start-Sleep -seconds 15
+              $i++
+            } while ( (!$resultUrl) -or (!$logsUrl) -or ($i -le 3) )
+
             if ( ($resultUrl) -and ($logsUrl) ) {
               New-Item -Path results -ItemType "directory"
               echo "*** Download resultsUrl"
@@ -254,7 +261,7 @@ stages:
               $JUNIT_RESULTS=output.xml
               python3 junit-converter.py $JMETER_RESULTS $JUNIT_RESULTS
             } else {
-              echo "Skipping conversion. results.zip was not found."
+              echo "Skipping result data conversion. results.zip was not found."
             }
             
         
@@ -268,6 +275,7 @@ stages:
 
       # publish load test results as pipeline artifacts in azure devops
       - task: PublishBuildArtifacts@1
+        condition: succeeded() 
         inputs:
           artifactName: 'loadtest'
           pathToPublish: '$(System.DefaultWorkingDirectory)/results'

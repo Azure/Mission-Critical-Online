@@ -220,16 +220,21 @@ stages:
 
             echo "*** Test Run $(testRunId) was completed. Status: $testRunStatus"
             echo "*** Portal URL: $($result.portalUrl)"
-
+            
             # processing test data and publish it in azure devops
-            $resultUrl = ($result).testArtifacts.outputArtifacts.resultUrl.url
-            $logsUrl = ($result).testArtifacts.outputArtifacts.logsUrl.url
-
             # download results and logs - retry if empty
             $i = 0
             do {
-              echo "*** Either logsUrl ($logsUrl) or resultUrl ($resultUrl) is empty. Retry $i/3"
-              Start-Sleep -seconds 15
+              $resultUrl = ($result).testArtifacts.outputArtifacts.resultUrl.url
+              $logsUrl = ($result).testArtifacts.outputArtifacts.logsUrl.url
+
+              if ( (!$resultUrl) -or (!$logsUrl) ) {
+                echo "*** Either logsUrl ($logsUrl) or resultUrl ($resultUrl) is empty. Retry $i/3"
+                Start-Sleep -seconds 15
+              } else {
+                $i=3
+              }
+
               $i++
             } while ( $i -le 3 )
 

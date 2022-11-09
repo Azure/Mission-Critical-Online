@@ -247,10 +247,16 @@ stages:
           targetType: inline
           script: |
             wget https://raw.githubusercontent.com/Azure-Samples/jmeter-aci-terraform/main/scripts/jtl_junit_converter.py -O $(System.DefaultWorkingDirectory)/junit-converter.py
-            unzip results/results.zip -d results
-            $JMETER_RESULTS=results/testreport.csv
-            $JUNIT_RESULTS=output.xml
-            python3 junit-converter.py $JMETER_RESULTS $JUNIT_RESULTS
+
+            if (Test-Path results/results.zip) {
+              Expand-Archive -Path results/results.zip -DestinationPath results
+              $JMETER_RESULTS=results/testreport.csv
+              $JUNIT_RESULTS=output.xml
+              python3 junit-converter.py $JMETER_RESULTS $JUNIT_RESULTS
+            } else {
+              echo "Skipping conversion. results.zip was not found."
+            }
+            
         
       - task: PublishTestResults@2
         displayName: 'RESULTS: Publish Load Testing Results'

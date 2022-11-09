@@ -163,7 +163,8 @@ stages:
             -loadTestId "$(loadTestId)" `
             -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
             -testFileName "$(System.DefaultWorkingDirectory)/src/testing/loadtest-azure/scripts/catalog-test.jmx" `
-            -verbose:$true
+            -verbose:$true `
+            -wait:$true
 
       # start azure load test
       - task: AzureCLI@2

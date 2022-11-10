@@ -22,7 +22,7 @@ param
   [bool] $pipeline = $false,
 
   # if set to true script will wait till file was validated
-  [bool] $wait = $false 
+  [bool] $wait = $true
 )
 
 . "$PSScriptRoot/common.ps1"

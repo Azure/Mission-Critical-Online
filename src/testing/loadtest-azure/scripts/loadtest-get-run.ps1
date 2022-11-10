@@ -1,7 +1,6 @@
 # loadtest-get-run.ps1 | Retrieve details from a load test run
 param
 (
-  # Load Test run id
   [Parameter(Mandatory=$true)]
   [string] $testRunId,
 
@@ -9,13 +8,13 @@ param
   [Parameter(Mandatory=$true)]
   [string] $apiEndpoint,
   
-  # Load Test data plane api version
+  # optional - load test data plane api version
   [string] $apiVersion = "2022-06-01-preview"
 )
 
 . "$PSScriptRoot/common.ps1"
 
-$urlRoot = "https://" + $apiEndpoint + "/testruns/" + $testRunId
+$urlRoot = "https://{0}/testruns/{1}" -f $apiEndpoint, $testRunId
 
 $url = $urlRoot + "?api-version=" + $apiVersion
 

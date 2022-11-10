@@ -13,9 +13,11 @@ param
   [Parameter(Mandatory = $true)]
   [string] $loadTestTargetUrl,
 
+  # Number of User threads
   [Parameter(Mandatory = $true)]
   [int] $loadTestUserThreads,
 
+  # Load test run duration (in seconds)
   [Parameter(Mandatory = $true)]
   [int] $loadTestDurationSeconds,
 
@@ -26,11 +28,13 @@ param
   [Parameter(Mandatory=$true)]
   [string] $apiEndpoint,
 
+  # parameter to handover a json file with test criteria
   [string] $passFailCriteria,
 
-  # Load Test data plane api version
+  # optional - load test data plane api version
   [string] $apiVersion = "2022-06-01-preview",
 
+  # optional - expose outputs as pipeline variables
   [bool] $pipeline = $false
 )
 
@@ -92,7 +96,7 @@ if ($passFailCriteria) {
 
 $body | Out-File $testDataFileName -Encoding utf8
 
-$urlRoot = "https://" + $apiEndpoint + "/loadtests/" + $loadTestId
+$urlRoot = "https://{0}/loadtests/{1}" -f $apiEndpoint, $loadTestId
 Write-Verbose "*** Load test service data plane: $urlRoot"
 
 # Create a new load test resource or update existing, if loadTestId already exists
@@ -102,7 +106,7 @@ az rest --url $urlRoot `
   --headers ('@' + $accessTokenFileName) "Content-Type=application/merge-patch+json" `
   --url-parameters testId=$loadTestId api-version=$apiVersion `
   --body ('@' + $testDataFileName) `
-  -o none $verbose 
+  --output none $verbose 
 
 # Outputs and exports for pipeline usage
 if($pipeline) {

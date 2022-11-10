@@ -1,7 +1,6 @@
 # loadtest-get-files.ps1 | List all files uploaded to a load test
 param
 (
-  # Load Test Id
   [Parameter(Mandatory=$true)]
   [string] $loadTestId,
   
@@ -9,21 +8,34 @@ param
   [Parameter(Mandatory=$true)]
   [string] $apiEndpoint,
 
-  # Load Test data plane api version
+  # optional - load test data plane api version
   [string] $apiVersion = "2022-06-01-preview",
+
+  # optional - request an individual file via its fileId
+  [string] $fileId,
+
+  # optional - keep access token when used embedded
+  [bool] $keepToken = $false,
 
   [int] $maxPageSize
 )
 
 . "$PSScriptRoot/common.ps1"
 
-$urlRoot = "https://" + $apiEndpoint + "/loadtests/" + $loadTestId + "/files"
+$urlRoot = "https://{0}/loadtests/{1}/files" -f $apiEndpoint, $loadTestId
+
+if ($fileId) {
+  $urlRoot = "{0}/{1}" -f $urlRoot,$fileId
+}
 
 az rest --url $urlRoot `
   --method GET `
   --skip-authorization-header `
   --headers ('@' + $accessTokenFileName) `
   --url-parameters api-version=$apiVersion maxPageSize=$maxPageSize `
-  $verbose
+  $verbose --output json | convertFrom-Json
 
-Remove-Item $accessTokenFileName
+if (!$keepToken) {
+  # delete accessToken when $keepToken is set to $false (default)
+  Remove-Item $accessTokenFileName
+}

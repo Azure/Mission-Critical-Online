@@ -43,6 +43,8 @@ variables:
   value: 'alwayson/healthservice'
 
 # Microsoft Azure Load Test (MALT) configuration
+- name: 'azureLoadTestApiVersion' # data plane
+  value: '2022-06-01-preview'
 - name: 'azureLoadTestEngineInstances'
   value: 2
 - name: 'azureLoadTestVUsers'

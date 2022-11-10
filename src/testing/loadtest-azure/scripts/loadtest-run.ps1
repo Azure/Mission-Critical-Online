@@ -1,7 +1,6 @@
 # loadtest-run.ps1 | Execute a load test run
 param
 (
-  # Load Test Id
   [Parameter(Mandatory=$true)]
   [string] $loadTestId,
   
@@ -9,8 +8,8 @@ param
   [Parameter(Mandatory=$true)]
   [string] $apiEndpoint,
 
-  # Load Test data plane api version
-  [string] $apiVersion = "2021-07-01-preview",
+  # optional - load test data plane api version
+  [string] $apiVersion = "2022-06-01-preview",
 
   # Load Test run displayname
   [Parameter(Mandatory=$true)]
@@ -18,8 +17,11 @@ param
 
   # Load test run description
   [string] $testRunDescription,
+  
   [int] $testRunVUsers = 1,
-  [bool]$pipeline = $False 
+
+  # optional - expose outputs as pipeline variables
+  [bool] $pipeline = $false
 )
 
 . "$PSScriptRoot/common.ps1"
@@ -48,7 +50,7 @@ function GetTestRunBody {
 }
 
 $testRunId = (New-Guid).toString()
-$urlRoot = "https://" + $apiEndpoint + "/testruns/" + $testRunId
+$urlRoot = "https://{0}/testruns/{1}"  -f $apiEndpoint,$testRunId
 Write-Verbose "*** Load test service data plane: $urlRoot"
 
 # Prep load test run body
@@ -60,7 +62,7 @@ $testRunData = GetTestRunBody `
     -vusers $testRunVUsers
 
 # Following is to get Invoke-RestMethod to work
-$url = $urlRoot + "?api-version=" + $apiVersion # + "&tenantId=" + $tenantId
+$url = $urlRoot + "?api-version=" + $apiVersion
 
 $header = @{
     'Content-Type'='application/merge-patch+json'

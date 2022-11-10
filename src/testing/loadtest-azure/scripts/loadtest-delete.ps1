@@ -1,7 +1,6 @@
 # loadtest-delete.ps1 | Delete a load test
 param
 (
-  # Load Test Id
   [Parameter(Mandatory=$true)]
   [string] $loadTestId,
   
@@ -9,7 +8,7 @@ param
   [Parameter(Mandatory=$true)]
   [string] $apiEndpoint,
 
-  # Load Test data plane api version
+  # optional - load test data plane api version
   [string] $apiVersion = "2022-06-01-preview"
 )
 
@@ -19,7 +18,7 @@ if (!$loadTestId) {
 
 . ./common.ps1
 
-$urlRoot = "https://" + $apiEndpoint + "/loadtests/" + "$loadTestId"
+$urlRoot = "https://{0}/loadtests/{1}" -f $apiEndpoint,$loadTestId
 
 az rest --url $urlRoot `
   --method DELETE `

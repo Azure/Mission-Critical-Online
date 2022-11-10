@@ -74,7 +74,7 @@ if($wait) {
        Write-Verbose "*** File $($fileStatus.fileId) was successfully validated."
     }
 
-  } while ($fileStatus.validationStatus -ne "VALIDATION_SUCCESS" )
+  } while ($fileStatus.validationStatus -eq "VALIDATION_INITIATED" )
 }
 
 Remove-Item $accessTokenFileName

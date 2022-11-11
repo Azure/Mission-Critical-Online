@@ -22,7 +22,7 @@ function Remove-SavedLogAnalyticsQueries {
       Write-Host "*** Looking for saved searches in workspace $($workspace.name) in category 'HealthModel'"
 
       # List all saved searches in the workspace of category "HealthModel" (those are our saved queries)
-      $savedSearches = az monitor log-analytics workspace saved-search list --resource-group $workspace.resourceGroup --workspace-name $workspace.name --query "value[?category=='HealthModel']" | ConvertFrom-Json
+      $savedSearches = az monitor log-analytics workspace saved-search list --resource-group $workspace.resourceGroup --workspace-name $workspace.name --query "[?category=='HealthModel']" | ConvertFrom-Json
 
       foreach($search in $savedSearches)
       {

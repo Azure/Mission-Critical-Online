@@ -1,5 +1,5 @@
 # Create build environment
-FROM node:18.11.0 as build-env
+FROM node:19.1.0 as build-env
 
 WORKDIR /app
 COPY . ./

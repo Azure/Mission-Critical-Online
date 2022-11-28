@@ -5,11 +5,11 @@ variables:
   value: 'foundational-online'
 
 - name: 'terraformVersion'    # Terraform Version
-  value: '1.3.2'
+  value: '1.3.5'
 - name: 'kubernetesVersion'   # kubernetes version used for aks clusters
-  value: '1.24.3'
+  value: '1.24.6'
 - name: 'helmVersion'         # helm package manager version
-  value: 'v3.9.4'
+  value: 'v3.10.2'
 - name: 'ingressNginxVersion' # nginx ingress controller helm chart version
   value: '4.2.5'
 - name: 'certManagerVersion'  # cert-manager helm chart version

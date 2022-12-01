@@ -145,9 +145,7 @@ resource "azurerm_cdn_frontdoor_route" "globalstorage" {
   enabled                       = true
   cdn_frontdoor_origin_group_id = azurerm_cdn_frontdoor_origin_group.globalstorage.id
 
-  cdn_frontdoor_custom_domain_ids = [
-    azurerm_cdn_frontdoor_custom_domain.global.*.id,
-  ]
+  cdn_frontdoor_custom_domain_ids = var.custom_fqdn != "" ? [azurerm_cdn_frontdoor_custom_domain.global.0.id] : null
 
   patterns_to_match = [
     "/images/*"
@@ -190,9 +188,7 @@ resource "azurerm_cdn_frontdoor_route" "backendapi" {
   enabled                       = true
   cdn_frontdoor_origin_group_id = azurerm_cdn_frontdoor_origin_group.backendapis.id
 
-  cdn_frontdoor_custom_domain_ids = [
-    azurerm_cdn_frontdoor_custom_domain.global.*.id,
-  ]
+  cdn_frontdoor_custom_domain_ids = var.custom_fqdn != "" ? [azurerm_cdn_frontdoor_custom_domain.global.0.id] : null
 
   patterns_to_match = [
     "/catalogservice/*",
@@ -233,9 +229,7 @@ resource "azurerm_cdn_frontdoor_route" "staticstorage" {
   enabled                       = true
   cdn_frontdoor_origin_group_id = azurerm_cdn_frontdoor_origin_group.staticstorage.id
 
-  cdn_frontdoor_custom_domain_ids = [
-    azurerm_cdn_frontdoor_custom_domain.global.*.id,
-  ]
+  cdn_frontdoor_custom_domain_ids = var.custom_fqdn != "" ? [azurerm_cdn_frontdoor_custom_domain.global.0.id] : null
 
   patterns_to_match = [
     "/*"

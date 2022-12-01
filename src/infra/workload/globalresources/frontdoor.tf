@@ -1,249 +1,334 @@
-# resource "azurerm_frontdoor" "main" {
-#   name                = local.frontdoor_name
-#   resource_group_name = azurerm_resource_group.global.name
+resource "azurerm_cdn_frontdoor_profile" "main" {
+  name                     = local.frontdoor_name
+  resource_group_name      = azurerm_resource_group.global.name
+  response_timeout_seconds = 120
 
-#   tags = local.default_tags
+  sku_name = "Premium_AzureFrontDoor"
+  tags     = local.default_tags
+}
 
-#   depends_on = [
-#     azurerm_dns_cname_record.app_subdomain
-#   ]
+# Default Front Door endpoint
+resource "azurerm_cdn_frontdoor_endpoint" "default" {
+  name    = "${local.prefix}-primaryendpoint" # needs to be a gloablly unique name
+  enabled = true
 
-#   routing_rule {
-#     name               = "API-rule"
-#     accepted_protocols = ["Https"]
-#     patterns_to_match  = ["/catalogservice/*", "/healthservice/*"]
-#     frontend_endpoints = [(var.custom_fqdn != "" ? local.frontdoor_custom_frontend_name : local.frontdoor_default_frontend_name)]
-#     forwarding_configuration {
-#       forwarding_protocol = "HttpsOnly"
-#       backend_pool_name   = "BackendApis"
-#     }
-#   }
+  cdn_frontdoor_profile_id = azurerm_cdn_frontdoor_profile.main.id
+}
 
-#   routing_rule {
-#     name               = "UI-rule"
-#     accepted_protocols = ["Https"]
-#     patterns_to_match  = ["/*"]
-#     frontend_endpoints = [(var.custom_fqdn != "" ? local.frontdoor_custom_frontend_name : local.frontdoor_default_frontend_name)]
-#     forwarding_configuration {
-#       forwarding_protocol = "HttpsOnly"
-#       backend_pool_name   = "StaticStorage"
+resource "azurerm_cdn_frontdoor_custom_domain" "global" {
+  count                    = var.custom_fqdn != "" ? 1 : 0
+  name                     = "CustomDomainFrontendEndpoint"
+  cdn_frontdoor_profile_id = azurerm_cdn_frontdoor_profile.main.id
 
-#       # Since the UI app is a SPA (single page application), usually the entire app can be served from cache without the need to request it from the backend every time
-#       cache_enabled = true
-#     }
-#   }
+  host_name   = local.custom_domain_name
+  dns_zone_id = data.azurerm_dns_zone.customdomain[0].id
 
-#   routing_rule {
-#     name               = "Images-rule"
-#     accepted_protocols = ["Https"]
-#     patterns_to_match  = ["/images/*"]
-#     frontend_endpoints = [(var.custom_fqdn != "" ? local.frontdoor_custom_frontend_name : local.frontdoor_default_frontend_name)]
-#     forwarding_configuration {
-#       forwarding_protocol = "HttpsOnly"
-#       backend_pool_name   = "GlobalStorage"
-#       cache_enabled       = true # Cache the images
-#     }
-#   }
+  tls {
+    certificate_type    = "ManagedCertificate"
+    minimum_tls_version = "TLS12"
+  }
+}
 
-#   # Routing rule to redirect all HTTP traffic to HTTPS endpoint
-#   routing_rule {
-#     name               = "HTTPS-Redirect"
-#     accepted_protocols = ["Http"]
-#     patterns_to_match  = ["/*"]
-#     frontend_endpoints = [(var.custom_fqdn != "" ? local.frontdoor_custom_frontend_name : local.frontdoor_default_frontend_name)]
-#     redirect_configuration {
-#       redirect_protocol = "HttpsOnly"
-#       redirect_type     = "Moved"
-#     }
-#   }
+resource "azurerm_cdn_frontdoor_custom_domain_association" "global" {
+  count                          = var.custom_fqdn != "" ? 1 : 0
+  cdn_frontdoor_custom_domain_id = azurerm_cdn_frontdoor_custom_domain.global[0].id
+  cdn_frontdoor_route_ids = setunion(
+    [azurerm_cdn_frontdoor_route.globalstorage.id],
+    azurerm_cdn_frontdoor_route.staticstorage.*.id,
+    azurerm_cdn_frontdoor_route.backendapi.*.id
+  )
+}
 
-#   backend_pool_load_balancing {
-#     name                            = "LoadBalancingSettings"
-#     additional_latency_milliseconds = 1000 # This number should be in 10s of ms to make sure that stamps in the same regions are treated as equal. We are right now using a high value to ensure load levelling between regions as well.
-#   }
+# Front Door Origin Group used for Backend APIs hosted on AKS
+resource "azurerm_cdn_frontdoor_origin_group" "backendapis" {
+  name = "BackendApis"
 
-#   backend_pool_health_probe {
-#     name                = "ApiHealthProbeSetting"
-#     protocol            = "Https"
-#     probe_method        = "HEAD"
-#     path                = "/healthservice/health/stamp"
-#     interval_in_seconds = 30
-#   }
+  cdn_frontdoor_profile_id = azurerm_cdn_frontdoor_profile.main.id
 
-#   backend_pool_health_probe {
-#     name                = "StaticStorageHealthProbeSetting"
-#     protocol            = "Https"
-#     probe_method        = "HEAD"
-#     path                = "/"
-#     interval_in_seconds = 30
-#   }
+  session_affinity_enabled = false
 
-#   backend_pool_health_probe {
-#     name                = "GlobalStorageHealthProbeSetting"
-#     protocol            = "Https"
-#     probe_method        = "HEAD"
-#     path                = "/health.check"
-#     interval_in_seconds = 30
-#   }
+  health_probe {
+    protocol            = "Https"
+    request_type        = "HEAD"
+    path                = "/healthservice/health/stamp"
+    interval_in_seconds = 30
+  }
 
-#   backend_pool_settings {
-#     enforce_backend_pools_certificate_name_check = true
-#     backend_pools_send_receive_timeout_seconds   = 60
-#   }
+  load_balancing {
+    sample_size                        = 4
+    successful_samples_required        = 2
+    additional_latency_in_milliseconds = 1000
+  }
+}
 
-#   backend_pool {
-#     name = "BackendApis"
+# Front Door Origin Group used for Global Storage Accounts
+resource "azurerm_cdn_frontdoor_origin_group" "globalstorage" {
+  name = "GlobalStorage"
 
-#     dynamic "backend" {
-#       for_each = var.backends_BackendApis
-#       content {
-#         host_header = backend.value.address
-#         address     = backend.value.address
-#         http_port   = 80
-#         https_port  = 443
-#         enabled     = backend.value.enabled
-#         weight      = backend.value.weight
-#       }
-#     }
+  session_affinity_enabled = false
 
-#     load_balancing_name = "LoadBalancingSettings"
-#     health_probe_name   = "ApiHealthProbeSetting"
-#   }
+  health_probe {
+    protocol            = "Https"
+    request_type        = "HEAD"
+    path                = "/health.check"
+    interval_in_seconds = 30
+  }
 
-#   backend_pool {
-#     name = "StaticStorage"
+  load_balancing {
+    sample_size                        = 4
+    successful_samples_required        = 2
+    additional_latency_in_milliseconds = 1000
+  }
 
-#     dynamic "backend" {
-#       for_each = var.backends_StaticStorage
-#       content {
-#         host_header = backend.value.address
-#         address     = backend.value.address
-#         http_port   = 80
-#         https_port  = 443
-#         enabled     = backend.value.enabled
-#         weight      = backend.value.weight
-#       }
-#     }
+  cdn_frontdoor_profile_id = azurerm_cdn_frontdoor_profile.main.id
+}
 
+# Front Door Origin Group used for Static Storage Accounts
+resource "azurerm_cdn_frontdoor_origin_group" "staticstorage" {
+  name = "StaticStorage"
 
-#     load_balancing_name = "LoadBalancingSettings"
-#     health_probe_name   = "StaticStorageHealthProbeSetting"
-#   }
+  session_affinity_enabled = false
 
-#   backend_pool {
-#     name = "GlobalStorage"
+  health_probe {
+    protocol            = "Https"
+    request_type        = "HEAD"
+    path                = "/"
+    interval_in_seconds = 30
+  }
 
-#     backend {
-#       host_header = azurerm_storage_account.global.primary_web_host
-#       address     = azurerm_storage_account.global.primary_web_host
-#       http_port   = 80
-#       https_port  = 443
-#       enabled     = true
-#       weight      = 1
-#       priority    = 1
-#     }
+  load_balancing {
+    sample_size                        = 4
+    successful_samples_required        = 2
+    additional_latency_in_milliseconds = 1000
+  }
 
-#     backend {
-#       host_header = azurerm_storage_account.global.secondary_web_host
-#       address     = azurerm_storage_account.global.secondary_web_host
-#       http_port   = 80
-#       https_port  = 443
-#       enabled     = true
-#       weight      = 1
-#       priority    = 2 # Use secondary location only in case the primary is not accessible in order to avoid issues due to replication latency of the GRS
-#     }
+  cdn_frontdoor_profile_id = azurerm_cdn_frontdoor_profile.main.id
+}
 
-#     load_balancing_name = "LoadBalancingSettings"
-#     health_probe_name   = "GlobalStorageHealthProbeSetting"
-#   }
+resource "azurerm_cdn_frontdoor_origin" "globalstorage-primary" {
+  name      = "primary"
+  host_name = azurerm_storage_account.global.primary_web_host
 
-#   frontend_endpoint {
-#     name                     = local.frontdoor_default_frontend_name
-#     host_name                = local.frontdoor_default_dns_name
-#     session_affinity_enabled = false
+  http_port  = 80
+  https_port = 443
+  weight     = 1
+  priority   = 1
 
-#     web_application_firewall_policy_link_id = azurerm_frontdoor_firewall_policy.main.id
-#   }
+  enabled                        = true
+  certificate_name_check_enabled = true
 
-#   dynamic "frontend_endpoint" {
-#     for_each = azurerm_dns_cname_record.app_subdomain # there is either 1 or 0 resources, depending on whether a custom domain name was supplied
-#     content {
-#       name                                    = local.frontdoor_custom_frontend_name
-#       host_name                               = trimsuffix(frontend_endpoint.value.fqdn, ".") # remove trailing dot (.) from the end of the FQDN
-#       session_affinity_enabled                = false
-#       web_application_firewall_policy_link_id = azurerm_frontdoor_firewall_policy.main.id
-#     }
-#   }
-# }
+  origin_host_header = azurerm_storage_account.global.primary_web_host
 
-# resource "azurerm_frontdoor_custom_https_configuration" "custom_domain_https" {
-#   count                             = var.custom_fqdn != "" ? 1 : 0
-#   frontend_endpoint_id              = "${azurerm_frontdoor.main.id}/frontendEndpoints/${local.frontdoor_custom_frontend_name}"
-#   custom_https_provisioning_enabled = true
+  cdn_frontdoor_origin_group_id = azurerm_cdn_frontdoor_origin_group.globalstorage.id
+}
 
-#   custom_https_configuration {
-#     certificate_source = "FrontDoor"
-#   }
-# }
+resource "azurerm_cdn_frontdoor_origin" "globalstorage-secondary" {
+  name      = "secondary"
+  host_name = azurerm_storage_account.global.secondary_web_host
 
-# resource "azurerm_frontdoor_firewall_policy" "main" {
-#   name                = "${lower(var.prefix)}globalfdfp"
-#   resource_group_name = azurerm_resource_group.global.name
-#   enabled             = true
-#   mode                = "Prevention"
+  http_port  = 80
+  https_port = 443
+  weight     = 1
+  priority   = 2
 
-#   managed_rule {
-#     type    = "Microsoft_DefaultRuleSet"
-#     version = "1.1"
-#   }
+  enabled                        = true
+  certificate_name_check_enabled = true
 
-#   managed_rule {
-#     type    = "Microsoft_BotManagerRuleSet"
-#     version = "1.0"
-#   }
+  origin_host_header = azurerm_storage_account.global.secondary_web_host
 
-#   tags = local.default_tags
-# }
+  cdn_frontdoor_origin_group_id = azurerm_cdn_frontdoor_origin_group.globalstorage.id
+}
 
-# ####################################### DIAGNOSTIC SETTINGS #######################################
+resource "azurerm_cdn_frontdoor_route" "globalstorage" {
+  name                          = "GlobalStorageRoute"
+  cdn_frontdoor_endpoint_id     = azurerm_cdn_frontdoor_endpoint.default.id
+  enabled                       = true
+  cdn_frontdoor_origin_group_id = azurerm_cdn_frontdoor_origin_group.globalstorage.id
 
-# # Use this data source to fetch all available log and metrics categories. We then enable all of them
-# data "azurerm_monitor_diagnostic_categories" "frontdoor" {
-#   resource_id = azurerm_frontdoor.main.id
-# }
+  cdn_frontdoor_custom_domain_ids = var.custom_fqdn != "" ? [azurerm_cdn_frontdoor_custom_domain.global.0.id] : null
 
-# resource "azurerm_monitor_diagnostic_setting" "frontdoor" {
-#   name                       = "frontdoorladiagnostics"
-#   target_resource_id         = azurerm_frontdoor.main.id
-#   log_analytics_workspace_id = azurerm_log_analytics_workspace.global.id
+  patterns_to_match = [
+    "/images/*"
+  ]
 
-#   dynamic "log" {
-#     iterator = entry
-#     for_each = data.azurerm_monitor_diagnostic_categories.frontdoor.log_category_types
+  supported_protocols = [
+    "Http", # HTTP needs to be enabled explicity, so that https_redirect_enabled = true (default) works
+    "Https"
+  ]
+  forwarding_protocol = "HttpsOnly"
 
-#     content {
-#       category = entry.value
-#       enabled  = true
+  cdn_frontdoor_origin_ids = [
+    azurerm_cdn_frontdoor_origin.globalstorage-primary.id,
+    azurerm_cdn_frontdoor_origin.globalstorage-secondary.id
+  ]
+}
 
-#       retention_policy {
-#         enabled = true
-#         days    = 30
-#       }
-#     }
-#   }
+resource "azurerm_cdn_frontdoor_origin" "backendapi" {
+  for_each = { for index, backend in var.backends_BackendApis : backend.address => backend }
 
-#   dynamic "metric" {
-#     iterator = entry
-#     for_each = data.azurerm_monitor_diagnostic_categories.frontdoor.metrics
+  name               = replace(each.value.address, ".", "-") # Name must not contain dots, so we use hyphens instead
+  host_name          = each.value.address
+  origin_host_header = each.value.address
+  weight             = each.value.weight
 
-#     content {
-#       category = entry.value
-#       enabled  = true
+  enabled                        = each.value.enabled
+  certificate_name_check_enabled = true
 
-#       retention_policy {
-#         enabled = true
-#         days    = 30
-#       }
-#     }
-#   }
-# }
+  cdn_frontdoor_origin_group_id = azurerm_cdn_frontdoor_origin_group.backendapis.id
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "azurerm_cdn_frontdoor_route" "backendapi" {
+  count                         = length(var.backends_BackendApis) > 0 ? 1 : 0 # only create this route if there are already backends
+  name                          = "BackendApiRoute"
+  cdn_frontdoor_endpoint_id     = azurerm_cdn_frontdoor_endpoint.default.id
+  enabled                       = true
+  cdn_frontdoor_origin_group_id = azurerm_cdn_frontdoor_origin_group.backendapis.id
+
+  cdn_frontdoor_custom_domain_ids = var.custom_fqdn != "" ? [azurerm_cdn_frontdoor_custom_domain.global.0.id] : null
+
+  patterns_to_match = [
+    "/catalogservice/*",
+    "/healthservice/*"
+  ]
+
+  supported_protocols = [
+    "Http", # HTTP needs to be enabled explicity, so that https_redirect_enabled = true (default) works
+    "Https"
+  ]
+  forwarding_protocol = "HttpsOnly"
+
+  cdn_frontdoor_origin_ids = [for i, b in azurerm_cdn_frontdoor_origin.backendapi : b.id]
+}
+
+resource "azurerm_cdn_frontdoor_origin" "staticstorage" {
+  for_each = { for index, backend in var.backends_StaticStorage : backend.address => backend }
+
+  name               = replace(each.value.address, ".", "-") # Name must not contain dots, so we use hyphens instead
+  host_name          = each.value.address
+  origin_host_header = each.value.address
+  weight             = each.value.weight
+
+  enabled                        = each.value.enabled
+  certificate_name_check_enabled = true
+
+  cdn_frontdoor_origin_group_id = azurerm_cdn_frontdoor_origin_group.staticstorage.id
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "azurerm_cdn_frontdoor_route" "staticstorage" {
+  count                         = length(var.backends_StaticStorage) > 0 ? 1 : 0 # only create this route if there are already backends
+  name                          = "StaticStorageRoute"
+  cdn_frontdoor_endpoint_id     = azurerm_cdn_frontdoor_endpoint.default.id
+  enabled                       = true
+  cdn_frontdoor_origin_group_id = azurerm_cdn_frontdoor_origin_group.staticstorage.id
+
+  cdn_frontdoor_custom_domain_ids = var.custom_fqdn != "" ? [azurerm_cdn_frontdoor_custom_domain.global.0.id] : null
+
+  patterns_to_match = [
+    "/*"
+  ]
+
+  supported_protocols = [
+    "Http", # HTTP needs to be enabled explicity, so that https_redirect_enabled = true (default) works
+    "Https"
+  ]
+  forwarding_protocol = "HttpsOnly"
+
+  cdn_frontdoor_origin_ids = [for i, b in azurerm_cdn_frontdoor_origin.staticstorage : b.id]
+}
+
+#### WAF
+
+resource "azurerm_cdn_frontdoor_firewall_policy" "global" {
+  name                = "${local.prefix}globalfdfp"
+  resource_group_name = azurerm_resource_group.global.name
+  sku_name            = azurerm_cdn_frontdoor_profile.main.sku_name
+  enabled             = true
+  mode                = "Prevention"
+
+  managed_rule {
+    type    = "Microsoft_DefaultRuleSet"
+    version = "2.0"
+    action  = "Block"
+  }
+  managed_rule {
+    type    = "Microsoft_BotManagerRuleSet"
+    version = "1.0"
+    action  = "Block"
+  }
+}
+
+resource "azurerm_cdn_frontdoor_security_policy" "global" {
+  name                     = "Global-Security-Policy"
+  cdn_frontdoor_profile_id = azurerm_cdn_frontdoor_profile.main.id
+
+  security_policies {
+    firewall {
+      cdn_frontdoor_firewall_policy_id = azurerm_cdn_frontdoor_firewall_policy.global.id
+      association {
+        patterns_to_match = ["/*"]
+
+        domain {
+          cdn_frontdoor_domain_id = azurerm_cdn_frontdoor_endpoint.default.id
+        }
+
+        dynamic "domain" {
+          for_each = azurerm_cdn_frontdoor_custom_domain.global
+          content {
+            cdn_frontdoor_domain_id = domain.value.id
+          }
+        }
+      }
+    }
+  }
+}
+
+####################################### DIAGNOSTIC SETTINGS #######################################
+
+# Use this data source to fetch all available log and metrics categories. We then enable all of them
+data "azurerm_monitor_diagnostic_categories" "frontdoor" {
+  resource_id = azurerm_cdn_frontdoor_profile.main.id
+}
+
+resource "azurerm_monitor_diagnostic_setting" "frontdoor" {
+  name                       = "afdladiagnostics"
+  target_resource_id         = azurerm_cdn_frontdoor_profile.main.id
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.global.id
+
+  dynamic "log" {
+    iterator = entry
+    for_each = data.azurerm_monitor_diagnostic_categories.frontdoor.log_category_types
+
+    content {
+      category = entry.value
+      enabled  = true
+
+      retention_policy {
+        enabled = true
+        days    = 30
+      }
+    }
+  }
+
+  dynamic "metric" {
+    iterator = entry
+    for_each = data.azurerm_monitor_diagnostic_categories.frontdoor.metrics
+
+    content {
+      category = entry.value
+      enabled  = true
+
+      retention_policy {
+        enabled = true
+        days    = 30
+      }
+    }
+  }
+}

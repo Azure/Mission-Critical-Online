@@ -20,7 +20,7 @@ resource "azurerm_cdn_frontdoor_custom_domain" "global" {
   name                     = "CustomDomainFrontendEndpoint"
   cdn_frontdoor_profile_id = azurerm_cdn_frontdoor_profile.main.id
 
-  host_name   = local.custom_domain_name
+  host_name   = var.custom_fqdn
   dns_zone_id = data.azurerm_dns_zone.customdomain[0].id
 
   tls {

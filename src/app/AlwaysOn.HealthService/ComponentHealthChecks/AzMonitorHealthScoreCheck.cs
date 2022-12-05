@@ -1,5 +1,5 @@
 ﻿using AlwaysOn.Shared;
-using Azure.Identity;
+using Azure.Core;
 using Azure.Monitor.Query;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
@@ -16,15 +16,13 @@ namespace AlwaysOn.HealthService.ComponentHealthChecks
         private readonly LogsQueryClient _logsQueryClient;
 
         public AzMonitorHealthScoreCheck(ILogger<AzMonitorHealthScoreCheck> logger,
+            TokenCredential tokenCredential,
             SysConfiguration sysConfig)
         {
             _logger = logger;
             _sysConfig = sysConfig;
 
-            _logsQueryClient = new LogsQueryClient(new DefaultAzureCredential(new DefaultAzureCredentialOptions()
-            {
-                ManagedIdentityClientId = _sysConfig.ManagedIdentityClientId
-            }));
+            _logsQueryClient = new LogsQueryClient(tokenCredential);
         }
 
         /// <summary>

@@ -29,34 +29,6 @@ resource "azurerm_eventhub_consumer_group" "backendworker" {
   resource_group_name = azurerm_resource_group.stamp.name
 }
 
-resource "azurerm_eventhub_authorization_rule" "frontend_sender" {
-  name                = "frontendsender"
-  namespace_name      = azurerm_eventhub_namespace.stamp.name
-  eventhub_name       = azurerm_eventhub.backendqueue.name
-  resource_group_name = azurerm_resource_group.stamp.name
-  listen              = false
-  send                = true
-  manage              = false
-
-  depends_on = [ # explicit dependency to avoid conflicts when deleting eventhub
-    azurerm_eventhub_consumer_group.backendworker
-  ]
-}
-
-resource "azurerm_eventhub_authorization_rule" "backend_reader" {
-  name                = "backendreader"
-  namespace_name      = azurerm_eventhub_namespace.stamp.name
-  eventhub_name       = azurerm_eventhub.backendqueue.name
-  resource_group_name = azurerm_resource_group.stamp.name
-  listen              = true
-  send                = false
-  manage              = false
-
-  depends_on = [ # explicit dependency to avoid conflicts when deleting eventhub
-    azurerm_eventhub_consumer_group.backendworker
-  ]
-}
-
 ####################################### DIAGNOSTIC SETTINGS #######################################
 
 # Use this data source to fetch all available log and metrics categories. We then enable all of them

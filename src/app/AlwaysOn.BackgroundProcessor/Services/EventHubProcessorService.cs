@@ -1,5 +1,6 @@
 using AlwaysOn.Shared;
 using AlwaysOn.Shared.Exceptions;
+using Azure.Core;
 using Azure.Data.Tables;
 using Azure.Messaging.EventHubs;
 using Azure.Messaging.EventHubs.Processor;
@@ -50,7 +51,7 @@ namespace AlwaysOn.BackgroundProcessor.Services
         /// </summary>
         private readonly ConcurrentDictionary<string, DateTime> ownedPartitions = new();
 
-        public EventHubProcessorService(ILogger<EventHubProcessorService> logger, SysConfiguration sysConfig, ActionProcessorService actionProcessorService, TelemetryClient tc)
+        public EventHubProcessorService(ILogger<EventHubProcessorService> logger, SysConfiguration sysConfig, TokenCredential tokenCredential, ActionProcessorService actionProcessorService, TelemetryClient tc)
         {
             _logger = logger;
             _sysConfig = sysConfig;
@@ -58,13 +59,13 @@ namespace AlwaysOn.BackgroundProcessor.Services
             _actionProcessorService = actionProcessorService;
 
             // Blob container client for checkpoint store
-            _blobContainerClient = new BlobContainerClient(_sysConfig.BackendStorageConnectionString, _sysConfig.BackendCheckpointBlobContainerName);
+            _blobContainerClient = new BlobContainerClient(new Uri($"https://{_sysConfig.BackendStorageAccountName}.blob.core.windows.net/{_sysConfig.BackendCheckpointBlobContainerName}"), tokenCredential);
 
             // Event Hub Processor client
-            _processor = new EventProcessorClient(_blobContainerClient, _sysConfig.BackendReaderEventHubConsumergroup, _sysConfig.BackendReaderEventHubConnectionString, new EventProcessorClientOptions() { TrackLastEnqueuedEventProperties = true });
+            _processor = new EventProcessorClient(_blobContainerClient, _sysConfig.BackendReaderEventHubConsumergroup, _sysConfig.EventHubEndpoint, _sysConfig.EventHubName, credential: tokenCredential, new EventProcessorClientOptions() { TrackLastEnqueuedEventProperties = true });
 
             // Table client for the poison message store. We expect the table itself was already created as part of the infrastructure (see Terraform IaC)
-            _tableClient = new TableClient(_sysConfig.BackendStorageConnectionString, SysConfiguration.BackendStoragePoisonMessagesTableName);
+            _tableClient = new TableClient(new Uri($"https://{_sysConfig.BackendStorageAccountName}.table.core.windows.net"), SysConfiguration.BackendStoragePoisonMessagesTableName, tokenCredential);
         }
 
         /// <summary>
@@ -106,7 +107,7 @@ namespace AlwaysOn.BackgroundProcessor.Services
                                 else
                                 {
                                     _logger.LogDebug("Scheduled checkpointing for partition {partition}. Offset={offset}", partition, lastProcessEventArgs.Data.Offset);
-                                    await lastProcessEventArgs.UpdateCheckpointAsync();
+                                    await lastProcessEventArgs.UpdateCheckpointAsync(stoppingToken);
                                 }
                             }
                         }

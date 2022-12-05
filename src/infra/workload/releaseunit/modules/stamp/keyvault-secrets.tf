@@ -3,15 +3,15 @@
 locals {
   secrets = {
     "EventHub-Endpoint"                          = "${azurerm_eventhub_namespace.stamp.name}.servicebus.windows.net"
-    "Backend-ReaderEventHubConsumerGroupName"    = azurerm_eventhub_consumer_group.backendworker.name
-    "EventHub-BackendqueueName"                  = azurerm_eventhub.backendqueue.name
+    "BackgroundProcessor-ConsumerGroupName"      = azurerm_eventhub_consumer_group.backendworker.name
+    "EventHub-Name"                              = azurerm_eventhub.backendqueue.name
     "StorageAccount-Name"                        = azurerm_storage_account.private.name
     "StorageAccount-EhCheckpointContainerName"   = azurerm_storage_container.deployment_eventhub_checkpoints.name
     "StorageAccount-Healthservice-ContainerName" = azurerm_storage_container.deployment_healthservice.name
     "StorageAccount-Healthservice-BlobName"      = local.health_blob_name
     "Global-StorageAccount-Name"                 = data.azurerm_storage_account.global.name
     "ApplicationInsights-Connection-String"      = data.azurerm_application_insights.stamp.connection_string
-    "ApplicationInsights-Adaptive-Sampling"      = var.ai_adaptive_sampling,
+    "ApplicationInsights-Adaptive-Sampling"      = var.ai_adaptive_sampling
     "CosmosDb-Endpoint"                          = data.azurerm_cosmosdb_account.global.endpoint
     "CosmosDb-DatabaseName"                      = var.cosmosdb_database_name
     "Api-Key"                                    = var.api_key

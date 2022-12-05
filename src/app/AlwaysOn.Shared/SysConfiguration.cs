@@ -62,7 +62,7 @@ namespace AlwaysOn.Shared
 
         public string EventHubEndpoint => Configuration["EVENTHUB_ENDPOINT"];
         public string EventHubName => Configuration["EVENTHUB_NAME"];
-        public string BackendReaderEventHubConsumergroup => Configuration["BACKEND_READEREVENTHUBCONSUMERGROUPNAME"];
+        public string BackendReaderEventHubConsumergroup => Configuration["BACKGROUNDPROCESSOR_CONSUMERGROUPNAME"];
         public string BackendStorageAccountName => Configuration["STORAGEACCOUNT_NAME"];
         public string BackendCheckpointBlobContainerName => Configuration["STORAGEACCOUNT_EHCHECKPOINTCONTAINERNAME"];
         public string RegionalLogAnalyticsWorkspaceId => Configuration["LOGANALYTICS_WORKSPACEID"];

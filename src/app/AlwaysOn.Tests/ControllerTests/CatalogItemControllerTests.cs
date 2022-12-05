@@ -67,7 +67,7 @@ namespace AlwaysOn.Tests
             mockDatabase.Setup(db => db.ListCatalogItemsAsync(100))
                         .Throws(new AlwaysOnDependencyException(HttpStatusCode.TooManyRequests));
 
-            var controller = new CatalogItemController(mockLogger, mockDatabase.Object, null, null);
+            var controller = new CatalogItemController(mockLogger, mockDatabase.Object, null, null, null);
 
             // Act
             var result = await controller.ListCatalogItemsAsync();

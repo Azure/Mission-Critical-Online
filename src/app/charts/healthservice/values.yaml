@@ -37,3 +37,6 @@ networkPolicy:
 azure:
   frontdoorid: "" # Azure Front Door Header ID
   region: "East US 2"
+
+identity:
+  clientid: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" # clientid used for workload identity

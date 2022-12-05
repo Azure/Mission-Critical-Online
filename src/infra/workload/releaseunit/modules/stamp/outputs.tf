@@ -52,3 +52,18 @@ output "app_insights_name" {
 output "eventhub_id" {
   value = azurerm_eventhub_namespace.stamp.id
 }
+
+# client_id of the catalogservice managed identity
+output "catalogservice_managed_identity_client_id" {
+  value = azurerm_user_assigned_identity.catalogservice.client_id
+}
+
+# client_id of the healthservice managed identity
+output "healthservice_managed_identity_client_id" {
+  value = azurerm_user_assigned_identity.healthservice.client_id
+}
+
+# client_id of the backgroundprocessor managed identity
+output "backgroundprocessor_managed_identity_client_id" {
+  value = azurerm_user_assigned_identity.backgroundprocessor.client_id
+}

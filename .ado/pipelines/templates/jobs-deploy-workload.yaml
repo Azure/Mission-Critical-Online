@@ -33,6 +33,7 @@ jobs: # using jobs so they each run in parallel
 
             $aksClusterName = $stamp.aks_cluster_name
             $aksClusterResourceGroup = $stamp.resource_group_name
+            $identityClientId = $stamp.healthservice_managed_identity_client_id
 
             # We are using the list-locations command to retrieve the display name of the region as this is needed for the Cosmos DB SDK's ApplicationRegion parameter
             $region = az account list-locations --query "[?name == '$($stamp.location)'].displayName" -o tsv
@@ -59,6 +60,7 @@ jobs: # using jobs so they each run in parallel
                          --set azure.region="$region" `
                          --set containerimage="$fullContainerImageName" `
                          --set workload.domainname="$fqdn" `
+                         --set identity.clientid="$identityClientId" `
                          --wait
 
             # Wait for the ingress certificate to be provisioned by cert-manager
@@ -125,6 +127,7 @@ jobs: # using jobs so they each run in parallel
 
             $aksClusterName = $stamp.aks_cluster_name
             $aksClusterResourceGroup = $stamp.resource_group_name
+            $identityClientId = $stamp.catalogservice_managed_identity_client_id
 
             # We are using the list-locations command to retrieve the display name of the region as this is needed for the Cosmos DB SDK's ApplicationRegion parameter
             $region = az account list-locations --query "[?name == '$($stamp.location)'].displayName" -o tsv
@@ -153,6 +156,7 @@ jobs: # using jobs so they each run in parallel
                          --set azure.region="$region" `
                          --set containerimage="$fullContainerImageName" `
                          --set workload.domainname="$fqdn" `
+                         --set identity.clientid="$identityClientId" `
                          --wait
           }
 
@@ -185,6 +189,7 @@ jobs: # using jobs so they each run in parallel
 
             $aksClusterName = $stamp.aks_cluster_name
             $aksClusterResourceGroup = $stamp.resource_group_name
+            $identityClientId = $stamp.backgroundprocessor_managed_identity_client_id
 
             # We are using the list-locations command to retrieve the display name of the region as this is needed for the Cosmos DB SDK's ApplicationRegion parameter
             $region = az account list-locations --query "[?name == '$($stamp.location)'].displayName" -o tsv
@@ -206,6 +211,7 @@ jobs: # using jobs so they each run in parallel
                          --create-namespace `
                          --set containerimage="$fullContainerImageName" `
                          --set azure.region="$region" `
+                         --set identity.clientid="$identityClientId" `
                          --wait
           }
 

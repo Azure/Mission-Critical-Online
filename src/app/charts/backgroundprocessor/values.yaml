@@ -22,6 +22,9 @@ resources:
 azure:
   region: "East US 2"
 
+identity:
+  clientid: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" # clientid used for workload identity
+
 # Note! When disabling Network Policy for this helm chart,
 # make sure to disable Network Policy for the CatalogService as well
 # as it contains a default-deny policy.

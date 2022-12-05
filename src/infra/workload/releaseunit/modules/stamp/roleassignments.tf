@@ -60,7 +60,7 @@ resource "azurerm_role_assignment" "healthservice_blob_contributor" {
 }
 
 resource "azurerm_role_assignment" "catalogservice_global_blob_contributor" {
-  scope                = data.azurerm_storage_account.global
+  scope                = data.azurerm_storage_account.global.id
   role_definition_name = "Storage Blob Data Contributor"
   principal_id         = azurerm_user_assigned_identity.catalogservice.principal_id
 }

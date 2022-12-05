@@ -17,6 +17,7 @@ spec:
       labels:
         app: {{ .Chart.Name }}
     spec:
+      serviceAccountName: {{ .Chart.Name }}-identity
       containers:
       - name: backgroundprocessor
         image: {{ .Values.containerimage }}

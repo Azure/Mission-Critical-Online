@@ -17,6 +17,7 @@ spec:
       labels:
         app: {{ .Chart.Name }}
     spec:
+      serviceAccountName: {{ .Chart.Name }}-identity
       containers:
       - image: {{ .Values.containerimage }}
         imagePullPolicy: {{ .Values.container.pullPolicy | default "Always" | quote }}

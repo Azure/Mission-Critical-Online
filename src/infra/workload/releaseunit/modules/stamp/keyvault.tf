@@ -45,6 +45,30 @@ resource "azurerm_key_vault_access_policy" "healthservice" {
   ]
 }
 
+# Give KV secret read permissions to the catalogservice for CSI driver access
+resource "azurerm_key_vault_access_policy" "catalogservice" {
+  key_vault_id = azurerm_key_vault.stamp.id
+
+  tenant_id = data.azurerm_client_config.current.tenant_id
+  object_id = azurerm_user_assigned_identity.catalogservice.principal_id
+
+  secret_permissions = [
+    "Get", "List"
+  ]
+}
+
+# Give KV secret read permissions to the backgroundprocessor for CSI driver access
+resource "azurerm_key_vault_access_policy" "backgroundprocessor" {
+  key_vault_id = azurerm_key_vault.stamp.id
+
+  tenant_id = data.azurerm_client_config.current.tenant_id
+  object_id = azurerm_user_assigned_identity.backgroundprocessor.principal_id
+
+  secret_permissions = [
+    "Get", "List"
+  ]
+}
+
 ####################################### DIAGNOSTIC SETTINGS #######################################
 
 # Use this data source to fetch all available log and metrics categories. We then enable all of them

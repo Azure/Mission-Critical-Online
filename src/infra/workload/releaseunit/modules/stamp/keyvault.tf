@@ -33,6 +33,18 @@ resource "azurerm_key_vault_access_policy" "aks_msi" {
   ]
 }
 
+# Give KV secret read permissions to the healthservice for CSI driver access
+resource "azurerm_key_vault_access_policy" "healthservice" {
+  key_vault_id = azurerm_key_vault.stamp.id
+
+  tenant_id = data.azurerm_client_config.current.tenant_id
+  object_id = azurerm_user_assigned_identity.healthservice.principal_id
+
+  secret_permissions = [
+    "Get", "List"
+  ]
+}
+
 ####################################### DIAGNOSTIC SETTINGS #######################################
 
 # Use this data source to fetch all available log and metrics categories. We then enable all of them

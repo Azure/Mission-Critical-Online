@@ -65,7 +65,7 @@ spec:
             driver: secrets-store.csi.k8s.io
             readOnly: true
             volumeAttributes:
-              secretProviderClass: azure-kv
+              secretProviderClass: {{ .Chart.Name }}-azure-kv
         - name: tmp-volume
           emptyDir: {}
         - name: var-log-volume

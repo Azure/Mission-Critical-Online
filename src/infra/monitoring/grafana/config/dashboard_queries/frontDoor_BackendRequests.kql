@@ -1,7 +1,7 @@
 AzureDiagnostics
-| where OperationName == "Microsoft.Network/FrontDoor/AccessLog/Write"
+| where OperationName == "Microsoft.Cdn/Profiles/AccessLog/Write"
 | where $__timeFilter(TimeGenerated)
-| extend backendHostname_s=replace_regex(backendHostname_s, @"^(.+).z[0-9]{1,2}\.web\.core\.windows\.net:443$", @"\1")
-| extend backendHostname_s=replace_regex(backendHostname_s, @"^(.+).cloudapp.azure.com:443$", @"\1")
-| summarize Requests=count() by bin(TimeGenerated, 2m), Backend=backendHostname_s
+| extend originName_s=replace_regex(originName_s, @"^(.+).z[0-9]{1,2}\.web\.core\.windows\.net:443$", @"\1")
+| extend originName_s=replace_regex(originName_s, @"^(.+).cloudapp.azure.com:443$", @"\1")
+| summarize Requests=count() by bin(TimeGenerated, 2m), Backend=originName_s
 | order by TimeGenerated asc

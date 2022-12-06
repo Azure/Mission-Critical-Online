@@ -812,18 +812,18 @@
                         "resourceMetadata": {
                           "id": "${front_door_id}"
                         },
-                        "name": "BackendRequestCount",
+                        "name": "OriginRequestCount",
                         "aggregationType": 1,
                         "metricVisualization": {
-                          "displayName": "Backend Request Count",
+                          "displayName": "Origin Request Count",
                           "resourceDisplayName": "${front_door_name}"
                         }
                       }
                     ],
-                    "title": "Backend request count",
+                    "title": "Origin request count",
                     "titleKind": 2,
                     "grouping": {
-                      "dimension": "Backend"
+                      "dimension": "Origin"
                     },
                     "visualization": {
                       "chartType": 2
@@ -846,18 +846,18 @@
                         "resourceMetadata": {
                           "id": "${front_door_id}"
                         },
-                        "name": "BackendRequestCount",
+                        "name": "OriginRequestCount",
                         "aggregationType": 1,
                         "metricVisualization": {
-                          "displayName": "Backend Request Count",
+                          "displayName": "Origin Request Count",
                           "resourceDisplayName": "${front_door_name}"
                         }
                       }
                     ],
-                    "title": "Backend request count",
+                    "title": "Origin request count",
                     "titleKind": 2,
                     "grouping": {
-                      "dimension": "Backend"
+                      "dimension": "Origin"
                     },
                     "visualization": {
                       "chartType": 2,
@@ -1268,18 +1268,18 @@
                         "resourceMetadata": {
                           "id": "${front_door_id}"
                         },
-                        "name": "BackendHealthPercentage",
+                        "name": "OriginHealthPercentage",
                         "aggregationType": 4,
                         "metricVisualization": {
-                          "displayName": "Backend Health Percentage",
+                          "displayName": "Origin Health Percentage",
                           "resourceDisplayName": "${front_door_name}"
                         }
                       }
                     ],
-                    "title": "Backend health percentage",
+                    "title": "Origin health percentage",
                     "titleKind": 2,
                     "grouping": {
-                      "dimension": "Backend"
+                      "dimension": "Origin"
                     },
                     "visualization": {
                       "chartType": 2
@@ -1302,18 +1302,18 @@
                         "resourceMetadata": {
                           "id": "${front_door_id}"
                         },
-                        "name": "BackendHealthPercentage",
+                        "name": "OriginHealthPercentage",
                         "aggregationType": 4,
                         "metricVisualization": {
-                          "displayName": "Backend Health Percentage",
+                          "displayName": "Origin Health Percentage",
                           "resourceDisplayName": "${front_door_name}"
                         }
                       }
                     ],
-                    "title": "Backend health percentage",
+                    "title": "Origin health percentage",
                     "titleKind": 2,
                     "grouping": {
-                      "dimension": "Backend"
+                      "dimension": "Origin"
                     },
                     "visualization": {
                       "chartType": 2,

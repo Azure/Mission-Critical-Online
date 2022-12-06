@@ -5,6 +5,9 @@ parameters:
   - name: removeDisabledBackends # if set to true, any backends in Front Door that are in a Disabled state (from a previous run of this script), will be now removed
     type: boolean
     default: false
+  - name: purgeAfdCache # whether to purge the Edge cache of Front Door
+    type: boolean
+    default: false
 
 # We have this as both a stage-template and a steps-template.
 # Reason for this is that we use it in two different places:
@@ -31,8 +34,6 @@ steps:
     scriptType: pscore
     scriptLocation: inlineScript
     inlineScript: |
-      # We need the az CLI Front Door extension
-      az extension add --name front-door
 
       $newBackendsWeight = ${{ parameters.trafficWeightNewBackends }}
       $oldBackendsWeight = 100 - $newBackendsWeight # since the weight for the new backends is a percentage, we substract from 100 to get the remaining weights for the old backends
@@ -64,12 +65,14 @@ steps:
 
       # loop through stamps from pipeline artifact json
       foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
-        echo "**************************** REGION: $($stamp.location) ****************************"
 
         # Build API backend config object for Front Door
         $clusterFqdn = $stamp.aks_cluster_ingress_fqdn
 
-        $apiProperties = @{address=$clusterFqdn; weight=$newBackendsWeight; enabled="true"}
+        $apiProperties = @{ address = $clusterFqdn; `
+                            weight = $newBackendsWeight; `
+                            enabled = "true"; }
+
         $apiBackend = New-Object PSObject –Property $apiProperties
 
         echo "*** Adding API backend $apiBackend"
@@ -96,47 +99,42 @@ steps:
           $queryOptionEnabledOnly = "?enabledState=='Enabled'" # If the switch to remove disabled backends is true, we only fetch the currently enabled ones and thereby not re-adding the disabled ones
         }
 
-        # Fetch existing backends in the pool from Front Door. We need the attributes "address", "weight" and "enabledState"
-        $backends = $(az network front-door backend-pool backend list `
-                        --front-door-name $(frontdoor_name) `
-                        --pool-name $pool `
-                        --resource-group $(global_resource_group_name) `
-                        --query "[$queryOptionEnabledOnly].{address:address,weight:weight,enabled:enabledState}")
+        # Fetch existing backends in the pool from Front Door
+        $backends = az afd origin list `
+                    --profile-name $(frontdoor_name) `
+                    --origin-group-name $pool `
+                    --resource-group $(global_resource_group_name) `
+                    --query "[$queryOptionEnabledOnly]" | ConvertFrom-Json -NoEnumerate
 
         if($LastExitCode -ne 0)
         {
             throw "*** Error on fetching existing backends from Front Door $(frontdoor_name) for pool $pool"
         }
 
-        $jsonBackends = $backends | ConvertFrom-Json -NoEnumerate
-
-        foreach($backend in $jsonBackends)
+        foreach($backend in $backends)
         {
-          if(($newBackends[$pool] | Select-Object "address") -match $backend.address) # This is the case if the backend was already added from the Terraform output above
+          if(($newBackends[$pool] | Select-Object "address") -match $backend.hostName) # This is the case if the backend was already added from the Terraform output above
           {
-            echo "*** Skipping backend $($backend.address) since it is already in the list"
+            echo "*** Skipping backend $($backend.hostName) since it is already in the list"
           }
           else
           {
-            if($backend.address -like "*.example.com") # In the Front Door Terraform template we use example.com for the very first creation of Front Door when we have no backends yet
+            $backendProperties = @{ address = $backend.hostName; `
+                      weight = $oldBackendsWeight; `
+                      enabled = ""; }
+
+            # Rewrite EnabledState into bool (true/false) for terraform input
+            if($backend.enabledState -eq "Enabled")
             {
-              echo "*** Ignoring dummy backend $($backend.address)"
+              $backendProperties.enabled = $oldBackendsEnabled
             }
             else
             {
-              $backend.weight = $oldBackendsWeight # set weight of existing (previous release) to what was calculated above
-
-              # Rewrite EnabledState into bool (true/false) for terraform input
-              if($backend.enabled -eq "Enabled")
-              {
-                $backend.enabled = $oldBackendsEnabled
-              }
-              else
-              {
-                $backend.enabled = "false"
-              }
-              $newBackends[$pool] += $backend
+              $backendProperties.enabled = "false"
             }
+
+            $backendConfig = New-Object PSObject –Property $backendProperties
+            $newBackends[$pool] += $backendConfig
           }
         }
         # Convert the list back to JSON (in a one-liner) so we can use it as Terraform input
@@ -147,6 +145,7 @@ steps:
 
         echo "##vso[task.setvariable variable=tfParameterFrontDoor$pool]$content"
       }
+
 
 # Global Resources deployment which will apply the new backend config to Front Door
 - template: steps-terraform-apply.yaml # terraform validate, plan and apply for global resources
@@ -162,22 +161,25 @@ steps:
                        $(tfParameterFrontDoorStaticStorage)
                        $(terraformAdditionalParametersCustomDomains)'
 
-# After new backends have been added to Front Door, we purge the cache so that content will be retrieved from the new backends as well
-- task: AzureCLI@2
-  displayName: 'Purge Front Door cache'
-  retryCountOnTaskFailure: 1
-  inputs:
-    azureSubscription: $(azureServiceConnection)
-    scriptType: pscore
-    scriptLocation: inlineScript
-    inlineScript: |
-      # We need the az CLI Front Door extension
-      az extension add --name front-door
+- ${{ if eq(parameters.purgeAfdCache, 'true') }}:
+  # After new backends have been added to Front Door, we purge the cache so that content will be retrieved from the new backends as well
+  - task: AzureCLI@2
+    displayName: 'Purge Front Door cache'
+    retryCountOnTaskFailure: 1
+    inputs:
+      azureSubscription: $(azureServiceConnection)
+      scriptType: pscore
+      scriptLocation: inlineScript
+      inlineScript: |
 
-      echo "*** Purging Front Door cache with path /*"
-      az network front-door purge-endpoint -g $(global_resource_group_name) -n $(frontdoor_name) --content-paths "/*"
+        echo "*** Purging Front Door cache with path /*"
+        az afd endpoint purge `
+        --resource-group $(global_resource_group_name) `
+        --profile-name $(frontdoor_name) `
+        --content-paths "/*" `
+        --endpoint-name "$(prefix)$(globalResourceSuffix)-primaryendpoint"
 
-      if($LastExitCode -ne 0)
-      {
-          throw "*** Error on purging cache in Front Door $(frontdoor_name)"
-      }
+        if($LastExitCode -ne 0)
+        {
+            throw "*** Error on purging cache in Front Door $(frontdoor_name)"
+        }

@@ -61,14 +61,12 @@ stages:
               scriptType: pscore
               scriptLocation: inlineScript
               inlineScript: |
-                # We need the az CLI Front Door extension
-                az extension add --name front-door
 
                 $rgName = "$(prefix)$(globalResourceSuffix)-global-rg"
                 $fdName = "$(prefix)$(globalResourceSuffix)-global-fd"
 
                 # check if Front Door exists
-                $frontDoor = $(az network front-door list --query "[?name=='$fdName']" -o tsv)
+                $frontDoor = az afd profile list --query "[?name=='$fdName']" -o tsv
 
                 if($LastExitCode -ne 0)
                 {
@@ -81,35 +79,43 @@ stages:
                 {
                   foreach($pool in $backendPools)
                   {
-                    $backends = $(az network front-door backend-pool backend list `
-                                    --front-door-name $fdName `
-                                    --pool-name $pool -g $rgName `
-                                    --query "[].{address:address,weight:weight,enabled:enabledState}")
+
+                    echo "*** Fetching existing backends from Front Door $fdName for pool $pool"
+
+                    $backends = az afd origin list `
+                                --profile-name $fdName `
+                                --origin-group-name $pool -g $rgName | ConvertFrom-Json -NoEnumerate
 
                     if($LastExitCode -ne 0)
                     {
                         throw "*** Error on fetching existing backends from Front Door $fdName for pool $pool"
                     }
 
-                    $jsonBackends = $backends | ConvertFrom-Json -NoEnumerate
-                    # Rewrite EnabledState into bool (true/false)
-                    foreach($backend in $jsonBackends)
+                    $afdBackendsInput = @()
+
+                    foreach($backend in $backends)
                     {
-                      if($backend.enabled -eq "Enabled")
-                      {
-                        $backend.enabled = "true"
-                      }
-                      else
-                      {
-                        $backend.enabled = "false"
-                      }
+                      $backendProperties = @{ address = $backend.hostName; `
+                                              weight = $backend.weight; `
+                                              enabled = $($backend.enabledState -eq "Enabled"); }
+
+
+                      $backendConfig = New-Object PSObject –Property $backendProperties
+                      $afdBackendsInput += $backendConfig
                     }
 
-                    $flatJsonApis = $jsonBackends | ConvertTo-Json -Compress -Depth 100 -AsArray
-                    echo "*** Current backends in pool $($pool): " $flatJsonApis
-                    $contentBackends = "-var='backends_$pool=$flatJsonApis'"
+                    if($afdBackendsInput.Count -gt 0)
+                    {
+                      $flatJsonApis = $afdBackendsInput | ConvertTo-Json -Compress -Depth 100 -AsArray
+                      echo "*** Current backends in pool $($pool): " $flatJsonApis
+                      $contentBackends = "-var='backends_$pool=$flatJsonApis'"
 
-                    echo "##vso[task.setvariable variable=tfParameterFrontDoor$pool]$contentBackends"
+                      echo "##vso[task.setvariable variable=tfParameterFrontDoor$pool]$contentBackends"
+                    }
+                    else
+                    {
+                      echo "##vso[task.setvariable variable=tfParameterFrontDoor$pool]"
+                    }
                   }
                 }
                 else
@@ -326,15 +332,12 @@ stages:
                   scriptType: pscore
                   scriptLocation: inlineScript
                   inlineScript: |
-                    # We need the az CLI Front Door extension
-                    az extension add --name front-door
 
-                    # Fetch disabled backends from the BackendApis pool. We only fetch the first one, assuming it represents all the stamps of the previous release unit
-                    $disabledBackendAddress = $(az network front-door backend-pool backend list `
-                                      --front-door-name $(frontdoor_name) `
-                                      --pool-name BackendApis `
-                                      --resource-group $(global_resource_group_name) `
-                                      --query "[?enabledState=='Disabled'].{address:address}[0]" -o tsv)
+                    $disabledBackendAddress = az afd origin list `
+                                --profile-name $(frontdoor_name) `
+                                --origin-group-name BackendApis -g $(global_resource_group_name) `
+                                --query "[?enabledState=='Disabled'].{hostName:hostName}[0]" -o tsv
+
 
                     if($LastExitCode -ne 0)
                     {

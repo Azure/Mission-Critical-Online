@@ -29,3 +29,4 @@ stages:
             parameters:
               trafficWeightNewBackends: ${{ parameters.trafficWeightNewBackends }}
               removeDisabledBackends: ${{ parameters.removeDisabledBackends }}
+              purgeAfdCache: true

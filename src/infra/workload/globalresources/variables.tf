@@ -91,11 +91,7 @@ variable "backends_BackendApis" {
     weight  = number
     enabled = bool
   }))
-  default = [{
-    address = "changeme-api.example.com"
-    weight  = 1
-    enabled = true
-  }]
+  default = []
 }
 
 # We use example.com for the very first creation of Front Door when we have no backends yet
@@ -105,9 +101,5 @@ variable "backends_StaticStorage" {
     weight  = number
     enabled = bool
   }))
-  default = [{
-    address = "changeme-storage.example.com"
-    weight  = 1
-    enabled = true
-  }]
+  default = []
 }

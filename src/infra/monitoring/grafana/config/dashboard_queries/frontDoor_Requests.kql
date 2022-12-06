@@ -1,5 +1,5 @@
 AzureMetrics
 | where $__timeFilter(TimeGenerated)
-| where ResourceProvider == "MICROSOFT.NETWORK"
-| summarize RequestCount=avgif(Total, MetricName=="RequestCount"), BackendRequestCount=avgif(Total, MetricName=="BackendRequestCount") by bin(TimeGenerated, 5m)
+| where ResourceProvider == "MICROSOFT.CDN"
+| summarize RequestCount=avgif(Total, MetricName=="RequestCount"), OriginRequestCount=avgif(Total, MetricName=="OriginRequestCount") by bin(TimeGenerated, 5m)
 | order by TimeGenerated asc

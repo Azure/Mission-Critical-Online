@@ -21,9 +21,15 @@ resources:
 
 azure:
   region: "East US 2"
+  keyVaultName:             ""        # Name of the Key Vault
+  tenantId:                 ""        # GUID of the tenant which holds the Key Vault
 
 identity:
   clientid: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" # clientid used for workload identity
+
+kvSecrets:
+- "MySecret-1"
+- "MySecret-2"
 
 # Note! When disabling Network Policy for this helm chart,
 # make sure to disable Network Policy for the CatalogService as well

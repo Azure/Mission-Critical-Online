@@ -37,6 +37,12 @@ ingress:
 azure:
   frontdoorid: "" # Azure Front Door Header ID
   region: "East US 2"
+  keyVaultName:             ""        # Name of the Key Vault
+  tenantId:                 ""        # GUID of the tenant which holds the Key Vault
 
 identity:
   clientid: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" # clientid used for workload identity
+
+kvSecrets:
+- "MySecret-1"
+- "MySecret-2"

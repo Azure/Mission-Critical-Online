@@ -131,6 +131,9 @@ jobs: # using jobs so they each run in parallel
 
           helm lint src/app/charts/catalogservice # lint helm chart
 
+          # Retrieve current TenantID
+          $tenantId = az account show --query "tenantId" --output tsv
+
           # load json data from downloaded terraform artifact
           $releaseUnitInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputReleaseUnitInfra/*.json | Get-Content | ConvertFrom-JSON
 
@@ -155,6 +158,13 @@ jobs: # using jobs so they each run in parallel
             $fqdn = $stamp.aks_cluster_ingress_fqdn
             echo "*** Retrieved Ingress Controller FQDN $fqdn for AKS cluster $aksClusterName"
 
+            # Gather Azure KeyVault name from terraform artifact
+            $keyVaultName = $stamp.key_vault_name
+            echo "*** Retrieved Key Vault name $keyVaultName"
+
+            $allSecretNames = $(az keyvault secret list --vault-name $keyVaultName --query "join(',',[].name)" --output tsv)
+            echo "*** Retrieved the names of $($allSecretNames.Split(',').Count) secrets in Key Vault $keyVaultName"
+
             $fullContainerImageName = Get-Content -Path "$(Pipeline.Workspace)/catalogservice-containerImageName/catalogservice.txt"
             echo "*** Retrieved full container image name from artifact - $fullContainerImageName"
 
@@ -170,6 +180,9 @@ jobs: # using jobs so they each run in parallel
                          --set containerimage="$fullContainerImageName" `
                          --set workload.domainname="$fqdn" `
                          --set identity.clientid="$identityClientId" `
+                         --set azure.tenantId=$tenantId `
+                         --set azure.keyVaultName="$keyVaultName" `
+                         --set kvSecrets="{$allSecretNames}" `
                          --wait
           }
 
@@ -193,6 +206,9 @@ jobs: # using jobs so they each run in parallel
 
           helm lint src/app/charts/backgroundprocessor # lint helm chart
 
+          # Retrieve current TenantID
+          $tenantId = az account show --query "tenantId" --output tsv
+
           # load json data from downloaded terraform artifact
           $releaseUnitInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputReleaseUnitInfra/*.json | Get-Content | ConvertFrom-JSON
 
@@ -214,6 +230,13 @@ jobs: # using jobs so they each run in parallel
                                    --resource-group $aksClusterResourceGroup `
                                    --overwrite-existing --admin
 
+            # Gather Azure KeyVault name from terraform artifact
+            $keyVaultName = $stamp.key_vault_name
+            echo "*** Retrieved Key Vault name $keyVaultName"
+
+            $allSecretNames = $(az keyvault secret list --vault-name $keyVaultName --query "join(',',[].name)" --output tsv)
+            echo "*** Retrieved the names of $($allSecretNames.Split(',').Count) secrets in Key Vault $keyVaultName"
+
             $fullContainerImageName = Get-Content -Path "$(Pipeline.Workspace)/backgroundprocessor-containerImageName/backgroundprocessor.txt"
             echo "*** Retrieved full container image name from artifact - $fullContainerImageName"
 
@@ -225,6 +248,9 @@ jobs: # using jobs so they each run in parallel
                          --set containerimage="$fullContainerImageName" `
                          --set azure.region="$region" `
                          --set identity.clientid="$identityClientId" `
+                         --set azure.tenantId=$tenantId `
+                         --set azure.keyVaultName="$keyVaultName" `
+                         --set kvSecrets="{$allSecretNames}" `
                          --wait
           }
 

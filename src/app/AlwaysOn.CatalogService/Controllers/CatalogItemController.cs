@@ -16,6 +16,7 @@ using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Azure.Core;
 
 namespace AlwaysOn.CatalogService.Controllers
 {
@@ -28,16 +29,19 @@ namespace AlwaysOn.CatalogService.Controllers
         private readonly IDatabaseService _databaseService;
         private readonly IMessageProducerService _messageProducerService;
         private readonly SysConfiguration _sysConfig;
+        private readonly TokenCredential _tokenCredential;
 
         public CatalogItemController(ILogger<CatalogItemController> logger,
             IDatabaseService databaseService,
             IMessageProducerService messageProducerService,
-        SysConfiguration sysConfig)
+            SysConfiguration sysConfig,
+            TokenCredential tokenCredential)
         {
             _logger = logger;
             _databaseService = databaseService;
             _messageProducerService = messageProducerService;
             _sysConfig = sysConfig;
+            _tokenCredential = tokenCredential;
         }
 
         /// <summary>
@@ -56,7 +60,7 @@ namespace AlwaysOn.CatalogService.Controllers
 
                 // Strip absolute location off the imageUrl (i.e. the URI of the blob storage where it is stored)
                 // They will be served from a relative path, thus by Front Door
-                foreach(var item in res)
+                foreach (var item in res)
                 {
                     item.ImageUrl = CatalogServiceHelpers.GetRelativeImageUrl(item.ImageUrl);
                 }
@@ -190,9 +194,8 @@ namespace AlwaysOn.CatalogService.Controllers
 
                     var blobName = $"{SysConfiguration.GlobalImagesPathSegment}/{item.Id}";// + fileExtension;
 
-                    var blobClient = new BlobClient(_sysConfig.GlobalStorageAccountConnectionString,
-                                                    SysConfiguration.GlobalStorageAccountImageContainerName,
-                                                    blobName);
+                    var blobClient = new BlobClient(new Uri($"https://{_sysConfig.GlobalStorageAccountName}.blob.core.windows.net/{SysConfiguration.GlobalStorageAccountImageContainerName}/{blobName}"),
+                                                    _tokenCredential);
 
                     var options = new BlobUploadOptions()
                     {

@@ -3,6 +3,8 @@ using AlwaysOn.Shared;
 using AlwaysOn.Shared.Interfaces;
 using AlwaysOn.Shared.Services;
 using AlwaysOn.Shared.TelemetryExtensions;
+using Azure.Core;
+using Azure.Identity;
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel;
@@ -68,6 +70,19 @@ namespace AlwaysOn.BackgroundProcessor
                 {
                     ConnectionString = hostContext.Configuration[SysConfiguration.ApplicationInsightsConnStringKeyName],
                     EnableAdaptiveSampling = bool.TryParse(hostContext.Configuration[SysConfiguration.ApplicationInsightsAdaptiveSamplingName], out bool result) ? result : true
+                });
+
+                services.AddSingleton<TokenCredential>(builder =>
+                {
+                    var managedIdentityClientId = hostContext.Configuration["AZURE_CLIENT_ID"];
+                    if (!string.IsNullOrEmpty(managedIdentityClientId))
+                    {
+                        return new ManagedIdentityCredential(managedIdentityClientId);
+                    }
+                    else
+                    {
+                        return new DefaultAzureCredential();
+                    }
                 });
 
                 services.AddSingleton<AppInsightsCosmosRequestHandler>();

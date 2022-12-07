@@ -21,12 +21,36 @@ resource "azurerm_key_vault_access_policy" "devops_pipeline_all" {
   ]
 }
 
-# Give KV secret read permissions to the Managed Identity of AKS for CSI driver access
-resource "azurerm_key_vault_access_policy" "aks_msi" {
+# Give KV secret read permissions to the healthservice for CSI driver access
+resource "azurerm_key_vault_access_policy" "healthservice" {
   key_vault_id = azurerm_key_vault.stamp.id
 
   tenant_id = data.azurerm_client_config.current.tenant_id
-  object_id = azurerm_kubernetes_cluster.stamp.kubelet_identity.0.object_id
+  object_id = azurerm_user_assigned_identity.healthservice.principal_id
+
+  secret_permissions = [
+    "Get", "List"
+  ]
+}
+
+# Give KV secret read permissions to the catalogservice for CSI driver access
+resource "azurerm_key_vault_access_policy" "catalogservice" {
+  key_vault_id = azurerm_key_vault.stamp.id
+
+  tenant_id = data.azurerm_client_config.current.tenant_id
+  object_id = azurerm_user_assigned_identity.catalogservice.principal_id
+
+  secret_permissions = [
+    "Get", "List"
+  ]
+}
+
+# Give KV secret read permissions to the backgroundprocessor for CSI driver access
+resource "azurerm_key_vault_access_policy" "backgroundprocessor" {
+  key_vault_id = azurerm_key_vault.stamp.id
+
+  tenant_id = data.azurerm_client_config.current.tenant_id
+  object_id = azurerm_user_assigned_identity.backgroundprocessor.principal_id
 
   secret_permissions = [
     "Get", "List"

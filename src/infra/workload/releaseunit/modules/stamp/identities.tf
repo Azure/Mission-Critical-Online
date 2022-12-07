@@ -1,6 +1,8 @@
 # managed identity used for catalogservice
 resource "azurerm_user_assigned_identity" "catalogservice" {
-  location            = azurerm_resource_group.stamp.location
+  # creation of federated identity credentials is not supported on user-assigned managed identities
+  # https://learn.microsoft.com/azure/active-directory/develop/workload-identity-federation-considerations#unsupported-regions-user-assigned-managed-identities
+  location            = azurerm_resource_group.stamp.location == "swedencentral" ? "westeurope" : azurerm_resource_group.stamp.location
   name                = "catalogservice"
   resource_group_name = azurerm_resource_group.stamp.name
 }
@@ -16,7 +18,9 @@ resource "azurerm_federated_identity_credential" "catalogservice" {
 
 # managed identity used for healthservice
 resource "azurerm_user_assigned_identity" "healthservice" {
-  location            = azurerm_resource_group.stamp.location
+  # creation of federated identity credentials is not supported on user-assigned managed identities
+  # https://learn.microsoft.com/azure/active-directory/develop/workload-identity-federation-considerations#unsupported-regions-user-assigned-managed-identities
+  location            = azurerm_resource_group.stamp.location == "swedencentral" ? "westeurope" : azurerm_resource_group.stamp.location
   name                = "healthservice"
   resource_group_name = azurerm_resource_group.stamp.name
 }
@@ -32,7 +36,9 @@ resource "azurerm_federated_identity_credential" "healthservice" {
 
 # managed identity used for backgroundprocessor
 resource "azurerm_user_assigned_identity" "backgroundprocessor" {
-  location            = azurerm_resource_group.stamp.location
+  # creation of federated identity credentials is not supported on user-assigned managed identities
+  # https://learn.microsoft.com/azure/active-directory/develop/workload-identity-federation-considerations#unsupported-regions-user-assigned-managed-identities
+  location            = azurerm_resource_group.stamp.location == "swedencentral" ? "westeurope" : azurerm_resource_group.stamp.location
   name                = "backgroundprocessor"
   resource_group_name = azurerm_resource_group.stamp.name
 }

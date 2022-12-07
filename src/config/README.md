@@ -60,13 +60,11 @@ spec:
 
 ### csi-driver-keyvault
 
-To securely read secrets such as connection strings from Azure Key Vault, we use the open-source [Azure Key Vault Provider for Secrets Store CSI Driver](https://azure.github.io/secrets-store-csi-driver-provider-azure/). It uses the Managed Identity of the AKS agent pool (aka "kubelet identity"), so no credentials need to be stored anywhere inside the cluster to access Key Vault.
+To securely read secrets such as connection strings from Azure Key Vault, we use the open-source [Azure Key Vault Provider for Secrets Store CSI Driver](https://azure.github.io/secrets-store-csi-driver-provider-azure/). It uses the Managed Identities of the respective pod ("workload identity"), so no credentials need to be stored anywhere inside the cluster to access Key Vault.
 
 During the infra-config deployment step, all required components are installed via Helm. The provider is configured to mount all the secrets from the Key Vault on the file system of a pod, as well as to provide them as Kubernetes secret objects.
-Those, in turn, are later loaded as ENV variables for easy application access inside the pods.
+Optionally, these can later be loaded as ENV variables for easy application access inside the pods.
 Note: Even if a pod only wants to use the ENV variables, it still needs to do the file system mount in order for the secret retrieval to work. This step is done in the app deployment.
-
-The configuration helm chart is stored in [src/config/csi-secrets-driver/chart](./csi-secrets-driver/chart)
 
 ### Monitoring
 

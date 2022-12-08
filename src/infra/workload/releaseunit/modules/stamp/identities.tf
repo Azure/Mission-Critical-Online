@@ -2,11 +2,11 @@
 # https://learn.microsoft.com/azure/active-directory/develop/workload-identity-federation-considerations#unsupported-regions-user-assigned-managed-identities
 locals {
   unsupported_regions = [
-    "swedencentral", "swedensouth", 
+    "swedencentral", "swedensouth",
     "germanynorth",
     "switzerlandwest",
     "eastasia",
-    "qatarcentral"]
+  "qatarcentral"]
 }
 
 # managed identity used for catalogservice

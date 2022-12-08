@@ -9,5 +9,4 @@ locals {
 
   global_resource_prefix = regex("^(.+)-global-rg$", var.global_resource_group_name)[0] # extract global resource prefix from the global resource group name
 
-
 }

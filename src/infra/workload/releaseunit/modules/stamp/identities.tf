@@ -1,5 +1,4 @@
 # regions where the creation of federated identity credentials is not supported on user-assigned managed identities
-# https://learn.microsoft.com/azure/active-directory/develop/workload-identity-federation-considerations#unsupported-regions-user-assigned-managed-identities
 locals {
   # regions where the creation of federated identity credentials is not supported on user-assigned managed identities
   # https://learn.microsoft.com/azure/active-directory/develop/workload-identity-federation-considerations#unsupported-regions-user-assigned-managed-identities

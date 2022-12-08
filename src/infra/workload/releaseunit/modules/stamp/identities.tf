@@ -1,14 +1,3 @@
-# regions where the creation of federated identity credentials is not supported on user-assigned managed identities
-# https://learn.microsoft.com/azure/active-directory/develop/workload-identity-federation-considerations#unsupported-regions-user-assigned-managed-identities
-locals {
-  unsupported_regions = [
-    "swedencentral", "swedensouth",
-    "germanynorth",
-    "switzerlandwest",
-    "eastasia",
-  "qatarcentral"]
-}
-
 # managed identity used for catalogservice
 resource "azurerm_user_assigned_identity" "catalogservice" {
   # temporary workaround while the creation of federated identity credentials is not supported on user-assigned managed identities in some regions

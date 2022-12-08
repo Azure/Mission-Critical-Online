@@ -4,12 +4,18 @@ locals {
   # regions where the creation of federated identity credentials is not supported on user-assigned managed identities
   # https://learn.microsoft.com/azure/active-directory/develop/workload-identity-federation-considerations#unsupported-regions-user-assigned-managed-identities
   unsupported_regions = [
-    "swedencentral",
-    "swedensouth",
     "germanynorth",
+    "swedensouth",
+    "swedencentral",
     "switzerlandwest",
+    "brazilsoutheast",
     "eastasia",
-    "qatarcentral"
+    "southeastasia",
+    "southafricawest",
+    "qatarcentral",
+    "australiacentral",
+    "australiacentral2",
+    "norwaywest"
   ]
 }
 

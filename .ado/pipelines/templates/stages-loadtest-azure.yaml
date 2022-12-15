@@ -56,11 +56,11 @@ stages:
     - template: steps-parse-terraform-output.yaml
       parameters:
         workingDirectory: '${{ parameters.terraformWorkingDirectory }}'
-        displayName: 'Parse MALT deployment outputs'
+        displayName: 'Parse loadtest deployment outputs'
 
     # Set loadTestBaseline variable
     - task: PowerShell@2
-      displayName: 'Set Azure Load Test baseline file'
+      displayName: 'Set load test baseline file'
       inputs:
         targetType: inline
         script: |
@@ -78,7 +78,7 @@ stages:
 
       # Set loadTestTargetFQDN to the Azure Front Door FQDN (when load test is embedded)
       - task: PowerShell@2
-        displayName: 'Set Azure Load Test variables'
+        displayName: 'Set load test target fqdn'
         inputs:
           targetType: inline
           script: |
@@ -100,7 +100,7 @@ stages:
 
       # standalone - set loadTestTargetFQDN to the FQDN specified in the pipeline parameters
       - task: PowerShell@2
-        displayName: 'Set Loadtest targetUrl to ${{ parameters.loadTestTargetFQDN }}'
+        displayName: 'Set load test targetUrl to ${{ parameters.loadTestTargetFQDN }}'
         inputs:
           targetType: inline
           script: |
@@ -109,7 +109,7 @@ stages:
 
     # create a new azure load test with an auto-generated loadTestId
     - task: AzureCLI@2
-      displayName: 'Create new Azure Load Test'
+      displayName: 'Create new load test instance'
       name: 'createAzureLoadTest'
       inputs:
         azureSubscription: '$(azureServiceConnection)'
@@ -135,7 +135,7 @@ stages:
 
       # This step adds additional App Components to the Load Test dashboard
       - task: AzureCLI@2
-        displayName: 'Add AppComponents to Load Test'
+        displayName: 'Add app components to load test'
         name: 'addAppComponentsToLoadTest'
         inputs:
           azureSubscription: '$(azureServiceConnection)'

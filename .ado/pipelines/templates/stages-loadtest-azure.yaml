@@ -58,6 +58,15 @@ stages:
         workingDirectory: '${{ parameters.terraformWorkingDirectory }}'
         displayName: 'Parse MALT deployment outputs'
 
+    # Set loadTestBaseline variable
+    - task: PowerShell@2
+      displayName: 'Set Azure Load Test baseline file'
+      inputs:
+        targetType: inline
+        script: |
+          echo "*** Setting loadTestBaseline to $(azureLoadTestBaseline)"
+          echo "##vso[task.setvariable variable=loadTestBaseline]$(azureLoadTestBaseline)"
+
     # Global Terraform output is only parsed when running in embedded mode
     - ${{ if eq(parameters.embeddedLoadTest, 'true') }}:
 
@@ -75,9 +84,6 @@ stages:
           script: |
             echo "*** Setting loadTestTargetFQDN to $(frontdoor_fqdn)"
             echo "##vso[task.setvariable variable=azureLoadTestTargetFQDN]$(frontdoor_fqdn)"
-
-            echo "*** Setting loadTestBaseline to $(azureLoadTestBaseline)"
-            echo "##vso[task.setvariable variable=loadTestBaseline]$(azureLoadTestBaseline)"
 
     # override baseline when chaos testing is enabled
     - ${{ if eq(parameters.runChaosTesting, 'true') }}:

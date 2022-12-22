@@ -2,7 +2,7 @@ resource "azapi_resource" "dataCollectionRule" {
   schema_validation_enabled = false
 
   type      = "Microsoft.Insights/dataCollectionRules@2021-09-01-preview"
-  name      = "MSPROM-SUK-${azurerm_kubernetes_cluster.stamp.name}"
+  name      = "MSProm-SUK-${azurerm_kubernetes_cluster.stamp.name}"
   parent_id = azurerm_resource_group.stamp.id
   location  = azurerm_resource_group.stamp.location
 
@@ -39,7 +39,7 @@ resource "azapi_resource" "dataCollectionRule" {
 
 resource "azapi_resource" "dataCollectionEndpoint" {
   type      = "Microsoft.Insights/dataCollectionEndpoints@2021-09-01-preview"
-  name      = "MSPROM-SUK-${azurerm_kubernetes_cluster.stamp.name}"
+  name      = "MSProm-SUK-${azurerm_kubernetes_cluster.stamp.name}"
   parent_id = azurerm_resource_group.stamp.id
   location  = azurerm_resource_group.stamp.location
 
@@ -57,6 +57,7 @@ resource "azapi_resource" "dataCollectionRuleAssociation" {
   location                  = azurerm_resource_group.stamp.location
 
   body = jsonencode({
+    scope = azurerm_kubernetes_cluster.stamp.id
     properties = {
       dataCollectionRuleId = jsondecode(data.azapi_resource.prometheus.output).properties.defaultIngestionSettings.dataCollectionRuleResourceId
     }

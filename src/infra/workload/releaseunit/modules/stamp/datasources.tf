@@ -10,7 +10,7 @@ data "azurerm_resource_group" "monitoring" {
 }
 
 data "azapi_resource" "prometheus" {
-  name      = "${local.prefix}-prometheus"
+  name      = "${local.prefix}-${local.location_short}-prometheus"
   type      = "microsoft.monitor/accounts@2021-06-03-preview"
   parent_id = data.azurerm_resource_group.monitoring.id
   

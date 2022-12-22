@@ -55,45 +55,6 @@ resource "azapi_resource" "dataCollectionEndpoint" {
   })
 }
 
-resource "azapi_resource" "dataCollectionRule" {
-  schema_validation_enabled = false
-
-  type      = "Microsoft.Insights/dataCollectionRules@2021-09-01-preview"
-  name      = "${local.prefix}-${local.location_short}-prom-dcr"
-  parent_id = var.resource_group_id
-  location  = var.location
-
-  body = jsonencode({
-    kind = "Linux"
-    properties = {
-      dataCollectionEndpointId = jsondecode(azapi_resource.prometheus.output).properties.defaultIngestionSettings.dataCollectionEndpointResourceId
-      dataFlows = [
-        {
-          destinations = ["MonitoringAccount1"]
-          streams      = ["Microsoft-PrometheusMetrics"]
-        }
-      ]
-      dataSources = {
-        prometheusForwarder = [
-          {
-            name               = "PrometheusDataSource"
-            streams            = ["Microsoft-PrometheusMetrics"]
-            labelIncludeFilter = {}
-          }
-        ]
-      }
-      destinations = {
-        monitoringAccounts = [
-          {
-            accountResourceId = azapi_resource.prometheus.id
-            name              = "MonitoringAccount1"
-          }
-        ]
-      }
-    }
-  })
-}
-
 # resource "azapi_resource" "dataCollectionRuleAssociation" {
 #   schema_validation_enabled = false
 #   type                      = "Microsoft.Insights/dataCollectionRuleAssociations@2021-09-01-preview"

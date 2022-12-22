@@ -15,4 +15,8 @@ module "stamp_monitoring" {
   azure_monitor_action_group_resource_id = azurerm_monitor_action_group.main.id
   alerts_enabled                         = var.alerts_enabled
   default_tags                           = local.default_tags
+
+  depends_on = [
+    azurerm_resource_group.monitoring
+  ]
 }

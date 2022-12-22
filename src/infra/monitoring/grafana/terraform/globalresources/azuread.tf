@@ -4,7 +4,7 @@ data "azuread_client_config" "current" {}
 resource "azuread_application" "auth" {
   display_name     = "${lower(var.prefix)}-auth"
   identifier_uris  = ["api://example-app"]
-  owners           = [data.azurerm_client_config.current.object_id]
+  owners           = [data.azuread_client_config.current.object_id]
   sign_in_audience = "AzureADMyOrg"
 }
 

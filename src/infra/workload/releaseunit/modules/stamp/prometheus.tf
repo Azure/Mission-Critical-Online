@@ -2,8 +2,8 @@ resource "azapi_resource" "dataCollectionRule" {
   schema_validation_enabled = false
 
   type      = "Microsoft.Insights/dataCollectionRules@2021-09-01-preview"
-  name      = "MSPROM-${azurerm_kubernetes_cluster.stamp.name}-${azurerm_kubernetes_cluster.stamp.location}"
-  parent_id = azurerm_kubernetes_cluster.stamp.id
+  name      = "MSPROM-SUK-${azurerm_kubernetes_cluster.stamp.name}-${azurerm_kubernetes_cluster.stamp.location}"
+  parent_id = azurerm_resource_group.stamp.id
   location  = azurerm_resource_group.stamp.location
 
   body = jsonencode({
@@ -34,6 +34,18 @@ resource "azapi_resource" "dataCollectionRule" {
         ]
       }
     }
+  })
+}
+
+resource "azapi_resource" "dataCollectionEndpoint" {
+  type      = "Microsoft.Insights/dataCollectionEndpoints@2021-09-01-preview"
+  name      = "MSPROM-SUK-${azurerm_kubernetes_cluster.stamp.name}-${azurerm_kubernetes_cluster.stamp.location}"
+  parent_id = azurerm_resource_group.stamp.id
+  location  = azurerm_resource_group.stamp.location
+
+  body = jsonencode({
+    kind       = "Linux"
+    properties = {}
   })
 }
 

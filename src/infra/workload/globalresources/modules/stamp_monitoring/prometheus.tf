@@ -43,17 +43,6 @@ resource "azapi_resource" "prometheus" {
 #   principal_id         = azapi_resource.grafana.identity[0].principal_id
 # }
 
-resource "azapi_resource" "dataCollectionEndpoint" {
-  type      = "Microsoft.Insights/dataCollectionEndpoints@2021-09-01-preview"
-  name      = "${local.prefix}-${local.location_short}-prom-dce"
-  parent_id = var.resource_group_id
-  location  = var.location
-
-  body = jsonencode({
-    kind       = "Linux"
-    properties = {}
-  })
-}
 
 # resource "azapi_resource" "dataCollectionRuleAssociation" {
 #   schema_validation_enabled = false

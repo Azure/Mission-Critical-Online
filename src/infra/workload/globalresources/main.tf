@@ -27,8 +27,7 @@ provider "azurerm" {
   }
 }
 
-provider "azapi" {
-}
+provider "azapi" {}
 
 resource "azurerm_resource_group" "global" {
   name     = "${local.prefix}-global-rg"

@@ -23,6 +23,8 @@ provider "azurerm" {
   }
 }
 
+provider "azapi" {}
+
 # Random API key which needs to be identical between all stamps
 resource "random_password" "api_key" {
   length  = 32

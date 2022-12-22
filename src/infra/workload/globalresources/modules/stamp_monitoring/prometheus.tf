@@ -1,8 +1,8 @@
 resource "azapi_resource" "prometheus" {
   type      = "microsoft.monitor/accounts@2021-06-03-preview"
   name      = "${local.prefix}-prometheus"
-  parent_id = data.azurerm_resource_group.monitoring.id
-  location  = data.azurerm_resource_group.monitoring.location
+  parent_id = var.resource_group_id
+  location  = var.location
 
   response_export_values = ["*"]
 }
@@ -10,8 +10,8 @@ resource "azapi_resource" "prometheus" {
 # resource "azapi_resource" "grafana" {
 #   type      = "Microsoft.Dashboard/grafana@2022-08-01"
 #   name      = "${local.prefix}-grafana"
-#   parent_id = data.azurerm_resource_group.monitoring.id
-#   location  = data.azurerm_resource_group.monitoring.location
+#   parent_id = var.resource_group_id
+#   location  = var.location
 
 #   identity {
 #     type = "SystemAssigned"
@@ -46,8 +46,8 @@ resource "azapi_resource" "prometheus" {
 resource "azapi_resource" "dataCollectionEndpoint" {
   type      = "Microsoft.Insights/dataCollectionEndpoints@2021-09-01-preview"
   name      = "${local.prefix}-${local.location_short}-prom-dce"
-  parent_id = data.azurerm_resource_group.monitoring.id
-  location  = data.azurerm_resource_group.monitoring.location
+  parent_id = var.resource_group_id
+  location  = var.location
 
   body = jsonencode({
     kind       = "Linux"
@@ -60,8 +60,8 @@ resource "azapi_resource" "dataCollectionRule" {
 
   type      = "Microsoft.Insights/dataCollectionRules@2021-09-01-preview"
   name      = "${local.prefix}-${local.location_short}-prom-dcr"
-  parent_id = data.azurerm_resource_group.monitoring.id
-  location  = data.azurerm_resource_group.monitoring.location
+  parent_id = var.resource_group_id
+  location  = var.location
 
   body = jsonencode({
     kind = "Linux"

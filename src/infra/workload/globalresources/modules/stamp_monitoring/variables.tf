@@ -13,6 +13,11 @@ variable "resource_group_name" {
   type        = string
 }
 
+variable "resource_group_id" {
+  description = "Resource Group Id"
+  type        = string
+}
+
 variable "azure_monitor_action_group_resource_id" {
   description = "Resource ID of a Azure Monitor action group to send alerts to"
   type        = string

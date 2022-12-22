@@ -9,7 +9,7 @@ resource "azapi_resource" "dataCollectionRule" {
   body = jsonencode({
     kind = "Linux"
     properties = {
-      dataCollectionEndpointId = jsondecode(data.azapi_resource.prometheus.output).properties.defaultIngestionSettings.dataCollectionEndpointResourceId
+      dataCollectionEndpointId = azapi_resource.dataCollectionEndpoint.id
       dataFlows = [
         {
           destinations = ["MonitoringAccount1"]

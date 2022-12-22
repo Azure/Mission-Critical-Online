@@ -1,5 +1,6 @@
 ﻿using AlwaysOn.Shared.Exceptions;
 using AlwaysOn.Shared.Interfaces;
+using Azure.Core;
 using Azure.Messaging.EventHubs;
 using Azure.Messaging.EventHubs.Producer;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -18,10 +19,10 @@ namespace AlwaysOn.Shared.Services
         private readonly EventHubProducerClient _eventHubProducerClient;
 
         // Expects to find FrontendSenderEventHubConnectionString in SysConfiguration.
-        public EventHubProducerService(ILogger<EventHubProducerService> logger, SysConfiguration sysConfig)
+        public EventHubProducerService(ILogger<EventHubProducerService> logger, TokenCredential tokenCredential, SysConfiguration sysConfig)
         {
             _logger = logger;
-            _eventHubProducerClient = new EventHubProducerClient(sysConfig.FrontendSenderEventHubConnectionString);
+            _eventHubProducerClient = new EventHubProducerClient(sysConfig.EventHubEndpoint, sysConfig.EventHubName, credential: tokenCredential);
 
             _logger.LogInformation("Initializing Event Hub producer client with Event Hub namespace {eventHubNamespace}", _eventHubProducerClient.FullyQualifiedNamespace);
         }

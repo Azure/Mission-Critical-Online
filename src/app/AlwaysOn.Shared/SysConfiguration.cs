@@ -48,11 +48,6 @@ namespace AlwaysOn.Shared
         public string AzureRegionShort => AzureRegion.Replace(" ", "").ToLower();
 
         /// <summary>
-        /// Client ID of the User-defined Managed Identity to be used for any MSI-based authentication
-        /// </summary>
-        public string ManagedIdentityClientId => Configuration["MANAGED_IDENTITY_CLIENTID"];
-
-        /// <summary>
         /// API Key for restricted APIs
         /// </summary>
         public string ApiKey => Configuration["API_KEY"];
@@ -60,17 +55,15 @@ namespace AlwaysOn.Shared
         /// <summary>
         /// Connection string for the globally shared storage account which is used for catalog image storage
         /// </summary>
-        public string GlobalStorageAccountConnectionString => Configuration["GLOBAL_STORAGEACCOUNT_CONNECTIONSTRING"];
+        public string GlobalStorageAccountName => Configuration["GLOBAL_STORAGEACCOUNT_NAME"];
 
         public string CosmosEndpointUri => Configuration["COSMOSDB_ENDPOINT"];
-        public string CosmosApiKey => Configuration["COSMOSDB_APIKEY"];
         public string CosmosDBDatabaseName => Configuration["COSMOSDB_DATABASENAME"];
 
-        public string FrontendSenderEventHubConnectionString => Configuration["FRONTEND_SENDEREVENTHUBCONNECTIONSTRING"];
-
-        public string BackendReaderEventHubConnectionString => Configuration["BACKEND_READEREVENTHUBCONNECTIONSTRING"];
-        public string BackendReaderEventHubConsumergroup => Configuration["BACKEND_READEREVENTHUBCONSUMERGROUPNAME"];
-        public string BackendStorageConnectionString => Configuration["STORAGEACCOUNT_CONNECTIONSTRING"];
+        public string EventHubEndpoint => Configuration["EVENTHUB_ENDPOINT"];
+        public string EventHubName => Configuration["EVENTHUB_NAME"];
+        public string BackendReaderEventHubConsumergroup => Configuration["BACKGROUNDPROCESSOR_CONSUMERGROUPNAME"];
+        public string BackendStorageAccountName => Configuration["STORAGEACCOUNT_NAME"];
         public string BackendCheckpointBlobContainerName => Configuration["STORAGEACCOUNT_EHCHECKPOINTCONTAINERNAME"];
         public string RegionalLogAnalyticsWorkspaceId => Configuration["LOGANALYTICS_WORKSPACEID"];
 
@@ -153,7 +146,7 @@ namespace AlwaysOn.Shared
             }
         }
 
-        public string HealthServiceStorageConnectionString => Configuration["STORAGEACCOUNT_CONNECTIONSTRING"];
+        public string HealthServiceStorageAccountName => Configuration["STORAGEACCOUNT_NAME"];
         public string HealthServiceBlobContainerName => Configuration["STORAGEACCOUNT_HEALTHSERVICE_CONTAINERNAME"];
         public string HealthServiceBlobName => Configuration["STORAGEACCOUNT_HEALTHSERVICE_BLOBNAME"];
         public int HealthServiceCacheDurationSeconds

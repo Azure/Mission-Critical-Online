@@ -10,6 +10,9 @@ resource "azurerm_kubernetes_cluster" "stamp" {
 
   automatic_channel_upgrade = "node-image"
 
+  oidc_issuer_enabled       = true
+  workload_identity_enabled = true
+
   maintenance_window {
     allowed {
       day   = "Sunday"

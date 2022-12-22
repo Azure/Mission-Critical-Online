@@ -1,4 +1,5 @@
 ﻿using AlwaysOn.Shared;
+using Azure.Core;
 using Azure.Storage.Blobs;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
@@ -12,12 +13,15 @@ namespace AlwaysOn.HealthService.ComponentHealthChecks
     {
         private readonly ILogger<BlobStorageHealthCheck> _logger;
         private readonly SysConfiguration _sysConfig;
+        private readonly TokenCredential _tokenCredential;
 
         public BlobStorageHealthCheck(ILogger<BlobStorageHealthCheck> logger,
-            SysConfiguration sysConfig)
+            SysConfiguration sysConfig,
+            TokenCredential tokenCredential)
         {
             _logger = logger;
             _sysConfig = sysConfig;
+            _tokenCredential = tokenCredential;
         }
 
         /// <summary>
@@ -27,10 +31,10 @@ namespace AlwaysOn.HealthService.ComponentHealthChecks
         {
             try
             {
-                var blobContainerClient = new BlobContainerClient(_sysConfig.HealthServiceStorageConnectionString, _sysConfig.HealthServiceBlobContainerName);
-                _logger.LogDebug("Initiated health state blob container client at {HealthBlobContainerUrl}", blobContainerClient.Uri.ToString());
+                var stateBlobClient = new BlobClient(new Uri($"https://{_sysConfig.HealthServiceStorageAccountName}.blob.core.windows.net/{_sysConfig.HealthServiceBlobContainerName}/{_sysConfig.HealthServiceBlobName}"),
+                                                    _tokenCredential);
+                _logger.LogDebug("Initiated health state blob client at {HealthBlobUrl}", stateBlobClient.Uri.ToString());
 
-                var stateBlobClient = blobContainerClient.GetBlobClient(_sysConfig.HealthServiceBlobName);
                 if (await stateBlobClient.ExistsAsync(cancellationToken))
                 {
                     return new HealthCheckResult(HealthStatus.Healthy);

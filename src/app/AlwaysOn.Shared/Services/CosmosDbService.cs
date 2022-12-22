@@ -4,6 +4,7 @@ using AlwaysOn.Shared.Interfaces;
 using AlwaysOn.Shared.Models;
 using AlwaysOn.Shared.Models.DataTransfer;
 using AlwaysOn.Shared.TelemetryExtensions;
+using Azure.Core;
 using Microsoft.ApplicationInsights;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Fluent;
@@ -43,6 +44,7 @@ namespace AlwaysOn.Shared.Services
             ILogger<CosmosDbService> logger,
             SysConfiguration sysConfig,
             TelemetryClient tc,
+            TokenCredential tokenCredential,
             AppInsightsCosmosRequestHandler appInsightsRequestHandler)
         {
             _logger = logger;
@@ -50,7 +52,7 @@ namespace AlwaysOn.Shared.Services
 
             _logger.LogInformation("Initializing Cosmos DB client with endpoint {endpoint} in ApplicationRegion {azureRegion}. Database name {databaseName}", sysConfig.CosmosEndpointUri, sysConfig.AzureRegion, sysConfig.CosmosDBDatabaseName);
 
-            CosmosClientBuilder clientBuilder = new CosmosClientBuilder(sysConfig.CosmosEndpointUri, sysConfig.CosmosApiKey)
+            CosmosClientBuilder clientBuilder = new CosmosClientBuilder(sysConfig.CosmosEndpointUri, tokenCredential)
                 .WithConnectionModeDirect()
                 .WithContentResponseOnWrite(false)
                 .WithRequestTimeout(TimeSpan.FromSeconds(sysConfig.ComsosRequestTimeoutSeconds))

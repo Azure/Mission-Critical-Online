@@ -27,12 +27,16 @@ jobs: # using jobs so they each run in parallel
           # load json data from downloaded terraform artifact
           $releaseUnitInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputReleaseUnitInfra/*.json | Get-Content | ConvertFrom-JSON
 
+          # Retrieve current TenantID
+          $tenantId = az account show --query "tenantId" --output tsv
+
           # loop through stamps from pipeline artifact json
           foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
             echo "**************************** REGION: $($stamp.location) ****************************"
 
             $aksClusterName = $stamp.aks_cluster_name
             $aksClusterResourceGroup = $stamp.resource_group_name
+            $identityClientId = $stamp.healthservice_managed_identity_client_id
 
             # We are using the list-locations command to retrieve the display name of the region as this is needed for the Cosmos DB SDK's ApplicationRegion parameter
             $region = az account list-locations --query "[?name == '$($stamp.location)'].displayName" -o tsv
@@ -50,6 +54,13 @@ jobs: # using jobs so they each run in parallel
             $fqdn = $stamp.aks_cluster_ingress_fqdn
             echo "*** Retrieved Ingress Controller FQDN $fqdn for AKS cluster $aksClusterName"
 
+            # Gather Azure KeyVault name from terraform artifact
+            $keyVaultName = $stamp.key_vault_name
+            echo "*** Retrieved Key Vault name $keyVaultName"
+
+            $allSecretNames = $(az keyvault secret list --vault-name $keyVaultName --query "join(',',[].name)" --output tsv)
+            echo "*** Retrieved the names of $($allSecretNames.Split(',').Count) secrets in Key Vault $keyVaultName"
+
             # Apply workload worker helm chart
             echo  "*** Deploy healthservice to $aksClusterName (in $aksClusterResourceGroup) via helm chart"
             helm upgrade --install healthservice-workload src/app/charts/healthservice `
@@ -59,6 +70,10 @@ jobs: # using jobs so they each run in parallel
                          --set azure.region="$region" `
                          --set containerimage="$fullContainerImageName" `
                          --set workload.domainname="$fqdn" `
+                         --set identity.clientid="$identityClientId" `
+                         --set azure.tenantId=$tenantId `
+                         --set azure.keyVaultName="$keyVaultName" `
+                         --set kvSecrets="{$allSecretNames}" `
                          --wait
 
             # Wait for the ingress certificate to be provisioned by cert-manager
@@ -116,6 +131,9 @@ jobs: # using jobs so they each run in parallel
 
           helm lint src/app/charts/catalogservice # lint helm chart
 
+          # Retrieve current TenantID
+          $tenantId = az account show --query "tenantId" --output tsv
+
           # load json data from downloaded terraform artifact
           $releaseUnitInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputReleaseUnitInfra/*.json | Get-Content | ConvertFrom-JSON
 
@@ -125,6 +143,7 @@ jobs: # using jobs so they each run in parallel
 
             $aksClusterName = $stamp.aks_cluster_name
             $aksClusterResourceGroup = $stamp.resource_group_name
+            $identityClientId = $stamp.catalogservice_managed_identity_client_id
 
             # We are using the list-locations command to retrieve the display name of the region as this is needed for the Cosmos DB SDK's ApplicationRegion parameter
             $region = az account list-locations --query "[?name == '$($stamp.location)'].displayName" -o tsv
@@ -138,6 +157,13 @@ jobs: # using jobs so they each run in parallel
 
             $fqdn = $stamp.aks_cluster_ingress_fqdn
             echo "*** Retrieved Ingress Controller FQDN $fqdn for AKS cluster $aksClusterName"
+
+            # Gather Azure KeyVault name from terraform artifact
+            $keyVaultName = $stamp.key_vault_name
+            echo "*** Retrieved Key Vault name $keyVaultName"
+
+            $allSecretNames = $(az keyvault secret list --vault-name $keyVaultName --query "join(',',[].name)" --output tsv)
+            echo "*** Retrieved the names of $($allSecretNames.Split(',').Count) secrets in Key Vault $keyVaultName"
 
             $fullContainerImageName = Get-Content -Path "$(Pipeline.Workspace)/catalogservice-containerImageName/catalogservice.txt"
             echo "*** Retrieved full container image name from artifact - $fullContainerImageName"
@@ -153,6 +179,10 @@ jobs: # using jobs so they each run in parallel
                          --set azure.region="$region" `
                          --set containerimage="$fullContainerImageName" `
                          --set workload.domainname="$fqdn" `
+                         --set identity.clientid="$identityClientId" `
+                         --set azure.tenantId=$tenantId `
+                         --set azure.keyVaultName="$keyVaultName" `
+                         --set kvSecrets="{$allSecretNames}" `
                          --wait
           }
 
@@ -176,6 +206,9 @@ jobs: # using jobs so they each run in parallel
 
           helm lint src/app/charts/backgroundprocessor # lint helm chart
 
+          # Retrieve current TenantID
+          $tenantId = az account show --query "tenantId" --output tsv
+
           # load json data from downloaded terraform artifact
           $releaseUnitInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputReleaseUnitInfra/*.json | Get-Content | ConvertFrom-JSON
 
@@ -185,6 +218,7 @@ jobs: # using jobs so they each run in parallel
 
             $aksClusterName = $stamp.aks_cluster_name
             $aksClusterResourceGroup = $stamp.resource_group_name
+            $identityClientId = $stamp.backgroundprocessor_managed_identity_client_id
 
             # We are using the list-locations command to retrieve the display name of the region as this is needed for the Cosmos DB SDK's ApplicationRegion parameter
             $region = az account list-locations --query "[?name == '$($stamp.location)'].displayName" -o tsv
@@ -196,6 +230,13 @@ jobs: # using jobs so they each run in parallel
                                    --resource-group $aksClusterResourceGroup `
                                    --overwrite-existing --admin
 
+            # Gather Azure KeyVault name from terraform artifact
+            $keyVaultName = $stamp.key_vault_name
+            echo "*** Retrieved Key Vault name $keyVaultName"
+
+            $allSecretNames = $(az keyvault secret list --vault-name $keyVaultName --query "join(',',[].name)" --output tsv)
+            echo "*** Retrieved the names of $($allSecretNames.Split(',').Count) secrets in Key Vault $keyVaultName"
+
             $fullContainerImageName = Get-Content -Path "$(Pipeline.Workspace)/backgroundprocessor-containerImageName/backgroundprocessor.txt"
             echo "*** Retrieved full container image name from artifact - $fullContainerImageName"
 
@@ -206,6 +247,10 @@ jobs: # using jobs so they each run in parallel
                          --create-namespace `
                          --set containerimage="$fullContainerImageName" `
                          --set azure.region="$region" `
+                         --set identity.clientid="$identityClientId" `
+                         --set azure.tenantId=$tenantId `
+                         --set azure.keyVaultName="$keyVaultName" `
+                         --set kvSecrets="{$allSecretNames}" `
                          --wait
           }
 

@@ -3,6 +3,8 @@ using AlwaysOn.Shared;
 using AlwaysOn.Shared.Interfaces;
 using AlwaysOn.Shared.Services;
 using AlwaysOn.Shared.TelemetryExtensions;
+using Azure.Core;
+using Azure.Identity;
 using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.Extensibility;
@@ -44,6 +46,19 @@ namespace AlwaysOn.CatalogService
             {
                 ConnectionString = Configuration[SysConfiguration.ApplicationInsightsConnStringKeyName],
                 EnableAdaptiveSampling = bool.TryParse(Configuration[SysConfiguration.ApplicationInsightsAdaptiveSamplingName], out bool result) ? result : true
+            });
+
+            services.AddSingleton<TokenCredential>(builder =>
+            {
+                var managedIdentityClientId = Configuration["AZURE_CLIENT_ID"];
+                if (!string.IsNullOrEmpty(managedIdentityClientId))
+                {
+                    return new ManagedIdentityCredential(managedIdentityClientId);
+                }
+                else
+                {
+                    return new DefaultAzureCredential();
+                }
             });
 
             services.AddSingleton<AppInsightsCosmosRequestHandler>();

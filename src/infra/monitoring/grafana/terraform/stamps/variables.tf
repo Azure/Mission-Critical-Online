@@ -9,6 +9,22 @@ variable "prefix" {
   }
 }
 
+variable "auth_client_id" {
+  description = "Client ID used for OAuth"
+  type        = string
+}
+
+variable "auth_client_secret" {
+  description = "Client Secret used for OAuth"
+  type        = string
+  sensitive   = true
+}
+
+variable "auth_client_tenant" {
+  description = "Client Tenant used for OAuth"
+  type        = string
+}
+
 variable "branch" {
   description = "Name of the repository branch used for the deployment. Used as an Azure Resource Tag."
   type        = string

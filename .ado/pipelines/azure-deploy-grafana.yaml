@@ -118,4 +118,6 @@ stages:
                                       -var=acr_resource_id="$(acr_resource_id)"
                                       -var=''stamps=$(stampLocationsGrafana)''
                                       -var=frontdoor_fqdn="$(frontdoor_fqdn)"
-                                      -var=frontdoor_header_id="$(frontdoor_header_id)"'
+                                      -var=frontdoor_header_id="$(frontdoor_header_id)"
+                                      -var=auth_client_id="$(auth_client_id)"
+                                      -var=auth_client_secret="$(auth_client_secret)"'

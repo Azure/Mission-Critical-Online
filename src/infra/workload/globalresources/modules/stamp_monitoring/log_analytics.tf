@@ -1,6 +1,6 @@
 # Adding a LogAnalytics Workspace for AKS and Container Insights
 resource "azurerm_log_analytics_workspace" "stamp" {
-  name                = "${local.prefix}-#-log"
+  name                = "${local.prefix}-${local.location_short}-log"
   location            = var.location
   resource_group_name = var.resource_group_name
   sku                 = "PerGB2018"

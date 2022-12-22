@@ -102,6 +102,20 @@ resource "azurerm_kubernetes_cluster_node_pool" "workload" {
   tags = var.default_tags
 }
 
+resource "azapi_resource" "dataCollectionRuleAssociation" {
+  schema_validation_enabled = false
+  type                      = "Microsoft.Insights/dataCollectionRuleAssociations@2021-09-01-preview"
+  name                      = "${local.prefix}-prom-dcra"
+  parent_id                 = azurerm_kubernetes_cluster.stamp.id
+  location                  = azurerm_resource_group.stamp.location
+
+  body = jsonencode({
+    properties = {
+      dataCollectionRuleId = jsondecode(data.azapi_resource.prometheus.output).properties.defaultIngestionSettings.dataCollectionRuleResourceId
+    }
+  })
+}
+
 ####################################### DIAGNOSTIC SETTINGS #######################################
 
 # Use this data source to fetch all available log and metrics categories. We then enable all of them

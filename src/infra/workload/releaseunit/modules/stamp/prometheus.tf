@@ -28,7 +28,7 @@ resource "azapi_resource" "dataCollectionRule" {
       destinations = {
         monitoringAccounts = [
           {
-            accountResourceId = azapi_resource.prometheus.id
+            accountResourceId = data.azapi_resource.prometheus.id
             name              = "MonitoringAccount1"
           }
         ]

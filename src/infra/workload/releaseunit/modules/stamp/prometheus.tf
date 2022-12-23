@@ -2,7 +2,7 @@ resource "azapi_resource" "dataCollectionRule" {
   schema_validation_enabled = false
 
   type      = "Microsoft.Insights/dataCollectionRules@2021-09-01-preview"
-  name      = "MSProm-SUK-${azurerm_kubernetes_cluster.stamp.name}"
+  name      = "${local.prefix}-${local.location_short}-dcr"
   parent_id = azurerm_resource_group.stamp.id
   location  = azurerm_resource_group.stamp.location
 
@@ -39,7 +39,7 @@ resource "azapi_resource" "dataCollectionRule" {
 
 resource "azapi_resource" "dataCollectionEndpoint" {
   type      = "Microsoft.Insights/dataCollectionEndpoints@2021-09-01-preview"
-  name      = "MSProm-SUK-${azurerm_kubernetes_cluster.stamp.name}"
+  name      = "${local.prefix}-${local.location_short}-dce"
   parent_id = azurerm_resource_group.stamp.id
   location  = azurerm_resource_group.stamp.location
 
@@ -52,7 +52,7 @@ resource "azapi_resource" "dataCollectionEndpoint" {
 resource "azapi_resource" "dataCollectionRuleAssociation" {
   schema_validation_enabled = false
   type                      = "Microsoft.Insights/dataCollectionRuleAssociations@2021-09-01-preview"
-  name                      = "MSProm-SUK-${azurerm_kubernetes_cluster.stamp.name}"
+  name                      = "${local.prefix}-${local.location_short}-dcra"
   parent_id                 = azurerm_kubernetes_cluster.stamp.id
   #location                  = azurerm_resource_group.stamp.location
 

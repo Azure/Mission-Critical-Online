@@ -24,6 +24,19 @@ output "frontdoor_name" {
   value = azurerm_frontdoor.afdgrafana.name
 }
 
+output "auth_client_id" {
+  value = azuread_application.auth.application_id
+}
+
+output "auth_client_secret" {
+  value = azuread_application_password.auth.value
+  sensitive = true
+}
+
+output "auth_client_tenant" {
+  value = data.azuread_client_config.current.tenant_id
+}
+
 # Azure Front Door Header ID
 output "frontdoor_header_id" {
   value = azurerm_frontdoor.afdgrafana.header_frontdoor_id

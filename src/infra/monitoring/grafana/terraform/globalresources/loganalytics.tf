@@ -1,5 +1,16 @@
-# Azure Frontdoor config for LA workspace
+resource "azurerm_log_analytics_workspace" "log_analytics_workspace" {
+  name                = "${local.prefix}-global-log"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  sku                 = "PerGB2018"
+  retention_in_days   = 30 # has to be between 30 and 730
 
+  daily_quota_gb = 10
+
+  tags = local.default_tags
+}
+
+# Azure Frontdoor config for LA workspace
 resource "azurerm_monitor_diagnostic_setting" "diag_settings_afd" {
   name                       = "frontdoorladiagnostics"
   target_resource_id         = azurerm_frontdoor.afdgrafana.id
@@ -38,7 +49,6 @@ resource "azurerm_monitor_diagnostic_setting" "diag_settings_afd" {
 
 
 # Azure Container Registry
-
 resource "azurerm_monitor_diagnostic_setting" "acr" {
   name                       = "acrladiagnostics"
   target_resource_id         = azurerm_container_registry.main.id

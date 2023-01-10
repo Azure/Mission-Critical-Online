@@ -39,9 +39,12 @@ resource "azurerm_linux_web_app" "appservice" {
     "GF_AUTH_AZUREAD_CLIENT_ID"      = var.auth_client_id
     "GF_AUTH_AZUREAD_CLIENT_SECRET"  = var.auth_client_secret
     "GF_AUTH_AZUREAD_ALLOW_SIGN_UP"  = "false"
+    "GF_AUTH_AZUREAD_SCOPES"         = "openid email profile"
     "GF_AUTH_AZUREAD_AUTH_URL"       = "https://login.microsoftonline.com/${var.auth_client_tenant}/oauth2/v2.0/authorize"
     "GF_AUTH_AZUREAD_TOKEN_URL"      = "https://login.microsoftonline.com/${var.auth_client_tenant}/oauth2/v2.0/token"
     "GF_AUTH_AZUREAD_ALLOWED_GROUPS" = var.auth_group_id
+
+    "GF_SERVER_DOMAIN" = var.frontdoor_fqdn
 
     "GF_SECURITY_CSRF_ADDITIONAL_HEADERS" = "X-FORWARDED-HOST"
     "GF_SECURITY_CSRF_TRUSTED_ORIGINS"    = "https://${var.frontdoor_fqdn}"
@@ -49,6 +52,7 @@ resource "azurerm_linux_web_app" "appservice" {
     "GRAFANA_USERNAME"           = "alwayson"
     "GRAFANA_PASSWORD"           = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.grafana_password[each.key].id})"
     "AZURE_DEFAULT_SUBSCRIPTION" = data.azurerm_subscription.current.subscription_id
+
     "WEBSITES_PORT"              = "3000"
     "WEBSITE_VNET_ROUTE_ALL"     = "1"
   }

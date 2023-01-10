@@ -25,6 +25,11 @@ variable "auth_client_tenant" {
   type        = string
 }
 
+variable "auth_group_id" {
+  description = "AAD Group ID that grants access to login"
+  type        = string
+}
+
 variable "branch" {
   description = "Name of the repository branch used for the deployment. Used as an Azure Resource Tag."
   type        = string

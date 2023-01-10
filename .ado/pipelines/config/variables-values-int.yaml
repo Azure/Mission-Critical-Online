@@ -13,6 +13,8 @@ variables:
 
 - name: 'stampLocationsGrafana'
   value: '["eastus"]' # Check which regions are valid. There is a list in /src/infra/README.md
+- name: 'grafanaAccessGroupId'
+  value: '952ad759-6673-4d83-917e-136f2b7e1594' # aad group id that grants access to login into grafana
 
 # Terraform state variables
 - name:  'terraformResourceGroup'

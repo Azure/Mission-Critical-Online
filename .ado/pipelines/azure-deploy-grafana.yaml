@@ -121,4 +121,5 @@ stages:
                                       -var=frontdoor_header_id="$(frontdoor_header_id)"
                                       -var=auth_client_id="$(auth_client_id)"
                                       -var=auth_client_secret="$(auth_client_secret)"
-                                      -var=auth_client_tenant="$(auth_client_tenant)"'
+                                      -var=auth_client_tenant="$(auth_client_tenant)"
+                                      -var=auth_group_id="$(grafanaAccessGroupId)"'

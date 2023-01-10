@@ -45,7 +45,9 @@ resource "azurerm_linux_web_app" "appservice" {
     "GF_AUTH_AZUREAD_ALLOWED_GROUPS" = var.auth_group_id
 
     "GF_SERVER_DOMAIN"   = var.frontdoor_fqdn
-    "GF_SERVER_ROOT_URL" = "https://${var.frontdoor_fqdn}"
+    
+    "GF_SERVER_ROOT_URL"            = "https://${var.frontdoor_fqdn}"
+    "GF_SERVER_SERVE_FROM_SUB_PATH" = "true"
 
     "GF_SECURITY_CSRF_ADDITIONAL_HEADERS" = "X-FORWARDED-HOST"
     "GF_SECURITY_CSRF_TRUSTED_ORIGINS"    = "https://${var.frontdoor_fqdn}"

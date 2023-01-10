@@ -53,7 +53,7 @@ resource "azurerm_linux_web_app" "appservice" {
     "GRAFANA_PASSWORD"           = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.grafana_password[each.key].id})"
     "AZURE_DEFAULT_SUBSCRIPTION" = data.azurerm_subscription.current.subscription_id
 
-    "WEBSITES_PORT"              = "3000"
+    #"WEBSITES_PORT"              = "3000"
     "WEBSITE_VNET_ROUTE_ALL"     = "1"
   }
 

@@ -1,8 +1,3 @@
-resource "azuread_service_principal" "msgraph" {
-  application_id = data.azuread_application_published_app_ids.well_known.result.MicrosoftGraph
-  use_existing   = true
-}
-
 # App registration for the auth manager to be able to validate requests against Azure AD
 resource "azuread_application" "auth" {
   display_name     = "${lower(var.prefix)}-auth"
@@ -16,7 +11,7 @@ resource "azuread_application" "auth" {
     resource_app_id = data.azuread_application_published_app_ids.well_known.result.MicrosoftGraph
 
     resource_access {
-      id   = azuread_service_principal.msgraph.app_role_ids["Group.Read.All"]
+      id   = "5b567255-7703-4780-807c-7be8301ae99b" # Group.Read.All
       type = "Role"
     }
   }

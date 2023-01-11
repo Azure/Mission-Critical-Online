@@ -41,22 +41,11 @@ resource "azuread_application" "auth" {
   }
 }
 
-data "azuread_service_principal" "auth" {
-  application_id = azuread_application.auth.application_id
-}
-
 # generate a custom guid for the grafana viewer app role
 resource "random_uuid" "app_role_viewer" {}
 
 # generate a custom guid for the grafana admin app role
 resource "random_uuid" "app_role_admin" {}
-
-# assign the grafana access group to the grafana admins app role
-resource "azuread_app_role_assignment" "grafana_admins" {
-  app_role_id         = random_uuid.app_role_admin.result           # guid (id) of the custom grafana admins role
-  principal_object_id = data.azuread_group.grafana_access.object_id # id of the aad group
-  resource_object_id  = data.azuread_service_principal.auth.object_id    # id of the application
-}
 
 resource "azuread_application_password" "auth" {
   application_object_id = azuread_application.auth.object_id

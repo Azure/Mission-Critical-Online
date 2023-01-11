@@ -1,4 +1,7 @@
-data "azuread_client_config" "current" {}
+resource "azuread_service_principal" "msgraph" {
+  application_id = data.azuread_application_published_app_ids.well_known.result.MicrosoftGraph
+  use_existing   = true
+}
 
 # App registration for the auth manager to be able to validate requests against Azure AD
 resource "azuread_application" "auth" {
@@ -7,36 +10,35 @@ resource "azuread_application" "auth" {
   owners           = [data.azuread_client_config.current.object_id]
   sign_in_audience = "AzureADMyOrg"
 
-  group_membership_claims = [ "SecurityGroup", "ApplicationGroup" ]
+  group_membership_claims = ["SecurityGroup", "ApplicationGroup"]
 
   required_resource_access {
-    resource_app_id = "00000003-0000-0000-c000-000000000000" # ID of Microsoft Graph
+    resource_app_id = data.azuread_application_published_app_ids.well_known.result.MicrosoftGraph
 
-    # add group.readwrite.all permissions
     resource_access {
-        id   = "5b567255-7703-4780-807c-7be8301ae99b"
-        type = "Role"
+      id   = azuread_service_principal.msgraph.app_role_ids["Group.Read.All"]
+      type = "Role"
     }
   }
 
   # Define a role for grafana read-only users
   app_role {
     allowed_member_types = ["User"]
-    description = "Grafana read only users"
-    display_name = "Grafana viewer"
-    enabled = "true"
-    value = "Viewer"
-    id = random_uuid.app_role_viewer.result
+    description          = "Grafana read only users"
+    display_name         = "Grafana viewer"
+    enabled              = "true"
+    value                = "Viewer"
+    id                   = random_uuid.app_role_viewer.result
   }
 
   # Define a role for grafana administrators
   app_role {
     allowed_member_types = ["User"]
-    description = "Grafana org admin users"
-    display_name = "Grafana admin"
-    enabled = "true"
-    value = "Admin"
-    id = random_uuid.app_role_admin.result
+    description          = "Grafana org admin users"
+    display_name         = "Grafana admin"
+    enabled              = "true"
+    value                = "Admin"
+    id                   = random_uuid.app_role_admin.result
   }
 
   web {
@@ -45,13 +47,21 @@ resource "azuread_application" "auth" {
   }
 }
 
-resource "random_uuid" "app_role_viewer" {
+resource "azuread_service_principal" "auth" {
+  application_id = azuread_application.auth.application_id
 }
 
-resource "random_uuid" "app_role_admin" {
-}
+# generate a custom guid for the grafana viewer app role
+resource "random_uuid" "app_role_viewer" {}
 
-resource "random_uuid" "test" {
+# generate a custom guid for the grafana admin app role
+resource "random_uuid" "app_role_admin" {}
+
+# assign the grafana access group to the grafana admins app role
+resource "azuread_app_role_assignment" "grafana_admins" {
+  app_role_id         = random_uuid.app_role_admin.result           # guid (id) of the custom grafana admins role
+  principal_object_id = data.azuread_group.grafana_access.object_id # id of the aad group
+  resource_object_id  = azuread_service_principal.auth.object_id    # id of the application
 }
 
 resource "azuread_application_password" "auth" {

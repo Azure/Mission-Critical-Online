@@ -53,6 +53,7 @@ stages:
                                       -var=branch="$(Build.SourceBranch)"
                                       -var=contact_email="$(contactEmail)"
                                       -var=environment="$(environment)"
+                                      -var=auth_group_id="$(grafanaAccessGroupId)"
                                       -var=''stamps=$(stampLocationsGrafana)'''
 
 - stage: buildcontainer

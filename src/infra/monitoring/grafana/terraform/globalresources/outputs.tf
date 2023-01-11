@@ -29,7 +29,7 @@ output "auth_client_id" {
 }
 
 output "auth_client_secret" {
-  value = azuread_application_password.auth.value
+  value     = azuread_application_password.auth.value
   sensitive = true
 }
 

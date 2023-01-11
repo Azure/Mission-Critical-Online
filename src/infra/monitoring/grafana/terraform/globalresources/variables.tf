@@ -48,3 +48,8 @@ variable "custom_dns_zone_resourcegroup_name" {
   type        = string
   default     = ""
 }
+
+variable "auth_group_id" {
+  description = "AAD Group ID that grants access to login"
+  type        = string
+}

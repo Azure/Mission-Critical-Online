@@ -4,12 +4,12 @@ variables:
 
 # Resource prefix for this environment
 - name:  'prefix'
-  value: 'afint'          # <===== CHANGE THIS! Must not be longer than 6 characters! Needs to be a unique prefix
+  value: 'mcint'          # <===== CHANGE THIS! Must not be longer than 6 characters! Needs to be a unique prefix
 
 # The first value in 'stampLocations' is the primary region used for global services.
 # IMPORTANT! Changing the primary region (first value) is a BREAKING change and will destroy CosmosDB and Front Door.
 - name: 'stampLocations'
-  value: '["swedencentral", "uksouth"]' # Check which regions are valid. There is a list in /src/infra/README.md
+  value: '["westeurope", "uksouth"]' # Check which regions are valid. There is a list in /src/infra/README.md
 
 - name: 'stampLocationsGrafana'
   value: '["eastus"]' # Check which regions are valid. There is a list in /src/infra/README.md
@@ -18,11 +18,11 @@ variables:
 - name:  'terraformResourceGroup'
   value: 'terraformstate-rg'        # <===== CHANGE THIS VALUE IF NEEDED
 - name:  'terraformStorageAccount'
-  value: '$(prefix)terraformstate'  # Needs to be a globally unique name
+  value: '$(prefix)tfstatestore'  # Needs to be a globally unique name
 
 # Custom DNS name settings
 - name: 'envDnsZoneRG'
-  value: 'ao-dns-rg'                # <===== CHANGE THIS OR LEAVE THE VALUE BLANK
+  value: 'mc-dnszones-rg'                # <===== CHANGE THIS OR LEAVE THE VALUE BLANK
 - name: 'envDomainName'
   value: 'int.shop.mission-critical.app'   # <===== CHANGE THIS OR LEAVE THE VALUE BLANK
 

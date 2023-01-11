@@ -7,6 +7,17 @@ resource "azuread_application" "auth" {
   owners           = [data.azuread_client_config.current.object_id]
   sign_in_audience = "AzureADMyOrg"
 
+  group_membership_claims = [ "SecurityGroup", "ApplicationGroup" ]
+
+  required_resource_access {
+    resource_app_id = "00000003-0000-0000-c000-000000000000" # ID of Microsoft Graph
+
+    resource_access {
+        id   = "98830695-27a2-44f7-8c18-0c3ebc9698f6"
+        type = "Role"
+    }
+  }
+
   web {
     redirect_uris = ["https://${var.custom_fqdn != "" ? var.custom_fqdn : azurerm_frontdoor.afdgrafana.cname}/login/azuread"]
 

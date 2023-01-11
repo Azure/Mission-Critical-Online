@@ -36,17 +36,17 @@ resource "azurerm_linux_web_app" "appservice" {
     "GF_DATABASE_SSL_MODE" = "require"
 
     "GF_AUTH_AZUREAD_ENABLED"        = "true"
+    "GF_AUTH_AZUREAD_ALLOW_SIGN_UP"  = "false"
     "GF_AUTH_AZUREAD_CLIENT_ID"      = var.auth_client_id
     "GF_AUTH_AZUREAD_CLIENT_SECRET"  = var.auth_client_secret
-    "GF_AUTH_AZUREAD_ALLOW_SIGN_UP"  = "false"
     "GF_AUTH_AZUREAD_SCOPES"         = "openid email profile"
     "GF_AUTH_AZUREAD_AUTH_URL"       = "https://login.microsoftonline.com/${var.auth_client_tenant}/oauth2/v2.0/authorize"
     "GF_AUTH_AZUREAD_TOKEN_URL"      = "https://login.microsoftonline.com/${var.auth_client_tenant}/oauth2/v2.0/token"
     "GF_AUTH_AZUREAD_ALLOWED_GROUPS" = var.auth_group_id
 
     "GF_SERVER_DOMAIN"   = var.frontdoor_fqdn
-    
-    "GF_SERVER_ROOT_URL"            = "https://${var.frontdoor_fqdn}"
+
+    "GF_SERVER_ROOT_URL"            = "https://${var.frontdoor_fqdn}/"
     "GF_SERVER_SERVE_FROM_SUB_PATH" = "true"
 
     "GF_SECURITY_CSRF_ADDITIONAL_HEADERS" = "X-FORWARDED-HOST"

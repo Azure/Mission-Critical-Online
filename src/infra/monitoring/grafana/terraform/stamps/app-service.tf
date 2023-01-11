@@ -36,7 +36,7 @@ resource "azurerm_linux_web_app" "appservice" {
     "GF_DATABASE_SSL_MODE" = "require"
 
     "GF_AUTH_AZUREAD_ENABLED"        = "true"
-    "GF_AUTH_AZUREAD_ALLOW_SIGN_UP"  = "false"
+    "GF_AUTH_AZUREAD_ALLOW_SIGN_UP"  = "true"
     "GF_AUTH_AZUREAD_CLIENT_ID"      = var.auth_client_id
     "GF_AUTH_AZUREAD_CLIENT_SECRET"  = var.auth_client_secret
     "GF_AUTH_AZUREAD_SCOPES"         = "openid email profile"

@@ -38,11 +38,10 @@ resource "azuread_application" "auth" {
 
   web {
     redirect_uris = ["https://${var.custom_fqdn != "" ? var.custom_fqdn : azurerm_frontdoor.afdgrafana.cname}/login/azuread"]
-
   }
 }
 
-resource "azuread_service_principal" "auth" {
+data "azuread_service_principal" "auth" {
   application_id = azuread_application.auth.application_id
 }
 
@@ -56,7 +55,7 @@ resource "random_uuid" "app_role_admin" {}
 resource "azuread_app_role_assignment" "grafana_admins" {
   app_role_id         = random_uuid.app_role_admin.result           # guid (id) of the custom grafana admins role
   principal_object_id = data.azuread_group.grafana_access.object_id # id of the aad group
-  resource_object_id  = azuread_service_principal.auth.object_id    # id of the application
+  resource_object_id  = data.azuread_service_principal.auth.object_id    # id of the application
 }
 
 resource "azuread_application_password" "auth" {

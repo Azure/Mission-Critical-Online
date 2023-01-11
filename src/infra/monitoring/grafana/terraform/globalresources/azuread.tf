@@ -18,6 +18,22 @@ resource "azuread_application" "auth" {
     }
   }
 
+  app_role {
+    allowed_member_types = ["User"]
+    description = "Grafana read only users"
+    display_name = "Grafana viewer"
+    enabled = "true"
+    value = "Viewer"
+  }
+
+  app_role {
+    allowed_member_types = ["User"]
+    description = "Grafana org admin users"
+    display_name = "Grafana admin"
+    enabled = "true"
+    value = "Admin"
+  }
+
   web {
     redirect_uris = ["https://${var.custom_fqdn != "" ? var.custom_fqdn : azurerm_frontdoor.afdgrafana.cname}/login/azuread"]
 

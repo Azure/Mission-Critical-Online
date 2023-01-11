@@ -1,7 +1,7 @@
 # Variable file for INT env
 vnet_address_space = "10.1.0.0/18" # /18 allows for up to 4 stamps
 
-aks_system_node_pool_sku_size          = "Standard_DS2_v2" # Adjust as needed for your workload
+aks_system_node_pool_sku_size          = "Standard_F4s_v2" # Adjust as needed for your workload
 aks_system_node_pool_autoscale_minimum = 2
 aks_system_node_pool_autoscale_maximum = 6
 

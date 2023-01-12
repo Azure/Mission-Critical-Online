@@ -16,7 +16,7 @@ RUN chmod +x insertqueries.sh && ./insertqueries.sh
 WORKDIR /app/healthmodelpanel
 RUN npm install
 
-FROM grafana/grafana:9.3.0
+FROM grafana/grafana:9.3.2
 
 # In order to run unsigned plugins such as our health model panel, we need to explicitly allow them in an env variable. 
 ENV GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS="healthmodelpanel"

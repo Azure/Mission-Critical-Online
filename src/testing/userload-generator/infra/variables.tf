@@ -34,7 +34,7 @@ variable "targeturl" {
 variable "regional_functions_workers" {
   type = map(any)
   default = {
-    "EMEA" = ["northeurope", "germanywestcentral", "francecentral", "westeurope", "uksouth", "ukwest", "switzerlandnorth", "norwayeast"]
+    "EMEA" = ["northeurope", "westeurope", "swedencentral", "uksouth", "norwayeast"]
     #"AMERICAS" = ["eastus2", "westus2", "brazilsouth"]
     #"APAC"     = ["australiaeast", "japaneast", "southeastasia"]
   }

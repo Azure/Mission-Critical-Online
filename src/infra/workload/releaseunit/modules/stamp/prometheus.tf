@@ -63,3 +63,31 @@ resource "azapi_resource" "dataCollectionRuleAssociation" {
     }
   })
 }
+
+resource "azapi_resource" "prometheusRuleGroup" {
+  type      = "Microsoft.AlertsManagement/prometheusRuleGroups@2021-07-22-preview"
+  name      = "${local.prefix}-${local.location_short}-ruleGroup"
+  #parent_id = azurerm_resource_group.stamp.id
+  location  = azurerm_resource_group.stamp.location
+
+  body = jsonencode({
+    properties = {
+      description = "Prometheus Rule Group"
+      scopes      = [data.azapi_resource.prometheus.id]
+      enabled     = true
+      clusterName = azurerm_kubernetes_cluster.stamp.name
+      interval    = "PT1M"
+
+      rules = [
+        {
+          record = "instance:node_cpu_utilisation:rate5m"
+          expression = "1 - avg without (cpu) (sum without (mode)(rate(node_cpu_seconds_total{job=\"node\", mode=~\"idle|iowait|steal\"}[5m])))"
+          labels = {
+              workload_type = "job"
+          }
+          enabled = true
+        }
+      ]
+    }
+  })
+}

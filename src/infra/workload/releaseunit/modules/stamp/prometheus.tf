@@ -86,6 +86,14 @@ resource "azapi_resource" "prometheusRuleGroup" {
               workload_type = "job"
           }
           enabled = true
+        },
+        {
+          record = "node_namespace_pod_container:container_cpu_usage_seconds_total:sum_irate"
+          expression = "sum by (cluster, namespace, pod, container) (  irate(container_cpu_usage_seconds_total{job=\"cadvisor\", image!=\"\"}[5m])) * on (cluster, namespace, pod) group_left(node) topk by (cluster, namespace, pod) (  1, max by(cluster, namespace, pod, node) (kube_pod_info{node!=\"\"}))"
+          labels = {
+            workload_type = "job"
+          }
+          enabled = true
         }
       ]
     }

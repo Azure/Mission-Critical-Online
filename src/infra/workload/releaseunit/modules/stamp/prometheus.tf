@@ -101,8 +101,8 @@ resource "azapi_resource" "prometheusK8sRuleGroup" {
 }
 
 resource "azapi_resource" "prometheusNodeRuleGroup" {
-  type      = "Microsoft.AlertsManagement/prometheusNodeGroups@2021-07-22-preview"
-  name      = "${local.prefix}-${local.location_short}-NodeRuleGroup"
+  type      = "Microsoft.AlertsManagement/prometheusRuleGroups@2021-07-22-preview"
+  name      = "${local.prefix}-${local.location_short}-nodeRuleGroup"
   parent_id = azurerm_resource_group.stamp.id
   location  = azurerm_resource_group.stamp.location
 

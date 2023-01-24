@@ -67,7 +67,7 @@ resource "azapi_resource" "dataCollectionRuleAssociation" {
 resource "azapi_resource" "prometheusRuleGroup" {
   type      = "Microsoft.AlertsManagement/prometheusRuleGroups@2021-07-22-preview"
   name      = "${local.prefix}-${local.location_short}-ruleGroup"
-  #parent_id = azurerm_resource_group.stamp.id
+  parent_id = azurerm_resource_group.stamp.id
   location  = azurerm_resource_group.stamp.location
 
   body = jsonencode({

@@ -64,9 +64,9 @@ resource "azapi_resource" "dataCollectionRuleAssociation" {
   })
 }
 
-resource "azapi_resource" "prometheusRuleGroup" {
+resource "azapi_resource" "prometheusK8sRuleGroup" {
   type      = "Microsoft.AlertsManagement/prometheusRuleGroups@2021-07-22-preview"
-  name      = "${local.prefix}-${local.location_short}-ruleGroup"
+  name      = "${local.prefix}-${local.location_short}-k8sRuleGroup"
   parent_id = azurerm_resource_group.stamp.id
   location  = azurerm_resource_group.stamp.location
 
@@ -92,6 +92,34 @@ resource "azapi_resource" "prometheusRuleGroup" {
           expression = "sum by (cluster, namespace, pod, container) (  irate(container_cpu_usage_seconds_total{job=\"cadvisor\", image!=\"\"}[5m])) * on (cluster, namespace, pod) group_left(node) topk by (cluster, namespace, pod) (  1, max by(cluster, namespace, pod, node) (kube_pod_info{node!=\"\"}))"
           labels = {
             workload_type = "job"
+          }
+          enabled = true
+        }
+      ]
+    }
+  })
+}
+
+resource "azapi_resource" "prometheusNodeRuleGroup" {
+  type      = "Microsoft.AlertsManagement/prometheusNodeGroups@2021-07-22-preview"
+  name      = "${local.prefix}-${local.location_short}-NodeRuleGroup"
+  parent_id = azurerm_resource_group.stamp.id
+  location  = azurerm_resource_group.stamp.location
+
+  body = jsonencode({
+    properties = {
+      description = "Prometheus Rule Group"
+      scopes      = [data.azapi_resource.prometheus.id]
+      enabled     = true
+      clusterName = azurerm_kubernetes_cluster.stamp.name
+      interval    = "PT1M"
+
+      rules = [
+        {
+          record = "instance:node_load1_per_cpu:ratio"
+          expression = "(  node_load1{job=\"node\"}/  instance:node_num_cpu:sum{job=\"node\"})"
+          labels = {
+              workload_type = "job"
           }
           enabled = true
         }

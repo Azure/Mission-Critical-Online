@@ -16,6 +16,7 @@ spec:
     metadata:
       labels:
         app: {{ .Chart.Name }}
+        azure.workload.identity/use: true
     spec:
       serviceAccountName: {{ .Chart.Name }}-identity
       containers:

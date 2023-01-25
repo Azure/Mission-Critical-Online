@@ -32,6 +32,8 @@ The Azure Monitor workspace that stores the collected data is getting deployed i
 
 The other resources, like the Data collection rule, endpoint and rule association is deployed alongside the regional stamps. They're ephemeral and share the same lifecycle as the stamp. When a new stamp is getting deployed, new rules, endpoints and associations are deployed and the old ones are getting destroyed.
 
+![Architecture diagram with prometheus](../media/architecture_diagram_with_prometheus.png)
+
 ## How to access the data?
 
 The data can be visualized and queried via Grafana. The Azure Monitor workspace, deployed per-region, can be added as additional data sources to Grafana. When using the Grafana deployment in Azure Mission-Critical, the App Service instance used to host Grafana can be granted access to the Azure Monitor workspace via the built-in role "Monitoring Data Reader".  

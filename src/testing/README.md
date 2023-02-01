@@ -16,7 +16,7 @@ Distributed applications need to be resilient to service and component outages. 
 
 Resilience is a property of an entire system and injecting faults helps to find issues in the application. Addressing these issues helps to validate application resiliency to unreliable conditions, missing dependencies and other errors.
 
-Manual failure injection testing was initially performed across both global and deployment stamp resources. Please consult the [Failure Injection article](https://docs.microsoft.com/azure/architecture/reference-architectures/containers/aks-mission-critical/mission-critical-deploy-test#testing-failure-injection-testing-and-chaos-engineering) for details.
+Manual failure injection testing was initially performed across both global and deployment stamp resources. Please consult the [Failure Injection article](https://learn.microsoft.com/azure/architecture/reference-architectures/containers/aks-mission-critical/mission-critical-deploy-test#testing-failure-injection-testing-and-chaos-engineering) for details.
 
 Azure Mission-Critical integrates [Azure Chaos Studio](https://aka.ms/chaosstudio) to deploy and run a set of Azure Chaos Studio Experiments to inject various faults at the global and stamp levels.
 
@@ -31,7 +31,7 @@ The Azure Mission-Critical online reference implementation uses existing testing
 
 ### Azure Load Test Service
 
-Microsoft [Azure Load Test](https://docs.microsoft.com/azure/load-testing/overview-what-is-azure-load-testing) Service (MALT) is a managed service to execute [Apache JMeter](https://jmeter.apache.org/) load test definitions. Azure Mission-Critical comes with a load test definition for its sample application that can be leveraged either standalone (infrastructure and test service is deployed via a separate pipeline) or embedded into the e2e pipeline including a baseline definition.
+Microsoft [Azure Load Test](https://learn.microsoft.com/azure/load-testing/overview-what-is-azure-load-testing) Service (MALT) is a managed service to execute [Apache JMeter](https://jmeter.apache.org/) load test definitions. Azure Mission-Critical comes with a load test definition for its sample application that can be leveraged either standalone (infrastructure and test service is deployed via a separate pipeline) or embedded into the e2e pipeline including a baseline definition.
 
 ### Locust
 

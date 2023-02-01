@@ -21,7 +21,7 @@ The Azure Mission-Critical reference implementation gets deployed into an Azure 
 - Either your user needs to have **Owner** or **User Access Administrator (UAA)** permission and you have **the right to create new Service Principals** on your Azure AD tenant, or
 - You need to have a pre-provisioned Service Principal with Owner permissions on the subscription
 
-If you will create the Service Principal yourself, it is recommended to have either [Azure CLI](https://docs.microsoft.com/cli/azure/service-page/azure%20cli?view=azure-cli-latest) installed on your machine or have access to it through the [Azure Cloud Shell](https://docs.microsoft.com/azure/cloud-shell/).
+If you will create the Service Principal yourself, it is recommended to have either [Azure CLI](https://learn.microsoft.com/cli/azure/service-page/azure%20cli?view=azure-cli-latest) installed on your machine or have access to it through the [Azure Cloud Shell](https://learn.microsoft.com/azure/cloud-shell/).
 
 ## Overview
 
@@ -42,7 +42,7 @@ The process to deploy Azure Mission-Critical is comprised of the following steps
 
 To deploy the Azure Mission-Critical reference implementation, you need to create a new Azure DevOps organization, or re-use an existing one. In this organization you will then create a new project used to host all pipelines for Azure Mission-Critical.
 
-- [Create an organization or project collection](https://docs.microsoft.com/azure/devops/organizations/accounts/create-organization?view=azure-devops)
+- [Create an organization or project collection](https://learn.microsoft.com/azure/devops/organizations/accounts/create-organization?view=azure-devops)
 
 
 #### Create a new Azure DevOps project

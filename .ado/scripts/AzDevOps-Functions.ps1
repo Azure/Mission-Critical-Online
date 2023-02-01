@@ -20,7 +20,7 @@ function Get-AzureAccount {
   return $azureAccount
 }
 
-# https://docs.microsoft.com/cli/azure/devops#az_devops_configure
+# https://learn.microsoft.com/cli/azure/devops#az_devops_configure
 function Set-AzDevOpsDefaults {
   param
   (
@@ -31,7 +31,7 @@ function Set-AzDevOpsDefaults {
 }
 
 # Organizations can ONLY be created manually via AzDO portal - placeholder here FYI
-# https://docs.microsoft.com/azure/devops/organizations/accounts/create-organization
+# https://learn.microsoft.com/azure/devops/organizations/accounts/create-organization
 
 function New-ServicePrincipal {
   param
@@ -47,7 +47,7 @@ function New-ServicePrincipal {
   return $sp
 }
 
-# https://docs.microsoft.com/cli/azure/devops/project
+# https://learn.microsoft.com/cli/azure/devops/project
 function New-AzDevOpsProject {
   param
   (
@@ -286,7 +286,7 @@ function New-AzureServiceConnection {
   # If password is present, we can use it. Otherwise the script will ask for it interactively.
   if ($servicePrincipal.password) {
     # For automation have to set the Service Principal password to this env var
-    # https://docs.microsoft.com/cli/azure/devops/service-endpoint/azurerm#az_devops_service_endpoint_azurerm_create
+    # https://learn.microsoft.com/cli/azure/devops/service-endpoint/azurerm#az_devops_service_endpoint_azurerm_create
     $env:AZURE_DEVOPS_EXT_AZURE_RM_SERVICE_PRINCIPAL_KEY = $servicePrincipal.password
   }
 

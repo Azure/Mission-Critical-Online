@@ -47,12 +47,6 @@ As with the Azure Mission-Critical Design Guidelines, the Reference Implementati
 - [SLO and Availability](./reference-implementation/AppDesign-SLO-Availability.md) outlines the SLO for Azure Mission-Critical (99.95%) and how this figure was calculated.
 - [Troubleshooting](./reference-implementation/Troubleshooting.md) collects solutions to known issues during development and deployment.
 
-## Helpful Information
-
-- [Getting started](./reference-implementation/Getting-Started.md) (or using [CLI](./reference-implementation/Getting-Started-CLI.md)) outlines the process and required steps to deploy Azure Mission-Critical in your environment, including preparing Azure DevOps pipelines. It should be read in tandem with the Reference Implementation guidance.
-- [SLO and Availability](./reference-implementation/AppDesign-SLO-Availability.md) outlines the SLO for Azure Mission-Critical (99.95%) and how this figure was calculated.
-- [Troubleshooting](./reference-implementation/Troubleshooting.md) collects solutions to known issues during development and deployment.
-
 ## Documentation Conventions
 
 - Overarching topics concerning the Azure Mission-Critical architecture, design principles, design decisions, and cross-component integration are documented as separate markdown documents within the `/docs/` folder.

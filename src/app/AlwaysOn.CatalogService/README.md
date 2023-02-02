@@ -1,6 +1,6 @@
 # Catalog Service
 
-As described in the [conceptual description](https://docs.microsoft.com/azure/architecture/reference-architectures/containers/aks-mission-critical/mission-critical-app-design), the CatalogService provides APIs that the UI, and all other users of the service, interact with.
+As described in the [conceptual description](https://learn.microsoft.com/azure/architecture/reference-architectures/containers/aks-mission-critical/mission-critical-app-design), the CatalogService provides APIs that the UI, and all other users of the service, interact with.
 
 ## Deployment
 
@@ -35,7 +35,7 @@ Apart from the configuration settings which are common between components, such 
 
 ## Implementation
 
-The CatalogService application is based on the [.NET Core Web API](https://docs.microsoft.com/aspnet/core/web-api/?view=aspnetcore-5.0) template, using Controllers to implement the APIs.
+The CatalogService application is based on the [.NET Core Web API](https://learn.microsoft.com/aspnet/core/web-api/?view=aspnetcore-5.0) template, using Controllers to implement the APIs.
 
 Currently there are three API Controllers:
 
@@ -45,7 +45,7 @@ Currently there are three API Controllers:
 
 When running in development mode (set ENV `ASPNETCORE_ENVIRONMENT=Development`), the CatalogService exposes a Swagger interface at `/swagger` to retrieve the API definitions and execute operations for debugging.
 
-In addition to the controllers, an [ASP.NET Core HealthCheck](https://docs.microsoft.com/aspnet/core/host-and-deploy/health-checks) is listening at `health/liveness` API which is only used by Kubernetes to probe the pod. It does not do any further checking than responding with a 200 result code.
+In addition to the controllers, an [ASP.NET Core HealthCheck](https://learn.microsoft.com/aspnet/core/host-and-deploy/health-checks) is listening at `health/liveness` API which is only used by Kubernetes to probe the pod. It does not do any further checking than responding with a 200 result code.
 
 ### Dependency Injection
 

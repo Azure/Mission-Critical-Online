@@ -1,19 +1,19 @@
 # Azure Mission-Critical - Reference Implementation - Solution Guide
 
-As outlined in the [Azure Mission-Critical introduction](https://docs.microsoft.com/azure/architecture/framework/mission-critical/mission-critical-overview) (➡️ `docs.microsoft.com`), Azure Mission-Critical has been developed to help customers with business critical systems to design and build a best practice Azure based solution that maximizes reliability. Azure Mission-Critical does this by giving customers prescriptive and opinionated guidance on how to build this best practice system as well as providing production ready technical artifacts for customers to quickly build that best practice system in their own environment.
+As outlined in the [Azure Mission-Critical introduction](https://learn.microsoft.com/azure/architecture/framework/mission-critical/mission-critical-overview) (➡️ `learn.microsoft.com`), Azure Mission-Critical has been developed to help customers with business critical systems to design and build a best practice Azure based solution that maximizes reliability. Azure Mission-Critical does this by giving customers prescriptive and opinionated guidance on how to build this best practice system as well as providing production ready technical artifacts for customers to quickly build that best practice system in their own environment.
 
-Where the Azure Mission-Critical [Design Principles](https://docs.microsoft.com/azure/architecture/framework/mission-critical/mission-critical-design-principles) (➡️ `docs.microsoft.com`) provide the thought and justification behind the Azure Mission-Critical architecture and product choices, this part of the repository tells you how to build your own production-ready Azure Mission-Critical solution using the technical artifacts provided within this repository i.e. Infrastructure-As-Code templates and CI/CD pipelines (via GitHub and Azure DevOps).
+Where the Azure Mission-Critical [Design Principles](https://learn.microsoft.com/azure/architecture/framework/mission-critical/mission-critical-design-principles) (➡️ `learn.microsoft.com`) provide the thought and justification behind the Azure Mission-Critical architecture and product choices, this part of the repository tells you how to build your own production-ready Azure Mission-Critical solution using the technical artifacts provided within this repository i.e. Infrastructure-As-Code templates and CI/CD pipelines (via GitHub and Azure DevOps).
 
 As with the Azure Mission-Critical Design Guidelines, the Reference Implementation section is divided into eight Design Areas, each giving clear instructions on how the solution is configured.  When you are ready to start, the [Getting Started](./reference-implementation/Getting-Started.md) guide outlines the process and required steps to deploy Azure Mission-Critical in your environment, including preparing Azure DevOps pipelines.
 
 ## Design Areas
 
-- [Application Design](https://docs.microsoft.com/azure/architecture/reference-architectures/containers/aks-mission-critical/mission-critical-app-design)
-- [Application Platform](https://docs.microsoft.com/azure/architecture/reference-architectures/containers/aks-mission-critical/mission-critical-app-platform)
-- [Networking anc connectivity](https://docs.microsoft.com/azure/architecture/reference-architectures/containers/aks-mission-critical/mission-critical-networking)
-- [Data Platform](https://docs.microsoft.com/azure/architecture/reference-architectures/containers/aks-mission-critical/mission-critical-data-platform)
-- [Deployment and testing](https://docs.microsoft.com/azure/architecture/reference-architectures/containers/aks-mission-critical/mission-critical-deploy-test#deployment-devops)
-- [Health Modeling](https://docs.microsoft.com/azure/architecture/reference-architectures/containers/aks-mission-critical/mission-critical-health-modeling)
+- [Application Design](https://learn.microsoft.com/azure/architecture/reference-architectures/containers/aks-mission-critical/mission-critical-app-design)
+- [Application Platform](https://learn.microsoft.com/azure/architecture/reference-architectures/containers/aks-mission-critical/mission-critical-app-platform)
+- [Networking anc connectivity](https://learn.microsoft.com/azure/architecture/reference-architectures/containers/aks-mission-critical/mission-critical-networking)
+- [Data Platform](https://learn.microsoft.com/azure/architecture/reference-architectures/containers/aks-mission-critical/mission-critical-data-platform)
+- [Deployment and testing](https://learn.microsoft.com/azure/architecture/reference-architectures/containers/aks-mission-critical/mission-critical-deploy-test#deployment-devops)
+- [Health Modeling](https://learn.microsoft.com/azure/architecture/reference-architectures/containers/aks-mission-critical/mission-critical-health-modeling)
 
 ### Additional content
 

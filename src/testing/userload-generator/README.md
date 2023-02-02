@@ -78,4 +78,4 @@ To deploy the user load generator for your own application, you need to:
 - Update the `daily_load_profile.json` file with your desired load profile. To validate your profile, is recommended to start with only one geographical region enabled and then gradually add more regions as needed.
 - Update the Terraform variable file `variables.tf` with the correct values for `targeturl`, `regional_functions_workers` and any other variables you might need to reflect test parameters and your geo(s).
 
-To deploy the infrastructure and the Functions, you can use the Azure DevOps pipeline definition (`/.ado/pipelines/azure-deploy-loadgenerator.yaml`). [Import](https://docs.microsoft.com/azure/devops/pipelines/get-started/clone-import-pipeline) that pipeline definition into your Azure DevOps project and run the pipeline.
+To deploy the infrastructure and the Functions, you can use the Azure DevOps pipeline definition (`/.ado/pipelines/azure-deploy-loadgenerator.yaml`). [Import](https://learn.microsoft.com/azure/devops/pipelines/get-started/clone-import-pipeline) that pipeline definition into your Azure DevOps project and run the pipeline.

@@ -14,7 +14,7 @@ It is important to note that API Management is used as a regional resource, i.e.
 
 ## Overview of the changes
 
-1) Add a subnet to host API Management in ["external" VNet mode](https://docs.microsoft.com/azure/api-management/virtual-network-concepts?tabs=stv2#access-options) plus the required Network Security Group and rules.
+1) Add a subnet to host API Management in ["external" VNet mode](https://learn.microsoft.com/azure/api-management/virtual-network-concepts?tabs=stv2#access-options) plus the required Network Security Group and rules.
 1) Add a subnet to host the new internal Kubernetes load balancer for the ingress controller
 1) Add a definition for the APIM service into the Terraform IaC part
 1) Add definitions for all the APIs, operations and polices, also to Terraform
@@ -31,7 +31,7 @@ It is important to note that API Management is used as a regional resource, i.e.
 
 To host the API Management service, we need to add a subnet to the VNet. This subnet will be used to host the API Management service. This is implemented in [network.tf](/src/infra/workload/releaseunit/modules/stamp/network.tf).
 
-Also a dedicated NSG is added which contains the [required rules](https://docs.microsoft.com/azure/api-management/api-management-using-with-vnet?tabs=stv2#configure-nsg-rules) for APIM.
+Also a dedicated NSG is added which contains the [required rules](https://learn.microsoft.com/azure/api-management/api-management-using-with-vnet?tabs=stv2#configure-nsg-rules) for APIM.
 
 ### Add a subnet to host the new internal Kubernetes load balancer
 

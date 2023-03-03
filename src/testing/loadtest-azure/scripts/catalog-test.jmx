@@ -106,87 +106,94 @@
               <stringProp name="JSONPostProcessor.referenceNames">catalogItemId</stringProp>
               <stringProp name="JSONPostProcessor.jsonPathExprs">$..id</stringProp>
               <stringProp name="JSONPostProcessor.match_numbers">0</stringProp>
+              <stringProp name="JSONPostProcessor.defaultValues">empty</stringProp>
             </JSONPostProcessor>
             <hashTree/>
           </hashTree>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get random catalog item" enabled="true">
-            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
-              <collectionProp name="Arguments.arguments"/>
-            </elementProp>
-            <stringProp name="HTTPSampler.domain"></stringProp>
-            <stringProp name="HTTPSampler.port"></stringProp>
-            <stringProp name="HTTPSampler.protocol"></stringProp>
-            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/catalogservice/api/1.0/catalogitem/${catalogItemId}</stringProp>
-            <stringProp name="HTTPSampler.method">GET</stringProp>
-            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-            <stringProp name="HTTPSampler.response_timeout"></stringProp>
-          </HTTPSamplerProxy>
-          <hashTree/>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Post new rating" enabled="true">
-            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
-            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
-              <collectionProp name="Arguments.arguments">
-                <elementProp name="" elementType="HTTPArgument">
-                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                  <stringProp name="Argument.value">{&#xd;
+          <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If catalogItemId was set" enabled="true">
+            <stringProp name="IfController.condition">&quot;${catalogItemId}&quot; != &quot;empty&quot;</stringProp>
+            <boolProp name="IfController.evaluateAll">false</boolProp>
+          </IfController>
+          <hashTree>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get random catalog item" enabled="true">
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+                <collectionProp name="Arguments.arguments"/>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain"></stringProp>
+              <stringProp name="HTTPSampler.port"></stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path">/catalogservice/api/1.0/catalogitem/${catalogItemId}</stringProp>
+              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+              <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            </HTTPSamplerProxy>
+            <hashTree/>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Post new rating" enabled="true">
+              <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                <collectionProp name="Arguments.arguments">
+                  <elementProp name="" elementType="HTTPArgument">
+                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                    <stringProp name="Argument.value">{&#xd;
 	&quot;rating&quot;: &quot;${__Random(1,5)}&quot;&#xd;
 }&#xd;
 </stringProp>
-                  <stringProp name="Argument.metadata">=</stringProp>
-                </elementProp>
-              </collectionProp>
-            </elementProp>
-            <stringProp name="HTTPSampler.domain"></stringProp>
-            <stringProp name="HTTPSampler.port"></stringProp>
-            <stringProp name="HTTPSampler.protocol"></stringProp>
-            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/catalogservice/api/1.0/catalogitem/${catalogItemId}/ratings</stringProp>
-            <stringProp name="HTTPSampler.method">POST</stringProp>
-            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-            <stringProp name="HTTPSampler.response_timeout"></stringProp>
-          </HTTPSamplerProxy>
-          <hashTree/>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Post new comment" enabled="true">
-            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
-            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
-              <collectionProp name="Arguments.arguments">
-                <elementProp name="" elementType="HTTPArgument">
-                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                  <stringProp name="Argument.value">{&#xd;
+                    <stringProp name="Argument.metadata">=</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain"></stringProp>
+              <stringProp name="HTTPSampler.port"></stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path">/catalogservice/api/1.0/catalogitem/${catalogItemId}/ratings</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+              <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            </HTTPSamplerProxy>
+            <hashTree/>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Post new comment" enabled="true">
+              <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                <collectionProp name="Arguments.arguments">
+                  <elementProp name="" elementType="HTTPArgument">
+                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                    <stringProp name="Argument.value">{&#xd;
 	&quot;authorName&quot;: &quot;JMeter test user&quot;,&#xd;
 	&quot;text&quot;: &quot;This is a load test entry&quot;&#xd;
 }&#xd;
 </stringProp>
-                  <stringProp name="Argument.metadata">=</stringProp>
-                </elementProp>
-              </collectionProp>
-            </elementProp>
-            <stringProp name="HTTPSampler.domain"></stringProp>
-            <stringProp name="HTTPSampler.port"></stringProp>
-            <stringProp name="HTTPSampler.protocol"></stringProp>
-            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/catalogservice/api/1.0/catalogitem/${catalogItemId}/comments</stringProp>
-            <stringProp name="HTTPSampler.method">POST</stringProp>
-            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-            <stringProp name="HTTPSampler.response_timeout"></stringProp>
-          </HTTPSamplerProxy>
-          <hashTree/>
+                    <stringProp name="Argument.metadata">=</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain"></stringProp>
+              <stringProp name="HTTPSampler.port"></stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path">/catalogservice/api/1.0/catalogitem/${catalogItemId}/comments</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+              <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            </HTTPSamplerProxy>
+            <hashTree/>
+          </hashTree>
         </hashTree>
         <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
           <boolProp name="ResultCollector.error_logging">false</boolProp>

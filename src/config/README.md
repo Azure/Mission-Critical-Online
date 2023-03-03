@@ -31,7 +31,7 @@ Additional configuration and manifests files used to configure the additional se
 
 ### ingress-nginx
 
-**ingress-nginx** is a Helm chart used to deploy the nginx-based ingress controller onto the AKS cluster. The Azure Public IP address for the ingress controller's load balancer is already pre-created as part of the [Infrastructure Layer](/src/infra/README.md). The Public IP address and Azure Resource Group where it resides are handed over to the Helm chart as a deployment parameter so it can be [used by the Kubernetes service](https://docs.microsoft.com/azure/aks/load-balancer-standard#additional-customizations-via-kubernetes-annotations).
+**ingress-nginx** is a Helm chart used to deploy the nginx-based ingress controller onto the AKS cluster. The Azure Public IP address for the ingress controller's load balancer is already pre-created as part of the [Infrastructure Layer](/src/infra/README.md). The Public IP address and Azure Resource Group where it resides are handed over to the Helm chart as a deployment parameter so it can be [used by the Kubernetes service](https://learn.microsoft.com/azure/aks/load-balancer-standard#additional-customizations-via-kubernetes-annotations).
 
 Important configurations are:
 

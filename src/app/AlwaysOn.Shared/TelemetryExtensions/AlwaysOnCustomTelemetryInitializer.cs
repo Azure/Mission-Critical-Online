@@ -9,7 +9,7 @@ namespace AlwaysOn.Shared.TelemetryExtensions
     /// <summary>Add a cloud role name to the context of every telemetries.</summary>
     /// <remarks>
     /// This allows to monitor multiple components and discriminate betweeen components.
-    /// See https://docs.microsoft.com/azure/application-insights/app-insights-monitor-multi-role-apps.
+    /// See https://learn.microsoft.com/azure/application-insights/app-insights-monitor-multi-role-apps.
     /// </remarks>
     public class AlwaysOnCustomTelemetryInitializer : ITelemetryInitializer
     {

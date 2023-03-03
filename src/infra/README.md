@@ -40,7 +40,7 @@ Infrastructure layer contains all infrastructure components and underlying found
 
 ### Stamp independence
 
-Every [stamp](https://docs.microsoft.com/azure/architecture/patterns/deployment-stamp) - which usually corresponds to a deployment to one Azure Region - is considered independent. Stamps are designed to work without relying on components in other regions (i.e. "share nothing").
+Every [stamp](https://learn.microsoft.com/azure/architecture/patterns/deployment-stamp) - which usually corresponds to a deployment to one Azure Region - is considered independent. Stamps are designed to work without relying on components in other regions (i.e. "share nothing").
 
 The main shared component between stamps which requires synchronization at runtime is the database layer. For this, **Azure Cosmos DB** was chosen as it provides the crucial ability of multi-region writes i.e., each stamp can write locally with Cosmos DB handling data replication and synchronization between the stamps.
 
@@ -48,7 +48,7 @@ Aside from the database, a geo-replicated **Azure Container Registry** (ACR) is 
 
 Stamps can be added and removed dynamically as needed to provide more resiliency, scale and proximity to users.
 
-A global load balancer is used to distribute and load balance incoming traffic to the stamps (see [Networking and connectivity](https://docs.microsoft.com/azure/architecture/reference-architectures/containers/aks-mission-critical/mission-critical-networking) for details).
+A global load balancer is used to distribute and load balance incoming traffic to the stamps (see [Networking and connectivity](https://learn.microsoft.com/azure/architecture/reference-architectures/containers/aks-mission-critical/mission-critical-networking) for details).
 
 ### Stateless compute clusters
 
@@ -56,7 +56,7 @@ As much as possible, no state should be stored on the compute clusters with all 
 
 ### Scale Units
 
-In addition to [stamp independence](#stamp-independence) and [stateless compute clusters](#stateless-compute-clusters), each "stamp" is considered to be a Scale Unit (SU) following the [Deployment stamps pattern](https://docs.microsoft.com/azure/architecture/patterns/deployment-stamp). All components and services within a given stamp are configured and tested to serve requests in a given range. This includes auto-scaling capabilities for each service as well as proper minimum and maximum values and regular evaluation.
+In addition to [stamp independence](#stamp-independence) and [stateless compute clusters](#stateless-compute-clusters), each "stamp" is considered to be a Scale Unit (SU) following the [Deployment stamps pattern](https://learn.microsoft.com/azure/architecture/patterns/deployment-stamp). All components and services within a given stamp are configured and tested to serve requests in a given range. This includes auto-scaling capabilities for each service as well as proper minimum and maximum values and regular evaluation.
 
 An example Scale Unit design in Azure Mission-Critical consists of scalability requirements i.e. minimum values / the expected capacity:
 
@@ -89,7 +89,7 @@ Each SU is deployed into an Azure region and is therefore primarily handling tra
 
 ### Available Azure Regions
 
-The reference implementation of Azure Mission-Critical deploys a set of Azure services. These services are not available across all Azure regions. In addition, only regions which offer **[Availability Zones](https://docs.microsoft.com/azure/availability-zones/az-region)** (AZs) are considered for a stamp. AZs are gradually being rolled-out and are not yet available across all regions. Due to these constraints, the reference implementation cannot be deployed to all Azure regions.
+The reference implementation of Azure Mission-Critical deploys a set of Azure services. These services are not available across all Azure regions. In addition, only regions which offer **[Availability Zones](https://learn.microsoft.com/azure/availability-zones/az-region)** (AZs) are considered for a stamp. AZs are gradually being rolled-out and are not yet available across all regions. Due to these constraints, the reference implementation cannot be deployed to all Azure regions.
 
 As of May 2022, following regions have been successfully tested with the reference implementation of Azure Mission-Critical:
 
@@ -158,7 +158,7 @@ As regional availability of services used in reference implementation and AZs ra
 
 #### Azure Log Analytics for Global Resources
 
-- Used to collect [diagnostic logs](https://docs.microsoft.com/azure/azure-monitor/essentials/diagnostic-settings) of the global resources
+- Used to collect [diagnostic logs](https://learn.microsoft.com/azure/azure-monitor/essentials/diagnostic-settings) of the global resources
 - `daily_quota_gb` is set to prevent overspend, especially on environments that are used for load testing.
 - `retention_in_days` is used to prevent overspend by storing data longer than needed in Log Analytics - long term log and metric retention is supposed to happen in Azure Storage.
 
@@ -187,22 +187,22 @@ This Azure Mission-Critical reference implementation uses Linux-only clusters as
 
 - `role_based_access_control` (RBAC) is **enabled**.
 - `sku_tier` set to **Paid** (Uptime SLA) to achieve the 99.95% SLA within a single region (with `availability_zones` enabled).
-- `http_application_routing` is **disabled** as it is [not recommended for production environments](https://docs.microsoft.com/azure/aks/http-application-routing), a separate Ingress controller solution will be used.
+- `http_application_routing` is **disabled** as it is [not recommended for production environments](https://learn.microsoft.com/azure/aks/http-application-routing), a separate Ingress controller solution will be used.
 - Managed Identities (SystemAssigned) are used, instead of Service Principals.
-- `azure_policy_enabled` is set to `true` to enable the use of [Azure Policies in Azure Kubernetes Service](https://docs.microsoft.com/azure/aks/use-azure-policy). The policy configured in the reference implementation is in "audit-only" mode. It is mostly integrated to demonstrate how to set this up through Terraform.
+- `azure_policy_enabled` is set to `true` to enable the use of [Azure Policies in Azure Kubernetes Service](https://learn.microsoft.com/azure/aks/use-azure-policy). The policy configured in the reference implementation is in "audit-only" mode. It is mostly integrated to demonstrate how to set this up through Terraform.
 - `oms_agent` is configured to enable the Container Insights addon and ship AKS monitoring data to Azure Log Analytics via an in-cluster OMS Agent (DaemonSet).
 - Diagnostic settings are configured to store all log and metric data in Log Analytics.
-- `default_node_pool` (used as [system node pool](https://docs.microsoft.com/azure/aks/use-system-pools)) settings
+- `default_node_pool` (used as [system node pool](https://learn.microsoft.com/azure/aks/use-system-pools)) settings
   - `availability_zones` is set to `3` to leverage all three AZs in a given region.
   - `enable_auto_scaling` is configured to let all node pools automatically scale out if needed.
-  - `os_disk_type` is set to `Ephemeral` to leverage [Ephemeral OS disks](https://docs.microsoft.com/azure/aks/cluster-configuration#ephemeral-os) for performance reasons.
-  - `upgrade_settings` `max_surge` is set to `33%` which is the [recommended value for production workloads](https://docs.microsoft.com/azure/aks/upgrade-cluster#customize-node-surge-upgrade).
+  - `os_disk_type` is set to `Ephemeral` to leverage [Ephemeral OS disks](https://learn.microsoft.com/azure/aks/cluster-configuration#ephemeral-os) for performance reasons.
+  - `upgrade_settings` `max_surge` is set to `33%` which is the [recommended value for production workloads](https://learn.microsoft.com/azure/aks/upgrade-cluster#customize-node-surge-upgrade).
 - Separate "workload" (aka user) node pool with same settings as "system" node pool but different VM SKUs and auto-scale settings.
   - The user node pool is configured with a taint `workload=true:NoSchedule` to prevent non-workload pods from being scheduled. The `node_label` set to `role=workload` can be used to target this node pool when deploying a workload (see [charts/catalogservice](/src/app/charts/catalogservice/) for an example).
 
-Individual stamps are considered ephemeral and stateless. Updates to the infrastructure and application are following a [Zero-downtime Update Strategy](https://docs.microsoft.com/azure/architecture/reference-architectures/containers/aks-mission-critical/mission-critical-deploy-test#deployment-zero-downtime-updates) and do not touch existing stamps. Updates to Kubernetes are therefore primarily rolled out by releasing new versions and replacing existing stamps. To update node images between two releases, the `automatic_channel_upgrade` in combination with `maintenance_window` is used:
+Individual stamps are considered ephemeral and stateless. Updates to the infrastructure and application are following a [Zero-downtime Update Strategy](https://learn.microsoft.com/azure/architecture/reference-architectures/containers/aks-mission-critical/mission-critical-deploy-test#deployment-zero-downtime-updates) and do not touch existing stamps. Updates to Kubernetes are therefore primarily rolled out by releasing new versions and replacing existing stamps. To update node images between two releases, the `automatic_channel_upgrade` in combination with `maintenance_window` is used:
 
-- `automatic_channel_upgrade` is set to `node-image` to [automatically upgrade node pools](https://docs.microsoft.com/azure/aks/upgrade-cluster#set-auto-upgrade-channel) with the most recent AKS node image.
+- `automatic_channel_upgrade` is set to `node-image` to [automatically upgrade node pools](https://learn.microsoft.com/azure/aks/upgrade-cluster#set-auto-upgrade-channel) with the most recent AKS node image.
 - `maintenance_window` contains the allowed window to run `automatic_channel_upgrade` upgrades. It is currently set to `allowed` on `Sunday` between 0 and 2 AM.
 
 #### Azure Log Analytics for Stamp Resources
@@ -252,7 +252,7 @@ These supporting services are required / optional based on how you chose to use 
 
 ## Naming conventions
 
-All resources used for Azure Mission-Critical follow a pre-defined and consistent naming structure to make it easier to identify them and to avoid confusion. Resource abbreviations are based on the [Cloud Adoption Framework](https://docs.microsoft.com/azure/cloud-adoption-framework/ready/azure-best-practices/resource-abbreviations#general). These abbreviations are typically attached as a suffix to each resource in Azure.
+All resources used for Azure Mission-Critical follow a pre-defined and consistent naming structure to make it easier to identify them and to avoid confusion. Resource abbreviations are based on the [Cloud Adoption Framework](https://learn.microsoft.com/azure/cloud-adoption-framework/ready/azure-best-practices/resource-abbreviations#general). These abbreviations are typically attached as a suffix to each resource in Azure.
 
 A **prefix** is used to uniquely identify "deployments" as some names in Azure must be worldwide unique. Examples of these include Storage Accounts, Container Registries and CosmosDB accounts.
 

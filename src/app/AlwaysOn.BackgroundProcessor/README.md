@@ -1,6 +1,6 @@
 # Background Processor
 
-The worker application is based on the [.NET Core Worker Service](https://docs.microsoft.com/aspnet/core/fundamentals/host/hosted-services?view=aspnetcore-5.0&tabs=visual-studio) template, using the Worker SDK which is designed for background task processing.
+The worker application is based on the [.NET Core Worker Service](https://learn.microsoft.com/aspnet/core/fundamentals/host/hosted-services?view=aspnetcore-5.0&tabs=visual-studio) template, using the Worker SDK which is designed for background task processing.
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk.Worker">
@@ -29,7 +29,7 @@ The BackgroundProcessor uses the `Microsoft.ApplicationInsights.WorkerService` N
 
 ## Partition ownership and checkpointing
 
-The Azure EventHub Processor library uses (by default) Azure Blob Storage to manage partition ownership, load balance between different worker instances and to track progress using checkpoints. The details on this can be found in the [official documentation](https://docs.microsoft.com/azure/event-hubs/event-processor-balance-partition-load#partition-ownership-tracking).
+The Azure EventHub Processor library uses (by default) Azure Blob Storage to manage partition ownership, load balance between different worker instances and to track progress using checkpoints. The details on this can be found in the [official documentation](https://learn.microsoft.com/azure/event-hubs/event-processor-balance-partition-load#partition-ownership-tracking).
 
 Writing the checkpoints to the blob storage does not happen after every event as this would add a prohibitively expensive delay for every message. Instead the checkpoint writing happens on a timer-loop (configurable duration with a current setting of 10 seconds):
 

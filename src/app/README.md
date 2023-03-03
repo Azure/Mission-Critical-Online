@@ -2,7 +2,7 @@
 
 The Azure Mission-Critical online reference implementation uses a simple web shop catalog application where end users can browse through a catalog of items, see details of an item, and post ratings and comments for items. Although fairly straight forward, this application enables the reference implementation to demonstrate the asynchronous processing of requests and how to achieve high throughput within a solution. The application consists of three backend components implemented in .NET Core and hosted on Azure Kubernetes Service, and one frontend single-page web application.
 
-See [Application Design](https://docs.microsoft.com/azure/architecture/reference-architectures/containers/aks-mission-critical/mission-critical-app-design) for more details about the application.
+See [Application Design](https://learn.microsoft.com/azure/architecture/reference-architectures/containers/aks-mission-critical/mission-critical-app-design) for more details about the application.
 
 ## Code
 
@@ -21,7 +21,7 @@ Each application component has its individual Dockerfile. These Dockerfiles are 
 
 Demo user interface is implemented as HTML & JavaScript website, and although it has its own Dockerfile (for local debugging), it's hosted on a Storage Account, instead of being deployed as a container to AKS.
 
-The UI is compiled in the CI pipeline and uploaded to Azure Storage accounts in the CD pipeline. Each stamp hosts a storage account for hosting the UI. These Storage Accounts are enabled for [Static Website hosting](https://docs.microsoft.com/azure/storage/blobs/storage-blob-static-website) and are added as backends in Azure Front Door. The routing rule for the UI is configured with aggressive caching so that the content, even though very small, rarely needs to be loaded from storage and is otherwise directly served from Azure Front Door's edge nodes.
+The UI is compiled in the CI pipeline and uploaded to Azure Storage accounts in the CD pipeline. Each stamp hosts a storage account for hosting the UI. These Storage Accounts are enabled for [Static Website hosting](https://learn.microsoft.com/azure/storage/blobs/storage-blob-static-website) and are added as backends in Azure Front Door. The routing rule for the UI is configured with aggressive caching so that the content, even though very small, rarely needs to be loaded from storage and is otherwise directly served from Azure Front Door's edge nodes.
 
 ## Helm Charts
 

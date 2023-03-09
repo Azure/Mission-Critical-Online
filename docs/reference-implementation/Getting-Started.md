@@ -23,6 +23,8 @@ The Azure Mission-Critical reference implementation gets deployed into an Azure 
 
 If you will create the Service Principal yourself, it is recommended to have either [Azure CLI](https://learn.microsoft.com/cli/azure/service-page/azure%20cli?view=azure-cli-latest) installed on your machine or have access to it through the [Azure Cloud Shell](https://learn.microsoft.com/azure/cloud-shell/).
 
+> **Note!** Azure Mission-Critical reference implementation uses functionalities that are general available (GA). However, at the moment the deployment requires Azure AD workload identity for AKS which is only available in preview. Make sure that the feature is registered on your subscription and Resource Provider following [this documentation](https://learn.microsoft.com/azure/aks/workload-identity-deploy-cluster#register-the-enableworkloadidentitypreview-feature-flag).
+
 ## Overview
 
 The process to deploy Azure Mission-Critical is comprised of the following steps:

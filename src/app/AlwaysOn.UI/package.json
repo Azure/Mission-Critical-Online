@@ -10,7 +10,7 @@
   "author": "CAE AppDev",
   "license": "ISC",
   "dependencies": {
-    "@microsoft/applicationinsights-web": "^2.8.10",
+    "@microsoft/applicationinsights-web": "^2.8.11",
     "tiny-emitter": "^2.1.0",
     "vue": "^3.2.47",
     "vue-router": "^4.1.3"

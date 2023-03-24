@@ -25,6 +25,12 @@ variable "queued_by" {
   default     = "not set"
 }
 
+variable "law_daily_cap_gb" {
+  description = "Daily data cap for Log Analytics Workspace and Application Insights in GB"
+  type        = number
+  default     = 10
+}
+
 variable "targeturl" {
   description = "Target URL"
   type        = string

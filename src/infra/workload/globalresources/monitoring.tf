@@ -6,7 +6,7 @@ resource "azurerm_log_analytics_workspace" "global" {
   sku                 = "PerGB2018"
   retention_in_days   = 30 # has to be between 30 and 730
 
-  daily_quota_gb = 10
+  daily_quota_gb = var.law_daily_cap_gb
 
   tags = local.default_tags
 }

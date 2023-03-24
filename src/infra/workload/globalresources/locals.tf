@@ -12,7 +12,7 @@ locals {
 
   location = var.stamps[0] # we use the first location in the list of stamps as the "main" location to root our global resources in, which need it. E.g. Cosmos DB
 
-  frontdoor_name             = "${lower(var.prefix)}-global-fd"
+  frontdoor_name = "${lower(var.prefix)}-global-fd"
 
   kql_queries = "${path.root}/../../monitoring/queries/global" # directory that contains the kql queries
 

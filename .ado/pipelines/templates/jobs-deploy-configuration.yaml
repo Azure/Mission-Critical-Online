@@ -50,7 +50,7 @@ jobs:
           helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx `
                        --namespace $(ingressNamespace) --create-namespace `
                        --values src/config/ingress-nginx/values.helm.yaml `
-                       --set controller.service.loadBalancerIP="$aksIngressIp" `
+                       --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-ipv4"="$aksIngressIp" `
                        --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-resource-group"="$aksClusterResourceGroup" `
                        --version "$(ingressNginxVersion)" `
                        --timeout 15m0s `

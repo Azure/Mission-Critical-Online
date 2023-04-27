@@ -30,10 +30,9 @@ spec:
         # For the liveness probe we check if the file exists and was modified in the last minute. Source: https://medium.com/spire-labs/utilizing-kubernetes-liveness-and-readiness-probes-to-automatically-recover-from-failure-2fe0314f2b2e
           exec:
             command:
-            - find
-            - /tmp/healthy
-            - -mmin
-            - '-1'
+            - /bin/sh
+            - -c
+            - '[ $(find /tmp/healthy -mmin -1 | wc -l) -eq 1 ] || false'
           initialDelaySeconds: 5
           periodSeconds: 10
         {{- if .Values.resources }}

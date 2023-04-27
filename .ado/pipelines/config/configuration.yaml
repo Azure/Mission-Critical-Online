@@ -5,7 +5,7 @@ variables:
   value: 'foundational-online'
 
 - name: 'terraformVersion'    # Terraform Version
-  value: '1.4.3'
+  value: '1.4.1'
 - name: 'kubernetesVersion'   # kubernetes version used for aks clusters
   value: '1.26.3'
 - name: 'helmVersion'         # helm package manager version

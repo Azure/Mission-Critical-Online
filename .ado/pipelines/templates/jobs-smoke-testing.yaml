@@ -79,7 +79,7 @@ jobs:
           # We are using Playwright to browse the UI and capture screenshots
           # install Playwright dependencies
           echo "Installing Playwright dependencies..."
-          npm install playwright-chromium @playwright/test -y
+          npm install playwright-chromium@1.32.0 @playwright/test@1.32.0 -y
 
           $env:TEST_BASEURL = "https://$(frontdoor_fqdn)"
           $env:SCREENSHOT_PATH = "$pwd/screenshots"

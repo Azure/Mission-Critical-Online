@@ -13,7 +13,7 @@ param
   [string] $apiEndpoint,
 
   # Load Test data plane api version
-  [string] $apiVersion = "2022-06-01-preview"
+  [string] $apiVersion = "2022-11-01"
 )
 
 . "$PSScriptRoot/common.ps1"

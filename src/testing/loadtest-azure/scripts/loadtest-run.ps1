@@ -9,7 +9,7 @@ param
   [string] $apiEndpoint,
 
   # optional - load test data plane api version
-  [string] $apiVersion = "2022-06-01-preview",
+  [string] $apiVersion = "2022-11-01",
 
   # Load Test run displayname
   [Parameter(Mandatory=$true)]

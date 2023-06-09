@@ -55,7 +55,7 @@ function GetTestBody {
   {
       "displayName": "$loadTestDisplayName",
       "description": "$loadTestDescription",
-      "loadTestConfig": {
+      "loadTestConfiguration": {
           "engineInstances": $engineInstances
       },
       "environmentVariables": {
@@ -96,7 +96,7 @@ if ($passFailCriteria) {
 
 $body | Out-File $testDataFileName -Encoding utf8
 
-$urlRoot = "https://{0}/loadtests/{1}" -f $apiEndpoint, $loadTestId
+$urlRoot = "https://{0}/tests/{1}" -f $apiEndpoint, $loadTestId
 Write-Verbose "*** Load test service data plane: $urlRoot"
 
 # Create a new load test resource or update existing, if loadTestId already exists

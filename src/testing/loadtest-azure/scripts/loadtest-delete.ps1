@@ -18,7 +18,7 @@ if (!$loadTestId) {
 
 . ./common.ps1
 
-$urlRoot = "https://{0}/loadtests/{1}" -f $apiEndpoint,$loadTestId
+$urlRoot = "https://{0}/tests/{1}" -f $apiEndpoint,$loadTestId
 
 az rest --url $urlRoot `
   --method DELETE `

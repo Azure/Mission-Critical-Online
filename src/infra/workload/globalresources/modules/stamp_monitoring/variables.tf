@@ -29,4 +29,9 @@ variable "alerts_enabled" {
   default     = false
 }
 
+variable "law_daily_cap_gb" {
+  description = "Daily data cap for Log Analytics Workspace and Application Insights in GB"
+  type        = number
+}
+
 variable "default_tags" {}

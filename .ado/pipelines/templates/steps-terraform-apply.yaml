@@ -50,11 +50,11 @@ steps:
 
       terraform apply -parallelism=20 -auto-approve tf_plan
 
-      echo "Writing Terraform output file to tfoutput.json"
-      terraform output -json >> tfoutput.json
+      echo "Writing Terraform output file to ${{ parameters.jobName }}-tfoutput.json"
+      terraform output -json >> ${{ parameters.jobName }}-tfoutput.json
 
 # Publish Terraform Outputs
-- publish:  '${{ parameters.terraformWorkingDirectory }}/tfoutput.json'
+- publish:  '${{ parameters.terraformWorkingDirectory }}/${{ parameters.jobName }}-tfoutput.json'
   artifact: 'terraformOutput${{ parameters.jobName }}' # artifact name
   condition: succeeded()
   displayName: 'Publish Terraform Outputs JSON'

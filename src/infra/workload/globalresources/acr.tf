@@ -37,7 +37,6 @@ resource "azurerm_monitor_diagnostic_setting" "acr" {
 
     content {
       category = entry.value
-      enabled  = true
 
       retention_policy {
         enabled = true

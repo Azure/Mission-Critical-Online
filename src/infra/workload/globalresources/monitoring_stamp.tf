@@ -11,6 +11,7 @@ module "stamp_monitoring" {
 
   location                               = each.value
   prefix                                 = local.prefix
+  resource_group_id                      = azurerm_resource_group.monitoring.id
   resource_group_name                    = azurerm_resource_group.monitoring.name
   azure_monitor_action_group_resource_id = azurerm_monitor_action_group.main.id
   alerts_enabled                         = var.alerts_enabled

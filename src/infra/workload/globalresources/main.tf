@@ -4,6 +4,10 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "3.61.0"
     }
+    azapi = {
+      source  = "Azure/azapi"
+      version = "1.5.0"
+    }
   }
 
   backend "azurerm" {
@@ -22,6 +26,8 @@ provider "azurerm" {
     }
   }
 }
+
+provider "azapi" {}
 
 resource "azurerm_resource_group" "global" {
   name     = "${local.prefix}-global-rg"

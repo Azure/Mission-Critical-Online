@@ -10,6 +10,8 @@ resource "azurerm_kubernetes_cluster" "stamp" {
 
   automatic_channel_upgrade = "node-image"
 
+  monitor_metrics {}
+
   oidc_issuer_enabled       = true
   workload_identity_enabled = true
 

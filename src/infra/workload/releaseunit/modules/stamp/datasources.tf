@@ -5,6 +5,18 @@ data "azurerm_cosmosdb_account" "global" {
   resource_group_name = var.global_resource_group_name
 }
 
+data "azurerm_resource_group" "monitoring" {
+  name = var.monitoring_resource_group_name
+}
+
+data "azapi_resource" "prometheus" {
+  name      = "${local.prefix}-${local.location_short}-prometheus"
+  type      = "microsoft.monitor/accounts@2021-06-03-preview"
+  parent_id = data.azurerm_resource_group.monitoring.id
+  
+  response_export_values = ["*"]
+}
+
 data "azurerm_container_registry" "global" {
   name                = var.acr_name
   resource_group_name = var.global_resource_group_name

@@ -10,7 +10,7 @@ To further improve the observability capabilities of a mission-critical workload
 
 Azure Mission-Critical follows a cloud-native-first, PaaS-first approach. Whenever possible should PaaS and cloud-native services be prioritized when designing, developing or modernizing a workload on Azure. These cloud-native, and several PaaS services have one thing in common, they provide prometheus metrics. To call out a few examples, AKS is using Kubernetes, Kubernetes provides Prometheus metrics on various levels like the control plane and the nodes (kubelet) but also its services like cert-manager, open service mesh and nginx (and of course many more) provide prometheus metric endpoints.
 
-As you can see, Prometheus, Prometheus metrics and especially the Prometheus Query Language (PromQL) are a defacto standard in the cloud native space. What options do we have to leverage these metrics? The existing Azure Monitor agent already supports scraping prometheus metrics and store them in Log Analytics. This was already quiet helpful, but, Log Analytics is a quiet expensive storage and it supports Kusto Query Language (KQL) but not the Prometheus Query Language (PromQL). And this can become a problem, especially when using Prometheus across environments and platforms.
+As the examples above show, Prometheus, Prometheus metrics and especially the Prometheus Query Language (PromQL) are well-established standards in the cloud native space. The existing Azure Monitor add-on for Azure Kubernetes Service already supported scraping prometheus metrics from endpoints within a cluster and stored them in Log Analytics. Azure Monitor Workspace now supports also PromQL which makes it easier to use across environments and platforms.
 
 ## Managed Prometheus
 

@@ -1,4 +1,4 @@
-# Managed prometheus in Azure Mission-critical (preview)
+# Managed Prometheus in Azure Mission-critical
 
 The Azure Mission-Critical reference implementation implements a wide variety of monitoring and observability capabilities and best practices. It uses regional and global Log Analytics workspaces to store logs and metrics, decoupled from the ephemeral nature and lifecycle of it's stamps, it contains an instrumented sample application workload using Application Insights for in-depth application metrics and distributed traces, uses a health service to evaluate and report the status of each of its deployed stamps and uses a self-hosted instance of Grafana to visualize the user and system flows and provide actionable insights into the overall health status of the workload. This is a good start, but might not be detailed enough for production workloads.
 

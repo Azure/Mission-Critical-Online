@@ -31,7 +31,7 @@ You might wonder how these additional resources are getting deployed and where t
 The Azure Monitor workspace that stores the collected data is getting deployed into the `<prefix>-monitoring-rg`. One instance per region used.
 
 The other resources, like the Data collection rule, endpoint and rule association is deployed alongside the regional stamps. They're ephemeral and share the same lifecycle as the stamp. When a new stamp is getting deployed, new rules, endpoints and associations are deployed and the old ones are getting destroyed.
-
+Use this [article](https://learn.microsoft.com/azure/azure-monitor/essentials/azure-monitor-workspace-overview#data-considerations), if the mission-critical application has strong data resiliency and retention requirements for metrics data.
 ![Architecture diagram with prometheus](../media/architecture_diagram_with_prometheus.png)
 
 ## How to access the data?

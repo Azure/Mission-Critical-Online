@@ -42,10 +42,9 @@ resource "azurerm_monitor_data_collection_rule" "stamp" {
 }
 
 resource "azurerm_monitor_data_collection_rule_association" "aks" {
-  #name                        = "${local.prefix}-${local.location_short}-dcra"
+  name                        = "${local.prefix}-${local.location_short}-dcra"
   target_resource_id          = azurerm_kubernetes_cluster.stamp.id
-  data_collection_endpoint_id = azurerm_monitor_data_collection_endpoint.stamp.id
-  #data_collection_rule_id     = azurerm_monitor_data_collection_rule.stamp.id
+  data_collection_rule_id     = azurerm_monitor_data_collection_rule.stamp.id
 }
 
 resource "azurerm_monitor_alert_prometheus_rule_group" "prometheusK8sRuleGroup" {

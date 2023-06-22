@@ -13,7 +13,7 @@ data "azapi_resource" "azure_monitor_workspace" {
   name      = "${local.prefix}-${local.location_short}-amw"
   type      = "microsoft.monitor/accounts@2023-04-03"
   parent_id = data.azurerm_resource_group.monitoring.id
-  
+
   response_export_values = ["*"]
 }
 

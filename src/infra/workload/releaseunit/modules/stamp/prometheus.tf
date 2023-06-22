@@ -28,7 +28,7 @@ resource "azapi_resource" "dataCollectionRule" {
       destinations = {
         monitoringAccounts = [
           {
-            accountResourceId = data.azapi_resource.prometheus.id
+            accountResourceId = data.azapi_resource.azure_monitor_workspace.id
             name              = "MonitoringAccount1"
           }
         ]
@@ -73,7 +73,7 @@ resource "azapi_resource" "prometheusK8sRuleGroup" {
   body = jsonencode({
     properties = {
       description = "Prometheus Rule Group"
-      scopes      = [data.azapi_resource.prometheus.id]
+      scopes      = [data.azapi_resource.azure_monitor_workspace.id]
       enabled     = true
       clusterName = azurerm_kubernetes_cluster.stamp.name
       interval    = "PT1M"
@@ -109,7 +109,7 @@ resource "azapi_resource" "prometheusNodeRuleGroup" {
   body = jsonencode({
     properties = {
       description = "Prometheus Rule Group"
-      scopes      = [data.azapi_resource.prometheus.id]
+      scopes      = [data.azapi_resource.azure_monitor_workspace.id]
       enabled     = true
       clusterName = azurerm_kubernetes_cluster.stamp.name
       interval    = "PT1M"

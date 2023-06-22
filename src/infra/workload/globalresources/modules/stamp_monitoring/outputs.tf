@@ -3,5 +3,5 @@ output "log_analytics_workspace_id" {
 }
 
 output "azure_monitor_workspace_id" {
-  value = azapi_resource.prometheus.id
+  value = azurerm_monitor_workspace.stamp.id
 }

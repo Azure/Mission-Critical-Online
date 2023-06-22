@@ -9,9 +9,9 @@ data "azurerm_resource_group" "monitoring" {
   name = var.monitoring_resource_group_name
 }
 
-data "azapi_resource" "prometheus" {
-  name      = "${local.prefix}-${local.location_short}-prometheus"
-  type      = "microsoft.monitor/accounts@2021-06-03-preview"
+data "azapi_resource" "azure_monitor_workspace" {
+  name      = "${local.prefix}-${local.location_short}-amw"
+  type      = "microsoft.monitor/accounts@2023-04-03"
   parent_id = data.azurerm_resource_group.monitoring.id
   
   response_export_values = ["*"]

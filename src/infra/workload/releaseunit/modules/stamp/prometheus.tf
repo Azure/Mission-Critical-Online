@@ -8,7 +8,7 @@ locals {
 resource "azapi_resource" "dataCollectionRule" {
   schema_validation_enabled = false
 
-  type      = "Microsoft.Insights/dataCollectionRules@2021-09-01-preview"
+  type      = "Microsoft.Insights/dataCollectionRules@2022-06-01"
   name      = "${local.prefix}-${local.location_short}-dcr"
   parent_id = azurerm_resource_group.stamp.id
   location  = lookup(local.region_fallbacks, var.location, var.location) # If the region is set in the region_fallbacks maps, we use the fallback, otherwise the region as chosen by the user
@@ -45,7 +45,7 @@ resource "azapi_resource" "dataCollectionRule" {
 }
 
 resource "azapi_resource" "dataCollectionEndpoint" {
-  type      = "Microsoft.Insights/dataCollectionEndpoints@2021-09-01-preview"
+  type      = "Microsoft.Insights/dataCollectionEndpoints@2022-06-01"
   name      = "${local.prefix}-${local.location_short}-dce"
   parent_id = azurerm_resource_group.stamp.id
   location  = lookup(local.region_fallbacks, var.location, var.location) # If the region is set in the region_fallbacks maps, we use the fallback, otherwise the region as chosen by the user
@@ -58,7 +58,7 @@ resource "azapi_resource" "dataCollectionEndpoint" {
 
 resource "azapi_resource" "dataCollectionRuleAssociation" {
   schema_validation_enabled = false
-  type                      = "Microsoft.Insights/dataCollectionRuleAssociations@2021-09-01-preview"
+  type                      = "Microsoft.Insights/dataCollectionRuleAssociations@2022-06-01"
   name                      = "${local.prefix}-${local.location_short}-dcra"
   parent_id                 = azurerm_kubernetes_cluster.stamp.id
   #location                  = azurerm_resource_group.stamp.location
@@ -72,7 +72,7 @@ resource "azapi_resource" "dataCollectionRuleAssociation" {
 }
 
 resource "azapi_resource" "prometheusK8sRuleGroup" {
-  type      = "Microsoft.AlertsManagement/prometheusRuleGroups@2021-07-22-preview"
+  type      = "Microsoft.AlertsManagement/prometheusRuleGroups@2023-03-01"
   name      = "${local.prefix}-${local.location_short}-k8sRuleGroup"
   parent_id = azurerm_resource_group.stamp.id
   location  = lookup(local.region_fallbacks, var.location, var.location) # If the region is set in the region_fallbacks maps, we use the fallback, otherwise the region as chosen by the user
@@ -108,7 +108,7 @@ resource "azapi_resource" "prometheusK8sRuleGroup" {
 }
 
 resource "azapi_resource" "prometheusNodeRuleGroup" {
-  type      = "Microsoft.AlertsManagement/prometheusRuleGroups@2021-07-22-preview"
+  type      = "Microsoft.AlertsManagement/prometheusRuleGroups@2023-03-01"
   name      = "${local.prefix}-${local.location_short}-nodeRuleGroup"
   parent_id = azurerm_resource_group.stamp.id
   location  = lookup(local.region_fallbacks, var.location, var.location) # If the region is set in the region_fallbacks maps, we use the fallback, otherwise the region as chosen by the user

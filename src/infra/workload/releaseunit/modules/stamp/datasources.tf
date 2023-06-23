@@ -11,7 +11,7 @@ data "azurerm_resource_group" "monitoring" {
 
 # There is no azurerm data source yet for Monitor Workspace (as of June-2023)
 data "azapi_resource" "azure_monitor_workspace" {
-  name      = "${local.prefix}-${local.location_short}-amw"
+  name      = "${local.global_resource_prefix}-${local.location_short}-amw"
   type      = "microsoft.monitor/accounts@2023-04-03"
   parent_id = data.azurerm_resource_group.monitoring.id
 

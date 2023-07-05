@@ -39,13 +39,12 @@ resource "azurerm_monitor_diagnostic_setting" "storage_global" {
   target_resource_id         = azurerm_storage_account.global.id
   log_analytics_workspace_id = azurerm_log_analytics_workspace.global.id
 
-  dynamic "log" {
+  dynamic "enabled_log" {
     iterator = entry
     for_each = data.azurerm_monitor_diagnostic_categories.global_public.log_category_types
 
     content {
       category = entry.value
-      enabled  = true
 
       retention_policy {
         enabled = true

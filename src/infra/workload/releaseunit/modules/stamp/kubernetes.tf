@@ -116,13 +116,12 @@ resource "azurerm_monitor_diagnostic_setting" "aks" {
   target_resource_id         = azurerm_kubernetes_cluster.stamp.id
   log_analytics_workspace_id = data.azurerm_log_analytics_workspace.stamp.id
 
-  dynamic "log" {
+  dynamic "enabled_log" {
     iterator = entry
     for_each = data.azurerm_monitor_diagnostic_categories.aks.log_category_types
 
     content {
       category = entry.value
-      enabled  = true
 
       retention_policy {
         enabled = true

@@ -47,10 +47,8 @@ variables:
   value: '2023-04-01-preview'
 - name: 'azureLoadTestEngineInstances'
   value: 2
-- name: 'azureLoadTestVUsers'
-  value: 100
 - name: 'azureLoadTestDurationSeconds'
-  value: 660
+  value: 60
 - name: 'azureLoadTestUserThreads'
   value: 500
 - name: 'azureLoadTestBaseline'

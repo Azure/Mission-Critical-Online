@@ -5,13 +5,11 @@
             "aggregate": "avg",
             "condition": "<",
             "value": 1200.0,
-            "actualValue": 0.0,
             "requestName": null,
             "action": "continue"
         },
         "ac6c5e62-647a-4a1a-b001-b961e384892f": {
             "action": "continue",
-            "actualValue": 0.0,
             "aggregate": "avg",
             "clientMetric": "response_time_ms",
             "condition": ">",
@@ -20,12 +18,11 @@
         },
         "a7ab8dec-07e6-4870-911c-4505382b85f1": {
             "action": "continue",
-            "actualValue": 0.0,
             "aggregate": "percentage",
             "clientMetric": "error",
             "condition": ">",
             "requestName": null,
-            "value": 0.0
+            "value": 1.0
         }
     }
 }

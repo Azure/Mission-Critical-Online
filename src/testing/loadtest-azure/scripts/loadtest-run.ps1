@@ -18,8 +18,6 @@ param
   # Load test run description
   [string] $testRunDescription,
   
-  [int] $testRunVUsers = 1,
-
   # optional - expose outputs as pipeline variables
   [bool] $pipeline = $false
 )

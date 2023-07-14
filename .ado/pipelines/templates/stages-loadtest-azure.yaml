@@ -177,7 +177,7 @@ stages:
 
       # start azure load test
       - task: AzureCLI@2
-        displayName: 'Run Azure Load Test'
+        displayName: 'Start Azure Load Test'
         inputs:
           azureSubscription: '$(azureServiceConnection)'
           scriptType: pscore
@@ -189,7 +189,6 @@ stages:
             -apiVersion "$(azureLoadTestApiVersion)" `
             -testRunName "$(get-date -f "yyyy-MM-dd hh:ss") Load Test run triggered by ADO" `
             -testRunDescription "Pipeline executed load test run" `
-            -testRunVUsers "$(azureLoadTestVUsers)" `
             -pipeline $true `
             -verbose:$true
 
@@ -220,9 +219,6 @@ stages:
                 echo "*** Test Run $(testRunId) is in status $testRunStatus"
               }
 
-              $resultUrl = ($result).testArtifacts.outputArtifacts.resultUrl.url
-              $logsUrl = ($result).testArtifacts.outputArtifacts.logsUrl.url
-
               # todo - timeout?
             } while ($result.status -ne "DONE")
 
@@ -252,10 +248,10 @@ stages:
                 -apiVersion "$(azureLoadTestApiVersion)" `
                 -testRunId "$(testRunId)"
 
-              $resultUrl = ($result).testArtifacts.outputArtifacts.resultUrl.url
-              $logsUrl = ($result).testArtifacts.outputArtifacts.logsUrl.url
+              $resultUrl = ($result).testArtifacts.outputArtifacts.resultFileInfo.url
+              $logsUrl = ($result).testArtifacts.outputArtifacts.logsFileInfo.url
 
-              if ( (!$resultUrl) -and (!$logsUrl) ) {
+              if ( (!$resultUrl) -or (!$logsUrl) ) {
                 echo "*** Either resultUrl ($resultUrl) or logsUrl ($logsUrl) is empty. Retry $i/3"
                 Start-Sleep -seconds 15
               } else {

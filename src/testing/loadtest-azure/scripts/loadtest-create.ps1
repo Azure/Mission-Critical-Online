@@ -32,7 +32,7 @@ param
   [string] $passFailCriteria,
 
   # optional - load test data plane api version
-  [string] $apiVersion = "2022-11-01",
+  [string] $apiVersion = "2023-04-01-preview",
 
   # optional - expose outputs as pipeline variables
   [bool] $pipeline = $false
@@ -62,7 +62,13 @@ function GetTestBody {
         "target_url": "$loadTestTargetUrl",
         "threads": $loadTestUserThreads,
         "load_duration_seconds": $loadTestDurationSeconds
-      }
+      },
+      "autoStopCriteria": {
+        "autoStopEnabled": false, 
+        "isAutoStopEnabled": false,
+        "errorRate": 90,
+        "errorRateTimeWindow": 60
+      ,
   }
 "@
 

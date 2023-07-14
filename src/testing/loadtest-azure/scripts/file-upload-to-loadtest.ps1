@@ -41,7 +41,7 @@ $result = az rest --url $urlRoot `
   --method PUT `
   --skip-authorization-header `
   --headers ('@' + $accessTokenFileName) "Content-Type=application/octet-stream" `
-  --url-parameters api-version=$apiVersion `
+  --url-parameters api-version=$apiVersion fileType="JMX_FILE" `
   --body ('@' + $testFileName) `
   --output json $verbose | ConvertFrom-Json
 

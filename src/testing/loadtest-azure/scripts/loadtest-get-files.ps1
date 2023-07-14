@@ -15,7 +15,7 @@ param
   [string] $fileId,
 
   # optional - keep access token when used embedded
-  [bool] $keepToken = $false,
+  [bool] $keepToken = $false
 )
 
 . "$PSScriptRoot/common.ps1"

@@ -16,7 +16,7 @@ param
   [string] $testFileName,
   
   # Test File ID is auto-generated when not set (default)
-  [string] $testFileId = (New-Guid).toString(),
+  [string] $testFileId = "$(New-Guid).jmx",
 
   # optional - expose outputs as pipeline variables
   [bool] $pipeline = $false,

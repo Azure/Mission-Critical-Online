@@ -68,7 +68,7 @@ function GetTestBody {
         "isAutoStopEnabled": false,
         "errorRate": 90,
         "errorRateTimeWindow": 60
-      ,
+      }
   }
 "@
 

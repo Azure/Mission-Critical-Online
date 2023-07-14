@@ -96,6 +96,9 @@ if ($passFailCriteria) {
 
 $body | Out-File $testDataFileName -Encoding utf8
 
+Write-Verbose "*** Test request body"
+$body
+
 $urlRoot = "https://{0}/tests/{1}" -f $apiEndpoint, $loadTestId
 Write-Verbose "*** Load test service data plane: $urlRoot"
 
@@ -104,9 +107,14 @@ az rest --url $urlRoot `
   --method PATCH `
   --skip-authorization-header `
   --headers ('@' + $accessTokenFileName) "Content-Type=application/merge-patch+json" `
-  --url-parameters testId=$loadTestId api-version=$apiVersion `
+  --url-parameters api-version=$apiVersion `
   --body ('@' + $testDataFileName) `
   --output none $verbose 
+
+if($LastExitCode -ne 0)
+{
+    throw "*** Error on creating load test instance!"
+}
 
 # Outputs and exports for pipeline usage
 if($pipeline) {

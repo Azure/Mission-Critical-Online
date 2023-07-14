@@ -43,19 +43,13 @@ if (!(validateResourceId -resourceId $resourceId)) {
 function AppComponent {
     param
     (
-      [string] $resourceName,
-      [string] $resourceId,
-      [string] $resourceType
+      [string] $resourceId
     )
   
     $result = @"
     {
         "components": {
-            "$resourceId": {
-              "resourceName": "$resourceName",
-              "resourceId": "$resourceId",
-              "resourceType": "$resourceType"
-            }
+            "$resourceId": {}
         }
     }
 "@
@@ -63,16 +57,15 @@ function AppComponent {
   return $result
 }
 
-# Split Azure ResourceID
-$resource = $resourceId.split("/")
-$resourceType = $resource[6]+"/"+$resource[7] # combine resource type like Microsoft.ContainerService/managedCluster
-
 $testDataFileName = $loadTestId + ".txt"
-AppComponent -resourceName $resource[8] `
-             -resourceType $resourceType `
-             -resourceId $resourceId | Out-File $testDataFileName -Encoding utf8
+$appComponent = AppComponent -resourceId $resourceId 
 
-$urlRoot = "https://" + $apiEndpoint + "/" + $loadTestId + "/app-components"
+Write-Verbose "*** App component request body:"
+$appComponent
+
+$appComponent | Out-File $testDataFileName -Encoding utf8
+
+$urlRoot = "https://{0}/tests/{1}/app-components" -f $apiEndpoint, $loadTestId
 Write-Verbose "*** Load test service data plane: $urlRoot"
 
 # Create a new load test resource or update existing, if loadTestId already exists

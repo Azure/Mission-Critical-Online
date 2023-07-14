@@ -44,7 +44,7 @@ variables:
 
 # Microsoft Azure Load Test (MALT) configuration
 - name: 'azureLoadTestApiVersion' # data plane
-  value: '2022-11-01'
+  value: '2023-04-01-preview'
 - name: 'azureLoadTestEngineInstances'
   value: 2
 - name: 'azureLoadTestVUsers'

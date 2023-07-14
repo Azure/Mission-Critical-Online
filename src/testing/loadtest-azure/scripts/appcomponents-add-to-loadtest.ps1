@@ -40,25 +40,15 @@ if (!(validateResourceId -resourceId $resourceId)) {
   throw "No valid resourceId provided."
 }
 
-function AppComponent {
-    param
-    (
-      [string] $resourceId
-    )
-  
-    $result = @"
+$testDataFileName = $loadTestId + ".txt"
+
+$appComponent = @"
     {
         "components": {
             "$resourceId": {}
         }
     }
 "@
-
-  return $result
-}
-
-$testDataFileName = $loadTestId + ".txt"
-$appComponent = AppComponent -resourceId $resourceId 
 
 Write-Verbose "*** App component request body:"
 $appComponent

@@ -33,7 +33,7 @@ if (!(Test-Path $testFileName -PathType leaf)) {
   trow "File $testFileName does not exist"
 }
 
-$urlRoot = "https://{0}/loadtests/{1}/files/{2}"  -f $apiEndpoint, $loadTestId, $testFileId
+$urlRoot = "https://{0}/tests/{1}/files/{2}"  -f $apiEndpoint, $loadTestId, $testFileId
 
 # Following is to get Invoke-RestMethod to work
 $url = "{0}?api-version={1}"  -f $urlRoot, $apiVersion

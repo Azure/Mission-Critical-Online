@@ -16,13 +16,11 @@ param
 
   # optional - keep access token when used embedded
   [bool] $keepToken = $false,
-
-  [int] $maxPageSize
 )
 
 . "$PSScriptRoot/common.ps1"
 
-$urlRoot = "https://{0}/loadtests/{1}/files" -f $apiEndpoint, $loadTestId
+$urlRoot = "https://{0}/tests/{1}/files" -f $apiEndpoint, $loadTestId
 
 if ($fileId) {
   $urlRoot = "{0}/{1}" -f $urlRoot,$fileId
@@ -32,7 +30,7 @@ az rest --url $urlRoot `
   --method GET `
   --skip-authorization-header `
   --headers ('@' + $accessTokenFileName) `
-  --url-parameters api-version=$apiVersion maxPageSize=$maxPageSize `
+  --url-parameters api-version=$apiVersion `
   $verbose --output json | convertFrom-Json
 
 if (!$keepToken) {

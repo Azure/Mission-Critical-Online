@@ -14,7 +14,7 @@ param
 
 . "$PSScriptRoot/common.ps1"
 
-$urlRoot = "https://{0}/testruns/{1}" -f $apiEndpoint, $testRunId
+$urlRoot = "https://{0}/test-runs/{1}" -f $apiEndpoint, $testRunId
 
 $url = $urlRoot + "?api-version=" + $apiVersion
 

@@ -35,25 +35,19 @@ if (!(Test-Path $testFileName -PathType leaf)) {
 
 $urlRoot = "https://{0}/tests/{1}/files/{2}"  -f $apiEndpoint, $loadTestId, $testFileId
 
-# Following is to get Invoke-RestMethod to work
-$url = "{0}?api-version={1}"  -f $urlRoot, $apiVersion
-
 Write-Verbose "*** Load test service data plane: $urlRoot"
 
-# Secure string to use access token with Invoke-RestMethod in Powershell
-$accessTokenSecure = ConvertTo-SecureString -String $accessToken -AsPlainText -Force
-
-$result = Invoke-RestMethod `
-  -Uri $url `
-  -Method PUT `
-  -Authentication Bearer `
-  -Token $accessTokenSecure `
-  -Form @{ file = Get-Item $testFileName } `
-  -Verbose:$verbose -Debug
+$result = az rest --url $urlRoot `
+  --method PUT `
+  --skip-authorization-header `
+  --headers ('@' + $accessTokenFileName) "Content-Type=application/octet-stream" `
+  --url-parameters api-version=$apiVersion `
+  --body ('@' + $testFileName) `
+  --output json $verbose | ConvertFrom-Json
 
 # export pipeline variables
 if($pipeline) {
-  echo "##vso[task.setvariable variable=fileId]$($result.fileId)" # contains the fileId for in-pipeline usage
+  echo "##vso[task.setvariable variable=fileId]$($result.fileName)" # contains the fileName for in-pipeline usage
 } else {
   $result
 }
@@ -65,7 +59,7 @@ if($wait) {
 
     $fileStatus = (& $PSScriptRoot\loadtest-get-files.ps1 -apiEndpoint $apiEndpoint `
                             -loadTestId $loadTestId `
-                            -fileId $($result.fileId) `
+                            -fileId $($result.fileName) `
                             -keepToken $true)
     if ($fileStatus.validationStatus -ne "VALIDATION_SUCCESS") {
       Write-Verbose "*** Waiting another 10s for file validation to complete $($fileStatus.validationStatus)"

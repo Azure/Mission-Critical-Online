@@ -45,14 +45,12 @@ function AppComponent {
     (
       [string] $resourceName,
       [string] $resourceId,
-      [string] $resourceType,
-      [string] $loadTestId
+      [string] $resourceType
     )
   
     $result = @"
     {
-        "testId": "$loadTestId",
-        "value": {
+        "components": {
             "$resourceId": {
               "resourceName": "$resourceName",
               "resourceId": "$resourceId",
@@ -72,10 +70,9 @@ $resourceType = $resource[6]+"/"+$resource[7] # combine resource type like Micro
 $testDataFileName = $loadTestId + ".txt"
 AppComponent -resourceName $resource[8] `
              -resourceType $resourceType `
-             -resourceId $resourceId `
-             -loadTestId $loadTestId | Out-File $testDataFileName -Encoding utf8
+             -resourceId $resourceId | Out-File $testDataFileName -Encoding utf8
 
-$urlRoot = "https://" + $apiEndpoint + "/appcomponents/" + $loadTestId
+$urlRoot = "https://" + $apiEndpoint + "/" + $loadTestId + "/app-components"
 Write-Verbose "*** Load test service data plane: $urlRoot"
 
 # Create a new load test resource or update existing, if loadTestId already exists
@@ -83,7 +80,7 @@ az rest --url $urlRoot `
   --method PATCH `
   --skip-authorization-header `
   --headers ('@' + $accessTokenFileName) "Content-Type=application/merge-patch+json" `
-  --url-parameters testId=$loadTestId api-version=$apiVersion `
+  --url-parameters api-version=$apiVersion `
   --body ('@' + $testDataFileName) `
   $verbose #-o none 
 

@@ -1,3 +1,16 @@
+terraform {
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "3.63.0"
+    }
+    azapi = {
+      source  = "Azure/azapi"
+      version = "1.5.0"
+    }
+  }
+}
+
 # Azure Resource Group used for all resources (per stamp)
 resource "azurerm_resource_group" "stamp" {
   name     = "${var.prefix}-stamp-${var.location}-rg"

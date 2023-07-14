@@ -69,13 +69,12 @@ resource "azurerm_monitor_diagnostic_setting" "kv" {
   target_resource_id         = azurerm_key_vault.stamp.id
   log_analytics_workspace_id = data.azurerm_log_analytics_workspace.stamp.id
 
-  dynamic "log" {
+  dynamic "enabled_log" {
     iterator = entry
     for_each = data.azurerm_monitor_diagnostic_categories.kv.log_category_types
 
     content {
       category = entry.value
-      enabled  = true
 
       retention_policy {
         enabled = true

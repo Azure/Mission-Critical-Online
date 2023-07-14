@@ -2,7 +2,11 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "3.59.0"
+      version = "3.63.0"
+    }
+    azapi = {
+      source  = "Azure/azapi"
+      version = "1.7.0"
     }
   }
 
@@ -18,6 +22,8 @@ provider "azurerm" {
     }
   }
 }
+
+provider "azapi" {}
 
 # Random API key which needs to be identical between all stamps
 resource "random_password" "api_key" {

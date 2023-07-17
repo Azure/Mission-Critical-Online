@@ -256,11 +256,10 @@ stages:
                 Start-Sleep -seconds 15
               } else {
                 echo "*** Received resultUrl ($resultUrl) and logsUrl ($logsUrl)"
-                $i=3 # set to 3 to end the loop
+                $i = 3 # set to 3 to end the loop
               }
-
               $i++
-            } while ( ($i -le 3) -and (($logsUrl) -and ($resultUrl)) )
+            } while ( $i -le 3 )
 
             if ( ($resultUrl) -and ($logsUrl) ) {
               New-Item -Path results -ItemType "directory" -Force

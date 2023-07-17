@@ -134,7 +134,7 @@ stages:
     # All of the next tasks are only applicable in embedded mode
     - ${{ if eq(parameters.embeddedLoadTest, 'true') }}:
 
-      # # This step adds additional App Components to the Load Test dashboard
+      # This step adds additional App Components to the Load Test dashboard
       - task: AzureCLI@2
         displayName: 'Add app components to load test'
         name: 'addAppComponentsToLoadTest'
@@ -253,7 +253,7 @@ stages:
             }
 
       - task: AzureCLI@2
-        displayName: 'RESULTS: Download and convert JMeter results'
+        displayName: 'RESULTS: Download Load Test results'
         condition: succeeded()
         inputs:
           azureSubscription: $(azureServiceConnection)
@@ -293,20 +293,22 @@ stages:
               throw "*** ERROR: Either logsUrl ($logsUrl) or resultUrl ($resultUrl) is empty."
             }
 
-            #wget https://raw.githubusercontent.com/Azure-Samples/jmeter-aci-terraform/main/scripts/jtl_junit_converter.py -O $(System.DefaultWorkingDirectory)/junit-converter.py
+            # Conversion of JMeter results to JUnit format currently not being used due to long runtime duration of the script
+            #
+            # wget https://raw.githubusercontent.com/Azure-Samples/jmeter-aci-terraform/main/scripts/jtl_junit_converter.py -O $(System.DefaultWorkingDirectory)/junit-converter.py
 
-            if (Test-Path results/results.zip) {
-              Expand-Archive -Path results/results.zip -DestinationPath results
+            # if (Test-Path results/results.zip) {
+            #   Expand-Archive -Path results/results.zip -DestinationPath results
 
-              # merge multiple csv files
-              # Get-ChildItem -Filter results/*.csv | Import-Csv | Export-Csv results/testreport.csv -NoTypeInformation -Append
+            #   # merge multiple csv files
+            #   Get-ChildItem -Filter results/*.csv | Import-Csv | Export-Csv results/testreport.csv -NoTypeInformation -Append
 
-              #$JMETER_RESULTS="results/testreport.csv"
-              #$JUNIT_RESULTS="output.xml"
-              #python3 junit-converter.py $JMETER_RESULTS $JUNIT_RESULTS
-            } else {
-              echo "Skipping result data conversion. results.zip was not found."
-            }
+            #   $JMETER_RESULTS="results/testreport.csv"
+            #   $JUNIT_RESULTS="output.xml"
+            #   python3 junit-converter.py $JMETER_RESULTS $JUNIT_RESULTS
+            # } else {
+            #   echo "Skipping result data conversion. results.zip was not found."
+            # }
             
         
       - task: PublishTestResults@2

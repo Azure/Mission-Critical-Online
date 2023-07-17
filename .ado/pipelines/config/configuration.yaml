@@ -50,7 +50,7 @@ variables:
 - name: 'azureLoadTestEngineInstances'
   value: 2
 - name: 'azureLoadTestDurationSeconds'
-  value: 60
+  value: 660
 - name: 'azureLoadTestUserThreads'
   value: 500
 - name: 'azureLoadTestBaseline'

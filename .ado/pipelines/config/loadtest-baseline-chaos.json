@@ -14,7 +14,7 @@
             "clientMetric": "response_time_ms",
             "condition": ">",
             "requestName": null,
-            "value": 75.0
+            "value": 500.0
         },
         "a7ab8dec-07e6-4870-911c-4505382b8511": {
             "action": "continue",

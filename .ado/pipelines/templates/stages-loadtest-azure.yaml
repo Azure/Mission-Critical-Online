@@ -231,9 +231,13 @@ stages:
 
               $totalTime += $retryWaitSeconds
 
-              if($totalTime -gt ($timeoutMinutes * 60)) {
-
-                # TODO stop the test run here
+              if($totalTime -gt ($timeoutMinutes * 60)) 
+              {
+                # Stop run
+                $(System.DefaultWorkingDirectory)/src/testing/loadtest-azure/scripts/loadtest-stop.ps1 `
+                          -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
+                          -apiVersion "$(azureLoadTestApiVersion)" `
+                          -testRunId "$(testRunId)"
                 throw "*** ERROR: Test run $(testRunId) did not finish in $timeoutMinutes minutes. Test Run Status: $testRunStatus Test Result: $($result.testResult)"
               }
 

@@ -71,7 +71,6 @@ if (!(validateResourceId -resourceId $resourceId)) {
 
 $testDataFileName = $loadTestId + ".txt"
 
-$testDataFileName = $loadTestId + ".txt"
 $appComponent = AppComponent -resourceName $resource[8] `
   -resourceType $resourceType `
   -resourceId $resourceId

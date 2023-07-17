@@ -135,29 +135,29 @@ stages:
     - ${{ if eq(parameters.embeddedLoadTest, 'true') }}:
 
       # # This step adds additional App Components to the Load Test dashboard
-      # - task: AzureCLI@2
-      #   displayName: 'Add app components to load test'
-      #   name: 'addAppComponentsToLoadTest'
-      #   inputs:
-      #     azureSubscription: '$(azureServiceConnection)'
-      #     workingDirectory: '$(System.DefaultWorkingDirectory)'
-      #     scriptType: pscore
-      #     scriptLocation: inlineScript
-      #     inlineScript: |
-      #       $releaseUnitInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputReleaseUnitInfra/*.json | Get-Content | ConvertFrom-JSON
+      - task: AzureCLI@2
+        displayName: 'Add app components to load test'
+        name: 'addAppComponentsToLoadTest'
+        inputs:
+          azureSubscription: '$(azureServiceConnection)'
+          workingDirectory: '$(System.DefaultWorkingDirectory)'
+          scriptType: pscore
+          scriptLocation: inlineScript
+          inlineScript: |
+            $releaseUnitInfraDeployOutput = Get-ChildItem $(Pipeline.Workspace)/terraformOutputReleaseUnitInfra/*.json | Get-Content | ConvertFrom-JSON
 
-      #       # loop through stamps from pipeline artifact json
-      #       foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
-      #         echo "**************************** REGION: $($stamp.location) ****************************"
+            # loop through stamps from pipeline artifact json
+            foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
+              echo "**************************** REGION: $($stamp.location) ****************************"
 
-      #         ./src/testing/loadtest-azure/scripts/appcomponents-add-to-loadtest.ps1 `
-      #           -loadTestId "$(loadTestId)" `
-      #           -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
-      #           -apiVersion "$(azureLoadTestApiVersion)" `
-      #           -resourceId "$($stamp.aks_cluster_id)"
+              echo "*** Adding $($stamp.aks_cluster_id) as app component"
 
-      #         echo "*** Adding $($stamp.aks_cluster_id)"
-      #       }
+              ./src/testing/loadtest-azure/scripts/appcomponents-add-to-loadtest.ps1 `
+                -loadTestId "$(loadTestId)" `
+                -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
+                -apiVersion "$(azureLoadTestApiVersion)" `
+                -resourceId "$($stamp.aks_cluster_id)"
+            }
 
       # upload a jmx file for the previously created azure load test with an auto-generated testFileId
       - task: AzureCLI@2
@@ -203,9 +203,18 @@ stages:
           scriptLocation: inlineScript
           inlineScript: |
 
+            # set retry wait time in seconds
+            $retryWaitSeconds = 90
+
+            # set timeout in minutes
+            $timeoutMinutes = 45
+
+            #create a variable to sum up time in seconds
+            $totalTime = 0
+
             do {
-              echo "*** Waiting additional 90 seconds for the load test run to complete.."
-              start-sleep -seconds 90
+              echo "*** Waiting additional $retryWaitSeconds seconds for the load test run to complete.."
+              start-sleep -seconds $retryWaitSeconds
               $result = $(System.DefaultWorkingDirectory)/src/testing/loadtest-azure/scripts/loadtest-get-run.ps1 `
                           -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
                           -apiVersion "$(azureLoadTestApiVersion)" `
@@ -220,7 +229,15 @@ stages:
                 echo "*** Test Run $(testRunId) is in status $testRunStatus Test Result: $($result.testResult)"
               }
 
-              # todo - timeout?
+              $totalTime += $retryWaitSeconds
+
+              if($totalTime -gt ($timeoutMinutes * 60)) {
+
+                # TODO stop the test run here
+                throw "*** ERROR: Test run $(testRunId) did not finish in $timeoutMinutes minutes. Test Run Status: $testRunStatus Test Result: $($result.testResult)"
+              }
+
+              # Wait until test is done and the rest result (evaluation of the test criteria is done)
             } while ($result.status -ne "DONE" -or $result.testResult -eq "NOT_APPLICABLE")
 
             echo "*** Test Run $(testRunId) was completed. Test Run Status: $testRunStatus Test Result: $($result.testResult)"

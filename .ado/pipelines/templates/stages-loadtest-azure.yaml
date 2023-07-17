@@ -221,7 +221,7 @@ stages:
               }
 
               # todo - timeout?
-            } while ($result.status -ne "DONE" -or $test.testResult -ne "NOT_APPLICABLE")
+            } while ($result.status -ne "DONE" -or $test.testResult -eq "NOT_APPLICABLE")
 
             echo "*** Test Run $(testRunId) was completed. Test Run Status: $testRunStatus Test Result: $($result.testResult)"
             echo "*** Portal URL: $($result.portalUrl)"

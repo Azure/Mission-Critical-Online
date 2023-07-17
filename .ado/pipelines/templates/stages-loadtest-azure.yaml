@@ -50,7 +50,8 @@ stages:
         customPrefix:              '${{ parameters.customPrefix }}'
         environment:               '$(environment)'
         customAttributes:          '-var=queued_by="$(Build.QueuedBy)"
-                                    -var=branch="$(sourceBranch)"'
+                                    -var=branch="$(sourceBranch)"
+                                    -var=location="$(azureLoadTestLocation)"'
 
     # Parsing the Terraform output for the MALT service deployment
     - template: steps-parse-terraform-output.yaml
@@ -312,4 +313,5 @@ stages:
           terraformStorageResourceGroupName: '$(terraformResourceGroup)'
           terraformStateFilename:     'terraform-azurelt-${{ parameters.customPrefix }}.state'
           terraformWorkingDirectory:  '${{ parameters.terraformWorkingDirectory }}'
-          customAttributes:           '-var=prefix="${{ parameters.customPrefix }}"'
+          customAttributes:           '-var=prefix="${{ parameters.customPrefix }}"
+                                      -var=location="$(azureLoadTestLocation)"'

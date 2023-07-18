@@ -121,8 +121,8 @@ stages:
         arguments:
           -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
           -apiVersion "$(azureLoadTestApiVersion)" `
-          -loadTestDisplayName "$(get-date -AsUTC -f "yyyy-MM-dd HH:ss") load test for build $(Build.BuildId)" `
-          -loadTestDescription "Pipeline-embedded load test for $(Build.BuildId) ($(get-date -AsUTC -f "yyyy-MM-dd HH:ss"))" `
+          -loadTestDisplayName "$(get-date -AsUTC -f "yyyy-MM-ddTHH:mm:ssZ") load test for build $(Build.BuildId)" `
+          -loadTestDescription "Pipeline-embedded load test for $(Build.BuildId) ($(get-date -AsUTC -f "yyyy-MM-ddTHH:mm:ssZ"))" `
           -loadTestTargetUrl "$(azureLoadTestTargetFQDN)" `
           -loadTestUserThreads "$(azureLoadTestUserThreads)" `
           -loadTestDurationSeconds "$(azureLoadTestDurationSeconds)" `
@@ -188,7 +188,7 @@ stages:
             -loadTestId "$(loadTestId)" `
             -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
             -apiVersion "$(azureLoadTestApiVersion)" `
-            -testRunName "$(get-date -f "yyyy-MM-dd hh:ss") Load Test run triggered by ADO" `
+            -testRunName "$(get-date -f "yyyy-MM-ddTHH:mm:ssZ") Load Test run triggered by ADO" `
             -testRunDescription "Pipeline executed load test run" `
             -pipeline $true `
             -verbose:$true

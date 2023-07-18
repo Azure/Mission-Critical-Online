@@ -1,4 +1,3 @@
-# loadtest-delete.ps1 | Delete a load test
 param
 (
   [Parameter(Mandatory=$true)]
@@ -9,20 +8,26 @@ param
   [string] $apiEndpoint,
 
   # optional - load test data plane api version
-  [string] $apiVersion = "2023-04-01-preview"
+  [string] $apiVersion = "2023-04-01-preview",
+
+  [string] $testRunId
 )
 
-if (!$loadTestId) {
-  throw "ERROR - Parameter loadTestId is required and cannot be empty."
-}
+. "$PSScriptRoot/common.ps1"
 
-. ./common.ps1
+$urlRoot = "https://" + $apiEndpoint + "/test-runs/" + $testRunId + ":stop"
 
-$urlRoot = "https://{0}/tests/{1}" -f $apiEndpoint,$loadTestId
+# Following is to get Invoke-RestMethod to work
+$url = $urlRoot + "?api-version=" + $apiVersion
 
-az rest --url $urlRoot `
-  --method DELETE `
-  --skip-authorization-header `
-  --headers "$accessTokenHeader" `
-  --url-parameters testId="$loadTestId" api-version="$apiVersion" `
-  $verbose
+# Secure string to use access token with Invoke-RestMethod in Powershell
+$accessTokenSecure = ConvertTo-SecureString -String $accessToken -AsPlainText -Force
+
+Invoke-RestMethod `
+  -Uri $url `
+  -Method POST `
+  -Authentication Bearer `
+  -Token $accessTokenSecure `
+  -Verbose:$verbose
+
+Remove-Item $accessTokenFileName

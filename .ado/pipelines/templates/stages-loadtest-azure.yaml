@@ -233,6 +233,7 @@ stages:
 
               if($totalTime -gt ($timeoutMinutes * 60)) 
               {
+                echo "*** Test run $(testRunId) did not finish in $timeoutMinutes minutes. Canceling test run..."
                 # Stop run
                 $(System.DefaultWorkingDirectory)/src/testing/loadtest-azure/scripts/loadtest-stop.ps1 `
                           -apiEndpoint "$(azureLoadTestDataPlaneURI)" `

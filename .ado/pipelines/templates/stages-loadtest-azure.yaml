@@ -188,7 +188,7 @@ stages:
             -loadTestId "$(loadTestId)" `
             -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
             -apiVersion "$(azureLoadTestApiVersion)" `
-            -testRunName "$(get-date -f "yyyy-MM-ddTHH:mm:ssZ") Load Test run triggered by ADO" `
+            -testRunName "$(get-date -f "yyyy-MM-ddTHH:mm:ssZ") run triggered by ADO" `
             -testRunDescription "Pipeline executed load test run" `
             -pipeline $true `
             -verbose:$true

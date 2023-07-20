@@ -9,20 +9,18 @@ param
   [string] $apiEndpoint,
 
   # optional - load test data plane api version
-  [string] $apiVersion = "2022-06-01-preview",
+  [string] $apiVersion = "2023-04-01-preview",
 
   # optional - request an individual file via its fileId
   [string] $fileId,
 
   # optional - keep access token when used embedded
-  [bool] $keepToken = $false,
-
-  [int] $maxPageSize
+  [bool] $keepToken = $false
 )
 
 . "$PSScriptRoot/common.ps1"
 
-$urlRoot = "https://{0}/loadtests/{1}/files" -f $apiEndpoint, $loadTestId
+$urlRoot = "https://{0}/tests/{1}/files" -f $apiEndpoint, $loadTestId
 
 if ($fileId) {
   $urlRoot = "{0}/{1}" -f $urlRoot,$fileId
@@ -32,7 +30,7 @@ az rest --url $urlRoot `
   --method GET `
   --skip-authorization-header `
   --headers ('@' + $accessTokenFileName) `
-  --url-parameters api-version=$apiVersion maxPageSize=$maxPageSize `
+  --url-parameters api-version=$apiVersion `
   $verbose --output json | convertFrom-Json
 
 if (!$keepToken) {

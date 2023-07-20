@@ -15,7 +15,7 @@ param
 
 . "$PSScriptRoot/common.ps1"
 
-$urlRoot = "https://{0}/test-runs/{1}/clientMetrics" -f $apiEndpoint, $testRunId
+$urlRoot = "https://" + $apiEndpoint + "/test-runs/" + $testRunId + ":stop"
 
 # Following is to get Invoke-RestMethod to work
 $url = $urlRoot + "?api-version=" + $apiVersion
@@ -25,7 +25,7 @@ $accessTokenSecure = ConvertTo-SecureString -String $accessToken -AsPlainText -F
 
 Invoke-RestMethod `
   -Uri $url `
-  -Method GET `
+  -Method POST `
   -Authentication Bearer `
   -Token $accessTokenSecure `
   -Verbose:$verbose

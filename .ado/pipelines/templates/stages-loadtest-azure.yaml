@@ -50,7 +50,8 @@ stages:
         customPrefix:              '${{ parameters.customPrefix }}'
         environment:               '$(environment)'
         customAttributes:          '-var=queued_by="$(Build.QueuedBy)"
-                                    -var=branch="$(sourceBranch)"'
+                                    -var=branch="$(sourceBranch)"
+                                    -var=location="$(azureLoadTestLocation)"'
 
     # Parsing the Terraform output for the MALT service deployment
     - template: steps-parse-terraform-output.yaml
@@ -120,8 +121,8 @@ stages:
         arguments:
           -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
           -apiVersion "$(azureLoadTestApiVersion)" `
-          -loadTestDisplayName "$(get-date -f "yyyy-MM-dd hh:ss") load test for build $(Build.BuildId)" `
-          -loadTestDescription "Pipeline-embedded load test for $(Build.BuildId) ($(get-date -f "dd/MM/yyyy hh:ss"))" `
+          -loadTestDisplayName "Load test run for build $(Build.BuildId)" `
+          -loadTestDescription "Pipeline-embedded load test for $(Build.BuildId) ($(get-date -AsUTC -f "yyyy-MM-ddTHH:mm:ssZ"))" `
           -loadTestTargetUrl "$(azureLoadTestTargetFQDN)" `
           -loadTestUserThreads "$(azureLoadTestUserThreads)" `
           -loadTestDurationSeconds "$(azureLoadTestDurationSeconds)" `
@@ -149,13 +150,13 @@ stages:
             foreach($stamp in $releaseUnitInfraDeployOutput.stamp_properties.value) {
               echo "**************************** REGION: $($stamp.location) ****************************"
 
+              echo "*** Adding $($stamp.aks_cluster_id) as app component"
+
               ./src/testing/loadtest-azure/scripts/appcomponents-add-to-loadtest.ps1 `
                 -loadTestId "$(loadTestId)" `
                 -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
                 -apiVersion "$(azureLoadTestApiVersion)" `
                 -resourceId "$($stamp.aks_cluster_id)"
-
-              echo "*** Adding $($stamp.aks_cluster_id)"
             }
 
       # upload a jmx file for the previously created azure load test with an auto-generated testFileId
@@ -177,7 +178,7 @@ stages:
 
       # start azure load test
       - task: AzureCLI@2
-        displayName: 'Run Azure Load Test'
+        displayName: 'Start Azure Load Test'
         inputs:
           azureSubscription: '$(azureServiceConnection)'
           scriptType: pscore
@@ -187,9 +188,8 @@ stages:
             -loadTestId "$(loadTestId)" `
             -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
             -apiVersion "$(azureLoadTestApiVersion)" `
-            -testRunName "$(get-date -f "yyyy-MM-dd hh:ss") Load Test run triggered by ADO" `
+            -testRunName "$(get-date -f "yyyy-MM-ddTHH:mm:ssZ") run triggered by ADO" `
             -testRunDescription "Pipeline executed load test run" `
-            -testRunVUsers "$(azureLoadTestVUsers)" `
             -pipeline $true `
             -verbose:$true
 
@@ -203,9 +203,18 @@ stages:
           scriptLocation: inlineScript
           inlineScript: |
 
+            # set retry wait time in seconds
+            $retryWaitSeconds = 90
+
+            # set timeout in minutes
+            $timeoutMinutes = 45
+
+            #create a variable to sum up time in seconds
+            $totalTime = 0
+
             do {
-              echo "*** Waiting additional 90 seconds for the load test run to complete.."
-              start-sleep -seconds 90
+              echo "*** Waiting additional $retryWaitSeconds seconds for the load test run to complete.."
+              start-sleep -seconds $retryWaitSeconds
               $result = $(System.DefaultWorkingDirectory)/src/testing/loadtest-azure/scripts/loadtest-get-run.ps1 `
                           -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
                           -apiVersion "$(azureLoadTestApiVersion)" `
@@ -217,16 +226,26 @@ stages:
                 throw "*** ERROR: Test run $(testRunId) ended in $($result.status) state."
               } else {
                 # test is still running
-                echo "*** Test Run $(testRunId) is in status $testRunStatus"
+                echo "*** Test Run $(testRunId) is in status $testRunStatus Test Result: $($result.testResult)"
               }
 
-              $resultUrl = ($result).testArtifacts.outputArtifacts.resultUrl.url
-              $logsUrl = ($result).testArtifacts.outputArtifacts.logsUrl.url
+              $totalTime += $retryWaitSeconds
 
-              # todo - timeout?
-            } while ($result.status -ne "DONE")
+              if($totalTime -gt ($timeoutMinutes * 60)) 
+              {
+                echo "*** Test run $(testRunId) did not finish in $timeoutMinutes minutes. Canceling test run..."
+                # Stop run
+                $(System.DefaultWorkingDirectory)/src/testing/loadtest-azure/scripts/loadtest-stop.ps1 `
+                          -apiEndpoint "$(azureLoadTestDataPlaneURI)" `
+                          -apiVersion "$(azureLoadTestApiVersion)" `
+                          -testRunId "$(testRunId)"
+                throw "*** ERROR: Test run $(testRunId) did not finish in $timeoutMinutes minutes. Test Run Status: $testRunStatus Test Result: $($result.testResult)"
+              }
 
-            echo "*** Test Run $(testRunId) was completed. Test Run Status: $testRunStatus Test Status: $($result.testResult)"
+              # Wait until test is done and the rest result (evaluation of the test criteria is done)
+            } while ($result.status -ne "DONE" -or $result.testResult -eq "NOT_APPLICABLE")
+
+            echo "*** Test Run $(testRunId) was completed. Test Run Status: $testRunStatus Test Result: $($result.testResult)"
             echo "*** Portal URL: $($result.portalUrl)"
 
             # throw an error when testResult is FAILED
@@ -235,7 +254,7 @@ stages:
             }
 
       - task: AzureCLI@2
-        displayName: 'RESULTS: Download and convert JMeter results'
+        displayName: 'RESULTS: Download Load Test results'
         condition: succeeded()
         inputs:
           azureSubscription: $(azureServiceConnection)
@@ -252,19 +271,18 @@ stages:
                 -apiVersion "$(azureLoadTestApiVersion)" `
                 -testRunId "$(testRunId)"
 
-              $resultUrl = ($result).testArtifacts.outputArtifacts.resultUrl.url
-              $logsUrl = ($result).testArtifacts.outputArtifacts.logsUrl.url
+              $resultUrl = ($result).testArtifacts.outputArtifacts.resultFileInfo.url
+              $logsUrl = ($result).testArtifacts.outputArtifacts.logsFileInfo.url
 
-              if ( (!$resultUrl) -and (!$logsUrl) ) {
+              if ( (!$resultUrl) -or (!$logsUrl) ) {
                 echo "*** Either resultUrl ($resultUrl) or logsUrl ($logsUrl) is empty. Retry $i/3"
                 Start-Sleep -seconds 15
               } else {
                 echo "*** Received resultUrl ($resultUrl) and logsUrl ($logsUrl)"
-                $i=3 # set to 3 to end the loop
+                $i = 3 # set to 3 to end the loop
               }
-
               $i++
-            } while ( ($i -le 3) -and (($logsUrl) -and ($resultUrl)) )
+            } while ( $i -le 3 )
 
             if ( ($resultUrl) -and ($logsUrl) ) {
               New-Item -Path results -ItemType "directory" -Force
@@ -276,20 +294,22 @@ stages:
               throw "*** ERROR: Either logsUrl ($logsUrl) or resultUrl ($resultUrl) is empty."
             }
 
-            #wget https://raw.githubusercontent.com/Azure-Samples/jmeter-aci-terraform/main/scripts/jtl_junit_converter.py -O $(System.DefaultWorkingDirectory)/junit-converter.py
+            # Conversion of JMeter results to JUnit format currently not being used due to long runtime duration of the script
+            #
+            # wget https://raw.githubusercontent.com/Azure-Samples/jmeter-aci-terraform/main/scripts/jtl_junit_converter.py -O $(System.DefaultWorkingDirectory)/junit-converter.py
 
-            if (Test-Path results/results.zip) {
-              Expand-Archive -Path results/results.zip -DestinationPath results
+            # if (Test-Path results/results.zip) {
+            #   Expand-Archive -Path results/results.zip -DestinationPath results
 
-              # merge multiple csv files
-              # Get-ChildItem -Filter results/*.csv | Import-Csv | Export-Csv results/testreport.csv -NoTypeInformation -Append
+            #   # merge multiple csv files
+            #   Get-ChildItem -Filter results/*.csv | Import-Csv | Export-Csv results/testreport.csv -NoTypeInformation -Append
 
-              #$JMETER_RESULTS="results/testreport.csv"
-              #$JUNIT_RESULTS="output.xml"
-              #python3 junit-converter.py $JMETER_RESULTS $JUNIT_RESULTS
-            } else {
-              echo "Skipping result data conversion. results.zip was not found."
-            }
+            #   $JMETER_RESULTS="results/testreport.csv"
+            #   $JUNIT_RESULTS="output.xml"
+            #   python3 junit-converter.py $JMETER_RESULTS $JUNIT_RESULTS
+            # } else {
+            #   echo "Skipping result data conversion. results.zip was not found."
+            # }
             
         
       - task: PublishTestResults@2
@@ -317,4 +337,5 @@ stages:
           terraformStorageResourceGroupName: '$(terraformResourceGroup)'
           terraformStateFilename:     'terraform-azurelt-${{ parameters.customPrefix }}.state'
           terraformWorkingDirectory:  '${{ parameters.terraformWorkingDirectory }}'
-          customAttributes:           '-var=prefix="${{ parameters.customPrefix }}"'
+          customAttributes:           '-var=prefix="${{ parameters.customPrefix }}"
+                                      -var=location="$(azureLoadTestLocation)"'

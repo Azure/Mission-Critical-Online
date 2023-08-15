@@ -11,11 +11,6 @@ resource "azurerm_monitor_diagnostic_setting" "diag_settings_afd" {
 
     content {
       category = entry.value
-
-      retention_policy {
-        enabled = true
-        days    = 30
-      }
     }
   }
 
@@ -26,11 +21,6 @@ resource "azurerm_monitor_diagnostic_setting" "diag_settings_afd" {
     content {
       category = entry.value
       enabled  = true
-
-      retention_policy {
-        enabled = true
-        days    = 30
-      }
     }
   }
 }
@@ -49,11 +39,6 @@ resource "azurerm_monitor_diagnostic_setting" "acr" {
 
     content {
       category = entry.value
-
-      retention_policy {
-        enabled = true
-        days    = 30
-      }
     }
   }
 
@@ -64,11 +49,6 @@ resource "azurerm_monitor_diagnostic_setting" "acr" {
     content {
       category = entry.value
       enabled  = true
-
-      retention_policy {
-        enabled = true
-        days    = 30
-      }
     }
   }
 }

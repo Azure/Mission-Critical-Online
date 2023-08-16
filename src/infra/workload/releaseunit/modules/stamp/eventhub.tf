@@ -47,11 +47,6 @@ resource "azurerm_monitor_diagnostic_setting" "eventhub" {
 
     content {
       category = entry.value
-
-      retention_policy {
-        enabled = true
-        days    = 30
-      }
     }
   }
 
@@ -62,11 +57,6 @@ resource "azurerm_monitor_diagnostic_setting" "eventhub" {
     content {
       category = entry.value
       enabled  = true
-
-      retention_policy {
-        enabled = true
-        days    = 30
-      }
     }
   }
 }

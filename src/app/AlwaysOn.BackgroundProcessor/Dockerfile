@@ -4,7 +4,7 @@ WORKDIR /app
 COPY . ./
 RUN dotnet publish AlwaysOn.BackgroundProcessor -c Release -o AlwaysOn.BackgroundProcessor/out
 
-FROM mcr.microsoft.com/dotnet/aspnet:6.0
+FROM mcr.microsoft.com/dotnet/aspnet:7.0
 
 # Update and upgrade
 RUN apt-get update && apt-get upgrade -y \

@@ -59,7 +59,8 @@ resource "azurerm_kubernetes_cluster" "stamp" {
 
   # Enable and configure the Azure Monitor (container insights) addon for AKS
   oms_agent {
-    log_analytics_workspace_id = data.azurerm_log_analytics_workspace.stamp.id
+    log_analytics_workspace_id      = data.azurerm_log_analytics_workspace.stamp.id
+    msi_auth_for_monitoring_enabled = true
   }
 
   # Enable and configure the Azure KeyVault Secrets Provider addon for AKS

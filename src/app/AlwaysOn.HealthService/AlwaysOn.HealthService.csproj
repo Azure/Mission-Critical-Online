@@ -9,7 +9,7 @@
   <ItemGroup>
     <PackageReference Include="Azure.Identity" Version="1.9.0" />
     <PackageReference Include="Azure.Monitor.Query" Version="1.2.0" />
-    <PackageReference Include="Azure.Storage.Blobs" Version="12.16.0" />
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.17.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0" />
     <PackageReference Include="Serilog.AspNetCore" Version="7.0.0" />
     <PackageReference Include="Serilog.Sinks.ApplicationInsights" Version="4.0.0" />

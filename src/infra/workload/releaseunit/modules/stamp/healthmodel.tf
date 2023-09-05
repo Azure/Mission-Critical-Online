@@ -24,7 +24,8 @@ resource "azapi_resource" "azure_health_model" {
           "impact": "Standard",
           "childNodeIds": [
             "1",
-            "2"
+            "2",
+            "3"
           ],
           "visual": {
             "x": 345,
@@ -39,61 +40,115 @@ resource "azapi_resource" "azure_health_model" {
             "credentialId": "SystemAssigned",
             "childNodeIds": [],
             "queries": [
-            {
-                "queryType": "ResourceMetricsQuery",
-                "metricName": "node_cpu_usage_percentage",
-                "metricNamespace": "Microsoft.ContainerService/managedClusters",
-                "aggregationType": "Average",
-                "queryId": "42b90d7a-ee40-4532-908b-e3c340268169",
-                "degradedThreshold": "1",
-                "degradedOperator": "GreaterThan",
-                "unhealthyThreshold": "85",
-                "unhealthyOperator": "GreaterThan",
-                "timeGrain": "PT30M",
-                "dataUnit": "Percent",
-                "enabledState": "Enabled"
-            },
-            {
-                "queryType": "ResourceMetricsQuery",
-                "metricName": "node_disk_usage_percentage",
-                "metricNamespace": "Microsoft.ContainerService/managedClusters",
-                "aggregationType": "Average",
-                "queryId": "81cac18b-ed56-450b-857a-d78c6a62b9c8",
-                "degradedThreshold": "75",
-                "degradedOperator": "GreaterThan",
-                "unhealthyThreshold": "90",
-                "unhealthyOperator": "GreaterThan",
-                "timeGrain": "PT30M",
-                "dataUnit": "Percent",
-                "enabledState": "Enabled"
-            },
+                {
+                    "queryType": "ResourceMetricsQuery",
+                    "metricName": "node_cpu_usage_percentage",
+                    "metricNamespace": "Microsoft.ContainerService/managedClusters",
+                    "aggregationType": "Average",
+                    "queryId": "42b90d7a-ee40-4532-908b-e3c340268169",
+                    "degradedThreshold": "1",
+                    "degradedOperator": "GreaterThan",
+                    "unhealthyThreshold": "85",
+                    "unhealthyOperator": "GreaterThan",
+                    "timeGrain": "PT30M",
+                    "dataUnit": "Percent",
+                    "enabledState": "Enabled"
+                },
+                {
+                    "queryType": "ResourceMetricsQuery",
+                    "metricName": "node_disk_usage_percentage",
+                    "metricNamespace": "Microsoft.ContainerService/managedClusters",
+                    "aggregationType": "Average",
+                    "queryId": "81cac18b-ed56-450b-857a-d78c6a62b9c8",
+                    "degradedThreshold": "75",
+                    "degradedOperator": "GreaterThan",
+                    "unhealthyThreshold": "90",
+                    "unhealthyOperator": "GreaterThan",
+                    "timeGrain": "PT30M",
+                    "dataUnit": "Percent",
+                    "enabledState": "Enabled"
+                }
+            ],
             "impact": "Standard"
         },
         {
             "nodeType": "AzureResourceNode",
             "azureResourceId": "${azurerm_eventhub_namespace.stamp.id}",
-            "nodeId": "565e7539-6457-48bb-accc-b6d6b5ca1b72",
+            "nodeId": "2",
             "name": "${azurerm_eventhub_namespace.stamp.name}",
             "credentialId": "SystemAssigned",
             "childNodeIds": [],
             "queries": [
                 {
                     "queryType": "ResourceMetricsQuery",
-                    "metricName": "ServiceAvailability",
-                    "metricNamespace": "Microsoft.DocumentDB/databaseAccounts",
+                    "metricName": "ServerErrors",
+                    "metricNamespace": "Microsoft.EventHub/namespaces",
                     "aggregationType": "Average",
-                    "queryId": "bdce05f3-40c7-4dd1-8381-934940cb9e76",
-                    "degradedThreshold": "100",
-                    "degradedOperator": "LowerThan",
-                    "unhealthyThreshold": "95",
-                    "unhealthyOperator": "LowerThan",
+                    "queryId": "95936847-5b8e-4543-8ddd-fd08cc406615",
+                    "degradedThreshold": "1",
+                    "degradedOperator": "GreaterThan",
+                    "unhealthyThreshold": "10",
+                    "unhealthyOperator": "GreaterThan",
                     "timeGrain": "PT1H",
-                    "dataUnit": "Percent",
+                    "dataUnit": "Count",
                     "enabledState": "Enabled"
                 }
             ],
             "impact": "Standard"
-        }
+        },
+        {
+            "nodeType": "AzureResourceNode",
+            "azureResourceId": "${azurerm_key_vault.stamp.id}",
+            "nodeId": "3",
+            "name": "KeyVault",
+            "credentialId": "SystemAssigned",
+            "childNodeIds": [],
+            "queries": [
+                {
+                    "queryType": "ResourceMetricsQuery",
+                    "metricName": "Availability",
+                    "metricNamespace": "Microsoft.KeyVault/vaults",
+                    "aggregationType": "Average",
+                    "queryId": "d6f7519f-f73c-4690-80a6-6ae6fcbece8d",
+                    "degradedThreshold": "99",
+                    "degradedOperator": "LowerThan",
+                    "unhealthyThreshold": "95",
+                    "unhealthyOperator": "LowerThan",
+                    "timeGrain": "PT30M",
+                    "dataUnit": "Percent",
+                    "enabledState": "Enabled"
+                },
+                {
+                    "queryType": "ResourceMetricsQuery",
+                    "metricName": "SaturationShoebox",
+                    "metricNamespace": "Microsoft.KeyVault/vaults",
+                    "aggregationType": "Average",
+                    "queryId": "511677bf-2c92-4da7-93c6-ad6ede24e500",
+                    "degradedThreshold": "25",
+                    "degradedOperator": "GreaterThan",
+                    "unhealthyThreshold": "50",
+                    "unhealthyOperator": "GreaterThan",
+                    "timeGrain": "PT30M",
+                    "dataUnit": "Percent",
+                    "enabledState": "Enabled"
+                },
+                {
+                    "queryType": "ResourceMetricsQuery",
+                    "metricName": "ServiceApiLatency",
+                    "metricNamespace": "Microsoft.KeyVault/vaults",
+                    "aggregationType": "Average",
+                    "queryId": "d66c380b-ac99-4ab6-b3b5-1c62088f6e2c",
+                    "degradedThreshold": "30",
+                    "degradedOperator": "GreaterThan",
+                    "unhealthyThreshold": "60",
+                    "unhealthyOperator": "GreaterThan",
+                    "timeGrain": "PT15M",
+                    "dataUnit": "MilliSeconds",
+                    "enabledState": "Enabled"
+                }
+            ],
+            "impact": "Standard"
+        },
       ]
     }
   }

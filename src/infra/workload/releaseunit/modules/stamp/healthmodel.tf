@@ -148,7 +148,7 @@ resource "azapi_resource" "azure_health_model" {
                 }
             ],
             "impact": "Standard"
-        },
+        }
       ]
     }
   }

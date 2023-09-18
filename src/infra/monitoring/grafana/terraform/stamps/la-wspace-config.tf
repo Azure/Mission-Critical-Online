@@ -7,18 +7,12 @@ resource "azurerm_monitor_diagnostic_setting" "appservice" {
   target_resource_id         = azurerm_linux_web_app.appservice[each.key].id
   log_analytics_workspace_id = azurerm_log_analytics_workspace.log_analytics_workspace[each.key].id
 
-  dynamic "log" {
+  dynamic "enabled_log" {
     iterator = entry
     for_each = data.azurerm_monitor_diagnostic_categories.appservice[each.key].log_category_types
 
     content {
       category = entry.value
-      enabled  = true
-
-      retention_policy {
-        enabled = true
-        days    = 30
-      }
     }
   }
 
@@ -28,12 +22,6 @@ resource "azurerm_monitor_diagnostic_setting" "appservice" {
 
     content {
       category = entry.value
-      enabled  = true
-
-      retention_policy {
-        enabled = true
-        days    = 30
-      }
     }
   }
 }
@@ -45,18 +33,12 @@ resource "azurerm_monitor_diagnostic_setting" "pgprimary" {
   target_resource_id         = azurerm_postgresql_server.pgprimary.id
   log_analytics_workspace_id = azurerm_log_analytics_workspace.log_analytics_workspace[0].id
 
-  dynamic "log" {
+  dynamic "enabled_log" {
     iterator = entry
     for_each = data.azurerm_monitor_diagnostic_categories.pgprimary.log_category_types
 
     content {
       category = entry.value
-      enabled  = true
-
-      retention_policy {
-        enabled = true
-        days    = 30
-      }
     }
   }
 
@@ -67,11 +49,6 @@ resource "azurerm_monitor_diagnostic_setting" "pgprimary" {
     content {
       category = entry.value
       enabled  = true
-
-      retention_policy {
-        enabled = true
-        days    = 30
-      }
     }
   }
 }
@@ -83,18 +60,12 @@ resource "azurerm_monitor_diagnostic_setting" "pgreplica" {
   target_resource_id         = azurerm_postgresql_server.pgreplica[each.key].id
   log_analytics_workspace_id = azurerm_log_analytics_workspace.log_analytics_workspace[each.key].id
 
-  dynamic "log" {
+  dynamic "enabled_log" {
     iterator = entry
     for_each = data.azurerm_monitor_diagnostic_categories.pgreplica[each.key].log_category_types
 
     content {
       category = entry.value
-      enabled  = true
-
-      retention_policy {
-        enabled = true
-        days    = 30
-      }
     }
   }
 
@@ -105,11 +76,6 @@ resource "azurerm_monitor_diagnostic_setting" "pgreplica" {
     content {
       category = entry.value
       enabled  = true
-
-      retention_policy {
-        enabled = true
-        days    = 30
-      }
     }
   }
 }
@@ -122,18 +88,12 @@ resource "azurerm_monitor_diagnostic_setting" "vnet" {
   target_resource_id         = azurerm_virtual_network.vnet[each.key].id
   log_analytics_workspace_id = azurerm_log_analytics_workspace.log_analytics_workspace[each.key].id
 
-  dynamic "log" {
+  dynamic "enabled_log" {
     iterator = entry
     for_each = data.azurerm_monitor_diagnostic_categories.vnet[each.key].log_category_types
 
     content {
       category = entry.value
-      enabled  = true
-
-      retention_policy {
-        enabled = true
-        days    = 30
-      }
     }
   }
 
@@ -144,11 +104,6 @@ resource "azurerm_monitor_diagnostic_setting" "vnet" {
     content {
       category = entry.value
       enabled  = true
-
-      retention_policy {
-        enabled = true
-        days    = 30
-      }
     }
   }
 }
@@ -161,18 +116,12 @@ resource "azurerm_monitor_diagnostic_setting" "asp" {
   target_resource_id         = azurerm_service_plan.asp[each.key].id
   log_analytics_workspace_id = azurerm_log_analytics_workspace.log_analytics_workspace[each.key].id
 
-  dynamic "log" {
+  dynamic "enabled_log" {
     iterator = entry
     for_each = data.azurerm_monitor_diagnostic_categories.asp[each.key].log_category_types
 
     content {
       category = entry.value
-      enabled  = true
-
-      retention_policy {
-        enabled = true
-        days    = 30
-      }
     }
   }
 
@@ -183,11 +132,6 @@ resource "azurerm_monitor_diagnostic_setting" "asp" {
     content {
       category = entry.value
       enabled  = true
-
-      retention_policy {
-        enabled = true
-        days    = 30
-      }
     }
   }
 }
@@ -200,18 +144,12 @@ resource "azurerm_monitor_diagnostic_setting" "akv" {
   target_resource_id         = azurerm_key_vault.stamp[each.key].id
   log_analytics_workspace_id = azurerm_log_analytics_workspace.log_analytics_workspace[each.key].id
 
-  dynamic "log" {
+  dynamic "enabled_log" {
     iterator = entry
     for_each = data.azurerm_monitor_diagnostic_categories.akv[each.key].log_category_types
 
     content {
       category = entry.value
-      enabled  = true
-
-      retention_policy {
-        enabled = true
-        days    = 30
-      }
     }
   }
 
@@ -222,11 +160,6 @@ resource "azurerm_monitor_diagnostic_setting" "akv" {
     content {
       category = entry.value
       enabled  = true
-
-      retention_policy {
-        enabled = true
-        days    = 30
-      }
     }
   }
 }

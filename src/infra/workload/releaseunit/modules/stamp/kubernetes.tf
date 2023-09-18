@@ -6,9 +6,11 @@ resource "azurerm_kubernetes_cluster" "stamp" {
   dns_prefix          = "${local.prefix}${var.location}aks"
   kubernetes_version  = var.aks_kubernetes_version
   node_resource_group = "MC_${local.prefix}-stamp-${var.location}-aks-rg" # we manually specify the naming of the managed resource group to have it controlled and consistent
-  sku_tier            = "Standard"                                            # Opt-in for AKS Uptime SLA
+  sku_tier            = "Standard"                                        # Opt-in for AKS Uptime SLA
 
   automatic_channel_upgrade = "node-image"
+
+  monitor_metrics {}
 
   oidc_issuer_enabled       = true
   workload_identity_enabled = true
@@ -57,7 +59,8 @@ resource "azurerm_kubernetes_cluster" "stamp" {
 
   # Enable and configure the Azure Monitor (container insights) addon for AKS
   oms_agent {
-    log_analytics_workspace_id = data.azurerm_log_analytics_workspace.stamp.id
+    log_analytics_workspace_id      = data.azurerm_log_analytics_workspace.stamp.id
+    msi_auth_for_monitoring_enabled = true
   }
 
   # Enable and configure the Azure KeyVault Secrets Provider addon for AKS
@@ -114,18 +117,12 @@ resource "azurerm_monitor_diagnostic_setting" "aks" {
   target_resource_id         = azurerm_kubernetes_cluster.stamp.id
   log_analytics_workspace_id = data.azurerm_log_analytics_workspace.stamp.id
 
-  dynamic "log" {
+  dynamic "enabled_log" {
     iterator = entry
     for_each = data.azurerm_monitor_diagnostic_categories.aks.log_category_types
 
     content {
       category = entry.value
-      enabled  = true
-
-      retention_policy {
-        enabled = true
-        days    = 30
-      }
     }
   }
 
@@ -136,11 +133,6 @@ resource "azurerm_monitor_diagnostic_setting" "aks" {
     content {
       category = entry.value
       enabled  = true
-
-      retention_policy {
-        enabled = true
-        days    = 30
-      }
     }
   }
 }

@@ -120,18 +120,12 @@ resource "azurerm_monitor_diagnostic_setting" "cosmosdb" {
   log_analytics_workspace_id     = azurerm_log_analytics_workspace.global.id
   log_analytics_destination_type = "AzureDiagnostics"
 
-  dynamic "log" {
+  dynamic "enabled_log" {
     iterator = entry
     for_each = data.azurerm_monitor_diagnostic_categories.cosmosdb.log_category_types
 
     content {
       category = entry.value
-      enabled  = true
-
-      retention_policy {
-        enabled = true
-        days    = 30
-      }
     }
   }
 
@@ -142,11 +136,6 @@ resource "azurerm_monitor_diagnostic_setting" "cosmosdb" {
     content {
       category = entry.value
       enabled  = true
-
-      retention_policy {
-        enabled = true
-        days    = 30
-      }
     }
   }
 }

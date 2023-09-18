@@ -9,12 +9,12 @@ param
   [string] $apiEndpoint,
   
   # optional - load test data plane api version
-  [string] $apiVersion = "2022-06-01-preview"
+  [string] $apiVersion = "2023-04-01-preview"
 )
 
 . "$PSScriptRoot/common.ps1"
 
-$urlRoot = "https://{0}/testruns/{1}" -f $apiEndpoint, $testRunId
+$urlRoot = "https://{0}/test-runs/{1}" -f $apiEndpoint, $testRunId
 
 $url = $urlRoot + "?api-version=" + $apiVersion
 

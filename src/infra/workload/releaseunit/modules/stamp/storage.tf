@@ -76,18 +76,12 @@ resource "azurerm_monitor_diagnostic_setting" "storage_public" {
   target_resource_id         = azurerm_storage_account.public.id
   log_analytics_workspace_id = data.azurerm_log_analytics_workspace.stamp.id
 
-  dynamic "log" {
+  dynamic "enabled_log" {
     iterator = entry
     for_each = data.azurerm_monitor_diagnostic_categories.storage_public.log_category_types
 
     content {
       category = entry.value
-      enabled  = true
-
-      retention_policy {
-        enabled = true
-        days    = 30
-      }
     }
   }
 
@@ -98,11 +92,6 @@ resource "azurerm_monitor_diagnostic_setting" "storage_public" {
     content {
       category = entry.value
       enabled  = true
-
-      retention_policy {
-        enabled = true
-        days    = 30
-      }
     }
   }
 }
@@ -116,18 +105,12 @@ resource "azurerm_monitor_diagnostic_setting" "storage_public_blob" {
   target_resource_id         = "${azurerm_storage_account.public.id}/blobServices/default/"
   log_analytics_workspace_id = data.azurerm_log_analytics_workspace.stamp.id
 
-  dynamic "log" {
+  dynamic "enabled_log" {
     iterator = entry
     for_each = data.azurerm_monitor_diagnostic_categories.storage_public_blob.log_category_types
 
     content {
       category = entry.value
-      enabled  = true
-
-      retention_policy {
-        enabled = true
-        days    = 30
-      }
     }
   }
 
@@ -138,11 +121,6 @@ resource "azurerm_monitor_diagnostic_setting" "storage_public_blob" {
     content {
       category = entry.value
       enabled  = true
-
-      retention_policy {
-        enabled = true
-        days    = 30
-      }
     }
   }
 }
@@ -159,18 +137,12 @@ resource "azurerm_monitor_diagnostic_setting" "storage_private" {
   target_resource_id         = azurerm_storage_account.private.id
   log_analytics_workspace_id = data.azurerm_log_analytics_workspace.stamp.id
 
-  dynamic "log" {
+  dynamic "enabled_log" {
     iterator = entry
     for_each = data.azurerm_monitor_diagnostic_categories.storage_private.log_category_types
 
     content {
       category = entry.value
-      enabled  = true
-
-      retention_policy {
-        enabled = true
-        days    = 30
-      }
     }
   }
 
@@ -181,11 +153,6 @@ resource "azurerm_monitor_diagnostic_setting" "storage_private" {
     content {
       category = entry.value
       enabled  = true
-
-      retention_policy {
-        enabled = true
-        days    = 30
-      }
     }
   }
 }
@@ -199,18 +166,12 @@ resource "azurerm_monitor_diagnostic_setting" "storage_private_blob" {
   target_resource_id         = "${azurerm_storage_account.private.id}/blobServices/default/"
   log_analytics_workspace_id = data.azurerm_log_analytics_workspace.stamp.id
 
-  dynamic "log" {
+  dynamic "enabled_log" {
     iterator = entry
     for_each = data.azurerm_monitor_diagnostic_categories.storage_private_blob.log_category_types
 
     content {
       category = entry.value
-      enabled  = true
-
-      retention_policy {
-        enabled = true
-        days    = 30
-      }
     }
   }
 
@@ -221,11 +182,6 @@ resource "azurerm_monitor_diagnostic_setting" "storage_private_blob" {
     content {
       category = entry.value
       enabled  = true
-
-      retention_policy {
-        enabled = true
-        days    = 30
-      }
     }
   }
 }

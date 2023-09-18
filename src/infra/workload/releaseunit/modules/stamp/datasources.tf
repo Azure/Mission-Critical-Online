@@ -5,6 +5,19 @@ data "azurerm_cosmosdb_account" "global" {
   resource_group_name = var.global_resource_group_name
 }
 
+data "azurerm_resource_group" "monitoring" {
+  name = var.monitoring_resource_group_name
+}
+
+# There is no azurerm data source yet for Monitor Workspace (as of June-2023)
+data "azapi_resource" "azure_monitor_workspace" {
+  name      = "${local.global_resource_prefix}-${local.location_short}-amw"
+  type      = "microsoft.monitor/accounts@2023-04-03"
+  parent_id = data.azurerm_resource_group.monitoring.id
+
+  response_export_values = ["*"]
+}
+
 data "azurerm_container_registry" "global" {
   name                = var.acr_name
   resource_group_name = var.global_resource_group_name

@@ -32,7 +32,7 @@ param
   [string] $passFailCriteria,
 
   # optional - load test data plane api version
-  [string] $apiVersion = "2022-06-01-preview",
+  [string] $apiVersion = "2023-04-01-preview",
 
   # optional - expose outputs as pipeline variables
   [bool] $pipeline = $false
@@ -55,13 +55,19 @@ function GetTestBody {
   {
       "displayName": "$loadTestDisplayName",
       "description": "$loadTestDescription",
-      "loadTestConfig": {
+      "loadTestConfiguration": {
           "engineInstances": $engineInstances
       },
       "environmentVariables": {
         "target_url": "$loadTestTargetUrl",
         "threads": $loadTestUserThreads,
         "load_duration_seconds": $loadTestDurationSeconds
+      },
+      "autoStopCriteria": {
+        "autoStopEnabled": false, 
+        "isAutoStopEnabled": false,
+        "errorRate": 90,
+        "errorRateTimeWindow": 60
       }
   }
 "@
@@ -96,7 +102,10 @@ if ($passFailCriteria) {
 
 $body | Out-File $testDataFileName -Encoding utf8
 
-$urlRoot = "https://{0}/loadtests/{1}" -f $apiEndpoint, $loadTestId
+Write-Verbose "*** Test request body"
+$body
+
+$urlRoot = "https://{0}/tests/{1}" -f $apiEndpoint, $loadTestId
 Write-Verbose "*** Load test service data plane: $urlRoot"
 
 # Create a new load test resource or update existing, if loadTestId already exists
@@ -104,9 +113,14 @@ az rest --url $urlRoot `
   --method PATCH `
   --skip-authorization-header `
   --headers ('@' + $accessTokenFileName) "Content-Type=application/merge-patch+json" `
-  --url-parameters testId=$loadTestId api-version=$apiVersion `
+  --url-parameters api-version=$apiVersion `
   --body ('@' + $testDataFileName) `
   --output none $verbose 
+
+if($LastExitCode -ne 0)
+{
+    throw "*** Error on creating load test instance!"
+}
 
 # Outputs and exports for pipeline usage
 if($pipeline) {

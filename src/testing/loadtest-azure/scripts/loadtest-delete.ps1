@@ -9,7 +9,7 @@ param
   [string] $apiEndpoint,
 
   # optional - load test data plane api version
-  [string] $apiVersion = "2022-06-01-preview"
+  [string] $apiVersion = "2023-04-01-preview"
 )
 
 if (!$loadTestId) {
@@ -18,7 +18,7 @@ if (!$loadTestId) {
 
 . ./common.ps1
 
-$urlRoot = "https://{0}/loadtests/{1}" -f $apiEndpoint,$loadTestId
+$urlRoot = "https://{0}/tests/{1}" -f $apiEndpoint,$loadTestId
 
 az rest --url $urlRoot `
   --method DELETE `

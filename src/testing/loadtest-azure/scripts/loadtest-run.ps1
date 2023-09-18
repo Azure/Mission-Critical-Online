@@ -9,7 +9,7 @@ param
   [string] $apiEndpoint,
 
   # optional - load test data plane api version
-  [string] $apiVersion = "2022-06-01-preview",
+  [string] $apiVersion = "2023-04-01-preview",
 
   # Load Test run displayname
   [Parameter(Mandatory=$true)]
@@ -18,8 +18,6 @@ param
   # Load test run description
   [string] $testRunDescription,
   
-  [int] $testRunVUsers = 1,
-
   # optional - expose outputs as pipeline variables
   [bool] $pipeline = $false
 )
@@ -31,18 +29,14 @@ function GetTestRunBody {
     (
         [string] $testId,
         [string] $testRunName,
-        [string] $description,
-        [string] $testRunId,
-        [int] $vusers
+        [string] $description
     )
 
     $result = @"
     {
         "testId": "$testId",
-        "testRunId": "$testRunId",
         "displayName": "$testRunName",
-        "description": "$testRunDescription",
-        "vusers": $vusers
+        "description": "$testRunDescription"
     }
 "@
 
@@ -50,23 +44,20 @@ function GetTestRunBody {
 }
 
 $testRunId = (New-Guid).toString()
-$urlRoot = "https://{0}/testruns/{1}"  -f $apiEndpoint,$testRunId
+$urlRoot = "https://{0}/test-runs/{1}"  -f $apiEndpoint,$testRunId
 Write-Verbose "*** Load test service data plane: $urlRoot"
 
 # Prep load test run body
 $testRunData = GetTestRunBody `
     -testId $loadTestId `
     -testRunName $testRunName `
-    -testRunDescription $testRunDescription `
-    -testRunId $testRunId `
-    -vusers $testRunVUsers
+    -testRunDescription $testRunDescription
 
 # Following is to get Invoke-RestMethod to work
 $url = $urlRoot + "?api-version=" + $apiVersion
 
 $header = @{
     'Content-Type'='application/merge-patch+json'
-    'testRunId'="$testRunId"
 }
 
 # Secure string to use access token with Invoke-RestMethod in Powershell

@@ -255,7 +255,7 @@ resource "azurerm_cdn_frontdoor_firewall_policy" "global" {
 
   managed_rule {
     type    = "Microsoft_DefaultRuleSet"
-    version = "2.0"
+    version = "2.1"
     action  = "Block"
   }
   managed_rule {

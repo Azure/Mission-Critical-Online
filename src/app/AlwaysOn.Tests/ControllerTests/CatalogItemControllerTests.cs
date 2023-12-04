@@ -37,8 +37,8 @@ namespace AlwaysOn.Tests
             var result = await controller.ListCatalogItemsAsync();
 
             // Assert
-            Assert.IsInstanceOf<ActionResult<IEnumerable<CatalogItem>>>(result); // expecting list of CatalogItems
-            Assert.IsInstanceOf<OkObjectResult>(result.Result); // expecting HTTP 200 result
+            Assert.That(result, Is.InstanceOf<ActionResult<IEnumerable<CatalogItem>>>());// expecting list of CatalogItems
+            Assert.That(result.Result, Is.InstanceOf<OkObjectResult>()); // expecting HTTP 200 result
         }
 
         [Test]
@@ -55,8 +55,9 @@ namespace AlwaysOn.Tests
             var result = await controller.ListCatalogItemsAsync();
 
             // Assert
-            Assert.IsInstanceOf<ObjectResult>(result.Result);
-            Assert.AreEqual((int)HttpStatusCode.InternalServerError, ((ObjectResult)result.Result).StatusCode);
+            Assert.That(result.Result, Is.InstanceOf<ObjectResult>());
+
+            Assert.Equals((int)HttpStatusCode.InternalServerError, ((ObjectResult)result.Result).StatusCode);
         }
 
         [Test]
@@ -73,8 +74,8 @@ namespace AlwaysOn.Tests
             var result = await controller.ListCatalogItemsAsync();
 
             // Assert
-            Assert.IsInstanceOf<ObjectResult>(result.Result);
-            Assert.AreEqual((int)HttpStatusCode.ServiceUnavailable, ((ObjectResult)result.Result).StatusCode);
+            Assert.That(result.Result, Is.InstanceOf<ObjectResult>());
+            Assert.Equals((int)HttpStatusCode.ServiceUnavailable, ((ObjectResult)result.Result).StatusCode);
         }
 
         [Test]
@@ -95,7 +96,7 @@ namespace AlwaysOn.Tests
             var result = await controller.DeleteCatalogItemAsync(itemId);
 
             // Assert
-            Assert.IsInstanceOf<ObjectResult>(result);
+            Assert.That(result, Is.InstanceOf<ObjectResult>());
         }
 
         private List<CatalogItem> GetTestCatalogItems()

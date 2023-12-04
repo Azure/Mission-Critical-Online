@@ -57,7 +57,7 @@ namespace AlwaysOn.Tests
             // Assert
             Assert.That(result.Result, Is.InstanceOf<ObjectResult>());
 
-            Assert.Equals((int)HttpStatusCode.InternalServerError, ((ObjectResult)result.Result).StatusCode);
+            Assert.That((int)HttpStatusCode.InternalServerError, Is.EqualTo(((ObjectResult)result.Result)?.StatusCode));
         }
 
         [Test]
@@ -75,7 +75,7 @@ namespace AlwaysOn.Tests
 
             // Assert
             Assert.That(result.Result, Is.InstanceOf<ObjectResult>());
-            Assert.Equals((int)HttpStatusCode.ServiceUnavailable, ((ObjectResult)result.Result).StatusCode);
+            Assert.That((int)HttpStatusCode.ServiceUnavailable, Is.EqualTo(((ObjectResult)result.Result)?.StatusCode));
         }
 
         [Test]

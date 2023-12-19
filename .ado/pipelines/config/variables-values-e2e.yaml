@@ -1,5 +1,5 @@
 # Central configuration settings
-# used for E2E environment pipelines
+# used for E2E environment pipelines - test
 variables:
 
 # Resource prefix for this environment

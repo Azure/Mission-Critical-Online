@@ -4,7 +4,7 @@ variables:
 
 # Resource prefix for this environment
 - name:  'prefix'
-  value: 'mce2e'          # <===== CHANGE THIS! Must not be longer than 6 characters! Needs to be a unique prefix
+  value: 'ldoe2e'          # <===== CHANGE THIS! Must not be longer than 6 characters! Needs to be a unique prefix
 
 # The first value in 'stampLocations' is the primary region used for global services.
 # IMPORTANT! Changing the primary region (first value) is a BREAKING change and will destroy CosmosDB and Front Door.
@@ -15,10 +15,17 @@ variables:
 
 # Terraform state variables
 - name:  'terraformResourceGroup'
-  value: 'terraformstate-rg'      # <===== CHANGE THIS VALUE IF NEEDED
+  value: 'rg-ldemconline'      # <===== CHANGE THIS VALUE IF NEEDED
 - name:  'terraformStorageAccount'
-  value: '$(prefix)tfstatestore'  # Needs to be a globally unique name
+  value: '$(prefix)tfstate'  # Needs to be a globally unique name
 
 # Other settings
 - name:  'contactEmail'
-  value: 'noreply@microsoft.com'  # <===== CHANGE THIS VALUE TO ONE OF YOUR REAL EMAIL ADDRESSES (OR A GROUP)!
+  value: 'chris@lde.bezencon.net'  # <===== CHANGE THIS VALUE TO ONE OF YOUR REAL EMAIL ADDRESSES (OR A GROUP)!
+
+    # Custom DNS name settings
+- name: 'envDnsZoneRG'
+  value: 'rg-mcodns'                         # <===== CHANGE THIS VALUE
+- name: 'envDomainName'
+  value: 'mcoe2e.bezencon.net'     # <===== CHANGE THIS VALUE
+

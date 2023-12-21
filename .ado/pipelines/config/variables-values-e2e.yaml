@@ -11,7 +11,7 @@ variables:
 # Check which regions are valid. There is a list in /src/infra/README.md
 # If you are planning to run Chaos Studio experiments, make sure the first region in the list does support Azure Chaos Studio. Not all regions do yet
 - name: 'stampLocations'
-  value: '["northeurope"]'
+  value: '["northeurope","uksouth"]'
 
 # Terraform state variables
 - name:  'terraformResourceGroup'

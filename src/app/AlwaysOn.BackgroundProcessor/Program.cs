@@ -90,7 +90,7 @@ namespace AlwaysOn.BackgroundProcessor
                 services.AddSingleton<IDatabaseService, CosmosDbService>();
 
                 // Health check / k8s liveness probes. Source: https://stackoverflow.com/a/60722982/1537195
-                services.AddHealthChecks();
+                services.AddHealthChecks().AddCheck("Sample", () => HealthCheckResult.Healthy()); // since dotnet8, at least some health check has to be registered for the checks to be executed https://github.com/dotnet/aspnetcore/issues/52087
                 services.AddSingleton<IHealthCheckPublisher, HealthCheckPublisher>();
                 services.Configure<HealthCheckPublisherOptions>(options =>
                 {

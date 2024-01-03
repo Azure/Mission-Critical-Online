@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using System;
@@ -63,7 +64,8 @@ namespace AlwaysOn.CatalogService
 
             services.AddSingleton<AppInsightsCosmosRequestHandler>();
 
-            services.AddHealthChecks();// Adds a simple liveness probe HTTP endpoint, path mapping happens further below
+            // Adds a simple liveness probe HTTP endpoint, path mapping happens further below
+            services.AddHealthChecks().AddCheck("Sample", () => HealthCheckResult.Healthy()); // since dotnet8, at least some health check has to be registered for the checks to be executed https://github.com/dotnet/aspnetcore/issues/52087
 
             services.AddSingleton<IDatabaseService, CosmosDbService>();
 

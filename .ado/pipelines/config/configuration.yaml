@@ -9,7 +9,7 @@ variables:
 - name: 'kubernetesVersion'   # kubernetes version used for aks clusters
   value: '1.27.3'
 - name: 'helmVersion'         # helm package manager version
-  value: 'v3.13.1'
+  value: 'v3.14.0'
 - name: 'ingressNginxVersion' # nginx ingress controller helm chart version
   value: '4.7.3'
 - name: 'certManagerVersion'  # cert-manager helm chart version

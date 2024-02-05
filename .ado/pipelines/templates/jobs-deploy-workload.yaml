@@ -85,17 +85,17 @@ jobs: # using jobs so they each run in parallel
               $certificateName = "workload-ingress-secret"
 
               # checking if certificate for workload-ingress-secret was issued
-              if ($(kubectl get certificates $certificateName -n $(workloadNamespace) -o 'jsonpath={..status.conditions[?(@.type==\"Ready\")].status}') -ne "True")
+              if ($(kubectl get certificates $certificateName -n $(workloadNamespace) -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') -ne "True")
               {
                 $certReady = $false
 
                 $retrycount++
-                echo "Certificate for $certificateName not ready. Waiting for $sleepSeconds seconds and retrying... $retrycount/$maxretrycount";
+                echo "Certificate '$certificateName' (in namespace '$(workloadNamespace)') is not ready. Waiting for $sleepSeconds seconds and retrying... $retrycount/$maxretrycount";
                 Start-Sleep $sleepSeconds
               }
               else
               {
-                echo "Certificate $certificateName is ready!"
+                echo "Certificate '$certificateName' (in namespace '$(workloadNamespace)') is ready!"
                 $certReady = $true
                 break
               }
@@ -103,7 +103,7 @@ jobs: # using jobs so they each run in parallel
 
             if(-not $certReady)
             {
-              throw "*** Error - Certificate $certificateName was not provisioned in time"
+              throw "*** Error - Certificate '$certificateName' (in namespace '$(workloadNamespace)') was not provisioned in time"
             }
           }
 

@@ -7,7 +7,7 @@ variables:
 - name: 'terraformVersion'    # Terraform Version
   value: '1.6.2-*'
 - name: 'kubernetesVersion'   # kubernetes version used for aks clusters
-  value: '1.27.3'
+  value: '1.28.5'
 - name: 'helmVersion'         # helm package manager version
   value: 'v3.14.0'
 - name: 'ingressNginxVersion' # nginx ingress controller helm chart version
@@ -15,7 +15,7 @@ variables:
 - name: 'certManagerVersion'  # cert-manager helm chart version
   value: 'v1.13.3'
 - name: 'dotnetSdkVersion'    # dotnet sdk version
-  value: '8.0.100'
+  value: '8.0.201'
 - name: 'chaosMeshVersion'    #  chaos-mesh chart version
   value: '2.5.1'
 - name: 'uiAppNodeVersion'    # nodejs version for the UI app

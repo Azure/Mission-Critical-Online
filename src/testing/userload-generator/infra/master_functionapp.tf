@@ -26,6 +26,7 @@ resource "azurerm_linux_function_app" "master" {
   }
 
   site_config {
+
     application_stack {
       dotnet_version = "6.0"
     }
@@ -34,6 +35,10 @@ resource "azurerm_linux_function_app" "master" {
   }
 
   key_vault_reference_identity_id = azurerm_user_assigned_identity.functions.id
+
+  ftp_publish_basic_authentication_enabled = false
+  
+  webdeploy_publish_basic_authentication_enabled = false
 
   app_settings = merge(
     local.function_names_per_geo,

@@ -75,6 +75,26 @@ Location: SwedenCentral, Current Limit: 100, Current Usage: 96, Additional Requi
 **Error:**
 
 ```console
+│ Agent Pool Name: "workloadpool"): performing CreateOrUpdate: unexpected status 400 (400 Bad Request) with response: {
+│   "code": "SubscriptionNotEnabledEncryptionAtHost",
+│   "details": null,
+│   "message": "Subscription does not enable EncryptionAtHost.",
+│   "subcode": ""
+│  }
+```
+
+**Description:** Host encryption needs to be enabled at subscription-level when `aks_enable_host_encryption` is set to `true` in `variables-<env>.tf`.
+
+**Solution:**
+
+Host encryption needs to be enabled at subscription-level: [Use the Azure CLI to enable end-to-end encryption using encryption at host
+](https://learn.microsoft.com/en-us/azure/virtual-machines/linux/disks-enable-host-based-encryption-cli)
+
+---
+
+**Error:**
+
+```console
 Error: deleting Front Door (Subscription: "xxxxx-8cbd-46f2-a146-yyyyyyyyyy"
 │ Resource Group Name: "xxxxx-global-rg"
 │ Front Door Name: "xxxxx-global-fd"): performing Delete: frontdoors.FrontDoorsClient#Delete: Failure sending request: StatusCode=0 -- Original Error: autorest/azure: Service returned an error. Status=<nil> Code="Conflict" Message="Cannot delete frontend endpoint \"xxxxx.e2e.example.com\" because it is still directly or indirectly (using \"afdverify\" prefix) CNAMEd to front door \"xxxxx-global-fd.azurefd.net\". Please remove the DNS CNAME records and try again."

@@ -1,6 +1,8 @@
 # Variable file for INT env
 vnet_address_space = "10.1.0.0/18" # /18 allows for up to 4 stamps
 
+aks_enable_host_encryption = true # https://learn.microsoft.com/en-us/azure/aks/enable-host-encryption
+
 aks_system_node_pool_sku_size          = "Standard_D2s_v3" # Adjust as needed for your workload
 aks_system_node_pool_autoscale_minimum = 2
 aks_system_node_pool_autoscale_maximum = 6

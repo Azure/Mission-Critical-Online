@@ -30,3 +30,16 @@ resource "random_password" "api_key" {
   length  = 32
   special = false
 }
+
+# Register the compute resource provider with the EncryptionAtHost feature (optional)
+resource "azurerm_resource_provider_registration" "compute" {
+  name = "Microsoft.Compute"
+
+  dynamic "feature" {
+    for_each = var.aks_enable_host_encryption ? [1] : []
+    content {
+      name       = "EncryptionAtHost"
+      registered = true
+    }
+  }
+}

@@ -87,6 +87,8 @@ resource "azurerm_kubernetes_cluster_node_pool" "workload" {
   os_disk_type          = "Ephemeral"
   orchestrator_version  = var.aks_kubernetes_version
 
+  enable_host_encryption = var.aks_enable_host_encryption # host encryption needs to be enabled per-subscription
+
   mode  = "User" # Define this node pool as a "user" aka workload node pool
   zones = [1, 2, 3]
 

@@ -96,6 +96,12 @@ variable "aks_user_node_pool_autoscale_maximum" {
   type        = number
 }
 
+variable "aks_enable_host_encryption" {
+  default     = true
+  type        = bool
+  description = "Enable host encryption for AKS nodes"
+}
+
 variable "event_hub_thoughput_units" {
   description = "Number of Throughput Units for Event Hub Namespace"
   type        = number

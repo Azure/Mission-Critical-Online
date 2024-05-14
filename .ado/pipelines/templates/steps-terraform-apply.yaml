@@ -33,6 +33,7 @@ steps:
       terraform plan -input=false -out=tf_plan \
                      -var=environment="$(environment)" \
                      -var=prefix="${{ parameters.customPrefix }}" \
+                     -var=aks_enable_host_encryption="$(enableHostEncryption)" \
                      -var-file="variables-$(environment).tfvars" \
                      ${{ parameters.customAttributes }}
 

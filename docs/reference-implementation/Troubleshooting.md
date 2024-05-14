@@ -83,12 +83,14 @@ Location: SwedenCentral, Current Limit: 100, Current Usage: 96, Additional Requi
 │  }
 ```
 
-**Description:** Host encryption needs to be enabled at subscription-level when `aks_enable_host_encryption` is set to `true` in `variables-<env>.tf`.
+**Description:** Host encryption needs to be enabled at subscription-level when `enableHostEncryption` is set to `true` in `variables-values-<env>.yaml` in `.ado/pipelines/config`.
 
 **Solution:**
 
 Host encryption needs to be enabled at subscription-level: [Use the Azure CLI to enable end-to-end encryption using encryption at host
 ](https://learn.microsoft.com/en-us/azure/virtual-machines/linux/disks-enable-host-based-encryption-cli)
+
+If you don't want to use Host-encryption, you can disable it by setting `enableHostEncryption` to `false` in `variables-values-<env>.yaml` in `.ado/pipelines/config`.
 
 ---
 

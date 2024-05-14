@@ -46,7 +46,6 @@ To deploy the Azure Mission-Critical reference implementation, you need to creat
 
 - [Create an organization or project collection](https://learn.microsoft.com/azure/devops/organizations/accounts/create-organization?view=azure-devops)
 
-
 #### Create a new Azure DevOps project
 
 Once you have created an Azure DevOps organization, you can create a new project in that organization. Go to the Azure DevOps portal, select the desired Organization and Click on "+ New Project" in the upper right hand corner.
@@ -123,6 +122,8 @@ All pipelines require an Azure DevOps service connection to access the target Az
 
 > **Important!** The AAD Service Principal needs **subscription-level owner permissions** as the pipeline will create various role assignments.
 
+> **Important!** Azure Mission-Critical is using host-level encryption compute. This feature needs to be manually registered in each subscription. See [Use the Azure CLI to enable end-to-end encryption using encryption at host](https://learn.microsoft.com/en-us/azure/virtual-machines/linux/disks-enable-host-based-encryption-cli) for more.
+
 You need to repeat these steps for each of the environments that you want to create. But you can also only start with one for now. If so, we recommend to start with `e2e`.
 
 ```powershell
@@ -184,17 +185,17 @@ Modify the respective file for the environment which you want to deploy. At leas
 
 | Required to modify | Key | Description | Sample value |
 | --- | --- | --- | --- |
-| **YES** | prefix | Custom prefix used for Azure resources. **Must not be longer than 6 characters!** | mye2e |
-| **YES** | contactEmail | E-mail alias used for alerting. **Be careful which address you put in here as it will potentially receive a lot of notification emails** | alwaysonappnet@example.com |
-| NO | terraformResourceGroup | Resource Group where the Terraform state Storage account will be deployed | terraformstate-rg |
-| NO | stampLocations | List of locations (Azure Regions) where this environment will be deployed into. You can keep the default to start with.  | ["northeurope", "eastus2"] |
-| NO | envDnsZoneRG | OPTIONAL: Name of the Azure Resource group which holds the Azure DNS Zone for your custom domain. Not required if you do not plan to use a custom DNS name | mydns-rg |
-| NO | envDomainName | OPTIONAL: Name of the Azure DNS Zone. Not required if you do not plan to use a custom DNS name | example.com |
+| **YES** | `prefix` | Custom prefix used for Azure resources. **Must not be longer than 6 characters!** | `mye2e` |
+| **YES** | `contactEmail` | E-mail alias used for alerting. **Be careful which address you put in here as it will potentially receive a lot of notification emails** | `alwaysonappnet@example.com` |
+| NO | `terraformResourceGroup` | Resource Group where the Terraform state Storage account will be deployed | `terraformstate-rg` |
+| NO | `stampLocations` | List of locations (Azure Regions) where this environment will be deployed into. You can keep the default to start with.  | `["northeurope", "eastus2"]` |
+| NO | `envDnsZoneRG` | OPTIONAL: Name of the Azure Resource group which holds the Azure DNS Zone for your custom domain. Not required if you do not plan to use a custom DNS name | `mydns-rg` |
+| NO | `envDomainName` | OPTIONAL: Name of the Azure DNS Zone. Not required if you do not plan to use a custom DNS name | example.com |
+| NO | `enableHostEncryption` | Enable or disable host-encryption for compute resources (needs to be enabled per-subscription) | `true` |
 
 **After modifying the file, make sure to commit and push the changes to your Git repository.**
 
 For more details on the variables, you can consult [this guide](/.ado/pipelines/README.md#configuration-files).
-
 
 ### 7) Execute the first deployment
 

@@ -6,7 +6,11 @@ variables:
 - name:  'prefix'
   value: 'afprod'          # <===== CHANGE THIS! Must not be longer than 6 characters! Needs to be a unique prefix
 
-
+# Host-encryption for compute resources (needs to be enabled on subscription-level)
+# https://learn.microsoft.com/en-us/azure/virtual-machines/linux/disks-enable-host-based-encryption-cli
+- name: 'enableHostEncryption'
+  value: 'true'           # <===== CHANGE THIS! Set to 'true' to enable host encryption
+  
 # The first value in 'stampLocations' is the primary region used for global services.
 # IMPORTANT! Changing the primary region (first value) is a BREAKING change and will destroy CosmosDB and Front Door.
 - name: 'stampLocations'

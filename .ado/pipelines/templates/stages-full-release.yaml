@@ -179,6 +179,7 @@ stages:
                                     -var=contact_email="$(contactEmail)"
                                     -var=''stamps=$(stampLocations)''
                                     -var=aks_kubernetes_version="$(kubernetesVersion)"
+                                    -var=aks_enable_host_encryption="$(enableHostEncryption)"
                                     -var=global_resource_group_name="$(global_resource_group_name)"
                                     -var=monitoring_resource_group_name="$(monitoring_resource_group_name)"
                                     -var=cosmosdb_account_name="$(cosmosdb_account_name)"

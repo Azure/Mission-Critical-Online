@@ -3,6 +3,7 @@
 # https://github.com/kubernetes/ingress-nginx/blob/master/charts/ingress-nginx/values.yaml
 
 controller:
+  allowSnippetAnnotations: true
   securityContext:
     readOnlyRootFilesystem: true # If a container does not need to write files, it should be run with a read-only filesystem. 
     privileged: false # Running a container as privileged gives all capabilities to the container, and it also lifts all the limitations enforced by the device cgroup controller.

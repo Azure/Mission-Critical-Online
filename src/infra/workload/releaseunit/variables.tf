@@ -101,6 +101,12 @@ variable "aks_kubernetes_version" {
   type        = string
 }
 
+variable "aks_enable_host_encryption" {
+  default     = true
+  type        = bool
+  description = "Enable host encryption for AKS nodes"
+}
+
 variable "aks_system_node_pool_sku_size" {
   description = "VM SKU of the AKS system nodes"
   type        = string

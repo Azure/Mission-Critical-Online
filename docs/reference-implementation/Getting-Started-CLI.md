@@ -137,6 +137,8 @@ All pipelines require an Azure DevOps service connection to access the target Az
 
 > **Important!** The AAD Service Principal needs **subscription-level owner permissions** as the pipeline will create various role assignments.
 
+> **Important!** Azure Mission-Critical is using host-level encryption compute. This feature needs to be manually registered in each subscription. See [Use the Azure CLI to enable end-to-end encryption using encryption at host](https://learn.microsoft.com/en-us/azure/virtual-machines/linux/disks-enable-host-based-encryption-cli) for more.
+
 You need to repeat these steps for each of the environments that you want to create. But you can also only start with one for now. If so, we recommend to start with `e2e`.
 
 ```powershell

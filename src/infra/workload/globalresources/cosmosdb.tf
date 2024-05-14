@@ -4,8 +4,8 @@ resource "azurerm_cosmosdb_account" "main" {
   resource_group_name = azurerm_resource_group.global.name
   offer_type          = "Standard"
 
-  enable_automatic_failover       = true
-  enable_multiple_write_locations = true
+  automatic_failover_enabled = true
+  multiple_write_locations_enabled = true
 
   consistency_policy {
     consistency_level       = "Session"

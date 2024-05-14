@@ -6,7 +6,7 @@ terraform {
     }
     azapi = {
       source  = "Azure/azapi"
-      version = "1.12.1"
+      version = "1.13.1"
     }
   }
 
@@ -21,6 +21,7 @@ provider "azurerm" {
       prevent_deletion_if_contains_resources = false
     }
   }
+  skip_provider_registration = true
 }
 
 provider "azapi" {}

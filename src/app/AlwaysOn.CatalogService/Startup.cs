@@ -172,10 +172,10 @@ namespace AlwaysOn.CatalogService
 
                         // Add tracing headers to each response
                         // Source: https://khalidabuhakmeh.com/add-headers-to-a-response-in-aspnet-5
-                        context.Response.Headers.Add("X-Server-Name", Environment.MachineName);
-                        context.Response.Headers.Add("X-Server-Location", sysConfig.AzureRegion);
-                        context.Response.Headers.Add("X-Correlation-ID", Activity.Current?.RootId);
-                        context.Response.Headers.Add("X-Requested-Api-Version", ctx.GetRequestedApiVersion()?.ToString());
+                        context.Response.Headers.Append("X-Server-Name", Environment.MachineName);
+                        context.Response.Headers.Append("X-Server-Location", sysConfig.AzureRegion);
+                        context.Response.Headers.Append("X-Correlation-ID", Activity.Current?.RootId);
+                        context.Response.Headers.Append("X-Requested-Api-Version", ctx.GetRequestedApiVersion()?.ToString());
                     }
                     return Task.CompletedTask;
                 }, context);

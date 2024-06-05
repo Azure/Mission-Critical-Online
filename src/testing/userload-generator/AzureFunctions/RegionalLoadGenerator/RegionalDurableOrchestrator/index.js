@@ -6,7 +6,7 @@ const activityFunctionName = process.env.TEST_ACTIVITY_FUNCTION_NAME || "PlayerU
  * This Durable Orchestrator function will kick off the activity Functions which run the actual userflows
  *
  */
-df.app.orchestration('durableOrchestrator', function* (context) {
+df.app.orchestration('RegionalDurableOrchestrator', function* (context) {
     const numberOfUsers = parseInt(context.df.getInput());
 
     if (!context.df.isReplaying)

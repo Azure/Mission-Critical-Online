@@ -1,6 +1,13 @@
 {
   "version": "2.0",
   "logging": {
+    "fileLoggingMode": "debugOnly",
+    "logLevel": {
+      "default": "Warning",
+      "Host.Aggregator": "Trace",
+      "Host.Results": "Information",
+      "Function": "Information"
+    },
     "applicationInsights": {
       "samplingSettings": {
         "isEnabled": true,

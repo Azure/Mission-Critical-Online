@@ -1,11 +1,11 @@
 ﻿using GlobalOrchestrator.Model;
-using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -16,15 +16,16 @@ namespace GlobalOrchestrator
     {
         private static HttpClient _httpClient = new HttpClient();
 
-        private const string regionalLoadgenFunctionBaseUrl = @"https://{0}.azurewebsites.net/api/StartRegionalUserflows?numberofusers={1}";
+        private const string RegionalLoadgenFunctionBaseUrl = @"https://{0}.azurewebsites.net/api/StartRegionalUserflows?numberofusers={1}";
 
-        public static async Task<List<string>> LoadSetterInternalAsync(ExecutionContext context, ILogger log)
+        public static async Task<List<string>> LoadSetterInternalAsync(ILogger log)
         {
             try
             {
                 string fileName = "daily_load_profile.json";
 
-                string jsonLocation = Path.Combine(context.FunctionAppDirectory, fileName);
+                var rootDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                string jsonLocation = Path.Combine(rootDirectory!, fileName);
                 string jsonString = await File.ReadAllTextAsync(jsonLocation);
                 var loadProfile = JsonSerializer.Deserialize<LoadProfile>(jsonString);
 
@@ -47,8 +48,7 @@ namespace GlobalOrchestrator
                     // Get the currently valid load profile for this geo (if there is any)
                     //  IsBetween() supports ranges that span midnight, so End can be lower than Start (e.g. 23:00-01:00)
                     var currentTimeframe = geo.timeframes
-                        .Where(t => geoNowTime.IsBetween(t.Start, t.End))
-                        .FirstOrDefault();
+                        .FirstOrDefault(t => geoNowTime.IsBetween(t.Start, t.End));
 
                     int currentUserLoad;
 
@@ -122,7 +122,7 @@ namespace GlobalOrchestrator
                             log.LogError("No Function Key configured for Function {functionName} functionName", functionName);
                             continue;
                         }
-                        var fullFunctionUrl = string.Format(regionalLoadgenFunctionBaseUrl, functionName, usersPerGroup[i]);
+                        var fullFunctionUrl = string.Format(RegionalLoadgenFunctionBaseUrl, functionName, usersPerGroup[i]);
                         log.LogInformation("Calling Function URL: {url}", fullFunctionUrl);
 
                         var request = new HttpRequestMessage(HttpMethod.Get, fullFunctionUrl);

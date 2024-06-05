@@ -56,7 +56,7 @@ app.http('StartRegionalUserflows', {
             };
         }
 
-        const instanceId = await client.startNew(orchestratorFunctionName, numberOfUsers);
+        const instanceId = await client.startNew(orchestratorFunctionName, {input: numberOfUsers});
 
         context.log(`Started new orchestration with ${numberOfUsers} users with ID = '${instanceId}'.`);
 

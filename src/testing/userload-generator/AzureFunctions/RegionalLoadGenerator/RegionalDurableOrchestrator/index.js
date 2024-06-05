@@ -14,7 +14,9 @@ df.app.orchestration('RegionalDurableOrchestrator', function* (context) {
 
     const tasks = [];
     for (var i = 0; i < numberOfUsers; i++) {
-        if (!context.df.isReplaying) context.log(`[${i + 1}/${numberOfUsers}] Starting task`)
+        if (!context.df.isReplaying) {
+            context.log(`[${i + 1}/${numberOfUsers}] Starting task`)
+        }
         tasks.push(context.df.callActivity(activityFunctionName, null));
     }
 

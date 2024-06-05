@@ -52,5 +52,5 @@ df.app.orchestration('RegionalDurableOrchestrator', function* (context) {
     if (!context.df.isReplaying)
         context.log("Restarting new orchestrator instance");
 
-    yield context.df.continueAsNew(numberOfUsers);
+    context.df.continueAsNew(numberOfUsers);
 });

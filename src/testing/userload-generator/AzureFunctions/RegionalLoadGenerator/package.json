@@ -5,7 +5,7 @@
   "scripts": {
     "start": "func start"
   },
-  "main": "*.js",
+  "main": "*/*.js",
   "dependencies": {
     "@azure/functions": "^4.5.0",
     "@playwright/test": "^1.19.2",

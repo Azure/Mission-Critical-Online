@@ -5,11 +5,13 @@
   "scripts": {
     "start": "func start"
   },
+  "main": "*/*.js",
   "dependencies": {
+    "@azure/functions": "^4.5.0",
     "@playwright/test": "^1.19.2",
     "csv-parser": "^3.0.0",
-    "durable-functions": "^3.0.0",
-    "playwright-core": "^1.19.2",
-    "playwright-chromium": "^1.19.2"
+    "durable-functions": "^3.1.0",
+    "playwright-chromium": "^1.19.2",
+    "playwright-core": "^1.19.2"
   }
 }

@@ -30,7 +30,7 @@ resource "azurerm_linux_function_app" "regional" {
 
   site_config {
     application_stack {
-      node_version = "14"
+      node_version = "20"
     }
 
     application_insights_connection_string = var.application_insights_connection_string

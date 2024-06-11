@@ -6,17 +6,15 @@ const activityFunctionName = process.env.TEST_ACTIVITY_FUNCTION_NAME || "PlayerU
  * This Durable Orchestrator function will kick off the activity Functions which run the actual userflows
  *
  */
-df.app.orchestration('RegionalDurableOrchestrator', function* (context) {
+module.exports = df.orchestrator(function* (context) {
     const numberOfUsers = parseInt(context.df.getInput());
 
     if (!context.df.isReplaying)
-        context.log(`Starting orchestrator for ${numberOfUsers} users`);
+        context.log.info(`Starting orchestrator for ${numberOfUsers} users`);
 
     const tasks = [];
     for (var i = 0; i < numberOfUsers; i++) {
-        if (!context.df.isReplaying) {
-            context.log(`[${i + 1}/${numberOfUsers}] Starting task`)
-        }
+        if (!context.df.isReplaying) context.log.info(`[${i + 1}/${numberOfUsers}] Starting task`)
         tasks.push(context.df.callActivity(activityFunctionName, null));
     }
 
@@ -24,15 +22,15 @@ df.app.orchestration('RegionalDurableOrchestrator', function* (context) {
     const results = yield context.df.Task.all(tasks);
 
     if (!context.df.isReplaying)
-        context.log(`All ${numberOfUsers} tasks have been finished!`);
+        context.log.info(`All ${numberOfUsers} tasks have been finished!`);
 
     let success = 0;
     let failed = 0;
 
     for (const r of results) {
         if (!context.df.isReplaying) {
-            context.log("Result status: " + r.status);
-            context.log("Result message: " + r.message);
+            context.log.info("Result status: " + r.status);
+            context.log.info("Result message: " + r.message);
         }
 
         if (r.status == 200) {
@@ -44,13 +42,13 @@ df.app.orchestration('RegionalDurableOrchestrator', function* (context) {
     }
 
     if (!context.df.isReplaying)
-        context.log(`Successful: ${success}/${numberOfUsers} - Failed: ${failed}/${numberOfUsers}`);
+        context.log.info(`Successful: ${success}/${numberOfUsers} - Failed: ${failed}/${numberOfUsers}`);
 
     context.df.setCustomStatus(`Last run result - Successful: ${success}/${numberOfUsers} - Failed: ${failed}/${numberOfUsers}`);
 
     // Start a new instance of this orchestrator ("eternal orchestrator")
     if (!context.df.isReplaying)
-        context.log("Restarting new orchestrator instance");
+        context.log.info("Restarting new orchestrator instance");
 
-    context.df.continueAsNew(numberOfUsers);
+    yield context.df.continueAsNew(numberOfUsers);
 });

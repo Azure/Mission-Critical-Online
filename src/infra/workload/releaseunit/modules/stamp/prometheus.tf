@@ -12,8 +12,6 @@ resource "azurerm_monitor_data_collection_endpoint" "stamp" {
   kind                          = "Linux"
   public_network_access_enabled = true
   description                   = "monitor_data_collection_endpoint example"
-
-  tags = var.default_tags
 }
 
 resource "azurerm_monitor_data_collection_rule" "stamp" {
@@ -41,8 +39,6 @@ resource "azurerm_monitor_data_collection_rule" "stamp" {
       name               = "MonitoringAccount1"
     }
   }
-
-  tags = var.default_tags
 }
 
 resource "azurerm_monitor_data_collection_rule_association" "aks" {
@@ -79,7 +75,6 @@ resource "azurerm_monitor_alert_prometheus_rule_group" "prometheusK8sRuleGroup" 
     enabled = true
   }
 
-  tags = var.default_tags
 }
 
 resource "azurerm_monitor_alert_prometheus_rule_group" "prometheusNodeRuleGroup" {
@@ -100,6 +95,4 @@ resource "azurerm_monitor_alert_prometheus_rule_group" "prometheusNodeRuleGroup"
     }
     enabled = true
   }
-
-  tags = var.default_tags
 }

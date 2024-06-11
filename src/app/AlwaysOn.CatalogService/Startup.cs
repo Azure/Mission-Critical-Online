@@ -16,7 +16,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using System;
@@ -64,8 +63,7 @@ namespace AlwaysOn.CatalogService
 
             services.AddSingleton<AppInsightsCosmosRequestHandler>();
 
-            // Adds a simple liveness probe HTTP endpoint, path mapping happens further below
-            services.AddHealthChecks().AddCheck("Sample", () => HealthCheckResult.Healthy()); // since dotnet8, at least some health check has to be registered for the checks to be executed https://github.com/dotnet/aspnetcore/issues/52087
+            services.AddHealthChecks();// Adds a simple liveness probe HTTP endpoint, path mapping happens further below
 
             services.AddSingleton<IDatabaseService, CosmosDbService>();
 
@@ -172,10 +170,10 @@ namespace AlwaysOn.CatalogService
 
                         // Add tracing headers to each response
                         // Source: https://khalidabuhakmeh.com/add-headers-to-a-response-in-aspnet-5
-                        context.Response.Headers.Append("X-Server-Name", Environment.MachineName);
-                        context.Response.Headers.Append("X-Server-Location", sysConfig.AzureRegion);
-                        context.Response.Headers.Append("X-Correlation-ID", Activity.Current?.RootId);
-                        context.Response.Headers.Append("X-Requested-Api-Version", ctx.GetRequestedApiVersion()?.ToString());
+                        context.Response.Headers.Add("X-Server-Name", Environment.MachineName);
+                        context.Response.Headers.Add("X-Server-Location", sysConfig.AzureRegion);
+                        context.Response.Headers.Add("X-Correlation-ID", Activity.Current?.RootId);
+                        context.Response.Headers.Add("X-Requested-Api-Version", ctx.GetRequestedApiVersion()?.ToString());
                     }
                     return Task.CompletedTask;
                 }, context);

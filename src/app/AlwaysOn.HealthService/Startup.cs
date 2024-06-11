@@ -139,9 +139,9 @@ namespace AlwaysOn.HealthService
                 {
                     if (o is HttpContext ctx)
                     {
-                        context.Response.Headers.Add("X-Server-Name", Environment.MachineName);
-                        context.Response.Headers.Add("X-Server-Location", sysConfig.AzureRegion);
-                        context.Response.Headers.Add("X-Correlation-ID", Activity.Current?.RootId);
+                        context.Response.Headers.Append("X-Server-Name", Environment.MachineName);
+                        context.Response.Headers.Append("X-Server-Location", sysConfig.AzureRegion);
+                        context.Response.Headers.Append("X-Correlation-ID", Activity.Current?.RootId);
                     }
                     return Task.CompletedTask;
                 }, context);

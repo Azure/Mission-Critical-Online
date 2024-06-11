@@ -30,11 +30,15 @@ resource "azurerm_linux_function_app" "regional" {
 
   site_config {
     application_stack {
-      node_version = "14"
+      node_version = "20"
     }
 
     application_insights_connection_string = var.application_insights_connection_string
   }
+
+  ftp_publish_basic_authentication_enabled = false
+
+  webdeploy_publish_basic_authentication_enabled = false
 
   app_settings = merge(
     var.additional_app_settings,

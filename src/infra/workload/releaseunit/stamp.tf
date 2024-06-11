@@ -23,8 +23,6 @@ module "stamp" {
 
   vnet_address_space = module.stamp_addresses.network_cidr_blocks[each.value]
 
-  aks_kubernetes_version = var.aks_kubernetes_version # kubernetes version
-
   prefix       = local.prefix       # handing over the resource prefix
   default_tags = local.default_tags # handing over the resource tags
   queued_by    = var.queued_by
@@ -38,6 +36,10 @@ module "stamp" {
   azure_monitor_action_group_resource_id = var.azure_monitor_action_group_resource_id
   frontdoor_id_header                    = var.frontdoor_id_header
   acr_name                               = var.acr_name
+
+  aks_kubernetes_version = var.aks_kubernetes_version # Defined kubernetes version
+
+  aks_enable_host_encryption  = var.aks_enable_host_encryption # Enable host encryption
 
   aks_system_node_pool_sku_size          = var.aks_system_node_pool_sku_size
   aks_system_node_pool_autoscale_minimum = var.aks_system_node_pool_autoscale_minimum

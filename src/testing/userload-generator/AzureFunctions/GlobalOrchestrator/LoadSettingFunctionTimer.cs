@@ -1,19 +1,15 @@
-using System;
-using System.Threading.Tasks;
-using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 
 namespace GlobalOrchestrator
 {
-    public static class LoadSettingFunctionTimer
+    public class LoadSettingFunctionTimer(ILogger<LoadSettingFunctionTimer> logger)
     {
-        [FunctionName(nameof(LoadSettingFunctionTimer))]
-        public static async Task Run([TimerTrigger("0 */10 * * * *")] TimerInfo myTimer, // run every 10min
-            ExecutionContext context,
-            ILogger log)
+        [Function(nameof(LoadSettingFunctionTimer))]
+        public async Task Run([TimerTrigger("0 */10 * * * *")] TimerInfo myTimer) // run every 10min
         {
-            log.LogInformation($"{nameof(LoadSettingFunctionTimer)} executed at: {DateTime.Now}");
-            await LoadSetter.LoadSetterInternalAsync(context, log);
+            logger.LogInformation($"{nameof(LoadSettingFunctionTimer)} executed at: {DateTime.Now}");
+            await LoadSetter.LoadSetterInternalAsync(logger);
         }
     }
 }

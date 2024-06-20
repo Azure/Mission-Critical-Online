@@ -20,7 +20,7 @@
     "is-primitive": "^3.0.1",
     "nprogress": "^0.2.0",
     "vue-template-compiler": "^2.7.16",
-    "ajv": "8.14.0"
+    "ajv": "8.16.0"
   },
   "resolutions": {
     "glob-parent": "6.0.2",

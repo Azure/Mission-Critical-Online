@@ -181,4 +181,4 @@ stages:
 
             echo "*** Deploying to Master Function App $masterFunctionName in resource group $rgName"
             cd "$(workingDirectory)/AzureFunctions/GlobalOrchestrator"
-            func azure functionapp publish $masterFunctionName --csharp
+            func azure functionapp publish $masterFunctionName --dotnet-isolated

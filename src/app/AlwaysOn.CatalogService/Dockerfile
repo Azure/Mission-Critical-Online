@@ -1,4 +1,3 @@
-# Create build environment
 FROM mcr.microsoft.com/dotnet/sdk:8.0.302-1 AS build-env
 WORKDIR /app
 COPY . ./

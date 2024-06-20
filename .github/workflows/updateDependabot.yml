@@ -8,21 +8,26 @@ env:
 
 jobs:
   UpdateDependabot:
+    name: 'Update Dependabot'
     runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      pull-requests: write
+      contents: write
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Create a working branch
+      - name: 'Create a working branch'
         run: |
           git checkout -b ${{ env.BRANCH_NAME }}
 
-      - name: Update Dependabot
+      - name: 'Update Dependabot'
         shell: pwsh
         run: |
           ./.github/scripts/update-dependabot.ps1 -targetBranch component-updates -outputFile ./.github/dependabot.yml
 
-      - name: Push files to repo
+      - name: 'Push files to repo'
         shell: pwsh
         run: |
 

@@ -1,4 +1,4 @@
-name: Reset component-updates branch
+name: 'Reset component-updates branch'
 
 on:
   workflow_dispatch:
@@ -8,21 +8,24 @@ env:
 
 jobs:
   resetBranch:
+    name: 'Reset component-updates branch'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       
-      - name: Checkout component-updates
+      - name: 'Checkout component-updates'
         run: |
           git checkout -b component-updates
 
-      - name: Reset branch
+      - name: 'Reset branch'
         run: |
           git reset --hard origin/main
       
-      - name: Push
+      - name: 'Push'
         run: |
           git push --set-upstream origin component-updates --force

@@ -11,8 +11,8 @@ jobs:
     name: 'Update Dependabot'
     runs-on: ubuntu-latest
     permissions:
-      actions: write
-      contents: read
+      actions: read
+      contents: write
 
     steps:
       - uses: actions/checkout@v4
